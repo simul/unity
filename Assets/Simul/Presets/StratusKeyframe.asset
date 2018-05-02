@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dcdfbea2e7338ed4ba21f9f27c8815df, type: 3}
+  m_Name: StratusKeyframe
+  m_EditorClassIdentifier: 
+  SequenceAsText: "{\n\t\"cloudKeyframer\":\n\t{\n\t\t\"keyframes\":\n\t\t[\n\t\t{\n\t\t\t\"ambient_light\":
+    \"               1\"\n\t\t\t\"baseNoiseFactor\": \"0.2000000029802322\"\n\t\t\t\"churn\":
+    \"               1\"\n\t\t\t\"cloud_base_km\": \"               1\"\n\t\t\t\"cloud_height_km\":
+    \"1.905269980430603\"\n\t\t\t\"cloudiness\": \"             0.95\"\n\t\t\t\"diffusivity\":
+    \"0.009999999776482582\"\n\t\t\t\"direct_light\": \"               1\"\n\t\t\t\"distributionBaseLayer\":
+    \"0.239999994635582\"\n\t\t\t\"distributionTransition\": \"0.2000000029802322\"\n\t\t\t\"edgeSharpness\":
+    \"             0.5\"\n\t\t\t\"extinction\": \"0.006\"\n\t\t\t\"fractal_amplitude\":
+    \"               1\"\n\t\t\t\"fractal_wavelength\": \"              20\"\n\t\t\t\"godrayStrength\":
+    \"               0\"\n\t\t\t\"indirect_light\": \"0.3959999918937683\"\n\t\t\t\"light_asymmetry\":
+    \"0.8700000047683716\"\n\t\t\t\"lightning\": \"               0\"\n\t\t\t\"octaves\":
+    \"3\"\n\t\t\t\"offsetx\": \"               0\"\n\t\t\t\"offsety\": \"          604800\"\n\t\t\t\"persistence\":
+    \"0.550000011920929\"\n\t\t\t\"precipitation\": \"               0\"\n\t\t\t\"precipitation_waver\":
+    \"             0.5\"\n\t\t\t\"precipitation_wind_effect\": \"            0.25\"\n\t\t\t\"rain_to_snow\":
+    \"               0\"\n\t\t\t\"upperDensity\": \"0.699999988079071\"\n\t\t}\n\t\t]\n\t}\n}\n"

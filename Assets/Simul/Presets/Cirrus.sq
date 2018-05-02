@@ -1,0 +1,32 @@
+{
+	"cloud2DKeyframer":
+	{
+		"keyframes":
+		[
+		{
+			"ambient_light": "               1"
+			"baseNoiseFactor": "0.2000000029802322"
+			"churn": "6.367955207824707"
+			"cloud_base_km": "               9"
+			"cloud_height_km": "1.905269980430603"
+			"cloud_width_km": "             920"
+			"cloudiness": "0.7879999876022339"
+			"diffusivity": "0.8970000147819519"
+			"direct_light": "               1"
+			"distributionBaseLayer": "0.239999994635582"
+			"distributionTransition": "0.2000000029802322"
+			"edgeSharpness": "0.6683310270309448"
+			"extinction": "0.07673615217208862"
+			"fractal_amplitude": "8.356030464172363"
+			"fractal_wavelength": "  19319.68359375"
+			"godrayStrength": "               0"
+			"indirect_light": "1.131999969482422"
+			"light_asymmetry": "0.8700000047683716"
+			"lightning": "               0"
+			"octaves": "2"
+			"persistence": "0.3869999945163727"
+			"upperDensity": "0.5950000286102295"
+		}
+		]
+	}
+}

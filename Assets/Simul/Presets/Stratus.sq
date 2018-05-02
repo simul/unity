@@ -1,0 +1,18 @@
+{
+	"cloudKeyframer":
+	{
+		"CloudWidth": "30000"
+		"EdgeNoiseFrequency": "16"
+		"EdgeNoiseOctaves": "7"
+		"EdgeNoisePersistence": "0.5569999814033508"
+		"EdgeNoiseTextureSize": "256"
+		"ExplicitOffsets": "false"
+		"GodraysSteps": "60"
+		"GridHeight": "16"
+		"GridWidth": "128"
+		"NoisePeriod": "               4"
+		"NoiseResolution": "8"
+		"ShadowTextureSize": "64"
+		"Wrap": "true"
+	}
+}

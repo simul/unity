@@ -1,0 +1,306 @@
+QWidget
+{
+	background-color: #383838;
+	color: silver;
+}
+
+#MainWindow
+{
+	background-color: #383838;
+}
+/* We provide a min-width and min-height for push buttons
+	so that they look elegant regardless of the width of the text. */
+QPushButton
+{
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #797979, stop:1 #444444);
+	border-width: 1px;
+	color: grey;
+	border-color: grey;
+	border-style: solid;
+	border-radius: 5;
+	padding: 3px;
+	min-width: 9ex;
+	min-height: 2.5ex;
+}
+
+QPushButton:enabled
+{
+	border-color: gainsboro;
+	border-style: solid;
+	color: white;
+}
+
+QPushButton:hover
+{
+	background-color: silver;
+}
+
+QPushButton:pressed
+{
+	background-color: silver;
+}
+
+QPushButton:flat
+{
+	border-style: none;
+}
+
+/* Increase the padding, so the text is shifted when the button is
+	pressed. */
+QPushButton:pressed,QPushButton:checked
+{
+	padding-left: 5px;
+	padding-top: 5px;
+}
+
+QPushButton:checked
+{
+	padding-left: 5px;
+	padding-top: 5px;
+	background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 dodgerblue, stop:1 midnightblue);
+}
+
+
+
+
+QTabWidget::pane
+{ /* The tab widget frame */
+	border: none;
+	border-left:0;
+	border-right:0;
+	padding-left:0;
+	padding-right:0;
+	margin-left:-2;
+	margin-right:-2;
+	border-top: 1px solid #444444;
+}
+ QTabWidget::tab-bar {
+     left: 0px; /* move to the right by 5px */
+	background: #FF0000;
+ }
+
+QTabBar::tab
+{
+	min-width: 16ex;
+	padding: 8px;
+	padding-bottom: 0px;
+	padding-top: 3px;
+	margin-bottom:0px;
+	margin-top: 1px; 
+	margin-left: 1px; 
+	border: none
+}
+
+QTabBar::tab:selected
+{
+    background-color: #444444;
+	border: 1px solid #AAAAAA;
+	border-bottom-color: #cbcbcb;
+	border-top-left-radius: 3px;
+	border-top-right-radius: 3px;
+}
+
+#tabContents
+{
+	border-top: 1px solid #444444;
+}
+
+QScrollBar:vertical
+{
+    background-color: QLinearGradient( x1: 0, y1: 0, x2: 0.7, y2: 0, x3: 1, y3: 0,
+											 stop: 0 #2B2B2B, stop: 1 #333333, stop: 2 #2d2d2d);
+    width: 13px;
+    margin: 15px 0 15px 0;
+    border: 1px solid ;
+    border-left-color:  #262626;
+    border-top-color:  #262626;
+    border-right-color:  #2d2d2d;
+    border-bottom-color:  #222222;
+    border-radius: 6px;
+}
+
+QScrollBar::handle:vertical
+{
+    background-color: QLinearGradient( x1: 0, y1: 0, x2:1, y2: 0, stop: 0 #4e4e4e, stop: 1 #363636);
+	width: 11px;
+    min-height: 5px;
+    border-radius: 5px;
+	border: 1px solid #585858;
+}
+
+QScrollBar::sub-line:vertical
+{
+    image: url(:/dark_qss/images/dark_qss/scroll_up.png);
+    height: 6px;
+    width: 7px;
+    margin: 1px 0 1px 0;
+    padding: 5px 0 5px 0;
+    subcontrol-position: top;
+    subcontrol-origin: margin;
+    background-color: QLinearGradient( x1: 0, y1: 0, x2: 1, y2: 0,   stop: 0 #3e3e3e, stop: 1 #232323);
+    width: 13px;
+}
+
+QScrollBar::add-line:vertical
+{
+    image: url(:/dark_qss/images/dark_qss/scroll_down.png);
+    height: 6px;
+    width: 7px;
+    margin: 1px 0 1px 0;
+    padding: 5px 0 5px 0;
+    subcontrol-position: bottom;
+    subcontrol-origin: margin;
+    background-color: QLinearGradient( x1: 0, y1: 0, x2: 1, y2: 0,   stop: 0 #3e3e3e, stop: 1 #232323);
+    width: 13px;
+}
+
+QScrollBar::sub-line:vertical:hover,QScrollBar::sub-line:vertical:on
+{
+    background-color: QLinearGradient( x1: 0, y1: 0, x2:1, y2: 0, stop: 0 #9aa8c0, stop: 1 #5f7294);
+}
+
+
+QScrollBar::add-line:vertical:hover, QScrollBar::add-line:vertical:on
+{
+    background-color: QLinearGradient( x1: 0, y1: 0, x2:1, y2: 0, stop: 0 #9aa8c0, stop: 1 #5f7294);
+}
+
+QScrollBar::up-arrow:vertical, QScrollBar::down-arrow:vertical
+{
+    background: none;
+}
+
+
+QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical
+{
+    background: none;
+}
+
+
+ QSlider::groove
+ {
+     border: 1px solid;
+	 border-top-color:#2F2F2F;
+	 border-left-color:#2F2F2F;
+	 border-bottom-color:#383838;
+	 border-right-color:#383838;
+     margin: 2px 0;
+	 border-radius: 2px;
+ }
+
+ QSlider::groove:horizontal
+ {
+     height: 3px; /* the groove expands to the size of the slider by default. by giving it a height, it has a fixed size */
+     background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #383838, stop:1 #444444);
+ }
+ QSlider::groove:vertical
+ {
+     width: 3px; /* the groove expands to the size of the slider by default. by giving it a height, it has a fixed size */
+     background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #383838, stop:1 #444444);
+ }
+
+ QSlider::handle
+ {
+     background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #797979, stop:1 #444444);
+     border: 1px solid #797979;
+     width: 8px;
+     height: 8px;
+     border-radius: 4px;
+ }
+
+ QSlider::handle:horizontal
+ {
+     margin: -4px 0; /* handle is placed by default on the contents rect of the groove. Expand outside the groove */
+ }
+ QSlider::handle:vertical
+ {
+     margin: 0 -4px; /* handle is placed by default on the contents rect of the groove. Expand outside the groove */
+ }
+
+ QSlider::handle:hover
+ {
+     border: 1px solid #4c4cff;
+ }
+
+QLineEdit,QComboBox
+{
+	background-color:#444444;
+	border: 1px solid ;
+	border-color:#383838;
+	border-top-color:#2F2F2F;
+}
+
+QLineEdit:focus
+{
+	border-color:#3838FF;
+}
+
+QLineEdit#rayleighRed, #wavelengthNmRed, #mieRed
+{
+	background-color: rgba(97,64,64)
+}
+
+#rayleighGreen, #wavelengthNmGreen, #mieGreen
+{
+	background-color: rgba(64,80,64)
+}
+
+#rayleighBlue, #wavelengthNmBlue, #mieBlue
+{
+	background-color: rgba(64,64,128)
+}
+
+
+QGroupBox
+{
+	font:bold;
+	background-color:none;
+	margin:4px;
+	border: none;
+	border-top: 1px solid #383838;
+	border-radius: 0px;
+	margin-top: 3ex; /* leave space at the top for the title */
+	background-image: url(:UI/:/qss_icons/groupbox_top.png); 
+    background-position: top left;
+    background-origin: content;
+    background-repeat: repeat-x;
+}
+
+QGroupBox::title
+{
+	font: bold large;
+	font-family: "Times";
+	border-radius: 0px;
+	subcontrol-origin: padding;
+	subcontrol-position: top left;
+    padding: 4;
+}
+
+QGroupBox::indicator
+{
+    width: 13px;
+    height: 13px;
+}
+
+QGroupBox::indicator:unchecked
+{
+	image: url(:/dark_qss/images/dark_qss/right_arrow.png);
+}
+
+QGroupBox::indicator:checked
+{
+	image: url(:/dark_qss/images/dark_qss/down_arrow.png);
+}
+
+QPushButton#reset
+{
+	border:none;
+	background-color: none;
+	background-repeat: repeat-none;
+  background-origin: content;
+	background-image: url(:/images/reset.png);
+}
+QPushButton#reset:disabled
+{
+	background: none;
+}
