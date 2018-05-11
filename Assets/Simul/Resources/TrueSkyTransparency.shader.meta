@@ -1,0 +1,13 @@
+fileFormatVersion: 2
+guid: c3c2650e28e77b943b1fd19a10444f4d
+timeCreated: 1455391323
+licenseType: Pro
+ShaderImporter:
+  defaultTextures:
+  - _MainTex: {instanceID: 0}
+  - _Loss: {fileID: 8400000, guid: f06e8f3443418f849a67577e21b54664, type: 2}
+  - _Inscatter: {fileID: 8400000, guid: f06e8f3443418f849a67577e21b54664, type: 2}
+  - _CloudVisibility: {fileID: 8400000, guid: 39c92c2ec117720419ee930c10f086b3, type: 2}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
