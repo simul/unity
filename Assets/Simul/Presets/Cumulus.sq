@@ -1,0 +1,25 @@
+{
+	"cloudKeyframer":
+	{
+		"CloudShadowRange": "           80000"
+		"DayLoop": "true"
+		"EdgeNoiseResolution": "16"
+		"EdgeNoiseFrequency": "4"
+		"EdgeNoiseOctaves": "4"
+		"EdgeNoisePersistence": "0.557"
+		"EdgeNoiseTextureSize": "16"
+		"ExplicitOffsets": "false"
+		"GodraysSteps": "60"
+		"GridHeight": "16"
+		"GridWidth": "128"
+		"LoopRange": "               1"
+		"LoopStart": "               0"
+		"MeetHorizon": "false"
+		"NoisePeriod": "               4"
+		"NoiseResolution": "8"
+		"OverrideWind": "false"
+		"ShadowTextureSize": "64"
+		"Visible": "true"
+		"Wrap": "true"
+	}
+}

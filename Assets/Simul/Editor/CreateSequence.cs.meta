@@ -1,0 +1,17 @@
+fileFormatVersion: 2
+guid: dd707a65adee78740ac98beb70e13874
+labels:
+- volumetric
+- weather
+- moon
+- stars
+- sun
+- time-of-day
+- clouds
+- sky
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 

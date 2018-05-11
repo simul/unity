@@ -1,0 +1,18 @@
+fileFormatVersion: 2
+guid: 5965457e5bb97d748a35da6a145d349b
+labels:
+- SimulExport
+- sky
+- clouds
+- time-of-day
+- sun
+- moon
+- stars
+- volumetric
+- weather
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 

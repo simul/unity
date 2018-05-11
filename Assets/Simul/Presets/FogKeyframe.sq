@@ -1,0 +1,21 @@
+{
+	"skyKeyframer":
+	{
+		"keyframes":
+		[
+		{
+			"Haze": "               50"
+			"HazeBaseKm": "               0"
+			"HazeEccentricity": "0.8199999928474426"
+			"HazeScaleKm": "             0.5"
+			"Mie": "0.004600000102072954,0.004600000102072954,0.004600000102072954,0.004600000102072954"
+			"MoonAzimuth": "4.586115837097168"
+			"MoonElevation": "0.3637213706970215"
+			"SeaLevelTemperatureK": "288.1499938964844"
+			"StoreAsColours": "false"
+			"SunAzimuth": "3.09234356880188"
+			"SunElevation": "1.166953206062317"
+		}
+		]
+	}
+}
