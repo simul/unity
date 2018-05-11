@@ -1,4 +1,7 @@
 ﻿//#define TRUESKY_LOGGING
+
+#define SIMUL_4_1
+
 using UnityEngine;
 using System.Collections;
 using System.Runtime.InteropServices;
@@ -347,6 +350,12 @@ namespace simul
 		{
 			return StaticRenderGetNumKeyframes(1);
 		}
+#if SIMUL_4_1
+        public int GetNumCloud2DKeyframes()
+		{
+			return StaticRenderGetNumKeyframes(2);
+		}
+#endif
 		public uint InsertSkyKeyframe(float t)
 		{
 			return StaticRenderInsertKeyframe(0,t);
@@ -355,7 +364,13 @@ namespace simul
 		{
 			return StaticRenderInsertKeyframe(1,t);
 		}
-		public void DeleteKeyframe(uint uid)
+#if SIMUL_4_1
+        public uint Insert2DCloudKeyframe(float t)
+		{
+			return StaticRenderInsertKeyframe(2,t);
+		}
+#endif
+        public void DeleteKeyframe(uint uid)
 		{
 			StaticRenderDeleteKeyframe(uid);
 		}
@@ -369,8 +384,13 @@ namespace simul
 		{
 			return StaticRenderGetKeyframeByIndex(1,index);
 		}
-
-		public uint GetInterpolatedCloudKeyframe(int layer)
+#if SIMUL_4_1
+        public uint GetCloud2DKeyframeByIndex(int index)
+		{
+			return StaticRenderGetKeyframeByIndex(2,index);
+		}
+#endif
+        public uint GetInterpolatedCloudKeyframe(int layer)
 		{
 			return GetInterpolatedCloudKeyframeUniqueId(layer);
 		}
@@ -474,7 +494,7 @@ namespace simul
 			return transform;
 		}
 
-        #endregion
+#endregion
 
 		[SerializeField]
 		float _metresPerUnit = 1.0f;
@@ -589,7 +609,8 @@ namespace simul
             }
         }
 
-		[SerializeField]
+#if SIMUL_4_2
+        [SerializeField]
         int _edgeNoiseFrequency = 4;
         public int EdgeNoiseFrequency
         {
@@ -693,7 +714,7 @@ namespace simul
                 StaticSetRenderFloat("WorleyWavelengthKm", _worleyWavelengthKm);
             }
         }
-
+#endif
         //! Set a floating-point property of the Sky layer.
         void SetFloat(string str, float value)
 		{
@@ -761,8 +782,28 @@ namespace simul
 			}
 			return value;
 		}
-
-		public void SetStormCentre(float x, float y)
+#if SIMUL_4_1
+        //! Set a floating-point property of the 2D cloud layer.
+        public void Set2DCloudFloat(string name, float value)
+		{
+			SetFloat("2DClouds:" + name, value);
+		}
+		//! Get a floating-point property of the 2D cloud layer.
+		public float Get2DCloudFloat(string name)
+		{
+			float value = 0.0F;
+			try
+			{
+				value = StaticGetRenderFloat("2DClouds:" + name);
+			}
+			catch (Exception exc)
+			{
+				UnityEngine.Debug.Log(exc.ToString());
+			}
+			return value;
+		}
+#endif
+        public void SetStormCentre(float x, float y)
 		{
 			int num=GetNumStorms();
 			for(int i=0;i<num;i++)	
@@ -823,12 +864,36 @@ namespace simul
 				UnityEngine.Debug.Log(exc.ToString());
 			}
 			return value;
-		} 
-
-		static public void RepaintAll()
-		{
 		}
-		[SerializeField]
+#if SIMUL_4_1
+        //! Set an integer property of the 2D cloud layer.
+        public void Set2DCloudInt(string name, int value)
+		{
+			try
+			{
+				StaticSetRenderInt("2DClouds:" + name, value);
+			}
+			catch (Exception exc)
+			{
+				UnityEngine.Debug.Log(exc.ToString());
+			}
+		}
+		//! Get an integer property of the 2D cloud layer.
+		public int Get2DCloudInt(string name)
+		{
+			int value = 0;
+			try
+			{
+				value = StaticGetRenderInt("2DClouds:" + name);
+			}
+			catch (Exception exc)
+			{
+				UnityEngine.Debug.Log(exc.ToString());
+			}
+			return value;
+		}
+#endif
+        [SerializeField]
         float _time;
 		/// <summary>
 		/// Time in the sequence, set from some external script, e.g. the sequence editor, or modified per-frame by the speed value.

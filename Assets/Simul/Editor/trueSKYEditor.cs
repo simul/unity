@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿#define SIMUL_4_1
+
+using UnityEngine;
 using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
@@ -122,18 +124,22 @@ namespace simul
 				{
 					// Edge
 					EditorGUILayout.LabelField("Edge Noise Settings", EditorStyles.boldLabel);
-					trueSky.EdgeNoiseFrequency = EditorGUILayout.IntSlider("Edge Noise Frequency", trueSky.EdgeNoiseFrequency, 1, 16);
+#if SIMUL_4_2
+                    trueSky.EdgeNoiseFrequency = EditorGUILayout.IntSlider("Edge Noise Frequency", trueSky.EdgeNoiseFrequency, 1, 16);
 					trueSky.EdgeNoiseOctaves = EditorGUILayout.IntSlider("Edge Noise Octaves", trueSky.EdgeNoiseOctaves, 1, 8);
 					trueSky.EdgeNoiseTextureSize = EditorGUILayout.IntSlider("Edge Noise Texture Size", trueSky.EdgeNoiseTextureSize, 32, 256);
 					trueSky.EdgeNoisePersistence = EditorGUILayout.Slider("Edge Noise Persistence", trueSky.EdgeNoisePersistence, 0.0f, 10.0f);
 					trueSky.EdgeNoiseWavelengthKm = EditorGUILayout.Slider("Edge Noise Wavelength Km", trueSky.EdgeNoiseWavelengthKm, 0.0f, 50.0f);
+#endif
 					EditorGUILayout.Space();
 
+#if SIMUL_4_2
 					// Cloud
 					EditorGUILayout.LabelField("Cloud Noise Settings", EditorStyles.boldLabel);
 					trueSky.WorleyWavelengthKm = EditorGUILayout.Slider("Worley Wavelength Km", trueSky.WorleyWavelengthKm, 0.0f, 50.0f);
 					trueSky.WorleyTextureSize = EditorGUILayout.IntSlider("Worley Texture Size", trueSky.WorleyTextureSize, 8, 512);
 					EditorGUILayout.Space();
+#endif
 				}				
 
 				// Textures
