@@ -1,6 +1,4 @@
-﻿#define SIMUL_4_1
-
-using UnityEngine;
+﻿using UnityEngine;
 using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
@@ -124,40 +122,33 @@ namespace simul
 				{
 					// Edge
 					EditorGUILayout.LabelField("Edge Noise Settings", EditorStyles.boldLabel);
-#if SIMUL_4_2
-                    trueSky.EdgeNoiseFrequency = EditorGUILayout.IntSlider("Edge Noise Frequency", trueSky.EdgeNoiseFrequency, 1, 16);
-					trueSky.EdgeNoiseOctaves = EditorGUILayout.IntSlider("Edge Noise Octaves", trueSky.EdgeNoiseOctaves, 1, 8);
-					trueSky.EdgeNoiseTextureSize = EditorGUILayout.IntSlider("Edge Noise Texture Size", trueSky.EdgeNoiseTextureSize, 32, 256);
-					trueSky.EdgeNoisePersistence = EditorGUILayout.Slider("Edge Noise Persistence", trueSky.EdgeNoisePersistence, 0.0f, 10.0f);
-					trueSky.EdgeNoiseWavelengthKm = EditorGUILayout.Slider("Edge Noise Wavelength Km", trueSky.EdgeNoiseWavelengthKm, 0.0f, 50.0f);
-#endif
+                    if(trueSky.SimulVersionMinor == 2)
+                    {
+                        trueSky.EdgeNoiseFrequency = EditorGUILayout.IntSlider("Edge Noise Frequency", trueSky.EdgeNoiseFrequency, 1, 16);
+					    trueSky.EdgeNoiseOctaves = EditorGUILayout.IntSlider("Edge Noise Octaves", trueSky.EdgeNoiseOctaves, 1, 8);
+					    trueSky.EdgeNoiseTextureSize = EditorGUILayout.IntSlider("Edge Noise Texture Size", trueSky.EdgeNoiseTextureSize, 32, 256);
+					    trueSky.EdgeNoisePersistence = EditorGUILayout.Slider("Edge Noise Persistence", trueSky.EdgeNoisePersistence, 0.0f, 10.0f);
+					    trueSky.EdgeNoiseWavelengthKm = EditorGUILayout.Slider("Edge Noise Wavelength Km", trueSky.EdgeNoiseWavelengthKm, 0.0f, 50.0f);
+                    }
 					EditorGUILayout.Space();
 
-#if SIMUL_4_2
 					// Cloud
-					EditorGUILayout.LabelField("Cloud Noise Settings", EditorStyles.boldLabel);
-					trueSky.WorleyWavelengthKm = EditorGUILayout.Slider("Worley Wavelength Km", trueSky.WorleyWavelengthKm, 0.0f, 50.0f);
-					trueSky.WorleyTextureSize = EditorGUILayout.IntSlider("Worley Texture Size", trueSky.WorleyTextureSize, 8, 512);
-					EditorGUILayout.Space();
-#endif
-				}				
+                    if(trueSky.SimulVersionMinor == 2)
+                    {
+					    EditorGUILayout.LabelField("Cloud Noise Settings", EditorStyles.boldLabel);
+					    trueSky.WorleyWavelengthKm = EditorGUILayout.Slider("Worley Wavelength Km", trueSky.WorleyWavelengthKm, 0.0f, 50.0f);
+					    trueSky.WorleyTextureSize = EditorGUILayout.IntSlider("Worley Texture Size", trueSky.WorleyTextureSize, 8, 512);
+					    EditorGUILayout.Space();
+                    }
+                }
 
-				// Textures
-				EditorGUILayout.LabelField("TrueSkyTextures", EditorStyles.boldLabel);
+                // Textures
+                EditorGUILayout.LabelField("TrueSkyTextures", EditorStyles.boldLabel);
 				{
 					trueSky.backgroundTexture = (Texture)EditorGUILayout.ObjectField("Cosmic Background", trueSky.backgroundTexture, typeof(Texture), false);
 					trueSky.moonTexture = (Texture)EditorGUILayout.ObjectField("Moon Texture", trueSky.moonTexture, typeof(Texture), false);
 					EditorGUILayout.Space();
 				}
-
-				// Sound settings
-				/*
-				EditorGUILayout.LabelField("Sound",EditorStyles.boldLabel);
-				{
-
-					EditorGUILayout.Space();
-				}
-				*/
 
 				// Debugging options
 				EditorGUILayout.LabelField("Debugging", EditorStyles.boldLabel);
