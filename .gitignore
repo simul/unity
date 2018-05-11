@@ -37,3 +37,5 @@ sysinfo.txt
 *.*_
 *.*_.meta
 *.dll
+*.cso
+*.cso.meta
