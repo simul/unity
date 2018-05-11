@@ -1,8 +1,4 @@
-﻿// Upgrade NOTE: replaced 'mul(UNITY_MATRIX_MVP,*)' with 'UnityObjectToClipPos(*)'
-
-// Upgrade NOTE: replaced 'mul(UNITY_MATRIX_MVP,*)' with 'UnityObjectToClipPos(*)'
-
-Shader "trueSKYSkybox" {
+﻿Shader "trueSKYSkybox" {
    Properties {
       _Cube ("Environment Map", Cube) = "white" {}
    }

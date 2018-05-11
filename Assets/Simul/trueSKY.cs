@@ -1,4 +1,5 @@
 ﻿//#define TRUESKY_LOGGING
+
 using UnityEngine;
 using System.Collections;
 using System.Runtime.InteropServices;
@@ -179,8 +180,10 @@ namespace simul
     [ExecuteInEditMode]
 	public class trueSKY : MonoBehaviour
 	{
-		#region Imports
-		[DllImport(SimulImports.renderer_dll)]		private static extern void StaticEnableLogging(string logfile);
+        #region Imports
+        [DllImport(SimulImports.renderer_dll)]      private static extern void GetSimulVersion(IntPtr major, IntPtr minor, IntPtr build);
+
+        [DllImport(SimulImports.renderer_dll)]		private static extern void StaticEnableLogging(string logfile);
 		[DllImport(SimulImports.renderer_dll)]		private static extern int StaticInitInterface();
 		[DllImport(SimulImports.renderer_dll)]		private static extern void StaticPushPath(string name, string path);
 		[DllImport(SimulImports.renderer_dll)]		private static extern int StaticPopPath(string name);
@@ -231,12 +234,19 @@ namespace simul
 		[DllImport(SimulImports.renderer_dll)]		public static extern uint GetStormAtTime(float t);
 		[DllImport(SimulImports.renderer_dll)]		public static extern uint GetStormByIndex(int i);
 
-		#endregion
-		#region API
-		private static trueSKY trueSkySingleton = null;
+        #endregion
+        #region API
+
+        public int SimulVersionMajor            = 0;
+        public int SimulVersionMinor            = 0;
+        public int SimulVersionBuild            = 0;
+
+        private static trueSKY trueSkySingleton = null;
+
 		public trueSKY()
 		{
 		}
+
 		~trueSKY()
 		{
 			if(this==trueSkySingleton)
@@ -338,24 +348,47 @@ namespace simul
 			float ret = StaticGetRenderFloatAtPosition("Precipitation", x);
 			return ret;
 		}
-		// These are for keyframe editing:
+		
+        // These are for keyframe editing:
 		public int GetNumSkyKeyframes()
 		{
 			return StaticRenderGetNumKeyframes(0);
 		}
+
 		public int GetNumCloudKeyframes()
 		{
 			return StaticRenderGetNumKeyframes(1);
 		}
+
+        public int GetNumCloud2DKeyframes()
+		{
+            if(SimulVersionMinor == 1)
+            {
+			    return StaticRenderGetNumKeyframes(2);
+            }
+            return -1;
+		}
+
 		public uint InsertSkyKeyframe(float t)
 		{
 			return StaticRenderInsertKeyframe(0,t);
 		}
+
 		public uint InsertCloudKeyframe(float t)
 		{
 			return StaticRenderInsertKeyframe(1,t);
 		}
-		public void DeleteKeyframe(uint uid)
+
+        public uint Insert2DCloudKeyframe(float t)
+		{
+            if (SimulVersionMinor == 1)
+            {
+                return StaticRenderInsertKeyframe(2, t);
+            }
+            return 0;
+		}
+
+        public void DeleteKeyframe(uint uid)
 		{
 			StaticRenderDeleteKeyframe(uid);
 		}
@@ -370,7 +403,16 @@ namespace simul
 			return StaticRenderGetKeyframeByIndex(1,index);
 		}
 
-		public uint GetInterpolatedCloudKeyframe(int layer)
+        public uint GetCloud2DKeyframeByIndex(int index)
+		{
+            if (SimulVersionMinor == 1)
+            {
+                return StaticRenderGetKeyframeByIndex(2, index);
+            }
+            return 0;
+		}
+
+        public uint GetInterpolatedCloudKeyframe(int layer)
 		{
 			return GetInterpolatedCloudKeyframeUniqueId(layer);
 		}
@@ -474,7 +516,7 @@ namespace simul
 			return transform;
 		}
 
-        #endregion
+#endregion
 
 		[SerializeField]
 		float _metresPerUnit = 1.0f;
@@ -589,7 +631,7 @@ namespace simul
             }
         }
 
-		[SerializeField]
+        [SerializeField]
         int _edgeNoiseFrequency = 4;
         public int EdgeNoiseFrequency
         {
@@ -634,6 +676,7 @@ namespace simul
             }
         }
 
+        // 4.2 only
         [SerializeField]
         float _edgeNoisePersistence = 0.63f;
         public float EdgeNoisePersistence
@@ -649,6 +692,7 @@ namespace simul
             }
         }
 
+        // 4.2 only
         [SerializeField]
         float _edgeNoiseWavelengthKm = 2.5f;
         public float EdgeNoiseWavelengthKm
@@ -664,6 +708,7 @@ namespace simul
             }
         }
 
+        // 4.2 only
         [SerializeField]
         int _worleyTextureSize = 64;
         public int WorleyTextureSize
@@ -679,6 +724,7 @@ namespace simul
             }
         }
 
+        // 4.2 only
         [SerializeField]
         float _worleyWavelengthKm = 8.7f;
         public float WorleyWavelengthKm
@@ -761,8 +807,28 @@ namespace simul
 			}
 			return value;
 		}
-
-		public void SetStormCentre(float x, float y)
+#if SIMUL_4_1
+        //! Set a floating-point property of the 2D cloud layer.
+        public void Set2DCloudFloat(string name, float value)
+		{
+			SetFloat("2DClouds:" + name, value);
+		}
+		//! Get a floating-point property of the 2D cloud layer.
+		public float Get2DCloudFloat(string name)
+		{
+			float value = 0.0F;
+			try
+			{
+				value = StaticGetRenderFloat("2DClouds:" + name);
+			}
+			catch (Exception exc)
+			{
+				UnityEngine.Debug.Log(exc.ToString());
+			}
+			return value;
+		}
+#endif
+        public void SetStormCentre(float x, float y)
 		{
 			int num=GetNumStorms();
 			for(int i=0;i<num;i++)	
@@ -823,12 +889,36 @@ namespace simul
 				UnityEngine.Debug.Log(exc.ToString());
 			}
 			return value;
-		} 
-
-		static public void RepaintAll()
-		{
 		}
-		[SerializeField]
+#if SIMUL_4_1
+        //! Set an integer property of the 2D cloud layer.
+        public void Set2DCloudInt(string name, int value)
+		{
+			try
+			{
+				StaticSetRenderInt("2DClouds:" + name, value);
+			}
+			catch (Exception exc)
+			{
+				UnityEngine.Debug.Log(exc.ToString());
+			}
+		}
+		//! Get an integer property of the 2D cloud layer.
+		public int Get2DCloudInt(string name)
+		{
+			int value = 0;
+			try
+			{
+				value = StaticGetRenderInt("2DClouds:" + name);
+			}
+			catch (Exception exc)
+			{
+				UnityEngine.Debug.Log(exc.ToString());
+			}
+			return value;
+		}
+#endif
+        [SerializeField]
         float _time;
 		/// <summary>
 		/// Time in the sequence, set from some external script, e.g. the sequence editor, or modified per-frame by the speed value.
@@ -1726,6 +1816,17 @@ namespace simul
 #endif
 
 				SimulImports.Init();
+
+                // Get Simul version
+                IntPtr ma = Marshal.AllocHGlobal(sizeof(int));
+                IntPtr mi = Marshal.AllocHGlobal(sizeof(int));
+                IntPtr bu = Marshal.AllocHGlobal(sizeof(int));
+                GetSimulVersion(ma, mi, bu);
+                SimulVersionMajor = Marshal.ReadInt32(ma);
+                SimulVersionMinor = Marshal.ReadInt32(mi);
+                SimulVersionBuild = Marshal.ReadInt32(bu);
+
+                UnityEngine.Debug.Log("trueSKY version:" + SimulVersionMajor + "," + SimulVersionMinor + "," + SimulVersionBuild);
 
 #if TRUESKY_LOGGING
 				StaticEnableLogging("trueSKYUnityRender.log");

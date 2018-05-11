@@ -43,8 +43,6 @@ namespace simul
         /// </summary>
         Material depthMaterial = null;
 
-        Mesh screenQuad = null;
-
         /// <summary>
         /// If true, both XR eyes are expected to be rendered to the same texture.
         /// </summary>

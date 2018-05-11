@@ -147,12 +147,12 @@ namespace simul
 			//SetOnPropertiesChangedCallback(null);
 			//SetOnTimeChangedCallback(null);
 			//UnityEngine.Debug.Log("~SequenceEditor destr");
-			HideSequencer();
+			//HideSequencer();
 		}
         void OnEnable()
         {
             SequenceEditorImports.CopyDependencyDllsToProjectDir();
-			show_when_possible = true;
+			//show_when_possible = true;
 		}
 		#region GetHandle
 		public class HandleFinder
@@ -293,11 +293,19 @@ namespace simul
 		static bool show_when_possible = false;
 		public void OnDisable()
 		{
-			if(_handle!=(System.IntPtr)0)
-				CloseUI(_handle);
-			_handle=(System.IntPtr)0;
+			//if(_handle!=(System.IntPtr)0)
+				//CloseUI(_handle);
+			//_handle=(System.IntPtr)0;
 		}
-		static bool show = true;
+
+        static void CloseDueToPlayModeStateChange(PlayModeStateChange state)
+	    {
+			if(_handle!=(System.IntPtr)0)	
+				CloseUI(_handle);	
+			_handle=(System.IntPtr)0;	
+		}				
+
+        static bool show = false;
 		static bool copy = false;
 		static bool paste = false;
 		static protected float[] viewMatrix = new float[16];
@@ -425,11 +433,13 @@ namespace simul
 			// Initialize time from the trueSKY object
 			if (t != null)
 				StaticSetFloat(handle, "time", t.time);
-		}
+            EditorApplication.playModeStateChanged += CloseDueToPlayModeStateChange;
+        }
 		protected static float[] viewmat = new float[16];
 		public static void HideSequencer()
 		{
-			HideUI(_handle);
+            EditorApplication.playModeStateChanged -= CloseDueToPlayModeStateChange;
+            HideUI(_handle);
 		}
 	}
 }
