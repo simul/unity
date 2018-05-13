@@ -1,4 +1,5 @@
 ﻿//#define TRUESKY_LOGGING
+
 using UnityEngine;
 using System.Collections;
 using System.Runtime.InteropServices;
@@ -369,14 +370,35 @@ namespace simul
 		{
 			return StaticRenderGetNumKeyframes(1);
 		}
+
+        public int GetNumCloud2DKeyframes()
+		{
+            if(SimulVersionMinor == 1)
+            {
+			    return StaticRenderGetNumKeyframes(2);
+            }
+            return -1;
+		}
+
 		public uint InsertSkyKeyframe(float t)
 		{
 			return StaticRenderInsertKeyframe(0,t);
 		}
+
 		public uint InsertCloudKeyframe(float t)
 		{
 			return StaticRenderInsertKeyframe(1,t);
 		}
+
+        public uint Insert2DCloudKeyframe(float t)
+		{
+            if (SimulVersionMinor == 1)
+            {
+                return StaticRenderInsertKeyframe(2, t);
+            }
+            return 0;
+		}
+
 		public void DeleteKeyframe(uint uid)
 		{
 			StaticRenderDeleteKeyframe(uid);
@@ -390,6 +412,15 @@ namespace simul
 		public uint GetCloudKeyframeByIndex(int index)
 		{
 			return StaticRenderGetKeyframeByIndex(1,index);
+		}
+
+        public uint GetCloud2DKeyframeByIndex(int index)
+		{
+            if (SimulVersionMinor == 1)
+            {
+                return StaticRenderGetKeyframeByIndex(2, index);
+            }
+            return 0;
 		}
 
 		public uint GetInterpolatedCloudKeyframe(int layer)
@@ -640,7 +671,7 @@ namespace simul
 			}
 		}
 		
-				[SerializeField]
+        [SerializeField]
         int _edgeNoiseFrequency = 4;
         public int EdgeNoiseFrequency
         {

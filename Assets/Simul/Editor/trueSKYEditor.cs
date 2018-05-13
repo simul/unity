@@ -174,6 +174,7 @@ namespace simul
 						trueSky.CellNoiseTextureSize = EditorGUILayout.IntSlider("Cell Noise Texture Size", trueSky.CellNoiseTextureSize, 32, 256);
 						trueSky.CellNoiseWavelengthKm = EditorGUILayout.Slider("Cell Noise Wavelength Km", trueSky.CellNoiseWavelengthKm, 0.01f, 50.0f);
 					}
+                    }
 					EditorGUILayout.Space();
 
 					// Cloud
