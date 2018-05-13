@@ -24,8 +24,8 @@ namespace simul
 			foreach (UnityEngine.Object t in objects)
 			{
 				Light l = (Light)t;
-				if (l.GetComponent<TrueSkyLight>() != null)
-					DestroyImmediate(l.GetComponent<TrueSkyLight>());
+				if (l.GetComponent<TrueSkyDirectionalLight>() != null)
+					DestroyImmediate(l.GetComponent<TrueSkyDirectionalLight>());
 			}
 			objects = FindObjectsOfType(typeof(Camera));
 			foreach (UnityEngine.Object t in objects)
@@ -186,7 +186,7 @@ namespace simul
                 {
 					GUILayout.Label ("There's 1 or more directional lights on the scene. TrueSKY only needs one directional light.");
                     lightGameObject = lights[0].gameObject;
-                    lightComponent  = lightGameObject.GetComponent<TrueSkyLight>();
+                    lightComponent  = lightGameObject.GetComponent<TrueSkyDirectionalLight>();
                 } 
 			}
 			if (stage == Stage.FINISH)
@@ -278,7 +278,7 @@ namespace simul
 		Camera          mainCamera = null; 
 		trueSKY         trueSky = null;
 		GameObject      lightGameObject = null;
-		TrueSkyLight    lightComponent;
+		TrueSkyDirectionalLight    lightComponent;
 
 		public bool     removeFog = true;
 		public bool     removeSkybox = true;
@@ -396,15 +396,15 @@ namespace simul
             // If there is not light on the scene, add one:
             if(lightGameObject == null)
             {
-                lightGameObject = new GameObject("TrueSkyLight");
+                lightGameObject = new GameObject("TrueSkyDirectionalLight");
                 Light dirLight  = lightGameObject.AddComponent<Light>();
                 dirLight.type   = LightType.Directional;
-                lightComponent  = lightGameObject.AddComponent<TrueSkyLight>();
+                lightComponent  = lightGameObject.AddComponent<TrueSkyDirectionalLight>();
             }
             // If there is a light, but without the component, add it:
 			if (lightComponent == null)
 			{
-                lightComponent = lightGameObject.AddComponent<TrueSkyLight>();
+                lightComponent = lightGameObject.AddComponent<TrueSkyDirectionalLight>();
             }
 			if (removeFog)
 			{

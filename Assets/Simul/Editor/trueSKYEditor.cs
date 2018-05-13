@@ -101,10 +101,17 @@ namespace simul
 					trueSky.MetresPerUnit = EditorGUILayout.FloatField("Metres per Unit", trueSky.MetresPerUnit);
 					trueSky.RenderInEditMode = EditorGUILayout.Toggle("Render in Edit Mode", trueSky.RenderInEditMode);
 					trueSky.sequence = (Sequence)EditorGUILayout.ObjectField("Sequence Asset", trueSky.sequence, typeof(Sequence), false);
+					if (trueSky.SimulVersion<trueSky.MakeSimulVersion(4, 2))
+					{
+						trueSky.CloudThresholdDistanceKm = EditorGUILayout.Slider("Threshold Distance (km)", trueSky.CloudThresholdDistanceKm, 0.0F, 10.0F);
+						trueSky.DepthBlending = EditorGUILayout.Toggle("Depth Blending", trueSky.DepthBlending);
+						trueSky.MinimumStarPixelSize = EditorGUILayout.FloatField("Minimum Star Pixel Size", trueSky.MinimumStarPixelSize);
+					}
 					EditorGUILayout.Space();
 				}
 				// Rendering settings
 				EditorGUILayout.LabelField("TrueSkyRendering", EditorStyles.boldLabel);
+				if (trueSky.SimulVersion >= trueSky.MakeSimulVersion(4, 2))
 				{
 					clouds = EditorGUILayout.BeginToggleGroup("clouds", clouds);
 					if (clouds)
@@ -122,7 +129,7 @@ namespace simul
 					}
 					EditorGUILayout.EndToggleGroup();
 					atmospherics = EditorGUILayout.BeginToggleGroup("atmospherics", atmospherics);
-					if(atmospherics)
+					if (atmospherics)
 					{
 						trueSky.AtmosphericsAmortization = EditorGUILayout.IntSlider("Atmospherics Amortization", trueSky.AtmosphericsAmortization, 1, 4);
 						trueSky.GodRaysGrid = EditorGUILayout.Vector3Field("God Rays Grid", trueSky.GodRaysGrid);
@@ -152,40 +159,33 @@ namespace simul
 					}
 					EditorGUILayout.EndToggleGroup();
 					EditorGUILayout.Space();
-				}
-				// Noise settings
-				noise = EditorGUILayout.BeginToggleGroup("Noise", noise);
-				if (noise)
-				{
-					// Edge
-					EditorGUILayout.LabelField("Edge Noise Settings", EditorStyles.boldLabel);
-					trueSky.EdgeNoisePersistence = EditorGUILayout.Slider("Edge Noise Persistence", trueSky.EdgeNoisePersistence, 0.0f, 10.0f);
-					trueSky.EdgeNoiseFrequency = EditorGUILayout.IntSlider("Edge Noise Frequency", trueSky.EdgeNoiseFrequency, 1, 16);
-					trueSky.EdgeNoiseTextureSize = EditorGUILayout.IntSlider("Edge Noise Texture Size", trueSky.EdgeNoiseTextureSize, 32, 256);
-					trueSky.EdgeNoiseWavelengthKm = EditorGUILayout.Slider("Edge Noise Wavelength Km", trueSky.EdgeNoiseWavelengthKm, 0.01f, 50.0f);
-					trueSky.MaxFractalAmplitudeKm = EditorGUILayout.Slider("Edge Noise Wavelength Km", trueSky.MaxFractalAmplitudeKm, 0.0f, 50.0f);
-					trueSky.CellNoiseTextureSize = EditorGUILayout.IntSlider("Cell Noise Texture Size", trueSky.CellNoiseTextureSize, 32, 256);
-					trueSky.CellNoiseWavelengthKm = EditorGUILayout.Slider("Cell Noise Wavelength Km", trueSky.CellNoiseWavelengthKm, 0.01f, 50.0f);
+
+					// Noise settings
+					noise = EditorGUILayout.BeginToggleGroup("Noise", noise);
+					if (noise)
+					{
+						// Edge
+						EditorGUILayout.LabelField("Edge Noise Settings", EditorStyles.boldLabel);
+						trueSky.EdgeNoisePersistence = EditorGUILayout.Slider("Edge Noise Persistence", trueSky.EdgeNoisePersistence, 0.0f, 10.0f);
+						trueSky.EdgeNoiseFrequency = EditorGUILayout.IntSlider("Edge Noise Frequency", trueSky.EdgeNoiseFrequency, 1, 16);
+						trueSky.EdgeNoiseTextureSize = EditorGUILayout.IntSlider("Edge Noise Texture Size", trueSky.EdgeNoiseTextureSize, 32, 256);
+						trueSky.EdgeNoiseWavelengthKm = EditorGUILayout.Slider("Edge Noise Wavelength Km", trueSky.EdgeNoiseWavelengthKm, 0.01f, 50.0f);
+						trueSky.MaxFractalAmplitudeKm = EditorGUILayout.Slider("Edge Noise Wavelength Km", trueSky.MaxFractalAmplitudeKm, 0.0f, 50.0f);
+						trueSky.CellNoiseTextureSize = EditorGUILayout.IntSlider("Cell Noise Texture Size", trueSky.CellNoiseTextureSize, 32, 256);
+						trueSky.CellNoiseWavelengthKm = EditorGUILayout.Slider("Cell Noise Wavelength Km", trueSky.CellNoiseWavelengthKm, 0.01f, 50.0f);
+					}
 					EditorGUILayout.Space();
 
 					// Cloud
-					EditorGUILayout.LabelField("Cloud Noise Settings", EditorStyles.boldLabel);
-					trueSky.WorleyWavelengthKm = EditorGUILayout.Slider("Worley Wavelength Km", trueSky.WorleyWavelengthKm, 0.0f, 50.0f);
-					trueSky.WorleyTextureSize = EditorGUILayout.IntSlider("Worley Texture Size", trueSky.WorleyTextureSize, 8, 512);
-					EditorGUILayout.Space();
-				}
-				EditorGUILayout.EndToggleGroup();
-
-					// Sound settings
-					/*
-					EditorGUILayout.LabelField("Sound",EditorStyles.boldLabel);
 					{
-
+						EditorGUILayout.LabelField("Cloud Noise Settings", EditorStyles.boldLabel);
+						trueSky.WorleyWavelengthKm = EditorGUILayout.Slider("Worley Wavelength Km", trueSky.WorleyWavelengthKm, 0.0f, 50.0f);
+						trueSky.WorleyTextureSize = EditorGUILayout.IntSlider("Worley Texture Size", trueSky.WorleyTextureSize, 8, 512);
 						EditorGUILayout.Space();
 					}
-					*/
-
-					// Debugging options
+					EditorGUILayout.EndToggleGroup();
+				}
+					// Sound settings
 				EditorGUILayout.LabelField("Debugging", EditorStyles.boldLabel);
 				{
 					string gv = SystemInfo.graphicsDeviceVersion;
