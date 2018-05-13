@@ -127,6 +127,7 @@ GameObject:
   - component: {fileID: 196656753}
   - component: {fileID: 196656752}
   - component: {fileID: 196656751}
+  - component: {fileID: 196656754}
   m_Layer: 0
   m_Name: Camera
   m_TagString: Untagged
@@ -184,6 +185,24 @@ AudioListener:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 196656750}
   m_Enabled: 1
+--- !u!114 &196656754
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 196656750}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 73661cd764129404b8091f5b746e6901, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  textureSize: 32
+  exposure: 1
+  gamma: 1
+  updatePeriodSeconds: 0.5
+  skyOnly: 1
+  renderTextureFormat: 0
+  flipProbeY: 1
 --- !u!124 &196656755
 Behaviour:
   m_ObjectHideFlags: 0
@@ -233,8 +252,8 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 196656750}
-  m_LocalRotation: {x: -0.028461538, y: -0.01592987, z: -0.00045363538, w: 0.99946785}
-  m_LocalPosition: {x: 3229.7385, y: 388.1946, z: -2212.9465}
+  m_LocalRotation: {x: -0.083488725, y: -0.16641882, z: -0.01414278, w: 0.9824125}
+  m_LocalPosition: {x: 4318.7935, y: 636.0445, z: -2218.9504}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -822,19 +841,19 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 4810226483687538, guid: 7eac24742d48c5044bb42c3961fedd7b, type: 2}
       propertyPath: m_LocalRotation.x
-      value: -0.19633684
+      value: -0.19638051
       objectReference: {fileID: 0}
     - target: {fileID: 4810226483687538, guid: 7eac24742d48c5044bb42c3961fedd7b, type: 2}
       propertyPath: m_LocalRotation.y
-      value: 0.51578856
+      value: 0.51255953
       objectReference: {fileID: 0}
     - target: {fileID: 4810226483687538, guid: 7eac24742d48c5044bb42c3961fedd7b, type: 2}
       propertyPath: m_LocalRotation.z
-      value: -0.122775115
+      value: -0.1217154
       objectReference: {fileID: 0}
     - target: {fileID: 4810226483687538, guid: 7eac24742d48c5044bb42c3961fedd7b, type: 2}
       propertyPath: m_LocalRotation.w
-      value: -0.82482743
+      value: -0.82698417
       objectReference: {fileID: 0}
     - target: {fileID: 4810226483687538, guid: 7eac24742d48c5044bb42c3961fedd7b, type: 2}
       propertyPath: m_RootOrder
@@ -843,17 +862,17 @@ Prefab:
     - target: {fileID: 108698730321076416, guid: 7eac24742d48c5044bb42c3961fedd7b,
         type: 2}
       propertyPath: m_Color.g
-      value: 0.9084158
+      value: 0.9081603
       objectReference: {fileID: 0}
     - target: {fileID: 108698730321076416, guid: 7eac24742d48c5044bb42c3961fedd7b,
         type: 2}
       propertyPath: m_Color.b
-      value: 0.7085834
+      value: 0.70787805
       objectReference: {fileID: 0}
     - target: {fileID: 108698730321076416, guid: 7eac24742d48c5044bb42c3961fedd7b,
         type: 2}
       propertyPath: m_Intensity
-      value: 3.5050645
+      value: 0.5838211
       objectReference: {fileID: 0}
     - target: {fileID: 108698730321076416, guid: 7eac24742d48c5044bb42c3961fedd7b,
         type: 2}
@@ -863,7 +882,7 @@ Prefab:
     - target: {fileID: 108698730321076416, guid: 7eac24742d48c5044bb42c3961fedd7b,
         type: 2}
       propertyPath: m_AreaSize.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 114057774250337018, guid: 7eac24742d48c5044bb42c3961fedd7b,
         type: 2}
