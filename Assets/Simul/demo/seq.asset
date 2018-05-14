@@ -31,8 +31,9 @@ MonoBehaviour:
     \"0.1000000014901161\"\n\t\t\t\"precipitationRegion.lockToClouds\": \"true\"\n\t\t\t\"precipitationRegion.rainCentreXKm\":
     \"               0\"\n\t\t\t\"precipitationRegion.rainCentreYKm\": \"               0\"\n\t\t\t\"precipitationRegion.rainEffectStrength\":
     \"               0\"\n\t\t\t\"precipitationRegion.rainRadiusKm\": \"              50\"\n\t\t\t\"precipitationRegion.regional\":
-    \"false\"\n\t\t\t\"rain_to_snow\": \"               0\"\n\t\t\t\"simulation\":
-    \"               0\"\n\t\t\t\"time\": \"0.5018149018287659\"\n\t\t\t\"uid\": \"4347\"\n\t\t\t\"upperDensity\":
+    \"false\"\n\t\t\t\"rain_to_snow\": \"               0\"\n\t\t\t\"scalekm\": \"
+    \            200,             200,              10\"\n\t\t\t\"simulation\": \"
+    \              0\"\n\t\t\t\"time\": \"0.5018149018287659\"\n\t\t\t\"uid\": \"4347\"\n\t\t\t\"upperDensity\":
     \"0.800000011920929\"\n\t\t\t\"wind_direction\": \"               0\"\n\t\t\t\"wind_speed\":
     \"               0\"\n\t\t}\n\t\t]\n\t\t\"storms\":\n\t\t[\n\t\t]\n\t\t\"volumes\":\n\t\t[\n\t\t]\n\t}\n\t\"skyKeyframer\":\n\t{\n\t\t\"BackgroundBrightness\":
     \"9.999999747378752e-06\"\n\t\t\"BackgroundTexture\": \"MilkyWay.jpg\"\n\t\t\"BaseOzone\":
