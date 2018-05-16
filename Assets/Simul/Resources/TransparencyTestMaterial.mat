@@ -7,7 +7,7 @@ Material:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_Name: TransparencyTestMaterial
-  m_Shader: {fileID: 4800000, guid: c3c2650e28e77b943b1fd19a10444f4d, type: 3}
+  m_Shader: {fileID: 4800000, guid: 2bbe10e9ef4c37c40b80fcf377d8212a, type: 3}
   m_ShaderKeywords: _ALPHAPREMULTIPLY_ON
   m_LightmapFlags: 5
   m_EnableInstancingVariants: 0

@@ -858,12 +858,13 @@ namespace simul
 			}
 			return value;
 		}
-#if SIMUL_4_1
+
         //! Set a floating-point property of the 2D cloud layer.
         public void Set2DCloudFloat(string name, float value)
 		{
 			SetFloat("2DClouds:" + name, value);
 		}
+
 		//! Get a floating-point property of the 2D cloud layer.
 		public float Get2DCloudFloat(string name)
 		{
@@ -878,7 +879,7 @@ namespace simul
 			}
 			return value;
 		}
-#endif
+
 		public void SetStormCentre(float x, float y)
 		{
 			int num = GetNumStorms();
@@ -941,19 +942,20 @@ namespace simul
 			}
 			return value;
 		}
-#if SIMUL_4_1
+
         //! Set an integer property of the 2D cloud layer.
         public void Set2DCloudInt(string name, int value)
 		{
 			try
 			{
 				StaticSetRenderInt("2DClouds:" + name, value);
-		}
+		    }
 			catch (Exception exc)
 			{
 				UnityEngine.Debug.Log(exc.ToString());
 			}
 		}
+
 		//! Get an integer property of the 2D cloud layer.
 		public int Get2DCloudInt(string name)
 		{
@@ -968,7 +970,7 @@ namespace simul
 			}
 			return value;
 		}
-#endif
+
 		[SerializeField]
 		float _time;
 		/// <summary>
@@ -2313,8 +2315,7 @@ namespace simul
 				SimulVersionMajor = Marshal.ReadInt32(ma);
 				SimulVersionMinor = Marshal.ReadInt32(mi);
 				SimulVersionBuild = Marshal.ReadInt32(bu);
-
-				UnityEngine.Debug.Log("trueSKY version:" + SimulVersionMajor + "," + SimulVersionMinor + "," + SimulVersionBuild);
+				UnityEngine.Debug.Log("trueSKY version:" + SimulVersionMajor + "." + SimulVersionMinor + "." + SimulVersionBuild);
 
 #if TRUESKY_LOGGING
 				StaticEnableLogging("trueSKYUnityRender.log");
@@ -2325,7 +2326,7 @@ namespace simul
                 StaticPushPath("ShaderPath", Application.dataPath + @"\Simul\shaderbin");
                 StaticPushPath("TexturePath", Application.dataPath + @"\Simul\Media\Textures");
 #else
-				StaticPushPath("ShaderBinaryPath", Application.dataPath + @"\Simul\shaderbin");
+                StaticPushPath("ShaderBinaryPath", Application.dataPath + @"\Simul\shaderbin");
 				StaticPushPath("ShaderPath", Application.dataPath + @"\Simul\Platform\DirectX11\HLSL");
 				StaticPushPath("TexturePath", Application.dataPath + @"\Simul\Media\Textures");
 #endif
