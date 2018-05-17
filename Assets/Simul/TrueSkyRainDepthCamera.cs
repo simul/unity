@@ -10,26 +10,82 @@ namespace simul
 	[ExecuteInEditMode]
 	public class TrueSkyRainDepthCamera : MonoBehaviour
 	{
-		public Shader _shader = null;
+		private Camera _camera = null;
+		private Shader _shader = null;
+		private Matrix4x4 _matrix = new Matrix4x4();
+		private RenderTexture _targetTexture=null;
+		public Matrix4x4 matrix
+		{
+			get
+			{
+				return _matrix;
+			}
+		}
+		public RenderTexture targetTexture
+		{
+			get
+			{
+				return _targetTexture;
+			}
+		}
+		void OnDisable()
+		{
+			if (_camera)
+			{
+				_camera = null;
+			}
+		}
 		// Use this for initialization
 		void Start()
 		{
-			Camera cam = GetComponent<Camera>();
-			//cam.depthTextureMode = DepthTextureMode.None;
-
-			cam.SetReplacementShader(_shader, "RenderType");
 		}
-
-
+		public float widthMetres = 100.0F;
+		public float depthMetres = 100.0F;
+		public int textureSize = 128;
 		public void Update()
 		{
-			Camera cam = GetComponent<Camera>();
-			cam.renderingPath = RenderingPath.Forward;
-			//cam.SetTargetBuffers(gBuffer.colorBuffer, gBuffer.depthBuffer);
-			cam.clearFlags = CameraClearFlags.SolidColor;
-			cam.backgroundColor = new Color(1.0F,0, 0, 0);
-			cam.RenderWithShader(_shader, "RenderType");
+			if (!_shader)
+			{
+				_shader = Shader.Find("Unlit/LinearDepth");
+			}
+			if (!_targetTexture||_targetTexture.width!=textureSize)
+			{
+				_targetTexture = new RenderTexture(textureSize, textureSize, 32,RenderTextureFormat.RFloat);
+			}
+			if (_camera == null)
+			{
+				_camera = gameObject.GetComponent<Camera>();
+			/*	if(!_camera)
+				{
+					_camera = gameObject.AddComponent<Camera>();
+				}
+				aDummyCamObject.hideFlags = HideFlags.HideAndDontSave;
+				dummyCam = aDummyCamObject.GetComponent<Camera>();
+				dummyCam.enabled = false;
+				dummyCam.backgroundColor = new Color(0, 0, 0, 0);
+				dummyCam.renderingPath = RenderingPath.DeferredLighting;
+				dummyCam.depthTextureMode |= DepthTextureMode.Depth;
+				trueSkyCameraCubemap = aDummyCamObject.AddComponent<TrueSkyCameraCubemap>();
+				_initialized = false;*/
+			}
+			if (!_shader || !_targetTexture||!_camera)
+				return;
+			_camera.renderingPath = RenderingPath.Forward;
+			_camera.clearFlags = CameraClearFlags.SolidColor;
+			_camera.backgroundColor = new Color(1.0F,0, 0, 0);
+			_camera.RenderWithShader(_shader, "RenderType");
+			_camera.enabled = false;
+			_camera.cameraType = CameraType.Game;
+			_camera.orthographic = true;
+			_camera.orthographicSize = widthMetres;
+			_camera.nearClipPlane = 0.0F;
+			_camera.farClipPlane= depthMetres;
+			_camera.targetTexture = _targetTexture;
 
+			Matrix4x4 proj = GL.GetGPUProjectionMatrix(_camera.projectionMatrix, true);
+			proj.m22 *= 2.0F;
+			Matrix4x4 view = Matrix4x4.Rotate(new Quaternion(1.0F, 0, 0, 0.0F)) * _camera.worldToCameraMatrix;
+			_matrix=proj.transpose* view;
 		}
 	}
 }
