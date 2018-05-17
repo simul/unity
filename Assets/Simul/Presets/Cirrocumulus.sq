@@ -1,0 +1,62 @@
+{
+	"cloud2DKeyframer":
+	{
+		"CloudShadowRange": "           80000"
+		"DayLoop": "true"
+		"EdgeNoiseFrequency": "16"
+		"EdgeNoiseOctaves": "7"
+		"EdgeNoisePersistence": "0.6819999814033508"
+		"EdgeNoiseTextureSize": "128"
+		"ExplicitOffsets": "false"
+		"GodraysSteps": "60"
+		"GridHeight": "16"
+		"GridWidth": "128"
+		"LoopRange": "               1"
+		"LoopStart": "               0"
+		"MeetHorizon": "false"
+		"NoisePeriod": "               4"
+		"NoiseResolution": "8"
+		"OverrideWind": "false"
+		"ShadowTextureSize": "64"
+		"Visible": "true"
+		"Wrap": "true"
+		"keyframes":
+		[
+		{
+			"ambient_light": "               1"
+			"baseNoiseFactor": "0.2000000029802322"
+			"churn": "6.367955207824707"
+			"cloud_base_km": "               9"
+			"cloud_height_km": "1.905269980430603"
+			"cloudiness": "0.4230000078678131"
+			"diffusivity": "0.8970000147819519"
+			"direct_light": "               1"
+			"distributionBaseLayer": "0.239999994635582"
+			"distributionTransition": "0.2000000029802322"
+			"edgeSharpness": "0.6683310270309448"
+			"extinction": "0.07673615217208862"
+			"fractal_amplitude": "               0"
+			"fractal_wavelength": " 6309.5732421875"
+			"godrayStrength": "               0"
+			"indirect_light": "0.9959999918937683"
+			"light_asymmetry": "0.8700000047683716"
+			"lightning": "               0"
+			"octaves": "2"
+			"offsetx": "               0"
+			"offsety": "  33458.40234375"
+			"persistence": "0.7770000100135803"
+			"precipitation": "               0"
+			"precipitation_waver": "               0"
+			"precipitation_wind_effect": "               0"
+			"rain_to_snow": "               0"
+			"time": "           0.125"
+			"upperDensity": "0.5709999799728394"
+			"wind_direction": "               0"
+			"wind_speed": "3.098000049591065"
+		}
+		]
+		"storms":
+		[
+		]
+	}
+}
