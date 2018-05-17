@@ -993,7 +993,7 @@ namespace simul
 					try
 					{
 						_time = value;
-						StaticSetRenderFloat("Time", _time);
+						StaticSetRenderFloat("Time", value);
 						// What if, having changed this value, we now ask for a light colour before the next Update()?
 						// so we force it:
 						StaticTick(0.0f);
@@ -1698,7 +1698,7 @@ namespace simul
 			}
 			set
 			{
-				bool v = value & _showCubemaps;
+				bool v = value;
 				if (_showCubemaps != v) try
 					{
 						_showCubemaps = v;
@@ -2315,6 +2315,7 @@ namespace simul
 				SimulVersionMajor = Marshal.ReadInt32(ma);
 				SimulVersionMinor = Marshal.ReadInt32(mi);
 				SimulVersionBuild = Marshal.ReadInt32(bu);
+
 				UnityEngine.Debug.Log("trueSKY version:" + SimulVersionMajor + "." + SimulVersionMinor + "." + SimulVersionBuild);
 
 #if TRUESKY_LOGGING

@@ -16,6 +16,9 @@ namespace simul
         protected static extern System.IntPtr UnityGetPostTranslucentFunc();
 
         protected float[] cubemapTransformMatrix = new float[16];
+		protected float[] rainDepthMatrix = new float[16];
+		protected float[] rainDepthProjection = new float[16];
+		protected float rainDepthTextureScale;
         protected override int InternalGetViewId()
 		{
 			return StaticGetOrAddView((System.IntPtr)view_ident);
@@ -33,6 +36,7 @@ namespace simul
         RenderTextureHolder _lossRT             = new RenderTextureHolder();
         RenderTextureHolder _cloudVisibilityRT  = new RenderTextureHolder();
 
+		RenderTextureHolder _rainDepthRT		= new RenderTextureHolder();
         protected RenderTextureHolder reflectionProbeTexture = new RenderTextureHolder();
         protected CommandBuffer overlay_buf                 = null;
         protected CommandBuffer post_translucent_buf        = null;
@@ -49,7 +53,7 @@ namespace simul
         /// If true, both XR eyes are expected to be rendered to the same texture.
         /// </summary>
         public bool ShareBuffersForVR = true;
-
+		public Camera DepthCamera = null;
         /// <summary>
         /// Generates an apropiate RenderStyle acording with this camera settings
         /// and takes into account if stereo (XR) is enabled.
@@ -349,6 +353,7 @@ namespace simul
                 _inscatterRT.renderTexture          = inscatterRT;
 				_cloudVisibilityRT.renderTexture    = cloudVisibilityRT;
 				_cloudShadowRT.renderTexture        = cloudShadowRT;
+
                 _lossRT.renderTexture               = lossRT;
 				StaticSetRenderTexture("inscatter2D",_inscatterRT.GetNative());
 				StaticSetRenderTexture("Loss2D", _lossRT.GetNative());
@@ -360,6 +365,24 @@ namespace simul
 				StaticSetRenderTexture("CloudShadowRT", _cloudShadowRT.GetNative());
 				MatrixTransform(cubemapTransformMatrix);
 				StaticSetMatrix4x4("CubemapTransform", cubemapTransformMatrix);
+
+				if (DepthCamera != null)
+					_rainDepthRT.renderTexture = DepthCamera.activeTexture;
+				StaticSetRenderTexture("RainDepthTexture", _rainDepthRT.GetNative());
+				if (DepthCamera != null)
+				{
+					Matrix4x4 proj = GL.GetGPUProjectionMatrix(DepthCamera.projectionMatrix, true);
+					proj.m22 *= 2.0F;
+					ProjMatrixToTrueSkyFormat(RenderStyle.UNITY_STYLE, proj, rainDepthProjection);
+					Matrix4x4 view2=Matrix4x4.Rotate(new Quaternion(1.0F,0,0,0.0F))*DepthCamera.worldToCameraMatrix;
+					
+					ViewMatrixToTrueSkyFormat(RenderStyle.UNITY_STYLE, proj.transpose* view2, rainDepthMatrix,0,true);
+					rainDepthTextureScale = 1.0F;// DepthCamera.farClipPlane;
+					StaticSetMatrix4x4("RainDepthTransform", rainDepthMatrix);
+					StaticSetMatrix4x4("RainDepthProjection", rainDepthProjection);
+					StaticSetRenderFloat("RainDepthTextureScale", rainDepthTextureScale);
+				}
+			
 			}
 		}
 	}

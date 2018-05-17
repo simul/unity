@@ -11,7 +11,7 @@ namespace simul
 	{
 		public class RenderTextureHolder
 		{
-			public Texture renderTexture=null;
+			public RenderTexture renderTexture=null;
 			public System.IntPtr GetNative()
 			{
 				if(cachedRenderTexture!=renderTexture)
@@ -24,8 +24,23 @@ namespace simul
 				}
 				return _nativeTexturePtr;
 			}
+			/*	GetNativeRenderBufferPtr is not properly supported by Unity, so don't use.
+			 *	public System.IntPtr GetNativeDepth()
+				{
+					if (cachedRenderTexture != renderTexture)
+					{
+						_nativeDepthTexturePtr = (System.IntPtr)0;
+					}
+					if (_nativeDepthTexturePtr == (System.IntPtr)0 && renderTexture != null)
+					{
+						_nativeDepthTexturePtr = renderTexture.depthBuffer.GetNativeRenderBufferPtr();
+					}
+					return _nativeDepthTexturePtr;
+				}*/
+
 			protected Texture cachedRenderTexture=null;
 			protected System.IntPtr _nativeTexturePtr=(System.IntPtr)0;
+			protected System.IntPtr _nativeDepthTexturePtr = (System.IntPtr)0; 
 		};
 		public enum RenderStyle
 		{
@@ -75,6 +90,8 @@ namespace simul
 		protected static extern void StaticSetRenderTexture(string name, System.IntPtr texturePtr);
 		[DllImport(SimulImports.renderer_dll)]
 		protected static extern void StaticSetMatrix4x4(string name, float[] matrix4x4);
+		[DllImport(SimulImports.renderer_dll)]
+		protected static extern void StaticSetRenderFloat(string name, float value); 
 		[DllImport(SimulImports.renderer_dll)]
 		protected static extern void UnityRenderEvent (int eventID);
 		[DllImport(SimulImports.renderer_dll)]
@@ -248,7 +265,7 @@ namespace simul
 			proj[offset+14] = m.m32 ;          
 			proj[offset+15] = m.m33 * metresPerUnit;
 		}
-		static public void ViewMatrixToTrueSkyFormat(RenderStyle renderStyle,Matrix4x4 m,float[] view,int offset=0)
+		static public void ViewMatrixToTrueSkyFormat(RenderStyle renderStyle,Matrix4x4 m,float[] view,int offset=0,bool swap_yz=true)
 		{
 		    // transform?
 			if (trueSKY.GetTrueSky() == null)
@@ -260,7 +277,8 @@ namespace simul
 			m=m.transpose;
 			Matrix4x4 n=m.inverse;
 			Matrix4x4 y;
-			
+			if (swap_yz)
+			{
 			// Swap the y and z columns - this makes a left-handed matrix into right-handed:
 			y.m00=	n.m00;
 			y.m01=	n.m02;
@@ -281,6 +299,30 @@ namespace simul
 			y.m31=	n.m32 * metresPerUnit;
 			y.m32=	n.m31 * metresPerUnit;
 			y.m33=	n.m33;
+			}
+			else
+			{
+				// Swap the y and z columns - this makes a left-handed matrix into right-handed:
+				y.m00 = n.m00;
+				y.m01 = n.m01;
+				y.m02 = n.m02;
+				y.m03 = n.m03;
+
+				y.m10 = n.m10;
+				y.m11 = n.m11;
+				y.m12 = n.m12;
+				y.m13 = n.m13;
+
+				y.m20 = n.m20;
+				y.m21 = n.m21;
+				y.m22 = n.m22;
+				y.m23 = n.m23;
+				// Swap the position values as well, as Unity uses y=up, we use z:
+				y.m30 = n.m30 * metresPerUnit;
+				y.m31 = n.m31 * metresPerUnit;
+				y.m32 = n.m32 * metresPerUnit;
+				y.m33 = n.m33;
+			}
 			
 			Matrix4x4 z=y.inverse;
 			view[offset+00] = z.m00;
