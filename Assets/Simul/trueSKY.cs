@@ -2418,7 +2418,7 @@ namespace simul
 				StaticSetRenderFloat("render:minimumstarpixelsize", _minimumStarPixelSize);
 				_rendering_initialized = true;
 			}
-			catch (Exception exc)
+			catch (Exception )
 			{
 				_rendering_initialized = false;
 			}
