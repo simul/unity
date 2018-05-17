@@ -1,8 +1,167 @@
 QWidget
 {
-	background-color: #383838;
 	color: silver;
+
+	background-color: transparent;
 }
+
+QDockWidget
+{
+	background-color: transparent;
+}
+QWidget:disabled
+{
+	background-color: #656565;
+}
+
+QPropertyPanel
+{
+	background-color: transparent;
+}
+
+.QAccordion
+{
+	border: solid 2px silver;
+}
+
+QAccordion
+{
+	background-color: rgba(35,35,35,255);
+}
+
+QAccordion#main,QAccordion#cloudRendering
+{
+	background-color: rgba(75,75,75,255);
+}
+
+QAccordion#shape
+{
+	background-color: rgba(55,55,115,255);
+}
+
+QAccordion#effects,QAccordion#precipitation
+{
+	background-color: rgba(35,55,75,255);
+}
+
+QAccordion#cloudWindow
+{
+	background-color: rgba(35,80,35,255);
+}
+
+QAccordion#noise
+{
+	background-color: rgba(85,55,35,255);
+}
+
+QAccordion#lighting
+{
+	background-color: rgba(125,35,35,255);
+}
+
+QAccordion#update
+{
+	background-color: rgba(85,75,35,255);
+}
+
+QAccordion#viewProperties
+{
+	background-color: rgba(35,55,155,255);
+}
+
+QAccordion#camera
+{
+	background-color: rgba(55,105,65,255);
+}
+
+QAccordion QCheckBox#accordionCheckBox
+{
+	color:white;
+	font-weight:600;
+}
+
+QAccordion QCheckBox#accordionCheckBox::indicator:unchecked
+{
+	image: url(:/images/dark_qss/right_arrow.png);
+}
+
+QAccordion QCheckBox#accordionCheckBox::indicator:checked
+{
+	image: url(:/images/dark_qss/down_arrow.png);
+}
+
+QCheckBox#accordionCheckBox:hover
+{
+	background-color: rgba(255,255,255,25);
+}
+
+DirectX11Widget
+{
+	color: red;
+	background-color: rgba(1,1,72,255);
+}
+
+.QScrollArea
+{
+	background-color: transparent;
+	border: 5px;
+}
+ 
+QTreeView
+{
+	color: black;
+	background-color: #484848;
+	margin: 0px;
+	border: 0px;
+	padding: 0px;
+}
+
+QHelpContentWidget
+{
+	color: black;
+	background-color: white;
+}
+
+QTextBrowser
+{
+	color: black;
+	background-color: white;
+}
+
+HelpBrowser
+{
+	color: black;
+	background-color: white;
+}
+
+QHeaderView
+{
+	margin: 0px;
+	border: 0px;
+	padding: 0px;
+}
+
+QHeaderView::section
+{
+	background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #616161, stop: 0.5 #505050, stop: 0.6 #434343, stop:1 #656565);
+	color: white;
+	margin: 0px;
+	border: 0px;
+	padding: 0px;
+	padding-left: 4px;
+}
+
+/* style the sort indicator */
+QHeaderView::down-arrow
+{
+	image: url(:/images/dark_qss/down_arrow.png);
+}
+
+QHeaderView::up-arrow
+{
+	image: url(:/images/dark_qss/up_arrow.png);
+}
+
 
 #MainWindow
 {
@@ -130,7 +289,7 @@ QScrollBar::handle:vertical
 
 QScrollBar::sub-line:vertical
 {
-    image: url(:/dark_qss/images/dark_qss/scroll_up.png);
+    image: url(:/images/dark_qss/scroll_up.png);
     height: 6px;
     width: 7px;
     margin: 1px 0 1px 0;
@@ -143,7 +302,7 @@ QScrollBar::sub-line:vertical
 
 QScrollBar::add-line:vertical
 {
-    image: url(:/dark_qss/images/dark_qss/scroll_down.png);
+    image: url(:/images/dark_qss/scroll_down.png);
     height: 6px;
     width: 7px;
     margin: 1px 0 1px 0;
@@ -180,10 +339,10 @@ QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical
  QSlider::groove
  {
      border: 1px solid;
-	 border-top-color:#2F2F2F;
-	 border-left-color:#2F2F2F;
-	 border-bottom-color:#383838;
-	 border-right-color:#383838;
+	 border-top-color:rgba(0,0,0,135);
+	 border-left-color:rgba(0,0,0,135);
+	 border-bottom-color:rgba(0,0,0,75);
+	 border-right-color:rgba(0,0,0,75);
      margin: 2px 0;
 	 border-radius: 2px;
  }
@@ -191,12 +350,12 @@ QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical
  QSlider::groove:horizontal
  {
      height: 3px; /* the groove expands to the size of the slider by default. by giving it a height, it has a fixed size */
-     background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #383838, stop:1 #444444);
+     background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgba(0,0,0,85), stop:1 rgba(0,0,0,35));
  }
  QSlider::groove:vertical
  {
      width: 3px; /* the groove expands to the size of the slider by default. by giving it a height, it has a fixed size */
-     background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #383838, stop:1 #444444);
+     background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 rgba(0,0,0,85), stop:1 rgba(0,0,0,35));
  }
 
  QSlider::handle
@@ -284,12 +443,12 @@ QGroupBox::indicator
 
 QGroupBox::indicator:unchecked
 {
-	image: url(:/dark_qss/images/dark_qss/right_arrow.png);
+	image: url(:/images/dark_qss/right_arrow.png);
 }
 
 QGroupBox::indicator:checked
 {
-	image: url(:/dark_qss/images/dark_qss/down_arrow.png);
+	image: url(:/images/dark_qss/down_arrow.png);
 }
 
 QPushButton#reset

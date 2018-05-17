@@ -1696,7 +1696,7 @@ namespace simul
 			}
 			set
 			{
-				bool v = value & _showCubemaps;
+				bool v = value;
 				if (_showCubemaps != v) try
 					{
 						_showCubemaps = v;
@@ -2416,7 +2416,7 @@ namespace simul
 				StaticSetRenderFloat("render:minimumstarpixelsize", _minimumStarPixelSize);
 				_rendering_initialized = true;
 			}
-			catch (Exception exc)
+			catch (Exception )
 			{
 				_rendering_initialized = false;
 			}

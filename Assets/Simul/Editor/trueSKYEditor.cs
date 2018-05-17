@@ -69,23 +69,21 @@ namespace simul
 			trueSKY.RecompileShaders();
 		}
 		[SerializeField]
-		bool celestial = false;
+		static bool celestial = false;
 		[SerializeField]
-		bool clouds = false;
+		static bool clouds = false;
 		[SerializeField]
-		bool atmospherics = false;
+		static bool atmospherics = false;
 		[SerializeField]
-		bool noise = false;
+		static bool noise = false;
 		[SerializeField]
-		bool debugging = false;
+		static bool debugging = false;
 		[SerializeField]
-		bool lighting = false;
+		static bool lighting = false;
 		[SerializeField]
 		bool interpolation = false;
 		[SerializeField]
-		bool precipitation = false;
-		[SerializeField]
-		bool global = false;
+		static bool precipitation = false;
 		public override void OnInspectorGUI()
 		{
 			trueSKY trueSky = (trueSKY)target;
@@ -94,12 +92,10 @@ namespace simul
 			EditorGUILayout.BeginVertical();
 			{
 				// General truesky settings
-				global = EditorGUILayout.Foldout(global, "TrueSky");
-				if (global)
+
 				{
-					trueSky.MetresPerUnit = EditorGUILayout.FloatField("Metres per Unit", trueSky.MetresPerUnit);
-					trueSky.RenderInEditMode = EditorGUILayout.Toggle("Render in Edit Mode", trueSky.RenderInEditMode);
 					trueSky.sequence = (Sequence)EditorGUILayout.ObjectField("Sequence Asset", trueSky.sequence, typeof(Sequence), false);
+					trueSky.MetresPerUnit = EditorGUILayout.FloatField("Metres per Unit", trueSky.MetresPerUnit);
 					if (trueSky.SimulVersion<trueSky.MakeSimulVersion(4, 2))
 					{
 						trueSky.CloudThresholdDistanceKm = EditorGUILayout.Slider("Threshold Distance (km)", trueSky.CloudThresholdDistanceKm, 0.0F, 10.0F);
@@ -188,7 +184,7 @@ namespace simul
 						if (trueSky.SimulVersion >= trueSky.MakeSimulVersion(4, 2))
 						{
 							trueSky.MaxPrecipitationParticles = EditorGUILayout.IntField("Max Particles", trueSky.MaxPrecipitationParticles);
-							trueSky.PrecipitationRadiusMetres = EditorGUILayout.Slider("Radius (m)", trueSky.PrecipitationRadiusMetres, 0.5F, 20.0F);
+							trueSky.PrecipitationRadiusMetres = EditorGUILayout.Slider("Radius (m)", trueSky.PrecipitationRadiusMetres, 0.5F, 100.0F);
 							trueSky.RainFallSpeedMS = EditorGUILayout.Slider("Rain fall speed (m/s)", trueSky.RainFallSpeedMS, 0.0F, 20.0F);
 							trueSky.SnowFallSpeedMS = EditorGUILayout.Slider("Snow fall speed (m/s)", trueSky.SnowFallSpeedMS, 0.0F, 20.0F);
 							trueSky.RainDropSizeMm = EditorGUILayout.Slider("Raindrop Size (mm)", trueSky.RainDropSizeMm, 0.05F, 20.0F);
@@ -216,6 +212,7 @@ namespace simul
 				debugging = EditorGUILayout.Foldout(debugging, "Debugging");
 				if(debugging)
 				{
+					trueSky.RenderInEditMode = EditorGUILayout.Toggle("Render in Edit Mode", trueSky.RenderInEditMode);
 					string gv = SystemInfo.graphicsDeviceVersion;
 					EditorGUILayout.LabelField("Unity Renderer", gv);
 					if (gv.Contains("Direct3D 11"))
