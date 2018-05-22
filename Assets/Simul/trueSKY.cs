@@ -166,6 +166,8 @@ namespace simul
 #else
 #if UNITY_PS4
 			public const string renderer_dll = @"TrueSkyPluginRender";
+#elif UNITY_XBOXONE
+			public const string renderer_dll = @"TrueSkyPluginRender_MD";
 #elif UNITY_IPHONE || UNITY_SWITCH
 			public const string renderer_dll = @"__Internal";
 #elif _WIN32
@@ -174,7 +176,7 @@ namespace simul
 			public const string renderer_dll = @"TrueSkyPluginRender_MT";
 #endif
 #endif
-    }
+	}
 
 	[ExecuteInEditMode]
 	public class trueSKY : MonoBehaviour
@@ -2323,15 +2325,19 @@ namespace simul
 #endif
 
 #if UNITY_PS4
-                StaticPushPath("ShaderBinaryPath", Application.dataPath + @"\Simul\shaderbin");
+                StaticPushPath("ShaderBinaryPath", Application.dataPath + @"\Simul\shaderbin\ps4");
+                StaticPushPath("ShaderPath", Application.dataPath + @"\Simul\shaderbin");
+                StaticPushPath("TexturePath", Application.dataPath + @"\Simul\Media\Textures");
+#elif UNITY_XBOXONE
+                StaticPushPath("ShaderBinaryPath", Application.dataPath + @"\Simul\shaderbin\xboxone");
                 StaticPushPath("ShaderPath", Application.dataPath + @"\Simul\shaderbin");
                 StaticPushPath("TexturePath", Application.dataPath + @"\Simul\Media\Textures");
 #else
-                StaticPushPath("ShaderBinaryPath", Application.dataPath + @"\Simul\shaderbin");
+				StaticPushPath("ShaderBinaryPath", Application.dataPath + @"\Simul\shaderbin\x86_64");
                 StaticPushPath("ShaderPath", Application.dataPath + @"\Simul\Platform\DirectX11\HLSL");
                 StaticPushPath("TexturePath", Application.dataPath + @"\Simul\Media\Textures");
 #endif
-                StaticInitInterface();
+				StaticInitInterface();
 				Reload();
 
 #if TRUESKY_LOGGING

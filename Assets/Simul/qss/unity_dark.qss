@@ -219,196 +219,7 @@ QPushButton:checked
 	background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 dodgerblue, stop:1 midnightblue);
 }
 
-QToolButton
-{ /* all types of tool button */
-	background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
-								stop: 0 #484848, stop: 1 dimgrey);
-	border: none;
-}
 
-QToolButton:hover
-{
-	background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #484848, stop: 1 dimgrey);
-}
-
-QToolButton:pressed
-{
-	background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #484848, stop: 1 dimgrey);
-	padding-left: 2px;
-	padding-top: 2px;
-}
-
-QToolButton:checked
-{
-	background-image: url(:/qss_icons/images/null.png);
-	background-repeat: repeat-x;
-	background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 midnightblue, stop: 1 dodgerblue);
-}
-
-QToolButton#back
-{
-	background-image: url(:/qss_icons/images/Buttons/Back32.png);
-	background-repeat: repeat-none;
-    background-origin: content;
-}
-
- 
-/* Bold text on status bar looks awful. */
-QStatusBar QLabel
-{
-	font: normal;
-}
-
-QStatusBar::item
-{
-	border-width: 1;
-	border-color: gainsboro;
-	border-style: solid;
-	border-radius: 2;
-}
-
-/* Password character */
-QLineEdit[echoMode="2"]
-{
-	lineedit-password-character: 9679;
-}
-
-QComboBox, QLineEdit, QTextEdit, QListView
-{
-	background-color: #9098a0;
-	selection-color: #0a214c;
-	selection-background-color: dodgerblue;
-}
-
-QVectorEdit[colourEdit="true"] QLineEdit#x
-{
-	background-color: rgba(192,0,0)
-}
-
-QVectorEdit[colourEdit="true"] QLineEdit#y
-{
-	background-color: rgba(0,128,0)
-}
-
-QVectorEdit[colourEdit="true"] QLineEdit#z
-{
-	background-color: rgba(0,64,255)
-}
-
-QLineEdit#rayleighRed, #wavelengthNmRed, #mieRed
-{
-	background-color: rgba(192,0,0)
-}
-
-#rayleighGreen, #wavelengthNmGreen, #mieGreen
-{
-	background-color: rgba(0,128,0)
-}
-
-#rayleighBlue, #wavelengthNmBlue, #mieBlue
-{
-	background-color: rgba(0,64,255)
-}
-
-
-QDateEdit
-{
-	border: 1px solid silver;
-	border-radius: 3px;
-	padding: 1px 18px 1px 3px;
-	min-width: 6em;
-}
- 
-QDateEdit::drop-down
-{
-	background-color: #484848;
-	subcontrol-origin: padding;
-	subcontrol-position: top right;
-	width: 15px;
-
-	border-left-width: 1px;
-	border-left-color: darkgray;
-	border-left-style: solid; /* just a single line */
-	border-top-right-radius: 3px; /* same radius as the QComboBox */
-	border-bottom-right-radius: 3px;
-	
-	image: url(:/qss_icons/images/down_arrow.png);
-	
- }
-
-/* Reserve 1 pixel space in padding. When we get the focus,
-	kill the padding and enlarge the border. This makes the items
-	glow. */
-QLineEdit
-{
-	color: white;
-	border-width: 1px;
-	padding: 1px;
-	border-style: solid;
-	border-color: silver;
-	border-radius: 5px;
-}
-
-/* As above, eliminate the padding and increase the border. */
-QLineEdit:focus
-{
-	background-color: #9098a0;
-	border-color: white;
-	border-width: 2px;
-	padding: 1px 0px 0px 0px;
-}
-
-	background: none;
-}
-
-/* A QToolTip is a QLabel ... */
-QToolTip
-{
-	border: 2px solid gainsboro;
-	padding: 5px;
-	border-radius: 3px;
-	opacity: 200;
-}
-
-QCheckBox
-{
-	spacing: 5px;
-}
-
-QCheckBox::indicator
-{
-	width: 13px;
-	height: 13px;
-}
-
-/* Nice to have the background color change when hovered. */
-QRadioButton:hover, QCheckBox:hover
-{
-	background-color: #484848;
-}
-QDial
-{
-	color:rgba(185, 185, 185, 255);
-	background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0 rgba(125, 125, 125, 255), stop:1 rgba(185, 185, 185, 255));
-	border: 2px solid #CC7000;
-}
-
-QDial#daytimeHourDial
-{
-	color:rgba(185, 185, 185, 255);
-	background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0 rgba(72, 72, 72, 255), stop:1 rgba(105,105,105, 255));
-	border: 2px solid #CC7000;
-}
-
-QDialog
-{
-	background-color: #484848;
-}
-/* Force the dialog's buttons to follow the Windows guidelines. */
-QDialogButtonBox
-{
-	button-layout: 0;
-}
 
 
 QTabWidget::pane
@@ -478,7 +289,7 @@ QScrollBar::handle:vertical
 
 QScrollBar::sub-line:vertical
 {
-    image: url(:/dark_qss/images/dark_qss/scroll_up.png);
+    image: url(:/images/dark_qss/scroll_up.png);
     height: 6px;
     width: 7px;
     margin: 1px 0 1px 0;
@@ -491,7 +302,7 @@ QScrollBar::sub-line:vertical
 
 QScrollBar::add-line:vertical
 {
-    image: url(:/dark_qss/images/dark_qss/scroll_down.png);
+    image: url(:/images/dark_qss/scroll_down.png);
     height: 6px;
     width: 7px;
     margin: 1px 0 1px 0;
@@ -612,12 +423,10 @@ QGroupBox
     background-position: top left;
     background-origin: content;
     background-repeat: repeat-x;
-	background-color:transparent;
 }
 
 QGroupBox::title
 {
-	background-color:transparent;
 	font: bold large;
 	font-family: "Times";
 	border-radius: 0px;
@@ -634,12 +443,12 @@ QGroupBox::indicator
 
 QGroupBox::indicator:unchecked
 {
-	image: url(:/dark_qss/images/dark_qss/right_arrow.png);
+	image: url(:/images/dark_qss/right_arrow.png);
 }
 
 QGroupBox::indicator:checked
 {
-	image: url(:/dark_qss/images/dark_qss/down_arrow.png);
+	image: url(:/images/dark_qss/down_arrow.png);
 }
 
 QPushButton#reset
