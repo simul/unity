@@ -2322,15 +2322,23 @@ namespace simul
 				StaticEnableLogging("trueSKYUnityRender.log");
 #endif
 
+                // Push the shader and texture paths:
+                if(!Application.isEditor)
+                {
 #if UNITY_PS4
-                StaticPushPath("ShaderBinaryPath", Application.dataPath + @"\Simul\shaderbin");
-                StaticPushPath("ShaderPath", Application.dataPath + @"\Simul\shaderbin");
-                StaticPushPath("TexturePath", Application.dataPath + @"\Simul\Media\Textures");
-#else
-                StaticPushPath("ShaderBinaryPath", Application.dataPath + @"\Simul\shaderbin");
-				StaticPushPath("ShaderPath", Application.dataPath + @"\Simul\Platform\DirectX11\HLSL");
-				StaticPushPath("TexturePath", Application.dataPath + @"\Simul\Media\Textures");
+                    StaticPushPath("ShaderBinaryPath", Application.dataPath + @"\Simul\shaderbin\ps4");
+#elif UNITY_WSA || UNITY_STANDALONE_WIN
+                    StaticPushPath("ShaderBinaryPath", Application.dataPath + @"\Simul\shaderbin\x86_64");
 #endif
+                    StaticPushPath("TexturePath", Application.dataPath + @"\Simul\Media\Textures");
+                }
+                else
+                {
+                    StaticPushPath("ShaderBinaryPath", Application.dataPath + @"\Simul\shaderbin\x86_64");
+                    StaticPushPath("ShaderPath", Application.dataPath + @"\Simul\shaderbin\x86_64");
+                    StaticPushPath("TexturePath", Application.dataPath + @"\Simul\Media\Textures");
+                }
+
 				StaticInitInterface();
 				Reload();
 
