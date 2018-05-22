@@ -1,12 +1,161 @@
 QWidget
 {
-	background-color: silver;
+	color: silver;
+	background-color: transparent;
 }
+
+QDockWidget
+{
+	background-color: rgba(54,54,255,255);
+}
+QWidget:disabled
+{
+	background-color: #656565;
+}
+
+QPropertyPanel
+{
+	background-color: rgba(54,54,54,255);
+}
+
+.QAccordion
+{
+	border: solid 2px silver;
+}
+
+QAccordion
+{
+	background-color: rgba(35,35,35,255);
+}
+
+QAccordion#cloudWindow
+{
+	background-color: rgba(35,80,35,255);
+}
+QAccordion#cloudRendering
+{
+	background-color: rgba(35,35,95,255);
+}
+QAccordion#precipitation
+{
+	background-color: rgba(35,55,75,255);
+}
+QAccordion#noise
+{
+	background-color: rgba(85,55,35,255);
+}
+QAccordion#lighting
+{
+	background-color: rgba(125,35,35,255);
+}
+QAccordion#update
+{
+	background-color: rgba(85,75,35,255);
+}
+QAccordion#viewProperties
+{
+	background-color: rgba(35,55,155,255);
+}
+QAccordion#camera
+{
+	background-color: rgba(75,75,75,255);
+}
+
+QAccordion QCheckBox#accordionCheckBox
+{
+	color:white;
+	font-weight:600;
+}
+
+QAccordion QCheckBox#accordionCheckBox::indicator:unchecked
+{
+	image: url(:/images/dark_qss/right_arrow.png);
+}
+
+QAccordion QCheckBox#accordionCheckBox::indicator:checked
+{
+	image: url(:/images/dark_qss/down_arrow.png);
+}
+
+QCheckBox#accordionCheckBox:hover
+{
+	background-color: rgba(255,255,255,25);
+}
+
+DirectX11Widget
+{
+	color: red;
+	background-color: rgba(1,1,72,255);
+}
+
+.QScrollArea
+{
+	background-color: rgba(25,25,25, 255);
+	border: 5px;
+}
+ 
+QTreeView
+{
+	color: black;
+	background-color: #484848;
+	margin: 0px;
+	border: 0px;
+	padding: 0px;
+}
+
+QHelpContentWidget
+{
+	color: black;
+	background-color: white;
+}
+
+QTextBrowser
+{
+	color: black;
+	background-color: white;
+}
+
+HelpBrowser
+{
+	color: black;
+	background-color: white;
+}
+
+QHeaderView
+{
+	margin: 0px;
+	border: 0px;
+	padding: 0px;
+}
+
+QHeaderView::section
+{
+	background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #616161, stop: 0.5 #505050, stop: 0.6 #434343, stop:1 #656565);
+	color: white;
+	margin: 0px;
+	border: 0px;
+	padding: 0px;
+	padding-left: 4px;
+}
+
+/* style the sort indicator */
+QHeaderView::down-arrow
+{
+	image: url(:/dark_qss/images/dark_qss/down_arrow.png);
+}
+
+QHeaderView::up-arrow
+{
+	image: url(:/dark_qss/images/dark_qss/up_arrow.png);
+}
+
 
 #MainWindow
 {
 	background-color: #AAAAAA;
 }
+/* We provide a min-width and min-height for push buttons
+	so that they look elegant regardless of the width of the text. */
 QPushButton
 {
 	background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #ececec, stop:1 #bcbcbc);
@@ -249,12 +398,12 @@ QGroupBox::indicator
 
 QGroupBox::indicator:unchecked
 {
-	image: url(:/images/light_qss/right_arrow.png);
+	image: url(:/light_qss/images/light_qss/right_arrow.png);
 }
 
 QGroupBox::indicator:checked
 {
-	image: url(:/images/light_qss/up_arrow.png);
+	image: url(:/light_qss/images/light_qss/up_arrow.png);
 }
 
 
