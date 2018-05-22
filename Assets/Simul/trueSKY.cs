@@ -241,7 +241,25 @@ namespace simul
         public int SimulVersionMinor            = 0;
         public int SimulVersionBuild            = 0;
 
-        private static trueSKY trueSkySingleton = null;
+		#endregion
+		#region API
+
+		public int SimulVersionMajor = 0;
+		public int SimulVersionMinor = 0;
+		public int SimulVersionBuild = 0;
+
+		public int SimulVersion
+		{
+			get
+			{
+				return MakeSimulVersion(SimulVersionMajor, SimulVersionMinor);
+			}
+		}
+		public int MakeSimulVersion(int major, int minor)
+		{
+			return (major << 8) + minor;
+		}
+		private static trueSKY trueSkySingleton = null;
 
 		public trueSKY()
 		{
@@ -529,16 +547,13 @@ namespace simul
 			set
 			{
 				if (_metresPerUnit != value) try
-				{
-					_metresPerUnit = value;
-					StaticSetRenderFloat("MetresPerUnit", _metresPerUnit); 
-					//if (!Application.isPlaying)
-						//RepaintAll();
-				}
-				catch (Exception exc)
-				{
-					UnityEngine.Debug.Log(exc.ToString());
-				}
+					{
+						_metresPerUnit = value;
+					}
+					catch (Exception exc)
+					{
+						UnityEngine.Debug.Log(exc.ToString());
+					}
 			}
 		}
 
@@ -890,19 +905,20 @@ namespace simul
 			}
 			return value;
 		}
-#if SIMUL_4_1
+
         //! Set an integer property of the 2D cloud layer.
         public void Set2DCloudInt(string name, int value)
 		{
 			try
 			{
 				StaticSetRenderInt("2DClouds:" + name, value);
-			}
+		    }
 			catch (Exception exc)
 			{
 				UnityEngine.Debug.Log(exc.ToString());
 			}
 		}
+
 		//! Get an integer property of the 2D cloud layer.
 		public int Get2DCloudInt(string name)
 		{
@@ -917,9 +933,9 @@ namespace simul
 			}
 			return value;
 		}
-#endif
-        [SerializeField]
-        float _time;
+
+		[SerializeField]
+		float _time;
 		/// <summary>
 		/// Time in the sequence, set from some external script, e.g. the sequence editor, or modified per-frame by the speed value.
 		/// </summary>
