@@ -993,7 +993,7 @@ namespace simul
 					try
 					{
 						_time = value;
-						StaticSetRenderFloat("Time", _time);
+						StaticSetRenderFloat("Time", value);
 						// What if, having changed this value, we now ask for a light colour before the next Update()?
 						// so we force it:
 						StaticTick(0.0f);
@@ -1698,7 +1698,7 @@ namespace simul
 			}
 			set
 			{
-				bool v = value & _showCubemaps;
+				bool v = value;
 				if (_showCubemaps != v) try
 					{
 						_showCubemaps = v;
@@ -2315,21 +2315,30 @@ namespace simul
 				SimulVersionMajor = Marshal.ReadInt32(ma);
 				SimulVersionMinor = Marshal.ReadInt32(mi);
 				SimulVersionBuild = Marshal.ReadInt32(bu);
+
 				UnityEngine.Debug.Log("trueSKY version:" + SimulVersionMajor + "." + SimulVersionMinor + "." + SimulVersionBuild);
 
 #if TRUESKY_LOGGING
 				StaticEnableLogging("trueSKYUnityRender.log");
 #endif
 
+                // Push the shader and texture paths:
+                if(!Application.isEditor)
+                {
 #if UNITY_PS4
-                StaticPushPath("ShaderBinaryPath", Application.dataPath + @"\Simul\shaderbin");
-                StaticPushPath("ShaderPath", Application.dataPath + @"\Simul\shaderbin");
-                StaticPushPath("TexturePath", Application.dataPath + @"\Simul\Media\Textures");
-#else
-                StaticPushPath("ShaderBinaryPath", Application.dataPath + @"\Simul\shaderbin");
-				StaticPushPath("ShaderPath", Application.dataPath + @"\Simul\Platform\DirectX11\HLSL");
-				StaticPushPath("TexturePath", Application.dataPath + @"\Simul\Media\Textures");
+                    StaticPushPath("ShaderBinaryPath", Application.dataPath + @"\Simul\shaderbin\ps4");
+#elif UNITY_WSA || UNITY_STANDALONE_WIN
+                    StaticPushPath("ShaderBinaryPath", Application.dataPath + @"\Simul\shaderbin\x86_64");
 #endif
+                    StaticPushPath("TexturePath", Application.dataPath + @"\Simul\Media\Textures");
+                }
+                else
+                {
+                    StaticPushPath("ShaderBinaryPath", Application.dataPath + @"\Simul\shaderbin\x86_64");
+                    StaticPushPath("ShaderPath", Application.dataPath + @"\Simul\shaderbin\x86_64");
+                    StaticPushPath("TexturePath", Application.dataPath + @"\Simul\Media\Textures");
+                }
+
 				StaticInitInterface();
 				Reload();
 
@@ -2417,7 +2426,7 @@ namespace simul
 				StaticSetRenderFloat("render:minimumstarpixelsize", _minimumStarPixelSize);
 				_rendering_initialized = true;
 			}
-			catch (Exception exc)
+			catch (Exception )
 			{
 				_rendering_initialized = false;
 			}

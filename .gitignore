@@ -39,3 +39,5 @@ sysinfo.txt
 *.dll
 *.cso
 *.cso.meta
+/Assets/Simul/shaderbin/ps4
+/textures

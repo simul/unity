@@ -48,8 +48,6 @@ namespace simul
 						continue;
 					if (file.Name.Contains(".pdb"))
 						continue;
-					if (file.Name.Contains(".fx"))
-						continue;
 					if (file.Name.Contains(".sl"))
 						continue;
 					if (file.Name.Contains(".hlsl"))

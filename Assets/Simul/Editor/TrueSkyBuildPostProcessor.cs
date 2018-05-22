@@ -9,6 +9,26 @@ namespace simul
 {
 	public class TrueSkyBuildPostprocessor
 	{
+        static string ToPlatformName(BuildTarget target)
+        {
+            switch(target)
+            {
+                case BuildTarget.PS4:
+                    return "ps4";
+                case BuildTarget.StandaloneWindows:
+                case BuildTarget.StandaloneWindows64:
+                    return "x86_64";
+                case BuildTarget.WSAPlayer:
+                    return "WSA";
+                case BuildTarget.XboxOne:
+                    return "XboxOne";
+                case BuildTarget.Switch:
+                    return "Switch";
+                default:
+                    return "null";
+            }
+        }
+
 		[PostProcessBuild]
 		public static void OnPostprocessBuild(BuildTarget target, string pathToBuiltProject)
 		{
@@ -43,28 +63,13 @@ namespace simul
 
             Debug.Log("Build directory is: " + buildDirectory);
 
-			
             // Copy shaders
-			string assetsPath = Environment.CurrentDirectory + s + "Assets";
-			string simul = assetsPath + s + "Simul";
-            // Custom shader binary folder
-            string shaderFolderSrt;
-            if (target == BuildTarget.PS4)
-            {
-                shaderFolderSrt = "shaderbinps4";
-            }
-            else if (target == BuildTarget.Switch)
-            {
-                shaderFolderSrt = "shaderbinnx";
-            }
-            else
-            {
-                shaderFolderSrt = "shaderbin";
-            }
-            string shaderbinSource = simul + s + shaderFolderSrt;
-			string shaderbinBuild = buildDirectory + s + "Simul" + s + "shaderbin";
+			string assetsPath       = Environment.CurrentDirectory + s + "Assets";
+			string simul            = assetsPath + s + "Simul";
+            string shaderbinSource  = simul + s + "shaderbin" + s + ToPlatformName(target);
+			string shaderbinBuild   = buildDirectory + s + "Simul" + s + "shaderbin" + s + ToPlatformName(target);
 			DirectoryCopy.Copy(shaderbinSource, shaderbinBuild, true, true);
-			Debug.Log("DirectoryCopy: " + shaderbinBuild + "->" + shaderbinBuild);
+			Debug.Log("DirectoryCopy: " + shaderbinSource + "->" + shaderbinBuild);
 
             // Copy media
 			string MediaSource = simul + s + "Media";
@@ -75,7 +80,7 @@ namespace simul
             // If building for ps4 also copy to StreamingAssets folder
             if (target == BuildTarget.PS4)
             {
-                string saDir = buildDirectory + s + "StreamingAssets" + s + "Simul" + s + "shaderbin";
+                string saDir = buildDirectory + s + "StreamingAssets" + s + "Simul" + s + "shaderbin" + s + ToPlatformName(target);
                 DirectoryCopy.Copy(shaderbinSource, saDir, true, true, false, false);
                 Debug.Log("DirectoryCopy: " + shaderbinSource + "->" + saDir);
                 saDir = buildDirectory + s + "StreamingAssets" + s + "Simul" + s + "Media";
