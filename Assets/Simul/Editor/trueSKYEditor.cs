@@ -110,8 +110,11 @@ namespace simul
 				{
 					trueSky.time = EditorGUILayout.FloatField("Time", trueSky.time);
 					trueSky.speed = EditorGUILayout.FloatField("Speed", trueSky.speed);
+                    if (trueSky.SimulVersion >= trueSky.MakeSimulVersion(4, 2))
+                    {
 					trueSky.HighDetailProportion = EditorGUILayout.Slider("High Detail", trueSky.HighDetailProportion,0.0F,1.0F);
 					trueSky.MediumDetailProportion = EditorGUILayout.Slider("Medium Detail", trueSky.MediumDetailProportion, trueSky.HighDetailProportion, 1.0F);
+                    }
 					EditorGUILayout.Space();
 				}
 				// Rendering settings
@@ -135,14 +138,17 @@ namespace simul
 						trueSky.DepthBlending = EditorGUILayout.Toggle("Depth Blending", trueSky.DepthBlending);
 						EditorGUILayout.EndVertical();
 					}
-					atmospherics = EditorGUILayout.Foldout(atmospherics,"Atmospherics");
-					if (atmospherics)
-					{
-						trueSky.AtmosphericsAmortization = EditorGUILayout.IntSlider("Atmospherics Amortization", trueSky.AtmosphericsAmortization, 1, 4);
-						trueSky.GodRaysGrid = EditorGUILayout.Vector3Field("God Rays Grid", trueSky.GodRaysGrid);
-						trueSky.CrepuscularRaysStrength = EditorGUILayout.Slider("Crepuscular Rays Strength", trueSky.CrepuscularRaysStrength, 0.0F, 1.0F);
-					}
+				}
+				atmospherics = EditorGUILayout.Foldout(atmospherics,"Atmospherics");
+				if (atmospherics)
+				{
+					trueSky.AtmosphericsAmortization = EditorGUILayout.IntSlider("Atmospherics Amortization", trueSky.AtmosphericsAmortization, 1, 4);
+					trueSky.GodRaysGrid = EditorGUILayout.Vector3Field("God Rays Grid", trueSky.GodRaysGrid);
+					trueSky.CrepuscularRaysStrength = EditorGUILayout.Slider("Crepuscular Rays Strength", trueSky.CrepuscularRaysStrength, 0.0F, 1.0F);
+				}
 
+				if (trueSky.SimulVersion >= trueSky.MakeSimulVersion(4, 2))
+				{
 					lighting = EditorGUILayout.Foldout(lighting,"Lighting");
 					if (lighting)
 					{

@@ -53,7 +53,7 @@ namespace simul
         /// If true, both XR eyes are expected to be rendered to the same texture.
         /// </summary>
         public bool ShareBuffersForVR = true;
-		public Camera DepthCamera = null;
+		public TrueSkyRainDepthCamera RainDepthCamera = null;
         /// <summary>
         /// Generates an apropiate RenderStyle acording with this camera settings
         /// and takes into account if stereo (XR) is enabled.
@@ -366,23 +366,17 @@ namespace simul
 				MatrixTransform(cubemapTransformMatrix);
 				StaticSetMatrix4x4("CubemapTransform", cubemapTransformMatrix);
 
-				if (DepthCamera != null)
-					_rainDepthRT.renderTexture = DepthCamera.activeTexture;
+				if (RainDepthCamera != null)
+					_rainDepthRT.renderTexture = RainDepthCamera.targetTexture;
 				StaticSetRenderTexture("RainDepthTexture", _rainDepthRT.GetNative());
-				if (DepthCamera != null)
+				if (RainDepthCamera != null)
 				{
-					Matrix4x4 proj = GL.GetGPUProjectionMatrix(DepthCamera.projectionMatrix, true);
-					proj.m22 *= 2.0F;
-					ProjMatrixToTrueSkyFormat(RenderStyle.UNITY_STYLE, proj, rainDepthProjection);
-					Matrix4x4 view2=Matrix4x4.Rotate(new Quaternion(1.0F,0,0,0.0F))*DepthCamera.worldToCameraMatrix;
-					
-					ViewMatrixToTrueSkyFormat(RenderStyle.UNITY_STYLE, proj.transpose* view2, rainDepthMatrix,0,true);
+					ViewMatrixToTrueSkyFormat(RenderStyle.UNITY_STYLE,RainDepthCamera.matrix, rainDepthMatrix,0,true);
 					rainDepthTextureScale = 1.0F;// DepthCamera.farClipPlane;
 					StaticSetMatrix4x4("RainDepthTransform", rainDepthMatrix);
 					StaticSetMatrix4x4("RainDepthProjection", rainDepthProjection);
 					StaticSetRenderFloat("RainDepthTextureScale", rainDepthTextureScale);
 				}
-			
 			}
 		}
 	}
