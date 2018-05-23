@@ -35,7 +35,7 @@ public class TrueSkyDirectionalLight : MonoBehaviour
             }
         }
     }
-    float intensity_scale = 0.05F;
+    float intensity_scale = 0.1F;
     bool UpdateLight()
     {
         LightingQueryResult res = mTsInstance.StaticLightingQuery(this.GetInstanceID(), transform.position);

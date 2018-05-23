@@ -1,7 +1,5 @@
 fileFormatVersion: 2
-guid: f52692b6e0eacc54fab72f34c70b0771
-timeCreated: 1513084617
-licenseType: Free
+guid: ed6a5d89cf1ad3d44849860f5c40f8fb
 PluginImporter:
   externalObjects: {}
   serializedVersion: 2
@@ -10,6 +8,18 @@ PluginImporter:
   isPreloaded: 0
   isOverridable: 0
   platformData:
+  - first:
+      '': OSXIntel
+    second:
+      enabled: 0
+      settings:
+        CPU: None
+  - first:
+      '': OSXIntel64
+    second:
+      enabled: 1
+      settings:
+        CPU: AnyCPU
   - first:
       Any: 
     second:
@@ -52,18 +62,6 @@ PluginImporter:
       enabled: 1
       settings:
         CPU: x86_64
-  - first:
-      Standalone: OSXIntel
-    second:
-      enabled: 0
-      settings:
-        CPU: None
-  - first:
-      Standalone: OSXIntel64
-    second:
-      enabled: 1
-      settings:
-        CPU: AnyCPU
   - first:
       Standalone: OSXUniversal
     second:

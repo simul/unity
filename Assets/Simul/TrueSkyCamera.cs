@@ -16,7 +16,10 @@ namespace simul
         protected static extern System.IntPtr UnityGetPostTranslucentFunc();
 
         protected float[] cubemapTransformMatrix = new float[16];
-        protected override int InternalGetViewId()
+		protected float[] rainDepthMatrix = new float[16];
+		protected float[] rainDepthProjection = new float[16];
+		protected float rainDepthTextureScale;
+		protected override int InternalGetViewId()
 		{
 			return StaticGetOrAddView((System.IntPtr)view_ident);
 		}
@@ -33,7 +36,8 @@ namespace simul
         RenderTextureHolder _lossRT             = new RenderTextureHolder();
         RenderTextureHolder _cloudVisibilityRT  = new RenderTextureHolder();
 
-        protected RenderTextureHolder reflectionProbeTexture = new RenderTextureHolder();
+		RenderTextureHolder _rainDepthRT		= new RenderTextureHolder();
+		protected RenderTextureHolder reflectionProbeTexture = new RenderTextureHolder();
         protected CommandBuffer overlay_buf                 = null;
         protected CommandBuffer post_translucent_buf        = null;
 
@@ -43,11 +47,13 @@ namespace simul
         /// </summary>
         Material depthMaterial = null;
 
+        //Mesh screenQuad = null;
+
         /// <summary>
         /// If true, both XR eyes are expected to be rendered to the same texture.
         /// </summary>
         public bool ShareBuffersForVR = true;
-
+		public TrueSkyRainDepthCamera RainDepthCamera = null;
         /// <summary>
         /// Generates an apropiate RenderStyle acording with this camera settings
         /// and takes into account if stereo (XR) is enabled.
@@ -347,6 +353,7 @@ namespace simul
                 _inscatterRT.renderTexture          = inscatterRT;
 				_cloudVisibilityRT.renderTexture    = cloudVisibilityRT;
 				_cloudShadowRT.renderTexture        = cloudShadowRT;
+
                 _lossRT.renderTexture               = lossRT;
 				StaticSetRenderTexture("inscatter2D",_inscatterRT.GetNative());
 				StaticSetRenderTexture("Loss2D", _lossRT.GetNative());
@@ -358,6 +365,18 @@ namespace simul
 				StaticSetRenderTexture("CloudShadowRT", _cloudShadowRT.GetNative());
 				MatrixTransform(cubemapTransformMatrix);
 				StaticSetMatrix4x4("CubemapTransform", cubemapTransformMatrix);
+
+				if (RainDepthCamera != null)
+					_rainDepthRT.renderTexture = RainDepthCamera.targetTexture;
+				StaticSetRenderTexture("RainDepthTexture", _rainDepthRT.GetNative());
+				if (RainDepthCamera != null)
+				{
+					ViewMatrixToTrueSkyFormat(RenderStyle.UNITY_STYLE,RainDepthCamera.matrix, rainDepthMatrix,0,true);
+					rainDepthTextureScale = 1.0F;// DepthCamera.farClipPlane;
+					StaticSetMatrix4x4("RainDepthTransform", rainDepthMatrix);
+					StaticSetMatrix4x4("RainDepthProjection", rainDepthProjection);
+					StaticSetRenderFloat("RainDepthTextureScale", rainDepthTextureScale);
+				}
 			}
 		}
 	}
