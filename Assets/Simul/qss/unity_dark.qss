@@ -1,22 +1,22 @@
 QWidget
 {
+	color: silver;
 
 	background-color: transparent;
-	color: silver;
+}
+
+QDockWidget
+{
+	background-color: transparent;
 }
 QWidget:disabled
 {
 	background-color: #656565;
 }
 
-QDockWidget
-{
-	background-color: rgba(54,54,255,255);
-}
-
 QPropertyPanel
 {
-	background-color: rgba(54,54,54,255);
+	background-color: transparent;
 }
 
 .QAccordion
@@ -95,24 +95,16 @@ QCheckBox#accordionCheckBox:hover
 	background-color: rgba(255,255,255,25);
 }
 
-
-#tabContents,#scrollAreaContents,#propertiesWidget
-{
-	background-color: #535353;
-}
-
-#splitter,QWinWidget,#tabWidget
-{
-	background-color:  #252525;
-}
-#cloudsTab,QScrollArea,#scrollAreaWidgetContents_2
-{
-	background-color:  #535353;
-}
 DirectX11Widget
 {
 	color: red;
 	background-color: rgba(1,1,72,255);
+}
+
+.QScrollArea
+{
+	background-color: transparent;
+	border: 5px;
 }
 
 QTreeView
@@ -142,7 +134,6 @@ HelpBrowser
 	background-color: white;
 }
 
-
 QHeaderView
 {
 	margin: 0px;
@@ -163,13 +154,14 @@ QHeaderView::section
 /* style the sort indicator */
 QHeaderView::down-arrow
 {
-	image: url(:/qss_icons/images/down_arrow.png);
+	image: url(:/images/dark_qss/down_arrow.png);
 }
 
 QHeaderView::up-arrow
 {
-	image: url(:/qss_icons/images/up_arrow.png);
+	image: url(:/images/dark_qss/up_arrow.png);
 }
+
 
 #MainWindow
 {
@@ -227,19 +219,6 @@ QPushButton:checked
 	background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 dodgerblue, stop:1 midnightblue);
 }
 
-QPushButton#reset
-{
-	border:none;
-	background-color: transparent;
-	background-repeat: repeat-none;
-    background-origin: content;
-	background-image: url(:/images/reset.png);
-}
-QPushButton#reset:disabled
-{
-	background: none;
-}
-
 QToolButton
 { /* all types of tool button */
 	background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
@@ -273,19 +252,6 @@ QToolButton#back
     background-origin: content;
 }
 
-QToolButton#forward
-{
-	background-image: url(:/qss_icons/images/Buttons/Forward32.png);
-	background-repeat: repeat-none;
-    background-origin: content;
-}
-
-QToolButton#home
-{
-	background-image: url(:/qss_icons/images/Buttons/Home32.png);
-	background-repeat: repeat-none;
-    background-origin: content;
-}
  
 /* Bold text on status bar looks awful. */
 QStatusBar QLabel
@@ -392,18 +358,6 @@ QLineEdit:focus
 	padding: 1px 0px 0px 0px;
 }
 
-/* As above, eliminate the padding and increase the border. */
-QFrame:focus
-{
-	border-width: 2px;
-	padding: 1px;
-}
-
-/* A QLabel is a QFrame ... */
-QLabel
-{
-	border: none;
-	padding: 0;
 	background: none;
 }
 
@@ -456,10 +410,6 @@ QDialogButtonBox
 	button-layout: 0;
 }
 
-#tabWidget
-{
-	background-color: blue;
-}
 
 QTabWidget::pane
 { /* The tab widget frame */
@@ -477,7 +427,6 @@ QTabWidget::pane
 	background: #FF0000;
  }
 
-/* Style the tab using the tab sub-control. Note that it reads QTabBar _not_ QTabWidget */
 QTabBar::tab
 {
 	min-width: 16ex;
@@ -490,55 +439,11 @@ QTabBar::tab
 	border: none
 }
 
-QTabBar::tab:hover
- {
-	background-color: #484848;
- }
-
 QTabBar::tab:selected
 {
     background-color: #444444;
 	border: 1px solid #AAAAAA;
 	border-bottom-color: #cbcbcb;
-	margin-top: 0px; 
-	margin-bottom: 0px; 
-	padding-bottom: 4px;
-	border-bottom: 0px; 
-}
-
-QSlider,QSliderEdit,QIntSliderEdit
-{
-	background: transparent;
-}
-
-QAbstractButton
-{
-	background: transparent;
-}
-
-QSlider::groove:horizontal
-{
-	border: 1px solid #333333;
-	height: 2px; /* the groove expands to the size of the slider by default. by giving it a height, it has a fixed size */
-	background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #B1B1B1, stop:1 #c4c4c4);
-	margin: 1px 0;
-}
-
-QSlider::handle:horizontal
-{
-	background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #b4b4b4, stop:1 #8f8f8f);
-	border: 2px solid #333333;
-	width: 18px;
-	margin: -6px 0; /* handle is placed by default on the contents rect of the groove. Expand outside the groove */
-	border-radius: 3px;
-}
-
-QSlider::add-page:horizontal
-{
-	border: 1px solid #333333;
-	height: 2px; /* the groove expands to the size of the slider by default. by giving it a height, it has a fixed size */
-	background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #B1B1B1, stop:1 #c4c4c4);
-	margin: 1px 0;
 	border-top-left-radius: 3px;
 	border-top-right-radius: 3px;
 }
@@ -623,10 +528,10 @@ QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical
  QSlider::groove
  {
      border: 1px solid;
-	 border-top-color:#2F2F2F;
-	 border-left-color:#2F2F2F;
-	 border-bottom-color:#383838;
-	 border-right-color:#383838;
+	 border-top-color:rgba(0,0,0,135);
+	 border-left-color:rgba(0,0,0,135);
+	 border-bottom-color:rgba(0,0,0,75);
+	 border-right-color:rgba(0,0,0,75);
      margin: 2px 0;
 	 border-radius: 2px;
  }
@@ -634,12 +539,12 @@ QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical
  QSlider::groove:horizontal
  {
      height: 3px; /* the groove expands to the size of the slider by default. by giving it a height, it has a fixed size */
-     background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #383838, stop:1 #444444);
+     background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgba(0,0,0,85), stop:1 rgba(0,0,0,35));
  }
  QSlider::groove:vertical
  {
      width: 3px; /* the groove expands to the size of the slider by default. by giving it a height, it has a fixed size */
-     background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #383838, stop:1 #444444);
+     background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 rgba(0,0,0,85), stop:1 rgba(0,0,0,35));
  }
 
  QSlider::handle
@@ -735,4 +640,17 @@ QGroupBox::indicator:unchecked
 QGroupBox::indicator:checked
 {
 	image: url(:/dark_qss/images/dark_qss/down_arrow.png);
+}
+
+QPushButton#reset
+{
+	border:none;
+	background-color: none;
+	background-repeat: repeat-none;
+  background-origin: content;
+	background-image: url(:/images/reset.png);
+}
+QPushButton#reset:disabled
+{
+	background: none;
 }
