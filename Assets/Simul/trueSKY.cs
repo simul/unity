@@ -166,6 +166,8 @@ namespace simul
 #else
 #if UNITY_PS4
 			public const string renderer_dll = @"TrueSkyPluginRender";
+#elif UNITY_XBOXONE
+			public const string renderer_dll = @"TrueSkyPluginRender_MD";
 #elif UNITY_IPHONE || UNITY_SWITCH
 			public const string renderer_dll = @"__Internal";
 #elif _WIN32
@@ -174,7 +176,7 @@ namespace simul
 			public const string renderer_dll = @"TrueSkyPluginRender_MT";
 #endif
 #endif
-    }
+	}
 
 	[ExecuteInEditMode]
 	public class trueSKY : MonoBehaviour
