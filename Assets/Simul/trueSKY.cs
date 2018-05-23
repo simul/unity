@@ -180,71 +180,71 @@ namespace simul
 	public class trueSKY : MonoBehaviour
 	{
 		#region Imports
-		[DllImport(SimulImports.renderer_dll)]      private static extern void GetSimulVersion(IntPtr major, IntPtr minor, IntPtr build);
+        [DllImport(SimulImports.renderer_dll)]      private static extern void GetSimulVersion(IntPtr major, IntPtr minor, IntPtr build);
 
-		[DllImport(SimulImports.renderer_dll)]      private static extern void StaticEnableLogging(string logfile);
-		[DllImport(SimulImports.renderer_dll)]      private static extern int StaticInitInterface();
-		[DllImport(SimulImports.renderer_dll)]      private static extern void StaticPushPath(string name, string path);
-		[DllImport(SimulImports.renderer_dll)]      private static extern int StaticPopPath(string name);
-		[DllImport(SimulImports.renderer_dll)]      private static extern int StaticTick(float deltaTime);
+		[DllImport(SimulImports.renderer_dll)]		private static extern void StaticEnableLogging(string logfile);
+		[DllImport(SimulImports.renderer_dll)]		private static extern int StaticInitInterface();
+		[DllImport(SimulImports.renderer_dll)]		private static extern void StaticPushPath(string name, string path);
+		[DllImport(SimulImports.renderer_dll)]		private static extern int StaticPopPath(string name);
+		[DllImport(SimulImports.renderer_dll)]		private static extern int StaticTick(float deltaTime);
 
 		// We import StaticSetSequenceTxt(const char *) rather than StaticSetSequence(std::string), as const char * converts from c# string.
-		[DllImport(SimulImports.renderer_dll)]      private static extern int StaticSetSequenceTxt(string SequenceInput);
-		[DllImport(SimulImports.renderer_dll)]      private static extern int StaticSetRenderTexture(string name, System.IntPtr texture);
-		[DllImport(SimulImports.renderer_dll)]      private static extern void StaticSetPointLight(int id, float[] pos, float min_radius, float max_radius, float[] irradiance);
-		[DllImport(SimulImports.renderer_dll)]      private static extern void StaticCloudPointQuery(int id, System.IntPtr pos, System.IntPtr volumeQueryResult);
-		[DllImport(SimulImports.renderer_dll)]      private static extern void StaticCloudLineQuery(int id, System.IntPtr startpos, System.IntPtr endpos, System.IntPtr volumeQueryResult);
-		[DllImport(SimulImports.renderer_dll)]      private static extern void StaticLightingQuery(int id, System.IntPtr pos, System.IntPtr lightingQueryResult);
-		[DllImport(SimulImports.renderer_dll)]      private static extern float StaticGetRenderFloat(string name);
-		[DllImport(SimulImports.renderer_dll)]      private static extern void StaticSetRenderFloat(string name, float value);
-		[DllImport(SimulImports.renderer_dll)]      private static extern bool StaticHasRenderFloat(string name);
-		[DllImport(SimulImports.renderer_dll)]      private static extern bool StaticHasRenderInt(string name);
-		[DllImport(SimulImports.renderer_dll)]      private static extern int StaticGetRenderInt(string name);
-		[DllImport(SimulImports.renderer_dll)]      private static extern void StaticSetRenderInt(string name, int value);
-		[DllImport(SimulImports.renderer_dll)]      private static extern void StaticSetRenderBool(string name, bool value);
-		[DllImport(SimulImports.renderer_dll)]      private static extern bool StaticGetRenderBool(string name);
-		[DllImport(SimulImports.renderer_dll)]      private static extern float StaticGetRenderFloatAtPosition(string name, float[] pos);
+		[DllImport(SimulImports.renderer_dll)]		private static extern int StaticSetSequenceTxt(string SequenceInput);
+		[DllImport(SimulImports.renderer_dll)]		private static extern int StaticSetRenderTexture(string name,System.IntPtr texture);
+		[DllImport(SimulImports.renderer_dll)]		private static extern void StaticSetPointLight(int id,float[] pos,float min_radius,float max_radius,float[] irradiance);
+		[DllImport(SimulImports.renderer_dll)]		private static extern void StaticCloudPointQuery(int id,System.IntPtr pos, System.IntPtr volumeQueryResult);
+		[DllImport(SimulImports.renderer_dll)]		private static extern void StaticCloudLineQuery(int id,System.IntPtr startpos,System.IntPtr endpos, System.IntPtr volumeQueryResult);
+		[DllImport(SimulImports.renderer_dll)]		private static extern void StaticLightingQuery(int id, System.IntPtr pos, System.IntPtr lightingQueryResult);
+		[DllImport(SimulImports.renderer_dll)]		private static extern float StaticGetRenderFloat(string name);
+		[DllImport(SimulImports.renderer_dll)]		private static extern void StaticSetRenderFloat(string name,float value);
+		[DllImport(SimulImports.renderer_dll)]		private static extern bool StaticHasRenderFloat(string name);
+		[DllImport(SimulImports.renderer_dll)]		private static extern bool StaticHasRenderInt(string name);
+		[DllImport(SimulImports.renderer_dll)]		private static extern int StaticGetRenderInt(string name);
+		[DllImport(SimulImports.renderer_dll)]		private static extern void StaticSetRenderInt(string name,int value);
+		[DllImport(SimulImports.renderer_dll)] 		private static extern void StaticSetRenderBool(string name, bool value);
+		[DllImport(SimulImports.renderer_dll)]		private static extern bool StaticGetRenderBool(string name);
+		[DllImport(SimulImports.renderer_dll)]		private static extern float StaticGetRenderFloatAtPosition(string name,float[] pos);
 
 		// These are for keyframe editing:
-		[DllImport(SimulImports.renderer_dll)]      private static extern int StaticRenderGetNumKeyframes(int layer);
-		[DllImport(SimulImports.renderer_dll)]      private static extern uint StaticRenderInsertKeyframe(int layer, float t);
-		[DllImport(SimulImports.renderer_dll)]      private static extern void StaticRenderDeleteKeyframe(uint uid);
-		[DllImport(SimulImports.renderer_dll)]      private static extern uint StaticRenderGetKeyframeByIndex(int layer, int index);
-		[DllImport(SimulImports.renderer_dll)]      private static extern uint GetInterpolatedCloudKeyframeUniqueId(int layer);
-		[DllImport(SimulImports.renderer_dll)]      private static extern uint GetInterpolatedSkyKeyframeUniqueId();
+		[DllImport(SimulImports.renderer_dll)]		private static extern int	StaticRenderGetNumKeyframes			(int layer);
+		[DllImport(SimulImports.renderer_dll)]		private static extern uint	StaticRenderInsertKeyframe			(int layer,float t );
+		[DllImport(SimulImports.renderer_dll)]		private static extern void	StaticRenderDeleteKeyframe			(uint uid );
+		[DllImport(SimulImports.renderer_dll)]		private static extern uint	StaticRenderGetKeyframeByIndex		(int layer,int index);
+		[DllImport(SimulImports.renderer_dll)]		private static extern uint	GetInterpolatedCloudKeyframeUniqueId(int layer);
+		[DllImport(SimulImports.renderer_dll)]		private static extern uint	GetInterpolatedSkyKeyframeUniqueId();
 
 		// Getting and changing properties of keyframes.
-		[DllImport(SimulImports.renderer_dll)]      private static extern bool StaticRenderKeyframeHasFloat(uint uid, string name);
-		[DllImport(SimulImports.renderer_dll)]      private static extern void StaticRenderKeyframeSetFloat(uint uid, string name, float value);
-		[DllImport(SimulImports.renderer_dll)]      private static extern float StaticRenderKeyframeGetFloat(uint uid, string name);
-		[DllImport(SimulImports.renderer_dll)]      private static extern bool StaticRenderKeyframeHasInt(uint uid, string name);
-		[DllImport(SimulImports.renderer_dll)]      private static extern void StaticRenderKeyframeSetInt(uint uid, string name, int value);
-		[DllImport(SimulImports.renderer_dll)]      private static extern int StaticRenderKeyframeGetInt(uint uid, string name);
-		[DllImport(SimulImports.renderer_dll)]      private static extern bool StaticRenderKeyframeHasBool(uint uid, string name);
-		[DllImport(SimulImports.renderer_dll)]      private static extern void StaticRenderKeyframeSetBool(uint uid, string name, bool value);
-		[DllImport(SimulImports.renderer_dll)]      private static extern bool StaticRenderKeyframeGetBool(uint uid, string name);
+		[DllImport(SimulImports.renderer_dll)]		private static extern bool StaticRenderKeyframeHasFloat(uint uid,string name);
+		[DllImport(SimulImports.renderer_dll)]		private static extern void	StaticRenderKeyframeSetFloat	(uint uid,string name,float value);
+		[DllImport(SimulImports.renderer_dll)]		private static extern float StaticRenderKeyframeGetFloat	(uint uid,string name);
+		[DllImport(SimulImports.renderer_dll)]		private static extern bool StaticRenderKeyframeHasInt		(uint uid,string name);
+		[DllImport(SimulImports.renderer_dll)]		private static extern void	StaticRenderKeyframeSetInt		(uint uid,string name,int value);
+		[DllImport(SimulImports.renderer_dll)]		private static extern int	StaticRenderKeyframeGetInt		(uint uid,string name);
+		[DllImport(SimulImports.renderer_dll)]		private static extern bool StaticRenderKeyframeHasBool		(uint uid,string name);
+		[DllImport(SimulImports.renderer_dll)]		private static extern void	StaticRenderKeyframeSetBool		(uint uid,string name,bool value);
+		[DllImport(SimulImports.renderer_dll)]		private static extern bool	StaticRenderKeyframeGetBool		(uint uid,string name);
 
 
-		[DllImport(SimulImports.renderer_dll)]      private static extern int StaticGetRenderString(string name, StringBuilder str, int len);
-		[DllImport(SimulImports.renderer_dll)]      private static extern void StaticSetRenderString(string name, string value);
-		[DllImport(SimulImports.renderer_dll)]      public static extern void StaticTriggerAction(string name);
+		[DllImport(SimulImports.renderer_dll)]		private static extern int StaticGetRenderString(string name, StringBuilder str, int len);
+		[DllImport(SimulImports.renderer_dll)]		private static extern void StaticSetRenderString(string name, string value);
+		[DllImport(SimulImports.renderer_dll)]		public static extern void StaticTriggerAction(string name);
 
-		[DllImport(SimulImports.renderer_dll)]      public static extern int GetNumStorms();
-		[DllImport(SimulImports.renderer_dll)]      public static extern uint GetStormAtTime(float t);
-		[DllImport(SimulImports.renderer_dll)]      public static extern uint GetStormByIndex(int i);
+		[DllImport(SimulImports.renderer_dll)]		public static extern int GetNumStorms();
+		[DllImport(SimulImports.renderer_dll)]		public static extern uint GetStormAtTime(float t);
+		[DllImport(SimulImports.renderer_dll)]		public static extern uint GetStormByIndex(int i);
 
 		#endregion
 		#region API
 
-		public int SimulVersionMajor = 0;
-		public int SimulVersionMinor = 0;
-		public int SimulVersionBuild = 0;
+        public int SimulVersionMajor            = 0;
+        public int SimulVersionMinor            = 0;
+        public int SimulVersionBuild            = 0;
 
 		public int SimulVersion
 		{
 			get
 			{
-				return MakeSimulVersion(SimulVersionMajor, SimulVersionMinor);
+				return MakeSimulVersion(SimulVersionMajor,SimulVersionMinor);
 			}
 		}
 		public int MakeSimulVersion(int major, int minor)
@@ -262,7 +262,7 @@ namespace simul
 			if (this == trueSkySingleton)
 				trueSkySingleton = null;
 		}
-
+		
 		/// <summary>
 		/// Get the trueSKY component in the scene.
 		/// </summary>
@@ -273,13 +273,13 @@ namespace simul
 				trueSkySingleton = GameObject.FindObjectOfType<trueSKY>();
 			return trueSkySingleton;
 		}
-		public void SetPointLight(int id, Vector3 pos, float min_radius, float max_radius, Vector3 irradiance)
+		public void SetPointLight(int id,Vector3 pos,float min_radius,float max_radius,Vector3 irradiance)
 		{
-			Vector3 convertedPos = UnityToTrueSkyPosition(pos);             // convert from Unity format to trueSKY  
+			Vector3 convertedPos = UnityToTrueSkyPosition (pos);   			// convert from Unity format to trueSKY  
 
-			float[] p = { convertedPos.x, convertedPos.y, convertedPos.z };
+			float[] p = { convertedPos.x, convertedPos.y, convertedPos.z };   
 			float[] i = { irradiance.x, irradiance.z, irradiance.y };
-			StaticSetPointLight(id, p, min_radius, max_radius, i);
+			StaticSetPointLight(id, p, min_radius,max_radius, i);
 		}
 		public LightingQueryResult StaticLightingQuery(int id, Vector3 pos)
 		{
@@ -300,7 +300,7 @@ namespace simul
 		}
 		public VolumeQueryResult GetCloudQuery(int id, Vector3 pos)
 		{
-			Vector3 convertedPos = UnityToTrueSkyPosition(pos);             // convert from Unity format to trueSKY
+			Vector3 convertedPos = UnityToTrueSkyPosition (pos);  			// convert from Unity format to trueSKY
 
 			VolumeQueryResult res = new VolumeQueryResult();
 			IntPtr unmanagedPosPtr = Marshal.AllocHGlobal(12);
@@ -329,7 +329,7 @@ namespace simul
 			float[] p2 = { convertedEndPos.x, convertedEndPos.y, convertedEndPos.z };
 			Marshal.Copy(p1, 0, unmanagedPosPtr1, 3);
 			Marshal.Copy(p2, 0, unmanagedPosPtr2, 3);
-			StaticCloudLineQuery(id, unmanagedPosPtr1, unmanagedPosPtr2, unmanagedResultPtr);
+			StaticCloudLineQuery(id, unmanagedPosPtr1,unmanagedPosPtr2, unmanagedResultPtr);
 			res = (LineQueryResult)Marshal.PtrToStructure(unmanagedResultPtr, typeof(LineQueryResult));
 			// Call unmanaged code
 			Marshal.FreeHGlobal(unmanagedPosPtr1);
@@ -339,27 +339,27 @@ namespace simul
 		}
 		public float GetCloudAtPosition(Vector3 pos)
 		{
-			Vector3 convertedPos = UnityToTrueSkyPosition(pos);
-			float[] x = { convertedPos.x, convertedPos.y, convertedPos.z };
-			float ret = StaticGetRenderFloatAtPosition("Cloud", x);
+			Vector3 convertedPos = UnityToTrueSkyPosition (pos);
+			float[] x= { convertedPos.x,convertedPos.y,convertedPos.z };		  
+			float ret=StaticGetRenderFloatAtPosition("Cloud",x);
 			return ret;
 		}
-		public float GetCloudShadowAtPosition(Vector3 pos)
+		public float GetCloudShadowAtPosition (Vector3 pos)
 		{
-			Vector3 convertedPos = UnityToTrueSkyPosition(pos);
-			float[] x = { convertedPos.x, convertedPos.y, convertedPos.z };
-			float ret = StaticGetRenderFloatAtPosition("CloudShadow", x);
-			return ret;
+			Vector3 convertedPos = UnityToTrueSkyPosition (pos);
+			float[] x= { convertedPos.x,convertedPos.y,convertedPos.z };		  
+			float ret=StaticGetRenderFloatAtPosition("CloudShadow",x);
+			return ret; 
 		}
 		public float GetPrecipitationAtPosition(Vector3 pos)
 		{
-			Vector3 convertedPos = UnityToTrueSkyPosition(pos);
-			float[] x = { convertedPos.x, convertedPos.y, convertedPos.z };
+			Vector3 convertedPos = UnityToTrueSkyPosition (pos);
+			float[] x = { convertedPos.x, convertedPos.y, convertedPos.z };								 
 			float ret = StaticGetRenderFloatAtPosition("Precipitation", x);
 			return ret;
 		}
 		// These are for keyframe editing:
-		// These are for keyframe editing:
+        // These are for keyframe editing:
 		public int GetNumSkyKeyframes()
 		{
 			return StaticRenderGetNumKeyframes(0);
@@ -370,56 +370,56 @@ namespace simul
 			return StaticRenderGetNumKeyframes(1);
 		}
 
-		public int GetNumCloud2DKeyframes()
+        public int GetNumCloud2DKeyframes()
 		{
-			if (SimulVersionMinor == 1)
-			{
-				return StaticRenderGetNumKeyframes(2);
-			}
-			return -1;
+            if(SimulVersionMinor == 1)
+            {
+			    return StaticRenderGetNumKeyframes(2);
+            }
+            return -1;
 		}
 
 		public uint InsertSkyKeyframe(float t)
 		{
-			return StaticRenderInsertKeyframe(0, t);
+			return StaticRenderInsertKeyframe(0,t);
 		}
 
 		public uint InsertCloudKeyframe(float t)
 		{
-			return StaticRenderInsertKeyframe(1, t);
+			return StaticRenderInsertKeyframe(1,t);
 		}
 
-		public uint Insert2DCloudKeyframe(float t)
+        public uint Insert2DCloudKeyframe(float t)
 		{
-			if (SimulVersionMinor == 1)
-			{
-				return StaticRenderInsertKeyframe(2, t);
-			}
-			return 0;
+            if (SimulVersionMinor == 1)
+            {
+                return StaticRenderInsertKeyframe(2, t);
+            }
+            return 0;
 		}
 
 		public void DeleteKeyframe(uint uid)
 		{
 			StaticRenderDeleteKeyframe(uid);
 		}
-
+		
 		public uint GetSkyKeyframeByIndex(int index)
 		{
-			return StaticRenderGetKeyframeByIndex(0, index);
+			return StaticRenderGetKeyframeByIndex(0,index);
 		}
 
 		public uint GetCloudKeyframeByIndex(int index)
 		{
-			return StaticRenderGetKeyframeByIndex(1, index);
+			return StaticRenderGetKeyframeByIndex(1,index);
 		}
 
-		public uint GetCloud2DKeyframeByIndex(int index)
+        public uint GetCloud2DKeyframeByIndex(int index)
 		{
-			if (SimulVersionMinor == 1)
-			{
-				return StaticRenderGetKeyframeByIndex(2, index);
-			}
-			return 0;
+            if (SimulVersionMinor == 1)
+            {
+                return StaticRenderGetKeyframeByIndex(2, index);
+            }
+            return 0;
 		}
 
 		public uint GetInterpolatedCloudKeyframe(int layer)
@@ -431,63 +431,63 @@ namespace simul
 			return GetInterpolatedSkyKeyframeUniqueId();
 		}
 		// Getting and changing properties of keyframes.
-		public void SetKeyframeValue(uint uid, string name, object value)
+		public void SetKeyframeValue(uint uid,string name,object value)
 		{
 			//UnityEngine.Debug.Log("trueSKY.SetKeyframeValue "+uid+" "+name+" "+value);
 			//UnityEngine.Debug.Log("type is "+value.GetType());
-			if (value.GetType() == typeof(double))
+			if(value.GetType()==typeof(double))
 			{
 				//UnityEngine.Debug.Log("it's a double");
-				double d = (double)value;
-				StaticRenderKeyframeSetFloat(uid, name, (float)d);
+				double d=(double)value;
+				StaticRenderKeyframeSetFloat(uid,name,(float)d);
 			}
-			else if (value.GetType() == typeof(float) || value.GetType() == typeof(double))
+			else if(value.GetType()==typeof(float)||value.GetType()==typeof(double))
 			{
 				//UnityEngine.Debug.Log("it's a float");
-				StaticRenderKeyframeSetFloat(uid, name, (float)value);
+				StaticRenderKeyframeSetFloat(uid,name,(float)value);
 			}
-			else if (value.GetType() == typeof(int))
+			else if(value.GetType()==typeof(int))
 			{
 				//UnityEngine.Debug.Log("it's an int");
-				StaticRenderKeyframeSetInt(uid, name, (int)value);
+				StaticRenderKeyframeSetInt(uid,name,(int)value);
 			}
-			else if (value.GetType() == typeof(bool))
+			else if(value.GetType()==typeof(bool))
 			{
 				//UnityEngine.Debug.Log("it's a bool");
-				StaticRenderKeyframeSetBool(uid, name, (bool)value);
+				StaticRenderKeyframeSetBool(uid,name,(bool)value);
 			}
 		}
-		public object GetKeyframeValue(uint uid, string name)
+		public object GetKeyframeValue(uint uid,string name)
 		{
-			if (StaticRenderKeyframeHasFloat(uid, name))
-				return StaticRenderKeyframeGetFloat(uid, name);
-			if (StaticRenderKeyframeHasInt(uid, name))
-				return StaticRenderKeyframeGetInt(uid, name);
+			if(StaticRenderKeyframeHasFloat(uid,name))
+				return StaticRenderKeyframeGetFloat(uid,name);
+			if(StaticRenderKeyframeHasInt(uid,name))
+				return StaticRenderKeyframeGetInt(uid,name);
 			return 0;
 		}
 
 		public uint GetStormUidByIndex(int index)
 		{
-			return GetStormByIndex(index);
+			return GetStormByIndex (index);
 		}
 		public uint GetStormUidAtTime(float time)
 		{
-			return GetStormAtTime(time);
+			return GetStormAtTime (time);
 		}
 		public float GetStormFloat(uint uid, string name)
-		{
+		{  
 			return StaticRenderKeyframeGetFloat(uid, name);
 		}
 		public void SetStormFloat(uint uid, string name, float value)
-		{
-			StaticRenderKeyframeSetFloat(uid, name, value);
+		{  
+		 	StaticRenderKeyframeSetFloat(uid, name, value);
 		}
 		public int GetStormInt(uint uid, string name)
-		{
+		{  
 			return StaticRenderKeyframeGetInt(uid, name);
 		}
 		public void SetStormInt(uint uid, string name, int value)
-		{
+		{  
 			StaticRenderKeyframeSetInt(uid, name, value);
 		}
 
@@ -508,25 +508,25 @@ namespace simul
 		}
 		static public Vector3 UnityToTrueSkyPosition(Vector3 upos)
 		{
-			Vector4 u_dir = UnityToTrueSkyMatrix() * (new Vector4(upos.x, upos.y, upos.z, 1.0F));
+			Vector4 u_dir = UnityToTrueSkyMatrix() * (new Vector4(upos.x, upos.y, upos.z,1.0F));
 			return new Vector3(u_dir.x, u_dir.z, u_dir.y);
 		}
 		static public Vector3 UnityToTrueSkyDirection(Vector3 u_dir)
 		{
-			Vector4 ts_dir = UnityToTrueSkyMatrix() * (new Vector4(u_dir.x, u_dir.y, u_dir.z, 0));
+			Vector4 ts_dir = UnityToTrueSkyMatrix()*(new Vector4(u_dir.x, u_dir.y, u_dir.z,0));
 			return new Vector3(ts_dir.x, ts_dir.z, ts_dir.y);
 		}
 		static public Matrix4x4 UnityToTrueSkyMatrix()
 		{
 			Matrix4x4 transform = trueSKY.GetTrueSky().transform.worldToLocalMatrix;
 			float metresPerUnit = trueSKY.GetTrueSky().MetresPerUnit;
-			Matrix4x4 scale = new Matrix4x4();
-			scale.SetTRS(new Vector3(0, 0, 0), new Quaternion(0, 0, 0, 1.0F), new Vector3(metresPerUnit, metresPerUnit, metresPerUnit));
-			transform = scale * transform;
+			Matrix4x4 scale		=new Matrix4x4();
+			scale.SetTRS(new Vector3(0,0,0),new Quaternion(0,0,0,1.0F),new Vector3(metresPerUnit,metresPerUnit,metresPerUnit));
+			transform=scale*transform;
 			return transform;
 		}
 
-		#endregion
+#endregion
 
 		[SerializeField]
 		float _metresPerUnit = 1.0f;
@@ -539,13 +539,13 @@ namespace simul
 			set
 			{
 				if (_metresPerUnit != value) try
-					{
-						_metresPerUnit = value;
-					}
-					catch (Exception exc)
-					{
-						UnityEngine.Debug.Log(exc.ToString());
-					}
+				{
+					_metresPerUnit = value;
+				}
+				catch (Exception exc)
+				{
+					UnityEngine.Debug.Log(exc.ToString());
+				}
 			}
 		}
 
@@ -572,40 +572,40 @@ namespace simul
 			}
 		}
 
-		[SerializeField]
-		float _minimumStarPixelSize = 1.0f;
-		public float MinimumStarPixelSize
-		{
-			get
-			{
-				return _minimumStarPixelSize;
-			}
-			set
-			{
-				_minimumStarPixelSize = value;
+        [SerializeField]
+        float _minimumStarPixelSize = 1.0f;
+        public float MinimumStarPixelSize
+        {
+            get
+            {
+                return _minimumStarPixelSize;
+            }
+            set
+            {
+                _minimumStarPixelSize = value;
 				StaticSetRenderFloat("render:minimumstarpixelsize", _minimumStarPixelSize);
-			}
-		}
+            }
+        }
 
-		[SerializeField]
-		Vector3 _godRaysGrid = new Vector3(64, 32, 32);
-		public Vector3 GodRaysGrid
-		{
-			get
-			{
-				return _godRaysGrid;
-			}
-			set
-			{
-				_godRaysGrid = value;
-				// To be safe, clamp to [8,64]
-				_godRaysGrid.x = Mathf.Clamp((int)_godRaysGrid.x, 8, 64);
-				_godRaysGrid.y = Mathf.Clamp((int)_godRaysGrid.y, 8, 64);
-				_godRaysGrid.z = Mathf.Clamp((int)_godRaysGrid.z, 8, 64);
-				StaticSetRenderInt("godraysgrid.x", (int)_godRaysGrid.x);
-				StaticSetRenderInt("godraysgrid.y", (int)_godRaysGrid.y);
-				StaticSetRenderInt("godraysgrid.z", (int)_godRaysGrid.z);
-			}
+        [SerializeField]
+        Vector3 _godRaysGrid = new Vector3(64, 32, 32);
+        public Vector3 GodRaysGrid
+        {
+            get
+            {
+                return _godRaysGrid;
+            }
+            set
+            {
+                _godRaysGrid = value;
+                // To be safe, clamp to [8,64]
+                _godRaysGrid.x = Mathf.Clamp((int)_godRaysGrid.x, 8, 64);
+                _godRaysGrid.y = Mathf.Clamp((int)_godRaysGrid.y, 8, 64);
+                _godRaysGrid.z = Mathf.Clamp((int)_godRaysGrid.z, 8, 64);
+                StaticSetRenderInt("godraysgrid.x", (int)_godRaysGrid.x);
+                StaticSetRenderInt("godraysgrid.y", (int)_godRaysGrid.y);
+                StaticSetRenderInt("godraysgrid.z", (int)_godRaysGrid.z);
+            }
 		}
 
 		[SerializeField]
@@ -623,35 +623,35 @@ namespace simul
 			}
 		}
 
-
+		
 		[SerializeField]
-		float _depthSamplingPixelRange = 1.5f;
-		public float DepthSamplingPixelRange
-		{
-			get
-			{
-				return _depthSamplingPixelRange;
-			}
-			set
-			{
-				_depthSamplingPixelRange = value;
-				StaticSetRenderFloat("depthsamplingpixelrange", _depthSamplingPixelRange);
-			}
-		}
+        float _depthSamplingPixelRange = 1.5f;
+        public float DepthSamplingPixelRange
+        {
+            get
+            {
+                return _depthSamplingPixelRange;
+            }
+            set
+            {
+                _depthSamplingPixelRange = value;
+                StaticSetRenderFloat("depthsamplingpixelrange", _depthSamplingPixelRange);
+            }
+        }
 
-		[SerializeField]
-		float _maxSunRadiance = 5000.0f;
-		public float MaxSunRadiance
-		{
-			get
-			{
-				return _maxSunRadiance;
-			}
-			set
-			{
-				_maxSunRadiance = Mathf.Max(value, 0.0f);
-				StaticSetRenderFloat("maxsunradiance", _maxSunRadiance);
-			}
+        [SerializeField]
+        float _maxSunRadiance = 5000.0f;
+        public float MaxSunRadiance
+        {
+            get
+            {
+                return _maxSunRadiance;
+            }
+            set
+            {
+                _maxSunRadiance = Mathf.Max(value, 0.0f);
+                StaticSetRenderFloat("maxsunradiance", _maxSunRadiance);
+            }
 		}
 		bool _adjustSunRadius = false;
 		public bool AdjustSunRadius
@@ -666,53 +666,53 @@ namespace simul
 				StaticSetRenderBool("adjustsunradius", _adjustSunRadius);
 			}
 		}
+		
+        [SerializeField]
+        int _edgeNoiseFrequency = 4;
+        public int EdgeNoiseFrequency
+        {
+            get
+            {
+                return _edgeNoiseFrequency;
+            }
+            set
+            {
+                _edgeNoiseFrequency = value;
+                StaticSetRenderInt("edgenoisefrequency",_edgeNoiseFrequency);
+            }
+        }
 
-		[SerializeField]
-		int _edgeNoiseFrequency = 4;
-		public int EdgeNoiseFrequency
-		{
-			get
-			{
-				return _edgeNoiseFrequency;
-			}
-			set
-			{
-				_edgeNoiseFrequency = value;
-				StaticSetRenderInt("edgenoisefrequency", _edgeNoiseFrequency);
-			}
-		}
+        [SerializeField]
+        int _edgeNoiseOctaves = 3;
+        public int EdgeNoiseOctaves
+        {
+            get
+            {
+                return _edgeNoiseOctaves;
+            }
+            set
+            {
+                _edgeNoiseOctaves = value;
+                StaticSetRenderInt("edgenoiseoctaves", _edgeNoiseOctaves);
+            }
+        }
 
-		[SerializeField]
-		int _edgeNoiseOctaves = 3;
-		public int EdgeNoiseOctaves
-		{
-			get
-			{
-				return _edgeNoiseOctaves;
-			}
-			set
-			{
-				_edgeNoiseOctaves = value;
-				StaticSetRenderInt("edgenoiseoctaves", _edgeNoiseOctaves);
-			}
-		}
-
-		[SerializeField]
-		int _edgeNoiseTextureSize = 64;
-		public int EdgeNoiseTextureSize
-		{
-			get
-			{
-				return _edgeNoiseTextureSize;
-			}
-			set
-			{
-				_edgeNoiseTextureSize = value;
+        [SerializeField]
+        int _edgeNoiseTextureSize = 64;
+        public int EdgeNoiseTextureSize
+        {
+            get
+            {
+                return _edgeNoiseTextureSize;
+            }
+            set
+            {
+                _edgeNoiseTextureSize = value;
 				StaticSetRenderInt("render:edgenoisetexturesize", _edgeNoiseTextureSize);
-			}
-		}
+            }
+        }
 
-		// 4.2 only
+        // 4.2 only
 		[SerializeField]
 		int _CellNoiseTextureSize = 64;
 		public int CellNoiseTextureSize
@@ -728,71 +728,71 @@ namespace simul
 			}
 		}
 
-		[SerializeField]
-		float _edgeNoisePersistence = 0.63f;
-		public float EdgeNoisePersistence
-		{
-			get
-			{
-				return _edgeNoisePersistence;
-			}
-			set
-			{
-				_edgeNoisePersistence = value;
+        [SerializeField]
+        float _edgeNoisePersistence = 0.63f;
+        public float EdgeNoisePersistence
+        {
+            get
+            {
+                return _edgeNoisePersistence;
+            }
+            set
+            {
+                _edgeNoisePersistence = value;
 				StaticSetRenderFloat("render:EdgeNoisePersistence", _edgeNoisePersistence);
-			}
-		}
+            }
+        }
 
-		// 4.2 only
-		[SerializeField]
-		float _edgeNoiseWavelengthKm = 2.5f;
-		public float EdgeNoiseWavelengthKm
-		{
-			get
-			{
-				return _edgeNoiseWavelengthKm;
-			}
-			set
-			{
-				_edgeNoiseWavelengthKm = value;
+        // 4.2 only
+        [SerializeField]
+        float _edgeNoiseWavelengthKm = 2.5f;
+        public float EdgeNoiseWavelengthKm
+        {
+            get
+            {
+                return _edgeNoiseWavelengthKm;
+            }
+            set
+            {
+                _edgeNoiseWavelengthKm = value;
 				StaticSetRenderFloat("render:EdgeNoiseWavelengthKm", _edgeNoiseWavelengthKm);
-			}
-		}
+            }
+        }
 
-		// 4.2 only
-		[SerializeField]
-		int _worleyTextureSize = 64;
-		public int WorleyTextureSize
-		{
-			get
-			{
-				return _worleyTextureSize;
-			}
-			set
-			{
-				_worleyTextureSize = value;
+        // 4.2 only
+        [SerializeField]
+        int _worleyTextureSize = 64;
+        public int WorleyTextureSize
+        {
+            get
+            {
+                return _worleyTextureSize;
+            }
+            set
+            {
+                _worleyTextureSize = value;
 				StaticSetRenderInt("render:CellNoiseTextureSize", _worleyTextureSize);
-			}
-		}
+            }
+        }
 
-		// 4.2 only
-		[SerializeField]
-		float _worleyWavelengthKm = 8.7f;
-		public float WorleyWavelengthKm
-		{
-			get
-			{
-				return _worleyWavelengthKm;
-			}
-			set
-			{
-				_worleyWavelengthKm = value;
-				StaticSetRenderFloat("WorleyWavelengthKm", _worleyWavelengthKm);
-			}
-		}
+        // 4.2 only
+        [SerializeField]
+        float _worleyWavelengthKm = 8.7f;
+        public float WorleyWavelengthKm
+        {
+            get
+            {
+                return _worleyWavelengthKm;
+            }
+            set
+            {
+                _worleyWavelengthKm = value;
+                StaticSetRenderFloat("WorleyWavelengthKm", _worleyWavelengthKm);
+            }
+        }
 
-		//! Set a floating-point property of the Sky layer.
-		void SetFloat(string str, float value)
+        //! Set a floating-point property of the Sky layer.
+        void SetFloat(string str, float value)
 		{
 			try
 			{
@@ -821,9 +821,9 @@ namespace simul
 			return value;
 		}
 		//! Set a floating-point property of the Sky layer.
-		public void SetSkyFloat(string name, float value)
+		public void SetSkyFloat(string name,float value)
 		{
-			SetFloat("sky:" + name, value);
+			SetFloat("sky:"+name,value);
 		}
 		//! Get a floating-point property of the Sky layer.
 		public float GetSkyFloat(string name)
@@ -831,7 +831,7 @@ namespace simul
 			float value = 0.0F;
 			try
 			{
-				value = StaticGetRenderFloat("sky:" + name);
+				value=StaticGetRenderFloat("sky:" + name);
 			}
 			catch (Exception exc)
 			{
@@ -882,12 +882,12 @@ namespace simul
 
 		public void SetStormCentre(float x, float y)
 		{
-			int num = GetNumStorms();
-			for (int i = 0; i < num; i++)
+			int num=GetNumStorms();
+			for(int i=0;i<num;i++)	
 			{
-				uint s = GetStormByIndex(i);
+				uint s=GetStormByIndex(i);
 				StaticRenderKeyframeSetFloat(s, "CentreKmx", x / 1000.0F);
-				StaticRenderKeyframeSetFloat(s, "CentreKmy", y / 1000.0F);
+				StaticRenderKeyframeSetFloat(s, "CentreKmy", y/ 1000.0F);
 			}
 		}
 		//! Set an int property of the Sky layer.
@@ -949,7 +949,7 @@ namespace simul
 			try
 			{
 				StaticSetRenderInt("2DClouds:" + name, value);
-		    }
+		}
 			catch (Exception exc)
 			{
 				UnityEngine.Debug.Log(exc.ToString());
@@ -972,7 +972,7 @@ namespace simul
 		}
 
 		[SerializeField]
-		float _time;
+        float _time;
 		/// <summary>
 		/// Time in the sequence, set from some external script, e.g. the sequence editor, or modified per-frame by the speed value.
 		/// </summary>
@@ -1103,29 +1103,29 @@ namespace simul
 #endif
 		public string GetRenderString(string s)
 		{
-			StringBuilder str = new StringBuilder("", 20);
+			StringBuilder str=new StringBuilder("",20);
 			try
 			{
-				int newlen = StaticGetRenderString(s, str, 16);
-				if (newlen > 0)
+				int newlen=StaticGetRenderString(s,str,16);
+				if(newlen>0)
 				{
-					str = new StringBuilder("", newlen + 2);
-					StaticGetRenderString(s, str, newlen + 1);
+					str=new StringBuilder("",newlen+2);
+					StaticGetRenderString(s,str,newlen+1);
 				}
 			}
-			catch (Exception exc)
+			catch(Exception exc)
 			{
 				UnityEngine.Debug.Log(exc.ToString());
 			}
 			return str.ToString();
 		}
-		public void SetRenderString(string s, string val)
+		public void SetRenderString(string s,string val)
 		{
 			try
 			{
-				StaticSetRenderString(s, val);
+				StaticSetRenderString(s,val);
 			}
-			catch (Exception exc)
+			catch(Exception exc)
 			{
 				UnityEngine.Debug.Log(exc.ToString());
 			}
@@ -1196,9 +1196,9 @@ namespace simul
 		[SerializeField]
 		float _cloudShadowing = 0.5F;
 		[SerializeField]
-		float _cloudShadowSharpness = 0.05F;
+		float _cloudShadowSharpness=0.05F;
 		[SerializeField]
-		float _cloudThresholdDistanceKm = 1.0F;
+		float _cloudThresholdDistanceKm = 1.0F; 
 		[SerializeField]
 		static public bool _showCloudCrossSections = false;
 		[SerializeField]
@@ -1208,18 +1208,18 @@ namespace simul
 		[SerializeField]
 		int _MaxPrecipitationParticles = 100000;
 
-		[SerializeField]
-		bool _changedAmortInEd = false;
-		public bool ChangeAmortInEd
-		{
-			get { return _changedAmortInEd; }
-			set { _changedAmortInEd = value; }
-		}
+        [SerializeField]
+        bool _changedAmortInEd = false;
+        public bool ChangeAmortInEd
+        {
+            get { return _changedAmortInEd; }
+            set { _changedAmortInEd = value; }
+        }
 
-		[SerializeField]
+        [SerializeField]
 		int _amortization = 2;
 		[SerializeField]
-		int _atmosphericsAmortization = 2;
+		int _atmosphericsAmortization=2;
 		[SerializeField]
 		bool _depthBlending = true;
 		public int Amortization
@@ -1234,11 +1234,11 @@ namespace simul
 					{
 						_amortization = value;
 						StaticSetRenderInt("Amortization", _amortization);
-						if (!Application.isPlaying)
-						{
-							ChangeAmortInEd = true;
-						}
-					}
+                        if (!Application.isPlaying)
+                        {
+                            ChangeAmortInEd = true;
+                        }
+                    }
 					catch (Exception exc)
 					{
 						UnityEngine.Debug.Log(exc.ToString());
@@ -1257,11 +1257,11 @@ namespace simul
 					{
 						_atmosphericsAmortization = value;
 						StaticSetRenderInt("AtmosphericsAmortization", _atmosphericsAmortization);
-						if (!Application.isPlaying)
-						{
-							ChangeAmortInEd = true;
-						}
-					}
+                        if (!Application.isPlaying)
+                        {
+                            ChangeAmortInEd = true;
+                        }
+                    }
 					catch (Exception exc)
 					{
 						UnityEngine.Debug.Log(exc.ToString());
@@ -1550,7 +1550,7 @@ namespace simul
 						_maxGpuProfileLevel = value;
 						StaticSetRenderInt("maxGpuProfileLevel", _maxGpuProfileLevel);
 					}
-					catch (Exception exc)
+					catch(Exception exc)
 					{
 						UnityEngine.Debug.Log(exc.ToString());
 					}
@@ -1564,12 +1564,12 @@ namespace simul
 			}
 			set
 			{
-				if (_cloudThresholdDistanceKm != value) try
+				if(_cloudThresholdDistanceKm != value) try
 					{
 						_cloudThresholdDistanceKm = value;
 						StaticSetRenderFloat("render:CloudThresholdDistanceKm", _cloudThresholdDistanceKm);
-					}
-					catch (Exception exc)
+                    }
+					catch(Exception exc)
 					{
 						UnityEngine.Debug.Log(exc.ToString());
 					}
@@ -1670,7 +1670,7 @@ namespace simul
 					}
 			}
 		}
-
+		
 		static public bool ShowRainTextures
 		{
 			get
@@ -1728,13 +1728,13 @@ namespace simul
 			}
 			set
 			{
-				if (_backgroundTexture != value)
+				if(_backgroundTexture!=value)
 				{
-					_backgroundTexture = value;
-					if (_backgroundTexture != null)
-						StaticSetRenderTexture("Background", _backgroundTexture.GetNativeTexturePtr());
+					_backgroundTexture=value;
+					if(_backgroundTexture!=null)
+						StaticSetRenderTexture("Background",_backgroundTexture.GetNativeTexturePtr());
 					else
-						StaticSetRenderTexture("Background", (System.IntPtr)null);
+						StaticSetRenderTexture("Background",(System.IntPtr)null);
 					Reload();
 				}
 			}
@@ -1749,18 +1749,18 @@ namespace simul
 			}
 			set
 			{
-				if (_moonTexture != value)
+				if(_moonTexture!=value)
 				{
-					_moonTexture = value;
-					if (_moonTexture != null)
-						StaticSetRenderTexture("Moon", _moonTexture.GetNativeTexturePtr());
+					_moonTexture=value;
+					if(_moonTexture!=null)
+						StaticSetRenderTexture("Moon",_moonTexture.GetNativeTexturePtr());
 					else
-						StaticSetRenderTexture("Moon", (System.IntPtr)null);
+						StaticSetRenderTexture("Moon",(System.IntPtr)null);
 					Reload();
 				}
 			}
 		}
-
+		
 		[SerializeField]
 		Sequence _sequence;
 
@@ -1827,7 +1827,7 @@ namespace simul
 				if (_CubemapResolution != value) try
 					{
 						_CubemapResolution = value;
-						StaticSetRenderInt("MaximumCubemapResolution", _CubemapResolution);
+						StaticSetRenderInt("MaximumCubemapResolution",  _CubemapResolution);
 					}
 					catch (Exception exc)
 					{
@@ -1836,7 +1836,7 @@ namespace simul
 			}
 		}
 
-		int _IntegrationScheme = 0;
+		int _IntegrationScheme=0;
 		[SerializeField]
 		public int IntegrationScheme
 		{
@@ -1847,14 +1847,14 @@ namespace simul
 			set
 			{
 				if (_IntegrationScheme != value) try
-					{
-						_IntegrationScheme = value;
-						StaticSetRenderBool("gridrendering", _IntegrationScheme == 0);
-					}
-					catch (Exception exc)
-					{
-						UnityEngine.Debug.Log(exc.ToString());
-					}
+				{
+					_IntegrationScheme = value;
+					StaticSetRenderBool("gridrendering", _IntegrationScheme==0);
+				}
+				catch (Exception exc)
+				{
+					UnityEngine.Debug.Log(exc.ToString());
+				}
 			}
 		}
 
@@ -1869,14 +1869,14 @@ namespace simul
 			set
 			{
 				if (_MaxCloudDistanceKm != value) try
-					{
-						_MaxCloudDistanceKm = value;
-						StaticSetRenderFloat("render:maxclouddistancekm", _MaxCloudDistanceKm);
-					}
-					catch (Exception exc)
-					{
-						UnityEngine.Debug.Log(exc.ToString());
-					}
+				{
+					_MaxCloudDistanceKm = value;
+					StaticSetRenderFloat("render:maxclouddistancekm", _MaxCloudDistanceKm);
+				}
+				catch (Exception exc)
+				{
+					UnityEngine.Debug.Log(exc.ToString());
+				}
 			}
 		}
 
@@ -2001,14 +2001,14 @@ namespace simul
 			set
 			{
 				if (_IndirectLight != value) try
-					{
-						_IndirectLight = value;
-						StaticSetRenderFloat("render:indirectlight", _IndirectLight);
-					}
-					catch (Exception exc)
-					{
-						UnityEngine.Debug.Log(exc.ToString());
-					}
+				{
+					_IndirectLight = value;
+					StaticSetRenderFloat("render:indirectlight", _IndirectLight);
+				}
+				catch (Exception exc)
+				{
+					UnityEngine.Debug.Log(exc.ToString());
+				}
 			}
 		}
 
@@ -2077,35 +2077,35 @@ namespace simul
 					}
 			}
 		}
-
+		
 		bool _initialized = false;
 		bool _rendering_initialized = false;
 		void Update()
 		{
-			try
+            try
 			{
 				if (!_initialized)
 					Init();
 				if (Application.isPlaying)
-				{
+                {
 					_time += Time.deltaTime * (_speed / (24.0F * 60.0F * 60.0F));
-				}
+                }
 
-				// Update simulation values
-				//if (ChangeAmortInEd && Application.isPlaying)
-				{
-					//UnityEngine.Debug.Log("Amortization:" + _amortization + " AtmosAmortization:" + _atmosphericsAmortization);
+                // Update simulation values
+                //if (ChangeAmortInEd && Application.isPlaying)
+                {
+                    //UnityEngine.Debug.Log("Amortization:" + _amortization + " AtmosAmortization:" + _atmosphericsAmortization);
 					StaticSetRenderInt("render:AtmosphericsAmortization", _atmosphericsAmortization);
 					StaticSetRenderInt("render:Amortization", _amortization);
-					ChangeAmortInEd = false;
-				}
+                    ChangeAmortInEd = false;
+                }
 				StaticSetRenderFloat("Time", _time);
 				StaticSetRenderFloat("RealTime", Time.time);
 				StaticTick(0.0f);
-				SetNightTextures();
-				StaticSetRenderBool("SimulationTimeRain", _simulationTimeRain);
+                SetNightTextures();
+                StaticSetRenderBool("SimulationTimeRain", _simulationTimeRain);
 				StaticSetRenderFloat("render:maxsunradiance", _maxSunRadiance);
-			}
+            }
 			catch (Exception exc)
 			{
 				UnityEngine.Debug.Log(exc.ToString());
@@ -2116,13 +2116,13 @@ namespace simul
 		/// Sun colour is given as a vector because Color class is clamped to [0,1] and irradiance can have arbitrary magnitude.
 		/// </summary>
 		/// <returns>Vector3</returns>
-		public Vector3 getSunColour(Vector3 pos, int id = 0)
+		public Vector3 getSunColour(Vector3 pos,int id=0)
 		{
 			if (!_initialized)
 				Init();
 			Vector3 convertedPos = UnityToTrueSkyPosition(pos);
-			LightingQueryResult q = StaticLightingQuery(id + (int)234965824, convertedPos);
-			Vector3 c = new Vector3(0, 0, 0);
+			LightingQueryResult q = StaticLightingQuery( id+(int)234965824, convertedPos);
+			Vector3 c=new Vector3(0,0,0);
 			try
 			{
 				c.x = q.sunlight.x;
@@ -2193,7 +2193,7 @@ namespace simul
 			{
 				float r = StaticGetRenderFloat("cloudshadowscale.x");
 				float metresPerUnit = trueSKY.GetTrueSky().MetresPerUnit;
-				return 1000.0F * r / metresPerUnit;
+				return 1000.0F * r/ metresPerUnit;
 			}
 			catch (Exception exc)
 			{
@@ -2239,7 +2239,7 @@ namespace simul
 				_initialized = false;
 				UnityEngine.Debug.Log(exc.ToString());
 			}
-			Quaternion q = Quaternion.Euler(el, az + 180.0F, 0.0F);
+			Quaternion q=Quaternion.Euler(el,az+180.0F,0.0F);
 			return q;
 		}
 
@@ -2260,9 +2260,9 @@ namespace simul
 				_initialized = false;
 				UnityEngine.Debug.Log(exc.ToString());
 			}
-			Quaternion q = Quaternion.Euler(el, az + 180.0F, 0.0F);
+			Quaternion q=Quaternion.Euler(el,az+180.0F,0.0F);
 			return q;
-		}
+		} 
 
 		void Awake()
 		{
@@ -2271,9 +2271,9 @@ namespace simul
 				UnityEngine.Debug.LogError("Only one trueSKY object should be instantiated.");
 			}
 			else
-			{
+            {
 				trueSkySingleton = this;
-			}
+            }
 		}
 
 #if UNITY_EDITOR
@@ -2281,20 +2281,20 @@ namespace simul
 		{
 		}
 #endif
-		void OnDestroy()
+		void OnDestroy()     
 		{
-			// Release what was accumulating beforehand
-			if (_initialized)
-			{
-				StaticPopPath("ShaderBinaryPath");
-				StaticPopPath("ShaderPath");
-				StaticPopPath("TexturePath");
+            // Release what was accumulating beforehand
+            if (_initialized) 			
+			{  
+				StaticPopPath ("ShaderBinaryPath");
+				StaticPopPath ("ShaderPath");
+				StaticPopPath ("TexturePath");
 			}
 		}
 
 		void Init()
 		{
-			try
+            try
 			{
 				if (_initialized)
 					return;
@@ -2307,14 +2307,14 @@ namespace simul
 
 				SimulImports.Init();
 
-				// Get Simul version
-				IntPtr ma = Marshal.AllocHGlobal(sizeof(int));
-				IntPtr mi = Marshal.AllocHGlobal(sizeof(int));
-				IntPtr bu = Marshal.AllocHGlobal(sizeof(int));
-				GetSimulVersion(ma, mi, bu);
-				SimulVersionMajor = Marshal.ReadInt32(ma);
-				SimulVersionMinor = Marshal.ReadInt32(mi);
-				SimulVersionBuild = Marshal.ReadInt32(bu);
+                // Get Simul version
+                IntPtr ma = Marshal.AllocHGlobal(sizeof(int));
+                IntPtr mi = Marshal.AllocHGlobal(sizeof(int));
+                IntPtr bu = Marshal.AllocHGlobal(sizeof(int));
+                GetSimulVersion(ma, mi, bu);
+                SimulVersionMajor = Marshal.ReadInt32(ma);
+                SimulVersionMinor = Marshal.ReadInt32(mi);
+                SimulVersionBuild = Marshal.ReadInt32(bu);
 
 				UnityEngine.Debug.Log("trueSKY version:" + SimulVersionMajor + "." + SimulVersionMinor + "." + SimulVersionBuild);
 
@@ -2366,7 +2366,7 @@ namespace simul
 				StaticSetRenderInt("CloudSteps", _CloudSteps);
 				StaticSetRenderFloat("SimpleCloudShadowing", _cloudShadowing);
 				StaticSetRenderFloat("SimpleCloudShadowSharpness", _cloudShadowSharpness);
-				StaticSetRenderFloat("CloudThresholdDistanceKm", _cloudThresholdDistanceKm);
+				StaticSetRenderFloat("CloudThresholdDistanceKm", _cloudThresholdDistanceKm); 
 				StaticSetRenderBool("OnscreenProfiling", _onscreenProfiling);
 				StaticSetRenderInt("maxCpuProfileLevel", _maxCpuProfileLevel);
 				StaticSetRenderInt("maxGpuProfileLevel", _maxGpuProfileLevel);
@@ -2376,10 +2376,10 @@ namespace simul
 				StaticSetRenderFloat("depthsamplingpixelrange", _depthSamplingPixelRange);
 				StaticSetRenderFloat("maxsunradiance", _maxSunRadiance);
 
-				SetNightTextures();
+                SetNightTextures();
 
 #if UNITY_EDITOR
-				StaticSetRenderBool("ShowCelestialDisplay", _showCelestials);
+				StaticSetRenderBool("ShowCelestialDisplay",_showCelestials);
 #endif
 
 #if LICENSING

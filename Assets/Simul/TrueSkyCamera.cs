@@ -19,7 +19,7 @@ namespace simul
 		protected float[] rainDepthMatrix = new float[16];
 		protected float[] rainDepthProjection = new float[16];
 		protected float rainDepthTextureScale;
-        protected override int InternalGetViewId()
+		protected override int InternalGetViewId()
 		{
 			return StaticGetOrAddView((System.IntPtr)view_ident);
 		}
@@ -37,7 +37,7 @@ namespace simul
         RenderTextureHolder _cloudVisibilityRT  = new RenderTextureHolder();
 
 		RenderTextureHolder _rainDepthRT		= new RenderTextureHolder();
-        protected RenderTextureHolder reflectionProbeTexture = new RenderTextureHolder();
+		protected RenderTextureHolder reflectionProbeTexture = new RenderTextureHolder();
         protected CommandBuffer overlay_buf                 = null;
         protected CommandBuffer post_translucent_buf        = null;
 
