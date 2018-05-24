@@ -261,7 +261,7 @@ namespace simul
 
 		~trueSKY()
 		{
-			if(this==trueSkySingleton)
+			if (this == trueSkySingleton)
 				trueSkySingleton = null;
 		}
 		
@@ -304,14 +304,14 @@ namespace simul
 		{
 			Vector3 convertedPos = UnityToTrueSkyPosition (pos);  			// convert from Unity format to trueSKY
 
-			VolumeQueryResult res=new VolumeQueryResult();
+			VolumeQueryResult res = new VolumeQueryResult();
 			IntPtr unmanagedPosPtr = Marshal.AllocHGlobal(12);
 			IntPtr unmanagedResultPtr = Marshal.AllocHGlobal(Marshal.SizeOf(typeof(VolumeQueryResult)));
-			float [] p={convertedPos.x,convertedPos.y,convertedPos.z};  
+			float[] p = { convertedPos.x, convertedPos.y, convertedPos.z };
 			Marshal.Copy(p, 0, unmanagedPosPtr, 3);
 			StaticCloudPointQuery(id, unmanagedPosPtr, unmanagedResultPtr);
 			res = (VolumeQueryResult)Marshal.PtrToStructure(unmanagedResultPtr, typeof(VolumeQueryResult));
-		
+
 			// Call unmanaged code
 			Marshal.FreeHGlobal(unmanagedPosPtr);
 			Marshal.FreeHGlobal(unmanagedResultPtr);
@@ -319,16 +319,16 @@ namespace simul
 		}
 		public LineQueryResult CloudLineQuery(int id, Vector3 startpos, Vector3 endpos)
 		{
-			Vector3 convertedStartPos = UnityToTrueSkyPosition (startpos);
-			Vector3 convertedEndPos = UnityToTrueSkyPosition (endpos);
+			Vector3 convertedStartPos = UnityToTrueSkyPosition(startpos);
+			Vector3 convertedEndPos = UnityToTrueSkyPosition(endpos);
 
-			LineQueryResult res = new LineQueryResult();                     
+			LineQueryResult res = new LineQueryResult();
 			IntPtr unmanagedPosPtr1 = Marshal.AllocHGlobal(12);
 			IntPtr unmanagedPosPtr2 = Marshal.AllocHGlobal(12);
 			IntPtr unmanagedResultPtr = Marshal.AllocHGlobal(Marshal.SizeOf(typeof(LineQueryResult)));
 			// swap y and z because Unity
-			float[] p1 = { convertedStartPos.x, convertedStartPos.y, convertedStartPos.z };		 
-			float[] p2 = { convertedEndPos.x, convertedEndPos.y, convertedEndPos.z };				 
+			float[] p1 = { convertedStartPos.x, convertedStartPos.y, convertedStartPos.z };
+			float[] p2 = { convertedEndPos.x, convertedEndPos.y, convertedEndPos.z };
 			Marshal.Copy(p1, 0, unmanagedPosPtr1, 3);
 			Marshal.Copy(p2, 0, unmanagedPosPtr2, 3);
 			StaticCloudLineQuery(id, unmanagedPosPtr1,unmanagedPosPtr2, unmanagedResultPtr);
@@ -2335,19 +2335,23 @@ namespace simul
 				StaticEnableLogging("trueSKYUnityRender.log");
 #endif
 
+                // Push the shader and texture paths:
+                if(!Application.isEditor)
+                {
 #if UNITY_PS4
-                StaticPushPath("ShaderBinaryPath", Application.dataPath + @"\Simul\shaderbin\ps4");
-                StaticPushPath("ShaderPath", Application.dataPath + @"\Simul\shaderbin");
-                StaticPushPath("TexturePath", Application.dataPath + @"\Simul\Media\Textures");
-#elif UNITY_XBOXONE
-                StaticPushPath("ShaderBinaryPath", Application.dataPath + @"\Simul\shaderbin\xboxone");
-                StaticPushPath("ShaderPath", Application.dataPath + @"\Simul\shaderbin");
-                StaticPushPath("TexturePath", Application.dataPath + @"\Simul\Media\Textures");
-#else
-				StaticPushPath("ShaderBinaryPath", Application.dataPath + @"\Simul\shaderbin\x86_64");
-                StaticPushPath("ShaderPath", Application.dataPath + @"\Simul\Platform\DirectX11\HLSL");
-                StaticPushPath("TexturePath", Application.dataPath + @"\Simul\Media\Textures");
+                    StaticPushPath("ShaderBinaryPath", Application.dataPath + @"\Simul\shaderbin\ps4");
+#elif UNITY_WSA || UNITY_STANDALONE_WIN
+                    StaticPushPath("ShaderBinaryPath", Application.dataPath + @"\Simul\shaderbin\x86_64");
 #endif
+                    StaticPushPath("TexturePath", Application.dataPath + @"\Simul\Media\Textures");
+                }
+                else
+                {
+                    StaticPushPath("ShaderBinaryPath", Application.dataPath + @"\Simul\shaderbin\x86_64");
+                    StaticPushPath("ShaderPath", Application.dataPath + @"\Simul\shaderbin\x86_64");
+                    StaticPushPath("TexturePath", Application.dataPath + @"\Simul\Media\Textures");
+                }
+
 				StaticInitInterface();
 				Reload();
 
@@ -2371,7 +2375,7 @@ namespace simul
 				StaticSetRenderBool("ShowCloudCrossSections", _showCloudCrossSections);
 				StaticSetRenderBool("ShowRainTextures", _showRainTextures);
 				StaticSetRenderBool("SimulationTimeRain", _simulationTimeRain);
-                StaticSetRenderInt("MaximumCubemapResolution",_CubemapResolution);
+				StaticSetRenderInt("MaximumCubemapResolution", _CubemapResolution);
 				StaticSetRenderInt("CloudSteps", _CloudSteps);
 				StaticSetRenderFloat("SimpleCloudShadowing", _cloudShadowing);
 				StaticSetRenderFloat("SimpleCloudShadowSharpness", _cloudShadowSharpness);

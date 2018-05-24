@@ -10,6 +10,26 @@ namespace simul
 {
 	public class TrueSkyBuildPostprocessor
 	{
+        static string ToPlatformName(BuildTarget target)
+        {
+            switch(target)
+            {
+                case BuildTarget.PS4:
+                    return "ps4";
+                case BuildTarget.StandaloneWindows:
+                case BuildTarget.StandaloneWindows64:
+                    return "x86_64";
+                case BuildTarget.WSAPlayer:
+                    return "WSA";
+                case BuildTarget.XboxOne:
+                    return "XboxOne";
+                case BuildTarget.Switch:
+                    return "Switch";
+                default:
+                    return "null";
+            }
+        }
+
 		[PostProcessBuild]
 		public static void OnPostprocessBuild(BuildTarget target, string pathToBuiltProject)
 		{
@@ -52,7 +72,7 @@ namespace simul
 			string shaderbinSource = trueSKY.GetShaderbinSourceDir(targetstr);
 			string shaderbinBuild = buildDirectory + s + "Simul" + s + "shaderbin";
 			DirectoryCopy.Copy(shaderbinSource, shaderbinBuild, true, true);
-			Debug.Log("DirectoryCopy: " + shaderbinBuild + "->" + shaderbinBuild);
+			Debug.Log("DirectoryCopy: " + shaderbinSource + "->" + shaderbinBuild);
 
 			string simul = assetsPath + s + "Simul";
 			// Copy media

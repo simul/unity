@@ -35,7 +35,7 @@ namespace simul
         RenderTextureHolder _inscatterRT        = new RenderTextureHolder();
         RenderTextureHolder _lossRT             = new RenderTextureHolder();
         RenderTextureHolder _cloudVisibilityRT  = new RenderTextureHolder();
-		
+
 		RenderTextureHolder _rainDepthRT		= new RenderTextureHolder();
 		protected RenderTextureHolder reflectionProbeTexture = new RenderTextureHolder();
         protected CommandBuffer overlay_buf                 = null;
@@ -354,7 +354,7 @@ namespace simul
 				_cloudVisibilityRT.renderTexture    = cloudVisibilityRT;
 				_cloudShadowRT.renderTexture        = cloudShadowRT;
 
-				_lossRT.renderTexture               = lossRT;
+                _lossRT.renderTexture               = lossRT;
 				StaticSetRenderTexture("inscatter2D",_inscatterRT.GetNative());
 				StaticSetRenderTexture("Loss2D", _lossRT.GetNative());
 				StaticSetRenderTexture("CloudVisibilityRT", _cloudVisibilityRT.GetNative());
