@@ -10,7 +10,7 @@ using simul;
 
 namespace simul
 {
-	class TrueSkyBuildPreProcessor : IPreprocessBuild
+	class TrueSkyBuildPreProcessor : IPreprocessBuildWithReport
 	{
 		public int callbackOrder { get { return 0; } }
 		public void OnPreprocessBuild(BuildReport report)
@@ -21,7 +21,7 @@ namespace simul
 		public void OnPreprocessBuild(BuildTarget target, string pathToBuiltProject)
 		{
 			char s = Path.DirectorySeparatorChar;
-			string buildDirectory = pathToBuiltProject.Replace(".exe", "_Data");
+			//string buildDirectory = pathToBuiltProject.Replace(".exe", "_Data");
 			// If building for ps4 also copy to StreamingAssets folder
 			if (target == BuildTarget.PS4)
 			{
@@ -29,10 +29,10 @@ namespace simul
 				string assetsPath = Environment.CurrentDirectory + s + "Assets";
 				string simul = assetsPath + s + "Simul";
 				string MediaSource = simul + s + "Media";
-				string saDir = buildDirectory + s + "StreamingAssets" + s + "Simul" + s + "shaderbin" + s + "ps4";
+				string saDir = Application.streamingAssetsPath + s + "Simul" + s + "shaderbin" + s + "ps4";
 				DirectoryCopy.Copy(shaderbinSource, saDir, true, true, false, false);
 				Debug.Log("DirectoryCopy: " + shaderbinSource + "->" + saDir);
-				saDir = buildDirectory + s + "StreamingAssets" + s + "Simul" + s + "Media";
+				saDir = Application.streamingAssetsPath + s + "Simul" + s + "Media";
 				DirectoryCopy.Copy(MediaSource, saDir, true, true, false, false);
 				Debug.Log("DirectoryCopy: " + MediaSource + "->" + saDir);
 			}

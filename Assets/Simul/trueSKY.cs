@@ -102,9 +102,9 @@ namespace simul
 		{
 			UnityEngine.Debug.LogWarning("Resolving " + args.Name);
 #if _WIN32
-			return Assembly.Load("Assets\\Plugins\\x86\\dependencies\\" + args.Name);
+			return Assembly.Load("Assets/Plugins/x86/dependencies/" + args.Name);
 #else
-			return Assembly.Load("Assets\\Plugins\\x86_64\\dependencies\\" + args.Name);
+			return Assembly.Load("Assets/Plugins/x86_64/dependencies/" + args.Name);
 #endif
 		}
 #endif
@@ -346,7 +346,7 @@ namespace simul
 			float ret=StaticGetRenderFloatAtPosition("Cloud",x);
 			return ret;
 		}
-		public float GetCloudShadowAtPosition (Vector3 pos)
+		public float GetCloudShadowAtPosition(Vector3 pos)
 		{
 			Vector3 convertedPos = UnityToTrueSkyPosition (pos);
 			float[] x= { convertedPos.x,convertedPos.y,convertedPos.z };		  
@@ -393,7 +393,7 @@ namespace simul
 
         public uint Insert2DCloudKeyframe(float t)
 		{
-            if (SimulVersionMinor == 1)
+			if (SimulVersion < MakeSimulVersion(4, 2) )
             {
                 return StaticRenderInsertKeyframe(2, t);
             }
@@ -417,7 +417,7 @@ namespace simul
 
         public uint GetCloud2DKeyframeByIndex(int index)
 		{
-            if (SimulVersionMinor == 1)
+			if (SimulVersion < MakeSimulVersion(4, 2) )
             {
                 return StaticRenderGetKeyframeByIndex(2, index);
             }
@@ -2339,17 +2339,17 @@ namespace simul
                 if(!Application.isEditor)
                 {
 #if UNITY_PS4
-                    StaticPushPath("ShaderBinaryPath", Application.dataPath + @"\Simul\shaderbin\ps4");
+                    StaticPushPath("ShaderBinaryPath", Application.streamingAssetsPath + @"/Simul/shaderbin/ps4");
 #elif UNITY_WSA || UNITY_STANDALONE_WIN
-                    StaticPushPath("ShaderBinaryPath", Application.dataPath + @"\Simul\shaderbin\x86_64");
+                    StaticPushPath("ShaderBinaryPath", Application.dataPath + @"/Simul/shaderbin/x86_64");
 #endif
-                    StaticPushPath("TexturePath", Application.dataPath + @"\Simul\Media\Textures");
+                    StaticPushPath("TexturePath", Application.dataPath + @"/Simul/Media/Textures");
                 }
                 else
                 {
-                    StaticPushPath("ShaderBinaryPath", Application.dataPath + @"\Simul\shaderbin\x86_64");
-                    StaticPushPath("ShaderPath", Application.dataPath + @"\Simul\shaderbin\x86_64");
-                    StaticPushPath("TexturePath", Application.dataPath + @"\Simul\Media\Textures");
+                    StaticPushPath("ShaderBinaryPath", Application.dataPath + @"/Simul/shaderbin/x86_64");
+                    StaticPushPath("ShaderPath", Application.dataPath + @"/Simul/shaderbin/x86_64");
+                    StaticPushPath("TexturePath", Application.dataPath + @"/Simul/Media/Textures");
                 }
 
 				StaticInitInterface();
