@@ -62,17 +62,17 @@ public class SimulMouseLook : MonoBehaviour
         else if (Event.current.type == EventType.MouseDrag || Event.current.type == EventType.MouseMove)
         {
             Vector3 diff = Event.current.mousePosition - lastPos;
-                if (Event.current.button == 0)
-                {
+			if (Event.current.button == 0)
+			{
 				new_speed = 0.1f*new Vector3(diff.x, diff.y, 0);
 				ApplyTranslation(new_speed);
-                }
-                else if (Event.current.button == 1)
-                {
+			}
+			else if (Event.current.button == 1)
+			{
 				new_speed*= 0;
-                    ApplyRotation(new_rot_speed);
+				ApplyRotation(new_rot_speed);
 				new_rot_speed = new Vector3(diff.x, diff.y, 0);
-                }
+			}
 			lastPos = Event.current.mousePosition;
             if (!Application.isPlaying)
             {

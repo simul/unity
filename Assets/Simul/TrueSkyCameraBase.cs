@@ -330,12 +330,12 @@ namespace simul
 			view[offset+02] = z.m02;
 			view[offset+03] = z.m03;
 
-			view[offset + 04] = z.m10;
+			view[offset+04] = z.m10;
 			view[offset+05] = z.m11;
 			view[offset+06] = z.m12;
 			view[offset+07] = z.m13;
 
-			view[offset + 08] = z.m20;
+			view[offset+08] = z.m20;
 			view[offset+09] = z.m21;
 			view[offset+10] = z.m22;
 			view[offset+11] = z.m23;

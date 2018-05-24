@@ -92,8 +92,6 @@ namespace simul
 			EditorGUILayout.BeginVertical();
 			{
 				// General truesky settings
-
-				{
 					trueSky.sequence = (Sequence)EditorGUILayout.ObjectField("Sequence Asset", trueSky.sequence, typeof(Sequence), false);
 					trueSky.MetresPerUnit = EditorGUILayout.FloatField("Metres per Unit", trueSky.MetresPerUnit);
 					if (trueSky.SimulVersion < trueSky.MakeSimulVersion(4, 2))
@@ -103,7 +101,7 @@ namespace simul
 						trueSky.MinimumStarPixelSize = EditorGUILayout.FloatField("Minimum Star Pixel Size", trueSky.MinimumStarPixelSize);
 					}
 					EditorGUILayout.Space();
-				}
+
 				// Interpolation settings
 				interpolation = EditorGUILayout.Foldout(interpolation, "Update");
 				if(interpolation)
@@ -117,8 +115,9 @@ namespace simul
                     }
 					EditorGUILayout.Space();
 				}
+
 				// Rendering settings
-				if (trueSky.SimulVersion >= trueSky.MakeSimulVersion(4, 2))
+				if (trueSky.SimulVersion >= trueSky.MakeSimulVersion(4, 1))
 				{
 					GUIStyle cloudsStyle = new GUIStyle();
 					cloudsStyle.active.textColor =  new Color(0.5F, 0.4F, 0.4F, 0.5F);
@@ -128,9 +127,12 @@ namespace simul
 						EditorGUILayout.BeginVertical(cloudsStyle);
 						trueSky.IntegrationScheme = EditorGUILayout.IntSlider("Integration Scheme", trueSky.IntegrationScheme, 0, 1);
 						trueSky.CubemapResolution = EditorGUILayout.IntSlider("Cubemap Resolution", trueSky.CubemapResolution, 16, 2048);
+                        if (trueSky.SimulVersion > trueSky.MakeSimulVersion(4, 1))
+                        { 
 						trueSky.MaxCloudDistanceKm = EditorGUILayout.Slider("Max Cloud Distance (km)", trueSky.MaxCloudDistanceKm, 100.0F, 1000.0F);
                             trueSky.RenderGridXKm = EditorGUILayout.Slider("Render Grid X (km)", trueSky.RenderGridXKm, 0.01F, 10.0F);
 						    trueSky.RenderGridZKm = EditorGUILayout.Slider("Render Grid Z (km)", trueSky.RenderGridZKm, 0.01F, 10.0F);
+                        }
 						trueSky.CloudSteps = EditorGUILayout.IntSlider("Cloud Steps", trueSky.CloudSteps, 60, 300);
 						trueSky.Amortization = EditorGUILayout.IntSlider("Amortization", trueSky.Amortization, 1, 4);
 						trueSky.CloudThresholdDistanceKm = EditorGUILayout.Slider("Threshold Distance (km)", trueSky.CloudThresholdDistanceKm, 0.0F, 10.0F);
@@ -139,13 +141,17 @@ namespace simul
                         EditorGUILayout.EndVertical();
 					}
 				}
+                // Atmospheric settings
 					atmospherics = EditorGUILayout.Foldout(atmospherics,"Atmospherics");
 					if (atmospherics)
 					{
 						trueSky.AtmosphericsAmortization = EditorGUILayout.IntSlider("Atmospherics Amortization", trueSky.AtmosphericsAmortization, 1, 4);
 						trueSky.GodRaysGrid = EditorGUILayout.Vector3Field("God Rays Grid", trueSky.GodRaysGrid);
+                    if (trueSky.SimulVersion > trueSky.MakeSimulVersion(4, 1))
+                    {
                             trueSky.CrepuscularRaysStrength = EditorGUILayout.Slider("Crepuscular Rays Strength", trueSky.CrepuscularRaysStrength, 0.0F, 1.0F);
                         }
+                }
 
                     if(trueSky.SimulVersion >= trueSky.MakeSimulVersion(4, 2))
                     {
@@ -170,6 +176,7 @@ namespace simul
 					    	trueSky.EdgeNoiseTextureSize = EditorGUILayout.IntSlider("Texture Size", trueSky.EdgeNoiseTextureSize, 32, 256);
 					    	trueSky.EdgeNoiseWavelengthKm = EditorGUILayout.Slider("Wavelength Km", trueSky.EdgeNoiseWavelengthKm, 0.01f, 50.0f);
 					    	trueSky.MaxFractalAmplitudeKm = EditorGUILayout.Slider("Amplitude Km", trueSky.MaxFractalAmplitudeKm, 0.0f, 20.0f);
+
 					    	EditorGUILayout.Space();
 					    	EditorGUILayout.LabelField("Cell Noise", EditorStyles.boldLabel);
 					    	trueSky.CellNoiseTextureSize = EditorGUILayout.IntSlider("Texture Size", trueSky.CellNoiseTextureSize, 32, 256);
@@ -330,8 +337,7 @@ namespace simul
 				recomp = false;
 			}
 		}
-#if (UNITY_4_3 || UNITY_4_4)
-#else
+
 	/// <summary>
 	/// This command is run from the CI server to test that the just-installed trueSKY package is ok.
 	/// </summary>
@@ -355,6 +361,5 @@ namespace simul
 
 		UnityEngine.Debug.Log("Exported: "+fileName);
 	}
-#endif
 	}
 }
