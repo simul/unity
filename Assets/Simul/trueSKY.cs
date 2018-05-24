@@ -2293,6 +2293,17 @@ namespace simul
 				StaticPopPath ("TexturePath");
 			}
 		}
+		public static string GetShaderbinSourceDir(string target)
+		{
+			char s = Path.DirectorySeparatorChar;
+			string assetsPath = Environment.CurrentDirectory + s + "Assets";
+			string simul = assetsPath + s + "Simul";
+			// Custom shader binary folder
+			string shaderFolderSrt;
+			shaderFolderSrt = "shaderbin"+s+ target;
+			string shaderbinSource = simul + s + shaderFolderSrt;
+			return shaderbinSource;
+		}
 
 		void Init()
 		{
