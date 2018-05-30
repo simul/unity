@@ -346,7 +346,7 @@ namespace simul
 			float ret=StaticGetRenderFloatAtPosition("Cloud",x);
 			return ret;
 		}
-		public float GetCloudShadowAtPosition(Vector3 pos)
+		public float GetCloudShadowAtPosition (Vector3 pos)
 		{
 			Vector3 convertedPos = UnityToTrueSkyPosition (pos);
 			float[] x= { convertedPos.x,convertedPos.y,convertedPos.z };		  
@@ -889,7 +889,7 @@ namespace simul
 			{
 				uint s=GetStormByIndex(i);
 				StaticRenderKeyframeSetFloat(s, "CentreKmx", x / 1000.0F);
-				StaticRenderKeyframeSetFloat(s, "CentreKmy", y / 1000.0F);
+				StaticRenderKeyframeSetFloat(s, "CentreKmy", y/ 1000.0F);
 			}
 		}
 		//! Set an int property of the Sky layer.
@@ -1105,29 +1105,29 @@ namespace simul
 #endif
 		public string GetRenderString(string s)
 		{
-			StringBuilder str = new StringBuilder("", 20);
+			StringBuilder str=new StringBuilder("",20);
 			try
 			{
-				int newlen = StaticGetRenderString(s, str, 16);
-				if (newlen > 0)
+				int newlen=StaticGetRenderString(s,str,16);
+				if(newlen>0)
 				{
-					str = new StringBuilder("", newlen + 2);
-					StaticGetRenderString(s, str, newlen + 1);
+					str=new StringBuilder("",newlen+2);
+					StaticGetRenderString(s,str,newlen+1);
 				}
 			}
-			catch (Exception exc)
+			catch(Exception exc)
 			{
 				UnityEngine.Debug.Log(exc.ToString());
 			}
 			return str.ToString();
 		}
-		public void SetRenderString(string s, string val)
+		public void SetRenderString(string s,string val)
 		{
 			try
 			{
-				StaticSetRenderString(s, val);
+				StaticSetRenderString(s,val);
 			}
-			catch (Exception exc)
+			catch(Exception exc)
 			{
 				UnityEngine.Debug.Log(exc.ToString());
 			}
@@ -1198,9 +1198,9 @@ namespace simul
 		[SerializeField]
 		float _cloudShadowing = 0.5F;
 		[SerializeField]
-		float _cloudShadowSharpness = 0.05F;
+		float _cloudShadowSharpness=0.05F;
 		[SerializeField]
-		float _cloudThresholdDistanceKm = 1.0F;
+		float _cloudThresholdDistanceKm = 1.0F; 
 		[SerializeField]
 		static public bool _showCloudCrossSections = false;
 		[SerializeField]
@@ -1221,7 +1221,7 @@ namespace simul
 		[SerializeField]
 		int _amortization = 2;
 		[SerializeField]
-		int _atmosphericsAmortization = 2;
+		int _atmosphericsAmortization=2;
 		[SerializeField]
 		bool _depthBlending = true;
 		public int Amortization
@@ -1552,7 +1552,7 @@ namespace simul
 						_maxGpuProfileLevel = value;
 						StaticSetRenderInt("maxGpuProfileLevel", _maxGpuProfileLevel);
 					}
-					catch (Exception exc)
+					catch(Exception exc)
 					{
 						UnityEngine.Debug.Log(exc.ToString());
 					}
@@ -1566,12 +1566,12 @@ namespace simul
 			}
 			set
 			{
-				if (_cloudThresholdDistanceKm != value) try
+				if(_cloudThresholdDistanceKm != value) try
 					{
 						_cloudThresholdDistanceKm = value;
 						StaticSetRenderFloat("render:CloudThresholdDistanceKm", _cloudThresholdDistanceKm);
 					}
-					catch (Exception exc)
+					catch(Exception exc)
 					{
 						UnityEngine.Debug.Log(exc.ToString());
 					}
@@ -1672,7 +1672,7 @@ namespace simul
 					}
 			}
 		}
-
+		
 		static public bool ShowRainTextures
 		{
 			get
@@ -1730,13 +1730,13 @@ namespace simul
 			}
 			set
 			{
-				if (_backgroundTexture != value)
+				if(_backgroundTexture!=value)
 				{
-					_backgroundTexture = value;
-					if (_backgroundTexture != null)
-						StaticSetRenderTexture("Background", _backgroundTexture.GetNativeTexturePtr());
+					_backgroundTexture=value;
+					if(_backgroundTexture!=null)
+						StaticSetRenderTexture("Background",_backgroundTexture.GetNativeTexturePtr());
 					else
-						StaticSetRenderTexture("Background", (System.IntPtr)null);
+						StaticSetRenderTexture("Background",(System.IntPtr)null);
 					Reload();
 				}
 			}
@@ -1751,18 +1751,18 @@ namespace simul
 			}
 			set
 			{
-				if (_moonTexture != value)
+				if(_moonTexture!=value)
 				{
-					_moonTexture = value;
-					if (_moonTexture != null)
-						StaticSetRenderTexture("Moon", _moonTexture.GetNativeTexturePtr());
+					_moonTexture=value;
+					if(_moonTexture!=null)
+						StaticSetRenderTexture("Moon",_moonTexture.GetNativeTexturePtr());
 					else
-						StaticSetRenderTexture("Moon", (System.IntPtr)null);
+						StaticSetRenderTexture("Moon",(System.IntPtr)null);
 					Reload();
 				}
 			}
 		}
-
+		
 		[SerializeField]
 		Sequence _sequence;
 
@@ -1838,7 +1838,7 @@ namespace simul
 			}
 		}
 
-		int _IntegrationScheme = 0;
+		int _IntegrationScheme=0;
 		[SerializeField]
 		public int IntegrationScheme
 		{
@@ -1851,7 +1851,7 @@ namespace simul
 				if (_IntegrationScheme != value) try
 					{
 						_IntegrationScheme = value;
-						StaticSetRenderBool("gridrendering", _IntegrationScheme == 0);
+					StaticSetRenderBool("gridrendering", _IntegrationScheme==0);
 					}
 					catch (Exception exc)
 					{
@@ -2079,7 +2079,7 @@ namespace simul
 					}
 			}
 		}
-
+		
 		bool _initialized = false;
 		bool _rendering_initialized = false;
 		void Update()
@@ -2118,13 +2118,13 @@ namespace simul
 		/// Sun colour is given as a vector because Color class is clamped to [0,1] and irradiance can have arbitrary magnitude.
 		/// </summary>
 		/// <returns>Vector3</returns>
-		public Vector3 getSunColour(Vector3 pos, int id = 0)
+		public Vector3 getSunColour(Vector3 pos,int id=0)
 		{
 			if (!_initialized)
 				Init();
 			Vector3 convertedPos = UnityToTrueSkyPosition(pos);
-			LightingQueryResult q = StaticLightingQuery(id + (int)234965824, convertedPos);
-			Vector3 c = new Vector3(0, 0, 0);
+			LightingQueryResult q = StaticLightingQuery( id+(int)234965824, convertedPos);
+			Vector3 c=new Vector3(0,0,0);
 			try
 			{
 				c.x = q.sunlight.x;
@@ -2195,7 +2195,7 @@ namespace simul
 			{
 				float r = StaticGetRenderFloat("cloudshadowscale.x");
 				float metresPerUnit = trueSKY.GetTrueSky().MetresPerUnit;
-				return 1000.0F * r / metresPerUnit;
+				return 1000.0F * r/ metresPerUnit;
 			}
 			catch (Exception exc)
 			{
@@ -2241,7 +2241,7 @@ namespace simul
 				_initialized = false;
 				UnityEngine.Debug.Log(exc.ToString());
 			}
-			Quaternion q = Quaternion.Euler(el, az + 180.0F, 0.0F);
+			Quaternion q=Quaternion.Euler(el,az+180.0F,0.0F);
 			return q;
 		}
 
@@ -2262,9 +2262,9 @@ namespace simul
 				_initialized = false;
 				UnityEngine.Debug.Log(exc.ToString());
 			}
-			Quaternion q = Quaternion.Euler(el, az + 180.0F, 0.0F);
+			Quaternion q=Quaternion.Euler(el,az+180.0F,0.0F);
 			return q;
-		}
+		} 
 
 		void Awake()
 		{
@@ -2283,14 +2283,14 @@ namespace simul
 		{
 		}
 #endif
-		void OnDestroy()
+		void OnDestroy()     
 		{
 			// Release what was accumulating beforehand
-			if (_initialized)
-			{
-				StaticPopPath("ShaderBinaryPath");
-				StaticPopPath("ShaderPath");
-				StaticPopPath("TexturePath");
+            if (_initialized) 			
+			{  
+				StaticPopPath ("ShaderBinaryPath");
+				StaticPopPath ("ShaderPath");
+				StaticPopPath ("TexturePath");
 			}
 		}
 		public static string GetShaderbinSourceDir(string target)
@@ -2379,7 +2379,7 @@ namespace simul
 				StaticSetRenderInt("CloudSteps", _CloudSteps);
 				StaticSetRenderFloat("SimpleCloudShadowing", _cloudShadowing);
 				StaticSetRenderFloat("SimpleCloudShadowSharpness", _cloudShadowSharpness);
-				StaticSetRenderFloat("CloudThresholdDistanceKm", _cloudThresholdDistanceKm);
+				StaticSetRenderFloat("CloudThresholdDistanceKm", _cloudThresholdDistanceKm); 
 				StaticSetRenderBool("OnscreenProfiling", _onscreenProfiling);
 				StaticSetRenderInt("maxCpuProfileLevel", _maxCpuProfileLevel);
 				StaticSetRenderInt("maxGpuProfileLevel", _maxGpuProfileLevel);
@@ -2392,7 +2392,7 @@ namespace simul
 				SetNightTextures();
 
 #if UNITY_EDITOR
-				StaticSetRenderBool("ShowCelestialDisplay", _showCelestials);
+				StaticSetRenderBool("ShowCelestialDisplay",_showCelestials);
 #endif
 
 #if LICENSING

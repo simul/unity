@@ -52,28 +52,36 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6c9584c35c660674d8e03faa566289dc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  SimulVersionMajor: 4
+  SimulVersionMinor: 1
+  SimulVersionBuild: 0
   _metresPerUnit: 1
   _renderInEditMode: 1
   _minimumStarPixelSize: 1
   _godRaysGrid: {x: 32, y: 32, z: 32}
+  _crepuscularRaysStrength: 1
   _depthSamplingPixelRange: 1.5
   _maxSunRadiance: 150000
   _edgeNoiseFrequency: 7
   _edgeNoiseOctaves: 5
   _edgeNoiseTextureSize: 32
+  _CellNoiseTextureSize: 64
   _edgeNoisePersistence: 0.1
   _edgeNoiseWavelengthKm: 1.3
   _worleyTextureSize: 64
   _worleyWavelengthKm: 2.3
-  _time: 0.33512932
+  _time: 0.35
   _speed: 100
+  _HighDetailProportion: 0.576
+  _MediumDetailProportion: 1
   _cloudShadowing: 0.5
   _cloudShadowSharpness: 0.01
-  _cloudThresholdDistanceKm: 0
+  _cloudThresholdDistanceKm: 0.06
   _simulationTimeRain: 0
+  _MaxPrecipitationParticles: 100000
   _changedAmortInEd: 0
-  _amortization: 1
-  _atmosphericsAmortization: 1
+  _amortization: 2
+  _atmosphericsAmortization: 2
   _depthBlending: 1
   _maxCpuProfileLevel: 3
   _maxGpuProfileLevel: 3
@@ -81,7 +89,7 @@ MonoBehaviour:
   _moonTexture: {fileID: 2800000, guid: 3541739e0b9713341bb6b93137f4fabe, type: 3}
   _sequence: {fileID: 11400000, guid: aa830ef1db867b648a37d89cbb5a74e1, type: 2}
   _CloudSteps: 250
-  _CubemapResolution: 256
+  _CubemapResolution: 477
 --- !u!114 &114891581999645932
 MonoBehaviour:
   m_ObjectHideFlags: 1

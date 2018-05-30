@@ -5,19 +5,22 @@ using UnityEditor.Callbacks;
 using System.IO;
 using System;
 using UnityEditor.Build;
+#if UNITY_2018
 using UnityEditor.Build.Reporting;
+#endif
 using simul;
 
 namespace simul
 {
-	class TrueSkyBuildPreProcessor : IPreprocessBuildWithReport
+	class TrueSkyBuildPreProcessor : IPreprocessBuild
 	{
 		public int callbackOrder { get { return 0; } }
+#if UNITY_2018
 		public void OnPreprocessBuild(BuildReport report)
 		{
 			OnPreprocessBuild(report.summary.platform, report.summary.outputPath);
 		}
-
+#endif
 		public void OnPreprocessBuild(BuildTarget target, string pathToBuiltProject)
 		{
 			char s = Path.DirectorySeparatorChar;

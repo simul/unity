@@ -153,7 +153,9 @@ namespace simul
 		protected RenderTextureHolder unityDepthTexture = new RenderTextureHolder();
 		static protected Material _flippedDepthMaterial = null;
 		static protected Material _deferredDepthMaterial= null;
+		static protected Material _msaaDepthMaterial8 = null; 
 		static protected Shader _flippedShader  = null;
+		static protected Shader _MSAADepthShader8 = null;
 		static protected Shader _deferredShader = null;
         protected CommandBuffer storebuf        = null;
 		protected CommandBuffer blitbuf         = null;
@@ -279,26 +281,26 @@ namespace simul
 			Matrix4x4 y;
 			if (swap_yz)
 			{
-			// Swap the y and z columns - this makes a left-handed matrix into right-handed:
-			y.m00=	n.m00;
-			y.m01=	n.m02;
-			y.m02=	n.m01;
-			y.m03=	n.m03;
+				// Swap the y and z columns - this makes a left-handed matrix into right-handed:
+				y.m00 = n.m00;
+				y.m01 = n.m02;
+				y.m02 = n.m01;
+				y.m03 = n.m03;
 
-			y.m10=	n.m10;
-			y.m11=	n.m12;
-			y.m12=	n.m11;
-			y.m13=	n.m13;
+				y.m10 = n.m10;
+				y.m11 = n.m12;
+				y.m12 = n.m11;
+				y.m13 = n.m13;
 
-			y.m20=	n.m20;
-			y.m21=	n.m22;
-			y.m22=	n.m21;
-			y.m23=	n.m23;
-            // Swap the position values as well, as Unity uses y=up, we use z:
-			y.m30=	n.m30 * metresPerUnit;
-			y.m31=	n.m32 * metresPerUnit;
-			y.m32=	n.m31 * metresPerUnit;
-			y.m33=	n.m33;
+				y.m20 = n.m20;
+				y.m21 = n.m22;
+				y.m22 = n.m21;
+				y.m23 = n.m23;
+				// Swap the position values as well, as Unity uses y=up, we use z:
+				y.m30 = n.m30 * metresPerUnit;
+				y.m31 = n.m32 * metresPerUnit;
+				y.m32 = n.m31 * metresPerUnit;
+				y.m33 = n.m33;
 			}
 			else
 			{
@@ -372,8 +374,10 @@ namespace simul
 		{
 			_flippedDepthMaterial = null;
 			_deferredDepthMaterial = null;
+			_msaaDepthMaterial8 = null;
 			_flippedShader = null;
 			_deferredShader = null;
+			_MSAADepthShader8 = null;
 		}
 
 		void OnEnable ()
