@@ -68,130 +68,214 @@ namespace simul
 		{
 			trueSKY.RecompileShaders();
 		}
-        public override void OnInspectorGUI()
-        {
-            trueSKY trueSky = (trueSKY)target;
+		[SerializeField]
+		static bool celestial = false;
+		[SerializeField]
+		static bool clouds = false;
+		[SerializeField]
+		static bool atmospherics = false;
+		[SerializeField]
+		static bool noise = false;
+		[SerializeField]
+		static bool debugging = false;
+		[SerializeField]
+		static bool lighting = false;
+		[SerializeField]
+		bool interpolation = false;
+		[SerializeField]
+		static bool precipitation = false;
+		public override void OnInspectorGUI()
+		{
+			trueSKY trueSky = (trueSKY)target;
 
-            EditorGUILayout.Space();
-            EditorGUILayout.BeginVertical();
-            {
-                // Interpolation settings
-                EditorGUILayout.LabelField("Interpolation", EditorStyles.boldLabel);
-                {
-                    trueSky.time = EditorGUILayout.FloatField("Time", trueSky.time);
-                    trueSky.speed = EditorGUILayout.FloatField("Speed", trueSky.speed);
-                    EditorGUILayout.Space();
-                }
+			EditorGUILayout.Space();
+			EditorGUILayout.BeginVertical();
+			{
+				// General truesky settings
+					trueSky.sequence = (Sequence)EditorGUILayout.ObjectField("Sequence Asset", trueSky.sequence, typeof(Sequence), false);
+					trueSky.MetresPerUnit = EditorGUILayout.FloatField("Metres per Unit", trueSky.MetresPerUnit);
+					if (trueSky.SimulVersion < trueSky.MakeSimulVersion(4, 2))
+					{
+						trueSky.CloudThresholdDistanceKm = EditorGUILayout.Slider("Threshold Distance (km)", trueSky.CloudThresholdDistanceKm, 0.0F, 10.0F);
+						trueSky.MinimumStarPixelSize = EditorGUILayout.FloatField("Minimum Star Pixel Size", trueSky.MinimumStarPixelSize);
+					}
+					EditorGUILayout.Space();
 
-                // Precipitation settings
-                EditorGUILayout.LabelField("Precipitation",EditorStyles.boldLabel);
-                {
-                    trueSky.SimulationTimeRain = EditorGUILayout.Toggle("Sim Time Rain", trueSky.SimulationTimeRain);
-                    EditorGUILayout.Space();
-                }
-
-                // General truesky settings
-                EditorGUILayout.LabelField("TrueSky", EditorStyles.boldLabel);
-                {
-                    trueSky.MetresPerUnit = EditorGUILayout.FloatField("Metres per Unit", trueSky.MetresPerUnit);
-                    trueSky.RenderInEditMode = EditorGUILayout.Toggle("Render in Edit Mode", trueSky.RenderInEditMode);
-                    trueSky.sequence = (Sequence)EditorGUILayout.ObjectField("Sequence Asset", trueSky.sequence, typeof(Sequence), false);
-                    trueSky.CloudThresholdDistanceKm = EditorGUILayout.Slider("Threshold Distance (km)", trueSky.CloudThresholdDistanceKm, 0.0F, 10.0F);
-                    trueSky.DepthBlending = EditorGUILayout.Toggle("Depth Blending", trueSky.DepthBlending);
-                    trueSky.MinimumStarPixelSize = EditorGUILayout.FloatField("Minimum Start Pixel Size", trueSky.MinimumStarPixelSize);
-                    EditorGUILayout.Space();
-                }
-
-                // Rendering settings
-                EditorGUILayout.LabelField("TrueSkyRendering", EditorStyles.boldLabel);
-                {
-                    trueSky.CloudShadowing = EditorGUILayout.Slider("Cloud Shadowing", trueSky.CloudShadowing, 0.0F, 1.0F);
-                    trueSky.CloudShadowSharpness = EditorGUILayout.Slider("Shadow Sharpness", trueSky.CloudShadowSharpness, 0.0F, 0.1F);
-                    trueSky.Amortization = EditorGUILayout.IntSlider("Amortization", trueSky.Amortization, 1, 4);
-                    trueSky.AtmosphericsAmortization = EditorGUILayout.IntSlider("Atmospherics Amortization", trueSky.AtmosphericsAmortization, 1, 4);
-                    trueSky.CloudSteps = EditorGUILayout.IntSlider("Cloud Steps", trueSky.CloudSteps, 60, 250);
-                    trueSky.CubemapResolution = EditorGUILayout.IntSlider("Cubemap Resolution", trueSky.CubemapResolution, 16, 2048);
-                    trueSky.GodRaysGrid = EditorGUILayout.Vector3Field("God Rays Grid", trueSky.GodRaysGrid);
-                    trueSky.DepthSamplingPixelRange = EditorGUILayout.Slider("Depth Sampling Range",trueSky.DepthSamplingPixelRange, 0.0f, 4.0f);
-                    trueSky.MaxSunRadiance = EditorGUILayout.FloatField("Max Sun Radiance", trueSky.MaxSunRadiance);
-                    EditorGUILayout.Space();
-                }
-
-                // Textures
-                EditorGUILayout.LabelField("TrueSkyTextures", EditorStyles.boldLabel);
-                {
-                    trueSky.backgroundTexture = (Texture)EditorGUILayout.ObjectField("Cosmic Background", trueSky.backgroundTexture, typeof(Texture), false);
-                    trueSky.moonTexture = (Texture)EditorGUILayout.ObjectField("Moon Texture", trueSky.moonTexture, typeof(Texture), false);
-                    EditorGUILayout.Space();
-                }
-
-                // Sound settings
-                /*
-                EditorGUILayout.LabelField("Sound",EditorStyles.boldLabel);
-                {
-
-                    EditorGUILayout.Space();
-                }
-                */
-
-                // Debugging options
-                EditorGUILayout.LabelField("Debugging", EditorStyles.boldLabel);
-                {
-                    string gv = SystemInfo.graphicsDeviceVersion;
-                    EditorGUILayout.LabelField("Unity Renderer", gv);
-                    if (gv.Contains("Direct3D 11"))
-                        EditorGUILayout.LabelField("GOOD", GUILayout.Width(48));
-                    else
-                        EditorGUILayout.LabelField("Unsupported", GUILayout.Width(48));
-                    //	string cons=trueSky.GetRenderString("ConstellationNames");			
+				// Interpolation settings
+				interpolation = EditorGUILayout.Foldout(interpolation, "Update");
+				if(interpolation)
+				{
+					trueSky.time = EditorGUILayout.FloatField("Time", trueSky.time);
+					trueSky.speed = EditorGUILayout.FloatField("Speed", trueSky.speed);
+                    if (trueSky.SimulVersion >= trueSky.MakeSimulVersion(4, 2))
                     {
-                        string f = EditorGUILayout.TextField("Find Constellation: ", "");
-                        if (f.Length > 0)
-                            trueSky.SetRenderString("HighlightConstellation", f);
+                        trueSky.HighDetailProportion = EditorGUILayout.Slider("High Detail", trueSky.HighDetailProportion,0.0F,1.0F);
+					    trueSky.MediumDetailProportion = EditorGUILayout.Slider("Medium Detail", trueSky.MediumDetailProportion, trueSky.HighDetailProportion, 1.0F);
                     }
-                    string hcons = trueSky.GetRenderString("HighlightConstellationNames");
-                    if (hcons.Length > 0)
-                    {
-                        EditorGUILayout.TextArea(hcons);
-                    }
-                    if (trueSKY.advancedMode)
-                    {
-                        if (GUILayout.Button("Recompile Shaders"))
-                        {
-                            recomp = true;
+					EditorGUILayout.Space();
+				}
+
+				// Rendering settings
+				if (trueSky.SimulVersion >= trueSky.MakeSimulVersion(4, 1))
+				{
+					GUIStyle cloudsStyle = new GUIStyle();
+					cloudsStyle.active.textColor =  new Color(0.5F, 0.4F, 0.4F, 0.5F);
+					clouds = EditorGUILayout.Foldout(clouds,"Clouds");
+					if (clouds)
+					{
+						EditorGUILayout.BeginVertical(cloudsStyle);
+						trueSky.IntegrationScheme = EditorGUILayout.IntSlider("Integration Scheme", trueSky.IntegrationScheme, 0, 1);
+						trueSky.CubemapResolution = EditorGUILayout.IntSlider("Cubemap Resolution", trueSky.CubemapResolution, 16, 2048);
+                        if (trueSky.SimulVersion > trueSky.MakeSimulVersion(4, 1))
+                        { 
+						trueSky.MaxCloudDistanceKm = EditorGUILayout.Slider("Max Cloud Distance (km)", trueSky.MaxCloudDistanceKm, 100.0F, 1000.0F);
+                            trueSky.RenderGridXKm = EditorGUILayout.Slider("Render Grid X (km)", trueSky.RenderGridXKm, 0.01F, 10.0F);
+						    trueSky.RenderGridZKm = EditorGUILayout.Slider("Render Grid Z (km)", trueSky.RenderGridZKm, 0.01F, 10.0F);
                         }
-                    }
-                    trueSky.maxGpuProfileLevel = EditorGUILayout.IntSlider("GPU Level", trueSky.maxGpuProfileLevel, 0, 8);
-                    trueSky.maxCpuProfileLevel = EditorGUILayout.IntSlider("CPU Level", trueSky.maxCpuProfileLevel, 0, 8);
-                    showProfiling = EditorGUILayout.BeginToggleGroup("Profiling", showProfiling);
+						trueSky.CloudSteps = EditorGUILayout.IntSlider("Cloud Steps", trueSky.CloudSteps, 60, 300);
+						trueSky.Amortization = EditorGUILayout.IntSlider("Amortization", trueSky.Amortization, 1, 4);
+						trueSky.CloudThresholdDistanceKm = EditorGUILayout.Slider("Threshold Distance (km)", trueSky.CloudThresholdDistanceKm, 0.0F, 10.0F);
+						trueSky.DepthSamplingPixelRange = EditorGUILayout.Slider("Depth Sampling Range", trueSky.DepthSamplingPixelRange, 0.0f, 4.0f);
+						trueSky.DepthBlending = EditorGUILayout.Toggle("Depth Blending", trueSky.DepthBlending);
+                        EditorGUILayout.EndVertical();
+					}
+				}
+                // Atmospheric settings
+					atmospherics = EditorGUILayout.Foldout(atmospherics,"Atmospherics");
+					if (atmospherics)
+					{
+						trueSky.AtmosphericsAmortization = EditorGUILayout.IntSlider("Atmospherics Amortization", trueSky.AtmosphericsAmortization, 1, 4);
+						trueSky.GodRaysGrid = EditorGUILayout.Vector3Field("God Rays Grid", trueSky.GodRaysGrid);
+                    if (trueSky.SimulVersion > trueSky.MakeSimulVersion(4, 1))
                     {
-                        if (showProfiling)
-                        {
-                            trueSky.SetBool("Profiling", true);
-                            GUIStyle style = new GUIStyle();
-                            style.richText = true;
-                            string perf = "";
-                            if (EditorGUIUtility.isProSkin)
-                                perf = "<color=white>";
-                            perf += trueSky.GetRenderString("Profiling");
-                            if (EditorGUIUtility.isProSkin)
-                                perf += "</color>";
-                            scroll = EditorGUILayout.BeginScrollView(scroll);
-                            EditorGUILayout.TextArea(perf, style, GUILayout.Height(1024));//
-                            EditorGUILayout.EndScrollView();
+                            trueSky.CrepuscularRaysStrength = EditorGUILayout.Slider("Crepuscular Rays Strength", trueSky.CrepuscularRaysStrength, 0.0F, 1.0F);
                         }
-                        else
-                            trueSky.SetBool("Profiling", false);
-                    }
-                    EditorGUILayout.EndToggleGroup();
-                    EditorGUILayout.Space();
                 }
-            }
-            EditorGUILayout.EndVertical();
+
+                    if(trueSky.SimulVersion >= trueSky.MakeSimulVersion(4, 2))
+                    {
+					    lighting = EditorGUILayout.Foldout(lighting,"Lighting");
+					    if (lighting)
+					    {
+					    	trueSky.DirectLight = EditorGUILayout.Slider("Direct Light", trueSky.DirectLight, 0.0F, 4.0F);
+					    	trueSky.IndirectLight = EditorGUILayout.Slider("Indirect Light", trueSky.IndirectLight, 0.0F, 4.0F);
+					    	trueSky.AmbientLight = EditorGUILayout.Slider("Ambient Light", trueSky.AmbientLight, 0.0F, 4.0F);
+					    	trueSky.Extinction = EditorGUILayout.Slider("Extinction (per km)", trueSky.Extinction, 0.0F, 12.0F);
+					    	trueSky.MieAsymmetry = EditorGUILayout.Slider("Mie Asymmetry", trueSky.MieAsymmetry, 0.0F, 0.999F);
+					    }
+
+                    // Noise settings
+                        noise = EditorGUILayout.Foldout(noise, "Noise");
+					    if (noise)
+					    {
+					    	// Edge
+					    	EditorGUILayout.LabelField("Edge Noise", EditorStyles.boldLabel);
+					    	trueSky.EdgeNoisePersistence = EditorGUILayout.Slider("Persistence", trueSky.EdgeNoisePersistence, 0.0f, 1.0f);
+					    	trueSky.EdgeNoiseFrequency = EditorGUILayout.IntSlider("Frequency", trueSky.EdgeNoiseFrequency, 1, 16);
+					    	trueSky.EdgeNoiseTextureSize = EditorGUILayout.IntSlider("Texture Size", trueSky.EdgeNoiseTextureSize, 32, 256);
+					    	trueSky.EdgeNoiseWavelengthKm = EditorGUILayout.Slider("Wavelength Km", trueSky.EdgeNoiseWavelengthKm, 0.01f, 50.0f);
+					    	trueSky.MaxFractalAmplitudeKm = EditorGUILayout.Slider("Amplitude Km", trueSky.MaxFractalAmplitudeKm, 0.0f, 20.0f);
+
+					    	EditorGUILayout.Space();
+					    	EditorGUILayout.LabelField("Cell Noise", EditorStyles.boldLabel);
+					    	trueSky.CellNoiseTextureSize = EditorGUILayout.IntSlider("Texture Size", trueSky.CellNoiseTextureSize, 32, 256);
+					    	trueSky.CellNoiseWavelengthKm = EditorGUILayout.Slider("Wavelength Km", trueSky.CellNoiseWavelengthKm, 0.01f, 50.0f);
+					    	EditorGUILayout.Space();
+
+					    	EditorGUILayout.LabelField("Cloud Noise Settings", EditorStyles.boldLabel);
+					    	trueSky.WorleyWavelengthKm = EditorGUILayout.Slider("Worley Wavelength Km", trueSky.WorleyWavelengthKm, 0.0f, 50.0f);
+					    	trueSky.WorleyTextureSize = EditorGUILayout.IntSlider("Worley Texture Size", trueSky.WorleyTextureSize, 8, 512);
+					    	EditorGUILayout.Space();
+					    }
+
+					// Precipitation settings
+					precipitation = EditorGUILayout.Foldout(precipitation, "Precipitation");
+					if (precipitation)
+					{
+						trueSky.SimulationTimeRain = EditorGUILayout.Toggle("Sim Time Rain", trueSky.SimulationTimeRain);
+						if (trueSky.SimulVersion >= trueSky.MakeSimulVersion(4, 2))
+						{
+							trueSky.MaxPrecipitationParticles = EditorGUILayout.IntField("Max Particles", trueSky.MaxPrecipitationParticles);
+							trueSky.PrecipitationRadiusMetres = EditorGUILayout.Slider("Radius (m)", trueSky.PrecipitationRadiusMetres, 0.5F, 100.0F);
+							trueSky.RainFallSpeedMS = EditorGUILayout.Slider("Rain fall speed (m/s)", trueSky.RainFallSpeedMS, 0.0F, 20.0F);
+							trueSky.SnowFallSpeedMS = EditorGUILayout.Slider("Snow fall speed (m/s)", trueSky.SnowFallSpeedMS, 0.0F, 20.0F);
+							trueSky.RainDropSizeMm = EditorGUILayout.Slider("Raindrop Size (mm)", trueSky.RainDropSizeMm, 0.05F, 20.0F);
+							trueSky.SnowFlakeSizeMm = EditorGUILayout.Slider("Snowflake Size (mm)", trueSky.SnowFlakeSizeMm, 0.05F, 20.0F);
+							trueSky.PrecipitationWindEffect = EditorGUILayout.Slider("WindEffect", trueSky.PrecipitationWindEffect, 0.0F, 1.0F);
+							trueSky.PrecipitationWaver = EditorGUILayout.Slider("Waver", trueSky.PrecipitationWaver, 0.0F, 5.0F);
+							trueSky.PrecipitationWaverTimescaleS = EditorGUILayout.Slider("WaverTimescaleS", trueSky.PrecipitationWaverTimescaleS, 0.1F, 60.0F);
+							trueSky.PrecipitationThresholdKm = EditorGUILayout.Slider("ThresholdKm", trueSky.PrecipitationThresholdKm, 0.5F, 20.0F);
+						}
+						EditorGUILayout.Space();
+					}
+
+					celestial = EditorGUILayout.Foldout(celestial,"Celestial");
+					if (celestial)
+					{
+						trueSky.MaxSunRadiance = EditorGUILayout.FloatField("Max Sun Radiance", trueSky.MaxSunRadiance);
+						trueSky.AdjustSunRadius = EditorGUILayout.Toggle("Adjust Sun Radius", trueSky.AdjustSunRadius);
+						trueSky.backgroundTexture = (Texture)EditorGUILayout.ObjectField("Cosmic Background", trueSky.backgroundTexture, typeof(Texture), false);
+						trueSky.moonTexture = (Texture)EditorGUILayout.ObjectField("Moon Texture", trueSky.moonTexture, typeof(Texture), false);
+						trueSky.MinimumStarPixelSize = EditorGUILayout.FloatField("Minimum Star Pixel Size", trueSky.MinimumStarPixelSize);
+						EditorGUILayout.Space();
+					}
+				}
+				// Sound settings
+				debugging = EditorGUILayout.Foldout(debugging, "Debugging");
+				if(debugging)
+				{
+					trueSky.RenderInEditMode = EditorGUILayout.Toggle("Render in Edit Mode", trueSky.RenderInEditMode);
+					string gv = SystemInfo.graphicsDeviceVersion;
+					EditorGUILayout.LabelField("Unity Renderer", gv);
+					if (gv.Contains("Direct3D 11"))
+						EditorGUILayout.LabelField("GOOD", GUILayout.Width(48));
+					else
+						EditorGUILayout.LabelField("Unsupported", GUILayout.Width(48));
+					//	string cons=trueSky.GetRenderString("ConstellationNames");			
+					{
+						string f = EditorGUILayout.TextField("Find Constellation: ", "");
+						if (f.Length > 0)
+							trueSky.SetRenderString("HighlightConstellation", f);
+					}
+					string hcons = trueSky.GetRenderString("HighlightConstellationNames");
+					if (hcons.Length > 0)
+					{
+						EditorGUILayout.TextArea(hcons);
+					}
+					if (trueSKY.advancedMode)
+					{
+						if (GUILayout.Button("Recompile Shaders"))
+						{
+							recomp = true;
+						}
+					}
+					trueSky.maxGpuProfileLevel = EditorGUILayout.IntSlider("GPU Level", trueSky.maxGpuProfileLevel, 0, 8);
+					trueSky.maxCpuProfileLevel = EditorGUILayout.IntSlider("CPU Level", trueSky.maxCpuProfileLevel, 0, 8);
+					showProfiling = EditorGUILayout.Foldout(showProfiling,"Profiling");
+					
+					if (showProfiling)
+					{
+						trueSky.SetBool("Profiling", true);
+						GUIStyle style = new GUIStyle();
+						style.richText = true;
+						string perf = "";
+						if (EditorGUIUtility.isProSkin)
+							perf = "<color=white>";
+						perf += trueSky.GetRenderString("Profiling");
+						if (EditorGUIUtility.isProSkin)
+							perf += "</color>";
+						scroll = EditorGUILayout.BeginScrollView(scroll);
+						EditorGUILayout.TextArea(perf, style, GUILayout.Height(1024));//
+						EditorGUILayout.EndScrollView();
+					}
+					else
+						trueSky.SetBool("Profiling", false);
+					
+					EditorGUILayout.Space();
+				}
+			}
+			EditorGUILayout.EndVertical();
 		
-
-#if (UNITY_4_3 || UNITY_4_4)
-#else
 		EditorGUILayout.BeginHorizontal();
 		if(trueSKY.advancedMode)
 		if(GUILayout.Button("Export Package"))
@@ -212,7 +296,7 @@ namespace simul
 				UnityEngine.Debug.Log(e);
 				UnityEngine.Debug.Log("The version string file could not be read: "+version_file);
 			}
-			string filenameRoot = "trueSKYAlpha-Unity5-" + version;
+			string filenameRoot = "trueSKYPlugin-Unity2017-" + version;
 			string[] aFilePaths=Directory.GetFiles(dir,filenameRoot+"*.unitypackage");
 			int largest=1;
 			foreach(string p in aFilePaths)
@@ -239,8 +323,8 @@ namespace simul
 			//UnityEngine.Debug.Log(fileName);
 			ExportPackage(fileName);
 		}
-        EditorGUILayout.EndHorizontal();
-#endif
+		EditorGUILayout.EndHorizontal();
+
 			if (GUI.changed)
 			{
 				EditorUtility.SetDirty(target);
@@ -252,8 +336,7 @@ namespace simul
 				recomp = false;
 			}
 		}
-#if (UNITY_4_3 || UNITY_4_4)
-#else
+
 	/// <summary>
 	/// This command is run from the CI server to test that the just-installed trueSKY package is ok.
 	/// </summary>
@@ -264,38 +347,18 @@ namespace simul
 	}
 	static void ExportPackageCmdLine()
 	{
-		UnityEngine.Debug.Log("ExportPackageCmdLine");
-		ExportPackage(CommandLineReader.GetCustomArgument("Filename"));
+        Application.SetStackTraceLogType (LogType.Error|LogType.Assert|LogType.Exception|LogType.Warning|LogType.Log,StackTraceLogType.None);
+		string f = CommandLineReader.GetCustomArgument("Filename");
+		f = f.Replace("\"", "");
+		UnityEngine.Debug.Log("ExportPackageCmdLine "+f);
+		ExportPackage(f);
 	}
 	static void ExportPackage(string fileName)
 	{
-		UnityEngine.Debug.Log("trueSKYEditor.ExportPackage: "+fileName);
-		List<string> paths=new List<string>();
-		AddAssetPathToExport("Simul",paths);
-		AssetDatabase.ExportPackage(paths.ToArray(),fileName,ExportPackageOptions.Default);
+		UnityEngine.Debug.Log("C:/trueSKY.unitypackage =" + fileName+"? "+("C:/trueSKY.unitypackage" == fileName));
+		AssetDatabase.ExportPackage("Assets/Simul", fileName, ExportPackageOptions.Recurse | ExportPackageOptions.IncludeDependencies);
+
 		UnityEngine.Debug.Log("Exported: "+fileName);
 	}
-	static void AddAssetPathToExport(string asset_path,List<string> paths)
-	{
-		UnityEngine.Debug.LogError("Application.dataPath: "+Application.dataPath);
-		string full_path=Path.GetFullPath(Path.Combine(Application.dataPath,asset_path));
-		UnityEngine.Debug.Log("Add Path: "+full_path);
-		string[] aFilePaths=Directory.GetFiles(full_path,"*.*",SearchOption.AllDirectories);
- 
-		// enumerate through the list of files loading the assets they represent and getting their type
-		foreach (string p in aFilePaths)
-		{
-			string asset_filename=p.Substring(Application.dataPath.Length-6);// remove asset path and slash.
-			if(!asset_filename.Contains(".meta"))
-				continue;
-			asset_filename=asset_filename.Replace(".meta","");
-			if(paths.Contains(asset_filename))
-				continue;
-			asset_filename=asset_filename.Replace("\\","/");
-			//UnityEngine.Debug.Log("Add: "+asset_filename);
-			paths.Add(asset_filename);
-         }
-	}
-#endif
 	}
 }

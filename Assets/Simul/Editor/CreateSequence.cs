@@ -13,7 +13,7 @@ namespace simul
 		[MenuItem("Assets/Create/trueSKY Sequence", false, 1000)]
 		public static void CreateSequenceAsset()
 		{
-			DirectoryCopy.CopyPluginsAndGizmosToAssetsFolder();
+			// DirectoryCopy.CopyPluginsAndGizmosToAssetsFolder();
 			Sequence asset = CustomAssetUtility.CreateAsset<Sequence>();
 			Selection.activeObject = asset;
 		}

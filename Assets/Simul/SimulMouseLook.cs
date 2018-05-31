@@ -27,7 +27,8 @@ public class SimulMouseLook : MonoBehaviour
 	public bool workWhenPlaying = true;
 	public float sensitivityX = 0.15F;
 	public float sensitivityY = 0.15F;
-	public float TiltTurn=0.0F;
+    public float translationSpeed = 10.0F;
+    public float TiltTurn=0.0F;
 	public float minimumX = -360F;
 	public float maximumX = 360F;
 
@@ -42,33 +43,84 @@ public class SimulMouseLook : MonoBehaviour
 			GetComponent<Rigidbody>().freezeRotation = true;
 	}
 	Vector2 lastPos;
-	Vector3 spd;
-	Vector3 newspd;
-	void OnGUI()
+	Vector3 rot_speed;
+	Vector3 new_rot_speed;
+    Vector3 speed;
+    Vector3 new_speed;
+    void OnGUI()
 	{
 		if (Application.isPlaying && !workWhenPlaying)
 			return;
-		if (Event.current.type == EventType.Layout || Event.current.type == EventType.Repaint)
-		{
-			EditorUtility.SetDirty(this); // this is important, if omitted, "Mouse down" will not be display
-		}
-		else if (Event.current.type == EventType.MouseDown)
-		{
-			lastPos = Event.current.mousePosition;
-		}
-		else if (Event.current.type == EventType.MouseDrag || Event.current.type == EventType.MouseMove)
-		{
-			Vector3 diff = Event.current.mousePosition - lastPos;
-			newspd = new Vector3(diff.x * sensitivityX, diff.y * sensitivityY,0);
-			lastPos = Event.current.mousePosition;
-			if (!Application.isPlaying)
+        if (Event.current.type == EventType.Layout || Event.current.type == EventType.Repaint)
+        {
+            EditorUtility.SetDirty(this); // this is important, if omitted, "Mouse down" will not be displayed
+        }
+        else if (Event.current.type == EventType.MouseDown)
+        {
+            lastPos = Event.current.mousePosition;
+        }
+        else if (Event.current.type == EventType.MouseDrag || Event.current.type == EventType.MouseMove)
+        {
+            Vector3 diff = Event.current.mousePosition - lastPos;
+			if (Event.current.button == 0)
 			{
-				ApplyRotation(newspd);
-				SceneView.RepaintAll();
+				new_speed = 0.1f*new Vector3(diff.x, diff.y, 0);
+				ApplyTranslation(new_speed);
 			}
-		}
-	}
-	void ApplyRotation(Vector3 spd)
+			else if (Event.current.button == 1)
+			{
+				new_speed*= 0;
+				ApplyRotation(new_rot_speed);
+				new_rot_speed = new Vector3(diff.x, diff.y, 0);
+			}
+			lastPos = Event.current.mousePosition;
+            if (!Application.isPlaying)
+            {
+
+                SceneView.RepaintAll();
+            }
+        }
+        else if (Event.current.type == EventType.KeyDown)
+        {
+            if(Event.current.keyCode==KeyCode.W)
+            {
+                new_speed.z = 1.0F;
+            }
+            if (Event.current.keyCode == KeyCode.S)
+            {
+                new_speed.z = -1.0F;
+            }
+            if (Event.current.keyCode == KeyCode.A)
+            {
+                new_speed.x = -1.0F;
+            }
+            if (Event.current.keyCode == KeyCode.D)
+            {
+                new_speed.x = 1.0F;
+            }
+        }
+        else if (Event.current.type == EventType.KeyUp)
+        {
+            if (Event.current.keyCode == KeyCode.W || Event.current.keyCode == KeyCode.S)
+            {
+                new_speed.z = 0.0F;
+            }
+            if (Event.current.keyCode == KeyCode.A || Event.current.keyCode == KeyCode.D)
+            {
+                new_speed.x = 0.0F;
+            }
+        }
+    }
+    void ApplyTranslation(Vector3 rspeed)
+    {
+        Vector3 up = transform.up;
+        Vector3 right = transform.right;
+        Vector3 forward = transform.forward;
+        transform.position-=up*speed.y* translationSpeed;
+        transform.position += right * speed.x* translationSpeed;
+        transform.position += forward * speed.z * translationSpeed;
+    }
+    void ApplyRotation(Vector3 rot_speed)
 	{
 		float rotationX = transform.localEulerAngles.y;
 		float rotationY = -transform.localEulerAngles.x;
@@ -77,14 +129,14 @@ public class SimulMouseLook : MonoBehaviour
 			tiltZ-=360.0F;
 		tiltZ*=0.99F;
 		if (axes == RotationAxes.MouseX || axes == RotationAxes.MouseXAndY)
-			rotationX += spd.x;
+			rotationX += rot_speed.x * sensitivityX;
 
 		if (axes == RotationAxes.MouseY || axes == RotationAxes.MouseXAndY)
 		{
-			rotationY -= spd.y;
+			rotationY -= rot_speed.y * sensitivityY;
 			//rotationY = Mathf.Clamp(rotationY, minimumY, maximumY);
 		}
-		tiltZ += spd.z;
+		tiltZ += rot_speed.z;
 		transform.localEulerAngles = new Vector3(-rotationY, rotationX, tiltZ);
 	}
 	void Update()
@@ -94,17 +146,24 @@ public class SimulMouseLook : MonoBehaviour
 			if (workWhenPlaying)
 			{
 				if (TiltTurn > 0.0F)
-					newspd.z = -TiltTurn * newspd.x;
-				spd *= (damping);
-				spd += (1.0F - damping) * newspd;
-				ApplyRotation(spd);
-				newspd *= 0;
-			}
+					new_rot_speed.z = -TiltTurn * new_rot_speed.x;
+				rot_speed *= (damping);
+				rot_speed += (1.0F - damping) * new_rot_speed;
+				ApplyRotation(rot_speed);
+				new_rot_speed *= 0;
+
+                speed *= (damping);
+                speed += (1.0F - damping) * new_rot_speed;
+                ApplyTranslation(speed);
+                new_speed *= 0;
+            }
 		}
 		else
 		{
-			spd = newspd;
-		}
+			rot_speed = new_rot_speed;
+            speed = new_speed;
+            ApplyTranslation(speed);
+        }
 	}
 #endif
 }

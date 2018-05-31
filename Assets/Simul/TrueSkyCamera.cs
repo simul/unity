@@ -16,76 +16,96 @@ namespace simul
         protected static extern System.IntPtr UnityGetPostTranslucentFunc();
 
         protected float[] cubemapTransformMatrix = new float[16];
+		protected float[] rainDepthMatrix = new float[16];
+		protected float[] rainDepthProjection = new float[16];
+		protected float rainDepthTextureScale;
         protected override int InternalGetViewId()
 		{
 			return StaticGetOrAddView((System.IntPtr)view_ident);
 		}
 
+        public RenderTexture inscatterRT;
+        public RenderTexture cloudShadowRT;
+        public RenderTexture lossRT;
+        public RenderTexture cloudVisibilityRT;
+        public bool FlipOverlays                = false;
+        public RenderTexture showDepthTexture   = null;
+
+        RenderTextureHolder _cloudShadowRT      = new RenderTextureHolder();
+        RenderTextureHolder _inscatterRT        = new RenderTextureHolder();
+        RenderTextureHolder _lossRT             = new RenderTextureHolder();
+        RenderTextureHolder _cloudVisibilityRT  = new RenderTextureHolder();
+
+		RenderTextureHolder _rainDepthRT		= new RenderTextureHolder();
+		protected RenderTextureHolder reflectionProbeTexture = new RenderTextureHolder();
+        protected CommandBuffer overlay_buf                 = null;
+        protected CommandBuffer post_translucent_buf        = null;
+
+        /// <summary>
+        /// This material is used the blit the camera's depth to a render target
+        /// that we'll send to the plugin
+        /// </summary>
+        Material depthMaterial = null;
+
+        //Mesh screenQuad = null;
+
+        /// <summary>
+        /// If true, both XR eyes are expected to be rendered to the same texture.
+        /// </summary>
+        public bool ShareBuffersForVR = true;
+		public TrueSkyRainDepthCamera RainDepthCamera = null;
+        /// <summary>
+        /// Generates an apropiate RenderStyle acording with this camera settings
+        /// and takes into account if stereo (XR) is enabled.
+        /// </summary>
+        /// <returns> A RenderStyle used by the plugin </returns>
 		public override RenderStyle GetRenderStyle()
 		{
-			UnityEngine.VR.VRSettings.showDeviceView = true;
+#if !UNITY_SWITCH
+            UnityEngine.VR.VRSettings.showDeviceView = true;
+#endif
 			RenderStyle r = base.GetRenderStyle();
             if (trueSKY.GetTrueSky().DepthBlending)
+            {
 				r = r | RenderStyle.DEPTH_BLENDING;
+            }
             Camera cam = GetComponent<Camera>();
-#if UNITY_5_5_OR_NEWER
 			if (cam.stereoEnabled)
 			{
 				StereoTargetEyeMask activeEye = cam.stereoTargetEye;
 				r = r | RenderStyle.VR_STYLE;
 				if (activeEye == StereoTargetEyeMask.Right)
+                {
 					r = r | RenderStyle.VR_STYLE_ALTERNATE_EYE;
+                }
 				if (activeEye == StereoTargetEyeMask.Both&&ShareBuffersForVR)
+                {
 					r = r | RenderStyle.VR_STYLE_SIDE_BY_SIDE;
 			}
-#endif
+			}
             return r;
         }
 
-        public enum VRPresetType { OculusRift = 0, OpenVR= 1, Custom= 2, Automatic=3 }
-        public VRPresetType VRPreset = VRPresetType.OpenVR;
-        public int VRTargetWidth = 1280;
-        public bool ShareBuffersForVR = true;
-       
         protected override int GetRequiredDepthTextureWidth()
 		{
 			var cam = GetComponent<Camera>();
             if (cam.stereoEnabled && cam.stereoTargetEye == StereoTargetEyeMask.Both)
 			{
-                int w = 0;
-                if (VRPreset == VRPresetType.OpenVR)
-                    w=1536;
-                else if (VRPreset == VRPresetType.OculusRift)
-                    w=1280;
-                else if (VRPreset == VRPresetType.Custom)
-                    w =VRTargetWidth;
-                else
-                    w= base.GetRequiredDepthTextureWidth();
-                w *= 2;
-                return w;
+#if UNITY_SWITCH
+                return 0;
+#else
+                return UnityEngine.VR.VRSettings.eyeTextureWidth;
+#endif
             }
             else
+            {
                 return base.GetRequiredDepthTextureWidth();
 		}
-		public RenderTexture showDepthTexture=null;
-		
-		public RenderTexture inscatterRT;
-		public RenderTexture cloudShadowRT;
-		public RenderTexture lossRT;
-		public RenderTexture cloudVisibilityRT;
-		public bool FlipOverlays=false;
-        RenderTextureHolder _cloudShadowRT = new RenderTextureHolder();
-		RenderTextureHolder _inscatterRT=new RenderTextureHolder();
-		RenderTextureHolder _lossRT=new RenderTextureHolder();
-		RenderTextureHolder _cloudVisibilityRT=new RenderTextureHolder();
-		
-		protected RenderTextureHolder reflectionProbeTexture = new RenderTextureHolder();
-		protected CommandBuffer overlay_buf=null;
-		protected CommandBuffer post_translucent_buf = null;
+		}
 
         void OnEnable()
         {
-            // Actuallya create the hardware resources of the render targets
+            // Actually create the hardware resources of the render targets
             if (cloudShadowRT)
                 cloudShadowRT.Create();
             if(lossRT)
@@ -116,6 +136,7 @@ namespace simul
 
 		void RemoveCommandBuffers()
 		{
+            RemoveBuffer("trueSKY store state");
 			RemoveBuffer("trueSKY render");
 			RemoveBuffer("trueSKY depth");
 			RemoveBuffer("trueSKY overlay");
@@ -130,11 +151,12 @@ namespace simul
 			}
 			GetComponent<Camera>().depthTextureMode|=DepthTextureMode.Depth;
 			PreRender();
-
 			Camera cam=GetComponent<Camera>();
 			if(buf==null)
 			{
 				RemoveCommandBuffers();
+                storebuf                    = new CommandBuffer();
+                storebuf.name               = "trueSKY store state";
 				buf = new CommandBuffer();
 				buf.name = "trueSKY render";
 				blitbuf=new CommandBuffer();
@@ -153,30 +175,36 @@ namespace simul
 			}
 			CommandBuffer[] bufs=cam.GetCommandBuffers(CameraEvent.BeforeImageEffectsOpaque);
 			PrepareDepthMaterial();
-			if(bufs.Length!=2)
+            if (bufs.Length != 3) 
 			{
 				RemoveCommandBuffers();
+               // cam.AddCommandBuffer(CameraEvent.BeforeImageEffectsOpaque, storebuf);
 				cam.AddCommandBuffer(CameraEvent.BeforeImageEffectsOpaque, blitbuf);
 				cam.AddCommandBuffer(CameraEvent.BeforeImageEffectsOpaque, buf);
 				cam.AddCommandBuffer(CameraEvent.AfterForwardAlpha, post_translucent_buf);
 				cam.AddCommandBuffer(CameraEvent.AfterEverything, overlay_buf);
 			}
+            storebuf.Clear();
 			buf.Clear();
 			blitbuf.Clear();
 			overlay_buf.Clear();
 			post_translucent_buf.Clear();
             cbuf_view_id =InternalGetViewId();
-			blitbuf.Blit(_dummyTexture, (RenderTexture)depthTexture.renderTexture, depthMaterial);
+
+            // Copy Unity camera depth
+            {
+				blitbuf.Blit(_dummyTexture, (RenderTexture)depthTexture.renderTexture, depthMaterial);
+			}
 			PrepareMatrices();
             if (showDepthTexture!=null)
 				blitbuf.Blit(_dummyTexture, showDepthTexture, depthMaterial);
 			
+          //  storebuf.IssuePluginEvent(UnityGetStoreStateFunc(), TRUESKY_EVENT_ID + cbuf_view_id);
 			buf.IssuePluginEvent(UnityGetRenderEventFunc(),TRUESKY_EVENT_ID + cbuf_view_id);
 			overlay_buf.IssuePluginEvent(UnityGetOverlayFunc(),TRUESKY_EVENT_ID + cbuf_view_id);
 			post_translucent_buf.IssuePluginEvent (UnityGetPostTranslucentFunc(), TRUESKY_EVENT_ID + cbuf_view_id);
 		}
 
-		Material depthMaterial = null;
 		void PrepareDepthMaterial()
 		{
 			RenderStyle renderStyle = GetRenderStyle();
@@ -192,6 +220,19 @@ namespace simul
 						UnityEngine.Debug.LogError("Shader not found: trueSKY needs flippedDepthShader.shader, located in the Assets/Simul/Resources directory");
 				}
 				depthMaterial = _flippedDepthMaterial;
+#if UNITY_DEPTH_ACCESS
+// unsupported due to missing Unity features.
+				if (_msaaDepthMaterial8== null)
+				{
+					_MSAADepthShader8 = Resources.Load("MSAADepthShader8", typeof(Shader)) as Shader;
+					if (_MSAADepthShader8 != null)
+						_msaaDepthMaterial8 = new Material(_MSAADepthShader8);
+					else
+						UnityEngine.Debug.LogError("Shader not found: trueSKY needs flippedDepthShader.shader, located in the Assets/Simul/Resources directory");
+				}
+				
+				UnityEngine.Debug.Log("msaa");
+#endif
 			}
 			else
 			{
@@ -205,39 +246,36 @@ namespace simul
 				}
 				depthMaterial = _deferredDepthMaterial;
 			}
-			depthMaterial.SetFloat("xoffset",  0.0f);
-			depthMaterial.SetFloat("xscale",  1.0f);
-			Vector4 texSize = new Vector4(depthTexture.renderTexture.width, depthTexture.renderTexture.height);
-			depthMaterial.SetVector("texSize", texSize);
 		}
 
-		public Rect LeftViewport = new Rect(0,0,1536,1680);
-		public Rect RightViewport = new Rect(1536-80,0,1536,1680);
-		public bool DefaultVrViewports = true;
-		Viewport[] targetViewports = new Viewport[3];
 		void PrepareMatrices()
 		{
+            Viewport[] targetViewports  = new Viewport[3];
 			RenderStyle renderStyle = GetRenderStyle();
 			int view_id=InternalGetViewId();
+
 			if (view_id >= 0)
 			{
 				Camera cam = GetComponent<Camera>();
-				Matrix4x4 m = cam.worldToCameraMatrix;
 
+                // View and projection: non-stereo rendering
+				Matrix4x4 m = cam.worldToCameraMatrix;
                 Matrix4x4 p =  GL.GetGPUProjectionMatrix(cam.projectionMatrix, true);
                 ViewMatrixToTrueSkyFormat(renderStyle, m, viewMatrices);
                 ProjMatrixToTrueSkyFormat(renderStyle, p, projMatrices);
 
                 if ((renderStyle & RenderStyle.VR_STYLE) == RenderStyle.VR_STYLE)
                 {
+                    // View matrix: left & right eyes
                     Matrix4x4 l = cam.GetStereoViewMatrix(Camera.StereoscopicEye.Left);
                     Matrix4x4 r = cam.GetStereoViewMatrix(Camera.StereoscopicEye.Right);
-                    // Sadly, Unity can't be trusted to give us equivalent matrices to p using these functions:
-                    Matrix4x4 pl = p;// cam.GetStereoProjectionMatrix(Camera.StereoscopicEye.Left);
-                    Matrix4x4 pr = p;// cam.GetStereoProjectionMatrix(Camera.StereoscopicEye.Right);
                     ViewMatrixToTrueSkyFormat(renderStyle,l, viewMatrices,1);
-                    ProjMatrixToTrueSkyFormat(renderStyle,pl, projMatrices,1);
                     ViewMatrixToTrueSkyFormat(renderStyle, r, viewMatrices,2);
+
+                    // Projection matrix: left & right eyes
+                    Matrix4x4 pl = GL.GetGPUProjectionMatrix(cam.GetStereoProjectionMatrix(Camera.StereoscopicEye.Left),true);
+                    Matrix4x4 pr = GL.GetGPUProjectionMatrix(cam.GetStereoProjectionMatrix(Camera.StereoscopicEye.Right), true);
+                    ProjMatrixToTrueSkyFormat(renderStyle,pl, projMatrices,1);
                     ProjMatrixToTrueSkyFormat(renderStyle, pr, projMatrices,2);
                 }
 
@@ -246,10 +284,11 @@ namespace simul
 				depthViewports[0].x=depthViewports[0].y=0;
 				depthViewports[0].z=depthTexture.renderTexture.width;
 				depthViewports[0].w=depthTexture.renderTexture.height;
+
 				// There are now three viewports. 1 and 2 are for left and right eyes in VR.
 				targetViewports[0].x = targetViewports[0].y = 0;
-				if (cam.actualRenderingPath != RenderingPath.DeferredLighting
-					&& cam.actualRenderingPath != RenderingPath.DeferredShading)
+				if (cam.actualRenderingPath != RenderingPath.DeferredLighting && 
+                    cam.actualRenderingPath != RenderingPath.DeferredShading)
 				{
 					Vector3 screen_0 = cam.ViewportToScreenPoint(new Vector3(0,0,0));
 					targetViewports[0].x = (int)(screen_0.x);
@@ -259,47 +298,47 @@ namespace simul
 				{
 					targetViewports[i].w = depthTexture.renderTexture.width;
 					targetViewports[i].h = depthTexture.renderTexture.height;
-					targetViewports[i].zfar = targetViewports[i].znear = 0.0F;
+                    targetViewports[i].zfar     = 1.0f;
+                    targetViewports[i].znear    = 0.0F;
 				}
 
+#if !UNITY_SWITCH
+                // If we are doing XR we need to setup the additional viewports
 				if ((renderStyle & RenderStyle.VR_STYLE) == RenderStyle.VR_STYLE)
 				{
-					if (DefaultVrViewports)
-					{
-						LeftViewport.x = 0;
-						LeftViewport.y = 0;
-                        LeftViewport.width = depthTexture.renderTexture.width/2;
-						LeftViewport.height = UnityEngine.VR.VRSettings.eyeTextureHeight;
-						RightViewport.x = depthTexture.renderTexture.width / 2;
-                        RightViewport.y = 0;
-						RightViewport.width = depthTexture.renderTexture.width / 2;
-						RightViewport.height = UnityEngine.VR.VRSettings.eyeTextureHeight;
+                    int fullEyeWidth    = UnityEngine.VR.VRSettings.eyeTextureWidth;
+                    int halfEyeWidth    = fullEyeWidth / 2;
+                    int eyeHeight       = UnityEngine.VR.VRSettings.eyeTextureHeight;
+
+                    // This values can be configured Unity side
+                    //float vpScale       = UnityEngine.VR.VRSettings.renderViewportScale;
+                   // float resScale      = UnityEngine.VR.VRSettings.eyeTextureResolutionScale;
+                   // float maskScale     = UnityEngine.VR.VRSettings.occlusionMaskScale;
+
+                    // Debug.Log(fullEyeWidth + "(" + halfEyeWidth + ")" + " , " + eyeHeight);
+                    // Debug.Log("VP Scale: " + vpScale);
+                    // Debug.Log("Res Scale: " + resScale);
+                    // Debug.Log("Mask Scale: " + maskScale);
+
+                    // Left eye viewports
+                    depthViewports[1].x = targetViewports[1].x = 0;
+                    depthViewports[1].y = targetViewports[1].y = 0;
+                    depthViewports[1].z = targetViewports[1].w = halfEyeWidth;
+                    depthViewports[1].w = targetViewports[1].h = eyeHeight;
+
+                    // Right eye viewports
+					depthViewports[2].x = targetViewports[2].x = halfEyeWidth;
+					depthViewports[2].y = targetViewports[2].y = 0;
+					depthViewports[2].z = targetViewports[2].w = halfEyeWidth;
+                    depthViewports[2].w = targetViewports[2].h = eyeHeight;                    
 					}
-					targetViewports[1].x = (int)LeftViewport.x;
-					targetViewports[1].y = (int)LeftViewport.y;
-					targetViewports[1].w = (int)LeftViewport.width;
-					targetViewports[1].h = (int)LeftViewport.height;
-					targetViewports[2].x = (int)RightViewport.x;
-					targetViewports[2].y = (int)RightViewport.y;
-					targetViewports[2].w = (int)RightViewport.width;
-					targetViewports[2].h = (int)RightViewport.height;
-
-                    depthViewports[1].x = 0;
-                    depthViewports[1].y = 0;
-                    depthViewports[1].z = (int)LeftViewport.width;
-                    depthViewports[1].w = depthTexture.renderTexture.height;
-
-                    depthViewports[2].x = (int)RightViewport.x;
-                    depthViewports[2].y = 0;
-                    depthViewports[2].z = (int)RightViewport.width;
-                    depthViewports[2].w = depthTexture.renderTexture.height;
-                }
-                UnityRenderOptions unityRenderOptions;
-                unityRenderOptions = UnityRenderOptions.DEFAULT;
+#endif
+                UnityRenderOptions unityRenderOptions = UnityRenderOptions.DEFAULT;
                 if (FlipOverlays)
                     unityRenderOptions = unityRenderOptions | UnityRenderOptions.FLIP_OVERLAYS;
+                // NOTE (Nacho): we need to update the plugin internally
                 if (ShareBuffersForVR)
-                    unityRenderOptions = unityRenderOptions | UnityRenderOptions.NO_SEPARATION;
+                    //unityRenderOptions = unityRenderOptions | UnityRenderOptions.NO_SEPARATION;
                 
                 UnitySetRenderFrameValues(view_id
                     ,viewMatrices
@@ -311,12 +350,14 @@ namespace simul
 					,renderStyle
 					,exposure
 					,gamma
-					,Time.renderedFrameCount
-                    ,unityRenderOptions);
+					,Time.frameCount
+					, unityRenderOptions
+                    , Graphics.activeColorBuffer.GetNativeRenderBufferPtr());
 
                 _inscatterRT.renderTexture = inscatterRT;
 				_cloudVisibilityRT.renderTexture = cloudVisibilityRT;
 				_cloudShadowRT.renderTexture = cloudShadowRT;
+
                 _lossRT.renderTexture = lossRT;
 				StaticSetRenderTexture("inscatter2D",_inscatterRT.GetNative());
 				StaticSetRenderTexture("Loss2D", _lossRT.GetNative());
@@ -328,6 +369,18 @@ namespace simul
 				StaticSetRenderTexture("CloudShadowRT", _cloudShadowRT.GetNative());
 				MatrixTransform(cubemapTransformMatrix);
 				StaticSetMatrix4x4("CubemapTransform", cubemapTransformMatrix);
+
+				if (RainDepthCamera != null)
+					_rainDepthRT.renderTexture = RainDepthCamera.targetTexture;
+				StaticSetRenderTexture("RainDepthTexture", _rainDepthRT.GetNative());
+				if (RainDepthCamera != null)
+				{
+					ViewMatrixToTrueSkyFormat(RenderStyle.UNITY_STYLE,RainDepthCamera.matrix, rainDepthMatrix,0,true);
+					rainDepthTextureScale = 1.0F;// DepthCamera.farClipPlane;
+					StaticSetMatrix4x4("RainDepthTransform", rainDepthMatrix);
+					StaticSetMatrix4x4("RainDepthProjection", rainDepthProjection);
+					StaticSetRenderFloat("RainDepthTextureScale", rainDepthTextureScale);
+				}
 			}
 		}
 	}

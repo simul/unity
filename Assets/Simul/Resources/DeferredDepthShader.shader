@@ -36,7 +36,7 @@
 		ret.rgb=float3(depth,depth,depth);
 		
 		return ret;
-	}
+	} 
 	ENDCG
 	SubShader
 	{

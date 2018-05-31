@@ -1,6 +1,5 @@
 ﻿using UnityEngine;
 using System.Collections;
-using System.IO; // Used for writing PNG textures to disk
 
 namespace simul
 {
@@ -8,27 +7,28 @@ namespace simul
     /// This probe component will update the material trueSKYSkybox, which can be used as the skybox for lighting.
     public class TrueSkyCubemapProbe : MonoBehaviour
     {
-        private Camera dummyCam = null;
-        private RenderTexture cubemapRenderTexture = null;
-        public int textureSize = 32;
-        public float exposure = 1.0F;
-        public float gamma = 0.44F;
-        public float updatePeriodSeconds = 0.5F;
-        float _updatePeriodSeconds = 0.0F;
-        public bool skyOnly = true;
+        private Camera dummyCam                     = null;
+        private RenderTexture cubemapRenderTexture  = null;
+        public int textureSize                      = 32;
+        public float exposure                       = 1.0F;
+        public float gamma                          = 0.44F;
+        public float updatePeriodSeconds            = 0.5F;
+        float _updatePeriodSeconds                  = 0.0F;
+        public bool skyOnly                         = true;
+
+        bool _initialized                                   = false;
+        public RenderTextureFormat renderTextureFormat      = RenderTextureFormat.Default;
+        private TrueSkyCameraCubemap trueSkyCameraCubemap   = null;
+        int last_face                                       = -1;
+        // Flips the projection matrix of the cubemap probe
+        public bool flipProbeY                              = true;
+
         public RenderTexture GetRenderTexture()
         {
             if (cubemapRenderTexture == null)
                 return null;
             return cubemapRenderTexture;
         }
-        bool _initialized = false;
-        public RenderTextureFormat renderTextureFormat = RenderTextureFormat.Default;
-        private TrueSkyCameraCubemap trueSkyCameraCubemap = null;
-        int last_face = -1;
-
-        // Flips the projection matrix of the cubemap probe
-        public bool flipProbeY = true;
 
         void Start()
         {
@@ -56,6 +56,7 @@ namespace simul
                 cubemapRenderTexture.DiscardContents();
             _initialized = false;
         }
+
         void Update()
         {
             // Has the update frequency changed?
@@ -111,15 +112,15 @@ namespace simul
                                     
             if (dummyCam == null)
             {
-                GameObject aDummyCamObject = new GameObject("CubemapCamera1", typeof(Camera));
-                aDummyCamObject.hideFlags = HideFlags.HideAndDontSave;
-                dummyCam = aDummyCamObject.GetComponent<Camera>();
-                dummyCam.backgroundColor = new Color(0, 0, 0, 0);
-                dummyCam.renderingPath = RenderingPath.DeferredLighting;
-                dummyCam.depthTextureMode |= DepthTextureMode.Depth;
-                dummyCam.enabled = false;
-                trueSkyCameraCubemap = aDummyCamObject.AddComponent<TrueSkyCameraCubemap>();
-                _initialized = false;
+                GameObject aDummyCamObject  = new GameObject("CubemapCamera1", typeof(Camera));
+                aDummyCamObject.hideFlags   = HideFlags.HideAndDontSave;
+                dummyCam                    = aDummyCamObject.GetComponent<Camera>();
+                dummyCam.enabled            = false;
+                dummyCam.backgroundColor    = new Color(0, 0, 0, 0);
+                dummyCam.renderingPath      = RenderingPath.DeferredLighting;
+                dummyCam.depthTextureMode   |= DepthTextureMode.Depth;
+                trueSkyCameraCubemap        = aDummyCamObject.AddComponent<TrueSkyCameraCubemap>();
+                _initialized                = false;
             }
 
             // Null checks
@@ -127,6 +128,11 @@ namespace simul
                 return;
             if (cubemapRenderTexture == null)
                 CreateTexture();
+            // Don't render if is not ready yet
+            if(!cubemapRenderTexture.IsCreated())
+            {
+                return;
+            }
 
             // Setup camera to render
             dummyCam.gameObject.transform.position = transform.position;
@@ -136,7 +142,7 @@ namespace simul
                 trueSkyCameraCubemap.exposure = exposure;
                 trueSkyCameraCubemap.gamma = gamma;
             }
-            dummyCam.farClipPlane = 100000.0F;
+            dummyCam.farClipPlane = 300000.0f;
             if (cubemapRenderTexture == null)
             {
                 UnityEngine.Debug.Log("cubemapRenderTexture == null ");
@@ -159,24 +165,14 @@ namespace simul
             // Disable any renderer attached to this object which may get in the way of our cam
             if (GetComponent<Renderer>())
                 GetComponent<Renderer>().enabled = false;
-            if (skyOnly)
+            
+            // TO-DO: this is as it should be (once we integrate the Skylights we won't have it anyway) 
+            // if (skyOnly)
                 dummyCam.cullingMask = 0;
-
-            // Set the cube texture
-            Material trueSKYSkyboxMat = Resources.Load("trueSKYSkybox", typeof(Material)) as Material;
-            if (trueSKYSkyboxMat)
-            {
-                if (trueSKYSkyboxMat.GetTexture("_Cube") != cubemapRenderTexture)
-                    trueSKYSkyboxMat.SetTexture("_Cube", cubemapRenderTexture); 
-            }
-            else
-                UnityEngine.Debug.LogWarning("Can't find Material 'trueSKYSkybox' - it should be in Simul/Resources.");
 
             // Render to the cubemap (using the mask to only render a face at a time)
             bool renderResult = false;
             renderResult = dummyCam.RenderToCubemap(cubemapRenderTexture, faceMask);
-            if (!_initialized)
-                renderResult = dummyCam.RenderToCubemap(cubemapRenderTexture, faceMask);
             if (!renderResult)
             {
                 Debug.LogWarning("Failed to capture the probe");
@@ -194,6 +190,16 @@ namespace simul
                             GetComponent<Renderer>().sharedMaterial.SetTexture("_Cube", cubemapRenderTexture);
                 }
             }
+
+            // Set the cube texture
+            Material trueSKYSkyboxMat = Resources.Load("trueSKYSkybox", typeof(Material)) as Material;
+            if (trueSKYSkyboxMat)
+            {
+                if (trueSKYSkyboxMat.GetTexture("_Cube") != cubemapRenderTexture)
+                    trueSKYSkyboxMat.SetTexture("_Cube", cubemapRenderTexture);
+            }
+            else
+                UnityEngine.Debug.LogWarning("Can't find Material 'trueSKYSkybox' - it should be in Simul/Resources.");
         }
 
         void CreateTexture()
@@ -202,21 +208,13 @@ namespace simul
                 || cubemapRenderTexture.width != textureSize
                 || cubemapRenderTexture.depth != 24
                 || cubemapRenderTexture.format != renderTextureFormat
-#if UNITY_5_4_OR_NEWER
                 || cubemapRenderTexture.dimension != UnityEngine.Rendering.TextureDimension.Cube
-#else
-				|| cubemapRenderTexture.isCubemap != true
-#endif
             )
             {
-                RenderTextureFormat rtf = renderTextureFormat;
-                cubemapRenderTexture = new RenderTexture(textureSize, textureSize, 24, rtf, RenderTextureReadWrite.Linear);
-                renderTextureFormat = cubemapRenderTexture.format;
-#if UNITY_5_4_OR_NEWER
-                cubemapRenderTexture.dimension = UnityEngine.Rendering.TextureDimension.Cube;
-#else
-				cubemapRenderTexture.isCubemap=true;
-#endif
+                RenderTextureFormat rtf         = renderTextureFormat;
+                cubemapRenderTexture            = new RenderTexture(textureSize, textureSize, 24, rtf, RenderTextureReadWrite.Linear);
+                renderTextureFormat             = cubemapRenderTexture.format;
+                cubemapRenderTexture.dimension  = UnityEngine.Rendering.TextureDimension.Cube;
                 cubemapRenderTexture.Create();
                 _initialized = false;
             }

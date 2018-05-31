@@ -19,7 +19,6 @@ namespace simul
             set { doFlipY = value; }
         }
 
-
         Material PrepareDepthMaterial()
         {
             Material mat = null;
@@ -59,11 +58,15 @@ namespace simul
                 targetViewport[0].x = targetViewport[0].y = 0;
                 targetViewport[0].w = depthTexture.renderTexture.width;
                 targetViewport[0].h = depthTexture.renderTexture.height;
-                targetViewport[0].znear = targetViewport[0].zfar = 0.0F;
-                UnitySetRenderFrameValues(view_id, viewMatrices, projMatrices, cproj
-                            , depthTexture.GetNative(), depthViewports, targetViewport
-                            , renderStyle, exposure, gamma, Time.renderedFrameCount, UnityRenderOptions.DEFAULT);
-
+                targetViewport[0].znear = 0.0f;
+                targetViewport[0].zfar  = 1.0f;
+                UnitySetRenderFrameValues
+                (
+                    view_id, viewMatrices, projMatrices, cproj
+                    ,depthTexture.GetNative(), depthViewports, targetViewport
+                    ,renderStyle, exposure, gamma, Time.frameCount, UnityRenderOptions.DEFAULT
+                    ,Graphics.activeColorBuffer.GetNativeRenderBufferPtr()
+                );
             }
         }
 
@@ -73,11 +76,11 @@ namespace simul
             Camera cam = GetComponent<Camera>();
             if (buf == null)
             {
-                buf = new CommandBuffer();
-                buf.name = "render trueSKY";
-                blitbuf = new CommandBuffer();
-                blitbuf.name = "copy depth texture";
-                cbuf_view_id = -1;
+                storebuf        = new CommandBuffer();
+                storebuf.name   = "trueSKY store state";
+                buf             = new CommandBuffer();
+                buf.name        = "render trueSKY";
+                cbuf_view_id    = -1;
             }
             if (cbuf_view_id != InternalGetViewId())
             {
@@ -85,17 +88,17 @@ namespace simul
             }
             PrepareMatrices();
             CommandBuffer[] bufs = cam.GetCommandBuffers(CameraEvent.BeforeImageEffectsOpaque);
-            Material mat = PrepareDepthMaterial();
             if (bufs.Length != 2)
             {
                 cam.RemoveCommandBuffers(CameraEvent.BeforeImageEffectsOpaque);
-                cam.AddCommandBuffer(CameraEvent.BeforeImageEffectsOpaque, blitbuf);
+                cam.AddCommandBuffer(CameraEvent.BeforeImageEffectsOpaque, storebuf);
                 cam.AddCommandBuffer(CameraEvent.BeforeImageEffectsOpaque, buf);
             }
             buf.Clear();
-            blitbuf.Clear();
+            storebuf.Clear();
             cbuf_view_id = InternalGetViewId();
-            blitbuf.Blit(_dummyTexture, (RenderTexture)depthTexture.renderTexture, mat);
+
+            storebuf.IssuePluginEvent(UnityGetStoreStateFunc(), TRUESKY_EVENT_ID + cbuf_view_id);
             buf.ClearRenderTarget(true, true, new Color(0.0F, 0.0F, 0.0F, 1.0F), 1.0F);
             buf.IssuePluginEvent(UnityGetRenderEventFunc(), TRUESKY_EVENT_ID + cbuf_view_id);
         }

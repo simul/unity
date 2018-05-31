@@ -4,52 +4,71 @@ using UnityEditor;
 using UnityEditor.Callbacks;
 using System.IO;
 using System;
+using simul;
 
 namespace simul
 {
 	public class TrueSkyBuildPostprocessor
 	{
+        static string ToPlatformName(BuildTarget target)
+        {
+            switch(target)
+            {
+                case BuildTarget.PS4:
+                    return "ps4";
+                case BuildTarget.StandaloneWindows:
+                case BuildTarget.StandaloneWindows64:
+                    return "x86_64";
+                case BuildTarget.WSAPlayer:
+                    return "WSA";
+                case BuildTarget.XboxOne:
+                    return "XboxOne";
+                default:
+                    return "null";
+            }
+        }
+
 		[PostProcessBuild]
 		public static void OnPostprocessBuild(BuildTarget target, string pathToBuiltProject)
 		{
             // Check supported targets
-			if (target != BuildTarget.StandaloneWindows && target != BuildTarget.StandaloneWindows64 && target != BuildTarget.PS4 && target != BuildTarget.WSAPlayer)
+			if (target != BuildTarget.StandaloneWindows && target != BuildTarget.StandaloneWindows64 && 
+                target != BuildTarget.PS4               && target != BuildTarget.WSAPlayer    )
 			{
-				Debug.LogError("trueSKY Build Postprocessor: don't know this platform: " + target.ToString());
+				Debug.LogError("Trying to build for a non-supported platform! (" + target.ToString() + ")");
 				return;
 			}
             
 			char s = Path.DirectorySeparatorChar;
-			Debug.Log("trueSKY Build Postprocessor: pathToBuiltProject is: " + pathToBuiltProject);
-			string buildDirectory = pathToBuiltProject.Replace(".exe", "_Data");// Path.GetDirectoryName(pathToBuiltProject);
-
+			string buildDirectory = pathToBuiltProject.Replace(".exe", "_Data");
+			String targetstr = "x86_64";
             // Per-platform changes
-			if(target== BuildTarget.PS4)
+			if(target == BuildTarget.PS4)
 			{
-				buildDirectory +=s+"Media" + s;
+                buildDirectory += s + "Media" + s;
+				targetstr = "ps4";
 			}
             if(target == BuildTarget.WSAPlayer)
             {
                 buildDirectory += s + Application.productName + s + "Data";
             }
-			
+
+            Debug.Log("Build directory is: " + buildDirectory);
+
             // Copy shaders
-			string assetsPath = Environment.CurrentDirectory + s + "Assets";
-			string simul = assetsPath + s + "Simul";
-            // Custom shader binary folder
-            string shaderFolderSrt = "shaderbin";
-            if (target == BuildTarget.PS4) shaderFolderSrt = "shaderbinps4";
-            string shaderbinSource = simul + s + shaderFolderSrt;
-
+			string assetsPath       = Environment.CurrentDirectory + s + "Assets";
+			string shaderbinSource = trueSKY.GetShaderbinSourceDir(targetstr);
 			string shaderbinBuild = buildDirectory + s + "Simul" + s + "shaderbin";
-			DirectoryCopy.Copy(shaderbinSource, shaderbinBuild, true, false, false, false);
-			Debug.Log("trueSKY Build Postprocessor: shader binaries to: " + shaderbinBuild);
+			DirectoryCopy.Copy(shaderbinSource, shaderbinBuild, true, true);
+			Debug.Log("DirectoryCopy: " + shaderbinSource + "->" + shaderbinBuild);
 
+			string simul = assetsPath + s + "Simul";
             // Copy media
 			string MediaSource = simul + s + "Media";
 			string MediaBuild = buildDirectory + s + "Simul" + s + "Media";
 			DirectoryCopy.Copy(MediaSource, MediaBuild, true, false, false, false);
-			Debug.Log("trueSKY Build Postprocessor: Media to: " + MediaBuild);
-		}
+            Debug.Log("DirectoryCopy: " + MediaSource + "->" + MediaBuild);
+
+        }
 	}
 }

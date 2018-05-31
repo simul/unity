@@ -22,7 +22,7 @@ Shader "Custom/DepthShader"
 	sampler2D _MainTex;
 	float xoffset;
 	float xscale;
-	float2 texSize;
+	float2 texSize; 
 	v2f vert( appdata_img v )
 	{
 		v2f o;

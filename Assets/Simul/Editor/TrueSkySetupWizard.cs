@@ -16,6 +16,7 @@ namespace simul
 			PRE_START, START, FIND_SEQUENCE, FIND_CAMERA, FIND_TRUESKY, FIND_SUN, FINISH
 		};
 		Stage stage = Stage.PRE_START;
+
 		[MenuItem("GameObject/Remove trueSKY from Scene", false, 200000)]
 		public static void RemoveTrueSky()
 		{
@@ -23,10 +24,8 @@ namespace simul
 			foreach (UnityEngine.Object t in objects)
 			{
 				Light l = (Light)t;
-				if (l.GetComponent<SimulSun>() != null)
-					DestroyImmediate(l.GetComponent<SimulSun>());
-				if (l.GetComponent<SimulMoon>() != null)
-					DestroyImmediate(l.GetComponent<SimulMoon>());
+				if (l.GetComponent<TrueSkyDirectionalLight>() != null)
+					DestroyImmediate(l.GetComponent<TrueSkyDirectionalLight>());
 			}
 			objects = FindObjectsOfType(typeof(Camera));
 			foreach (UnityEngine.Object t in objects)
@@ -89,7 +88,7 @@ namespace simul
 		{   
 			if (stage == Stage.PRE_START)
 			{
-				DirectoryCopy.CopyPluginsAndGizmosToAssetsFolder();
+				// DirectoryCopy.CopyPluginsAndGizmosToAssetsFolder();
 				stage = Stage.START;
 			}
 			GUIStyle textStyle = new GUIStyle();
@@ -160,42 +159,35 @@ namespace simul
 				FindTrueSky();
 				if (trueSky != null)
 				{
-					GUILayout.Label("A trueSKY GameObject " + trueSky.name + " was found in the current scene.", textStyle);
-					//	trueSky=(trueSKY)EditorGUILayout.ObjectField("trueSKY",trueSky,typeof(trueSKY),true);
+                    GUILayout.Label("A trueSKY GameObject " + trueSky.name + " was found in the current scene.", textStyle);
 				}
 				else
 				{
-					GUILayout.Label("No trueSKY GameObject was found in the current scene, one will be created.", textStyle);
+                    GUILayout.Label("No trueSKY GameObject was found in the current scene, one will be created.", textStyle);
 				}
 			}
 			if (stage == Stage.FIND_SUN)
 			{ 
-				UnityEngine.Object[] lights;
-				lights = FindObjectsOfType (typeof(Light));
+				UnityEngine.Light[] lights;
+				lights              = FindObjectsOfType (typeof(Light)) as Light[];
 				int directionalLights = 0;
-
-				foreach (UnityEngine.Object t in lights) 
+                
+				foreach (Light t in lights) 
 				{
 					Light l = (Light)t;
 					if (l.type == LightType.Directional)
 						directionalLights++;
 				}
-
-				if (directionalLights == 0)  
-					GUILayout.Label ("No directional lights were found in the current scene. \n2 will be created and assigned SimulSun and SimulMoon scripts.", textStyle);
-				else if (directionalLights == 1) 
-					GUILayout.Label ("Only 1 directional light found. The SimulSun script will be assigned to this. \nAn additional light will be created and assigned the SimulMoon script.");
-				else if (directionalLights == 2) 
-					GUILayout.Label ("Exactly 2 directional lights were found. \nThe SimulSun and SimulMoon scripts have been assigned to one of each.");
-				else if (directionalLights >= 3) 
-				{
-					GUILayout.Label ("More than 2 directional lights found. \nPlease assign 2 for the SimulSun and SimulMoon scripts", textStyle);
-					sunlightGameObject = (GameObject)EditorGUILayout.ObjectField ("Sun", sunlightGameObject, typeof(GameObject), true);
-					moonlightGameObject = (GameObject)EditorGUILayout.ObjectField ("Moon", moonlightGameObject, typeof(GameObject), true);
-				} 
-  
-				FindSun ();
-				FindMoon (); 
+				if (directionalLights == 0)
+                {
+					GUILayout.Label ("No directional light on scene, one will be created.", textStyle);
+                }
+				else if (directionalLights >= 1)
+                {
+					GUILayout.Label ("There's 1 or more directional lights on the scene. TrueSKY only needs one directional light.");
+                    lightGameObject = lights[0].gameObject;
+                    lightComponent  = lightGameObject.GetComponent<TrueSkyDirectionalLight>();
+                } 
 			}
 			if (stage == Stage.FINISH)
 			{
@@ -260,6 +252,7 @@ namespace simul
 			EditorGUILayout.EndHorizontal();
 			EditorGUILayout.Space();
 		}
+
 		string GetBottomText()
 		{
 			if (stage == Stage.START)
@@ -269,6 +262,7 @@ namespace simul
 			else
 				return "Click Finish to create the trueSKY assets, objects, and components.";
 		}
+
 		// When the user pressed the "Apply" button OnWizardOtherButton is called.
 		void OnWizardOtherButton()
 		{
@@ -279,21 +273,22 @@ namespace simul
 		{
 			stage--;
 		}
-		Sequence sequence = null;
-		Camera mainCamera = null; 
-		trueSKY trueSky = null;
-		GameObject sunlightGameObject = null;
-		GameObject moonlightGameObject = null;
-		SimulSun simulSun;
-		SimulMoon simulMoon;
-		public bool removeFog = true;
-		public bool removeSkybox = true;
-		public bool createCubemapProbeCam = true;
-		public bool createCubemapProbeObj = true;
-		public bool multipleCameras = false;  
-		public bool createAMainCamera = false;
 
-		string sceneFilename;
+		Sequence        sequence = null;
+		Camera          mainCamera = null; 
+		trueSKY         trueSky = null;
+		GameObject      lightGameObject = null;
+		TrueSkyDirectionalLight    lightComponent;
+
+		public bool     removeFog = true;
+		public bool     removeSkybox = true;
+		public bool     createCubemapProbeCam = true;
+		public bool     createCubemapProbeObj = true;
+		public bool     multipleCameras = false;  
+		public bool     createAMainCamera = false;
+
+		string          sceneFilename;
+
 		void FindSequence()
 		{
 			if (sequence == null) 				 	// to stop GUILayout.ObjectField selections being overwritten
@@ -308,27 +303,24 @@ namespace simul
 				string dir = Path.GetDirectoryName (curScenPath);
 				// Find any sequence asset:
 				string[] assetFiles = Directory.GetFiles (dir, "*.asset");
-				foreach (string p in assetFiles)
-				{ 
-					string assetPath = Path.GetDirectoryName(UnityEngine.SceneManagement.SceneManager.GetActiveScene().path);
-					UnityEngine.Debug.Log("/" + assetPath + "/" + Path.GetFileName(relativePath));
-
-					Sequence sq = AssetDatabase.LoadAssetAtPath(assetPath + "/" + Path.GetFileName(p), typeof(Sequence)) as Sequence;
-					if (sq != null)
+				foreach (string p in assetFiles) 
+				{
+					Sequence sq = AssetDatabase.LoadAssetAtPath (p, typeof(Sequence)) as Sequence;
+					if (sq != null) 
 					{
-						UnityEngine.Debug.Log("Found sequence");						sequence = sq;
+						sequence = sq;
 					}
 				}
 			}
 		}
-		void FindCamera()
+
+        void FindCamera()
 		{
 			// Now we find the main camera, and add the TrueSkyCamera.cs script to it, IF it is not already present:
-			//		GameObject.Find("myObject").camera;
-
 			if (mainCamera == null) 				// to stop GUILayout.ObjectField selections being overwritten
 				mainCamera = Camera.main;
 		}
+
 		void Finish()
 		{   
 			TrueSkyCamera trueSkyCamera;
@@ -400,26 +392,20 @@ namespace simul
 				Material trueSKYSkyboxMat = Resources.Load ("trueSKYSkybox", typeof(Material)) as Material;
 				RenderSettings.skybox = trueSKYSkyboxMat;
 			}  
-			if (sunlightGameObject == null)
+
+            // If there is not light on the scene, add one:
+            if(lightGameObject == null)
+            {
+                lightGameObject = new GameObject("TrueSkyDirectionalLight");
+                Light dirLight  = lightGameObject.AddComponent<Light>();
+                dirLight.type   = LightType.Directional;
+                lightComponent  = lightGameObject.AddComponent<TrueSkyDirectionalLight>();
+            }
+            // If there is a light, but without the component, add it:
+			if (lightComponent == null)
 			{
-				sunlightGameObject = new GameObject("Sunlight");
-				Light light = sunlightGameObject.AddComponent<Light>();
-				light.type = LightType.Directional;
-			}
-			if (simulSun == null)
-			{
-				simulSun = sunlightGameObject.AddComponent<SimulSun>();
-			}
-			if (moonlightGameObject == null)
-			{
-				moonlightGameObject = new GameObject("Moonlight");
-				Light light = moonlightGameObject.AddComponent<Light>();
-				light.type = LightType.Directional;
-			}
-			if (simulMoon == null)
-			{
-				simulMoon = moonlightGameObject.AddComponent<SimulMoon>();
-			}
+                lightComponent = lightGameObject.AddComponent<TrueSkyDirectionalLight>();
+            }
 			if (removeFog)
 			{
 				RenderSettings.fog = false;
@@ -432,10 +418,12 @@ namespace simul
 					mainCamera.backgroundColor = Color.black;
 				}
 			}
+
 			// Now the sequence must be assigned to the trueSKY object.
-			trueSky.sequence = sequence;
-			trueSky.time = 0.5F;
+			trueSky.sequence    = sequence;
+			trueSky.time        = 0.5F;
 		}
+
 		void FindTrueSky()
 		{
 			// And we need a trueSKY object in the scene.
@@ -446,50 +434,7 @@ namespace simul
 				trueSky = (trueSKY)t;
 			}
 		}
-		void FindSun()
-		{
-			// And we need a trueSKY object in the scene.
-			UnityEngine.Object[] lights;
-			lights = FindObjectsOfType(typeof(Light));
-			foreach (UnityEngine.Object t in lights)
-			{
-				Light l = (Light)t;
-
-				if (l.gameObject != moonlightGameObject)   // if moon isn't assigned to this light
-				{
-					if (l.GetComponent<SimulSun> () != null && l.type == LightType.Directional) 
-					{
-						sunlightGameObject = l.gameObject; 
-						simulSun = (SimulSun)l.GetComponent<SimulSun> ();
-						return;
-					} 
-					else if (sunlightGameObject == null) 
-						sunlightGameObject = l.gameObject;
-				}		
-			}
-		}
-		void FindMoon()
-		{
-			// And we need a trueSKY object in the scene.
-			UnityEngine.Object[] lights;
-			lights = FindObjectsOfType(typeof(Light));
-			foreach (UnityEngine.Object t in lights)
-			{
-				Light l = (Light)t;
-
-				if (l.gameObject != sunlightGameObject)      // if sun isn't assigned to this light
-				{
-					if (l.GetComponent<SimulMoon> () != null && l.type == LightType.Directional) 
-					{
-						moonlightGameObject = l.gameObject;
-						simulMoon = (SimulMoon)l.GetComponent<SimulMoon> ();
-						return;
-					} 
-					else if (moonlightGameObject == null)
-						moonlightGameObject = l.gameObject;
-				}
-			}
-		}
+		
 		void OnWizardNext()
 		{
 			stage++;
