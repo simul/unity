@@ -2134,23 +2134,7 @@ namespace simul
                 SetNightTextures();
                 StaticSetRenderBool("SimulationTimeRain", _simulationTimeRain);
 				StaticSetRenderFloat("render:maxsunradiance", _maxSunRadiance);
-				StaticSetRenderBool("EnableBoundlessOcean", true);
-				float[] location = new float[]
-				{
-					0.0f, 0.0f, 600.0f,
-				};
-				float[] absorption = new float[]
-				{
-					0.2916f, 0.0474f, 0.0092f,
-				};
-				float[] scattering = new float[]
-				{
-					0.17f, 0.2f, 0.234f,
-				};
-				StaticSetWaterVector("location", -1, location);
-				StaticSetWaterVector("absorption", -1, absorption);
-				StaticSetWaterVector("scattering", -1, scattering);
-				StaticSetWaterFloat("beaufortScale", -1, 6);
+
 				
 			}
 			catch (Exception exc)
@@ -2434,8 +2418,7 @@ namespace simul
 				StaticSetRenderFloat("render:crepuscularraysstrength", _crepuscularRaysStrength);
 				StaticSetRenderFloat("depthsamplingpixelrange", _depthSamplingPixelRange);
 				StaticSetRenderFloat("maxsunradiance", _maxSunRadiance);
-
-                SetNightTextures();
+				SetNightTextures();
 
 #if UNITY_EDITOR
 				StaticSetRenderBool("ShowCelestialDisplay",_showCelestials);

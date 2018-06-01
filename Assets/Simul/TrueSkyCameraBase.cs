@@ -103,8 +103,10 @@ namespace simul
 		[DllImport(SimulImports.renderer_dll)]
         protected static extern System.IntPtr UnityGetRenderEventFunc();
 		[DllImport(SimulImports.renderer_dll)]
-		protected static extern System.IntPtr UnityGetRenderEventFuncWithData(); 
-		 [DllImport(SimulImports.renderer_dll)]
+		protected static extern System.IntPtr UnityGetRenderEventFuncWithData();
+		[DllImport(SimulImports.renderer_dll)]
+		protected static extern System.IntPtr UnityGetOverlayFuncWithData(); 
+		[DllImport(SimulImports.renderer_dll)]
         protected static extern System.IntPtr UnityGetStoreStateFunc();
 		#endregion
 		[StructLayout(LayoutKind.Sequential)]
