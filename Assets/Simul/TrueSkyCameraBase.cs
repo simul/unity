@@ -102,11 +102,18 @@ namespace simul
 		protected static extern int StaticOnDeviceChanged (System.IntPtr device);
 		[DllImport(SimulImports.renderer_dll)]
         protected static extern System.IntPtr UnityGetRenderEventFunc();
-        [DllImport(SimulImports.renderer_dll)]
+		[DllImport(SimulImports.renderer_dll)]
+		protected static extern System.IntPtr UnityGetRenderEventFuncWithData(); 
+		 [DllImport(SimulImports.renderer_dll)]
         protected static extern System.IntPtr UnityGetStoreStateFunc();
-        #endregion
-
-        protected int view_ident;
+		#endregion
+		[StructLayout(LayoutKind.Sequential)]
+		public struct UnityViewStruct
+		{
+			public System.IntPtr nativeColourRenderBuffer;
+			public System.IntPtr nativeDepthRenderBuffer;
+		}
+		protected int view_ident;
         protected int view_id=-1;
 		protected static int last_view_ident = 0;
 

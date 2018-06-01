@@ -3,7 +3,7 @@
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
+  m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 0}
   m_Enabled: 1
@@ -16,6 +16,7 @@ MonoBehaviour:
     \"16\"\n\t\t\"GridWidth\": \"128\"\n\t\t\"LoopRange\": \"               1\"\n\t\t\"LoopStart\":
     \"               0\"\n\t\t\"MapTexture\": \"\"\n\t\t\"NoisePeriod\": \"               4\"\n\t\t\"NoiseResolution\":
     \"8\"\n\t\t\"OverrideWind\": \"false\"\n\t\t\"PrecipitationThresholdKm\": \"0.2000000029802322\"\n\t\t\"Viscosity\":
+<<<<<<< HEAD
     \"               1\"\n\t\t\"VorticityConfinement\": \"               0\"\n\t\t\"Wrap\":
     \"true\"\n\t\t\"keyframes\":\n\t\t[\n\t\t{\n\t\t\t\"EdgeWorleyNoise\": \"0.5559999942779541\"\n\t\t\t\"WorleyNoise\":
     \"0.6299999952316284\"\n\t\t\t\"WorleyScale\": \"9.708000183105469\"\n\t\t\t\"baseNoiseFactor\":
@@ -34,6 +35,28 @@ MonoBehaviour:
     \"               0\"\n\t\t\t\"time\": \"0.372958242893219\"\n\t\t\t\"uid\": \"4319\"\n\t\t\t\"upperDensity\":
     \"0.699999988079071\"\n\t\t\t\"wind_direction\": \"               0\"\n\t\t\t\"wind_speed\":
     \"              23\"\n\t\t}\n\t\t]\n\t\t\"storms\":\n\t\t[\n\t\t]\n\t}\n\t\"skyKeyframer\":\n\t{\n\t\t\"BackgroundBrightness\":
+=======
+    \"               0\"\n\t\t\"VorticityConfinement\": \"               0\"\n\t\t\"Wrap\":
+    \"true\"\n\t\t\"keyframes\":\n\t\t[\n\t\t{\n\t\t\t\"EdgeWorleyNoise\": \"               0\"\n\t\t\t\"WorleyNoise\":
+    \"               0\"\n\t\t\t\"WorleyScale\": \"               9\"\n\t\t\t\"baseNoiseFactor\":
+    \"             0.5\"\n\t\t\t\"churn\": \"               1\"\n\t\t\t\"cloud_base_km\":
+    \"               3\"\n\t\t\t\"cloud_height_km\": \"               5\"\n\t\t\t\"cloud_width_km\":
+    \"              50\"\n\t\t\t\"cloudiness\": \"0.8600000143051147\"\n\t\t\t\"diffusivity\":
+    \"0.009999999776482582\"\n\t\t\t\"distributionBaseLayer\": \"0.239999994635582\"\n\t\t\t\"distributionTransition\":
+    \"0.2000000029802322\"\n\t\t\t\"edgeSharpness\": \"0.1000000014901161\"\n\t\t\t\"fractal_amplitude\":
+    \"2.400000095367432\"\n\t\t\t\"maxDensityGm3\": \"             0.5\"\n\t\t\t\"octaves\":
+    \"3\"\n\t\t\t\"offsetKmx\": \"               0\"\n\t\t\t\"offsetKmy\": \"               0\"\n\t\t\t\"origin\":
+    \"0.7071067690849304,               0,               0,0.7071067690849304\"\n\t\t\t\"persistence\":
+    \"0.550000011920929\"\n\t\t\t\"precipitation\": \"               1\"\n\t\t\t\"precipitationRegion.edge\":
+    \"0.1000000014901161\"\n\t\t\t\"precipitationRegion.lockToClouds\": \"true\"\n\t\t\t\"precipitationRegion.rainCentreXKm\":
+    \"               0\"\n\t\t\t\"precipitationRegion.rainCentreYKm\": \"               0\"\n\t\t\t\"precipitationRegion.rainEffectStrength\":
+    \"               0\"\n\t\t\t\"precipitationRegion.rainRadiusKm\": \"              50\"\n\t\t\t\"precipitationRegion.regional\":
+    \"false\"\n\t\t\t\"rain_to_snow\": \"               0\"\n\t\t\t\"scalekm\": \"
+    \            200,             200,              10\"\n\t\t\t\"simulation\": \"
+    \              0\"\n\t\t\t\"time\": \"0.372958242893219\"\n\t\t\t\"uid\": \"4319\"\n\t\t\t\"upperDensity\":
+    \"0.699999988079071\"\n\t\t\t\"wind_direction\": \"               0\"\n\t\t\t\"wind_speed\":
+    \"               0\"\n\t\t}\n\t\t]\n\t\t\"storms\":\n\t\t[\n\t\t]\n\t\t\"volumes\":\n\t\t[\n\t\t]\n\t}\n\t\"skyKeyframer\":\n\t{\n\t\t\"BackgroundBrightness\":
+>>>>>>> 5acfc3a299b3b10c0d60d3a00e0fe53caf856320
     \"9.999999747378752e-06\"\n\t\t\"BackgroundTexture\": \"\"\n\t\t\"BaseOzone\":
     \"0.05999999865889549,0.03999999910593033,0.009999999776482582,               0\"\n\t\t\"BrightnessPower\":
     \"            0.25\"\n\t\t\"ColourWavelengthsNm\": \"             630,             540,
