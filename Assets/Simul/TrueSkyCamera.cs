@@ -333,7 +333,7 @@ namespace simul
                 if (FlipOverlays)
                     unityRenderOptions = unityRenderOptions | UnityRenderOptions.FLIP_OVERLAYS;
                 // NOTE (Nacho): we need to update the plugin internally
-                if (ShareBuffersForVR)
+               // if (ShareBuffersForVR)
                     //unityRenderOptions = unityRenderOptions | UnityRenderOptions.NO_SEPARATION;
 
                 UnitySetRenderFrameValues(view_id
@@ -353,7 +353,7 @@ namespace simul
                 _inscatterRT.renderTexture          = inscatterRT;
 				_cloudVisibilityRT.renderTexture    = cloudVisibilityRT;
 				_cloudShadowRT.renderTexture        = cloudShadowRT;
-
+				
                 _lossRT.renderTexture               = lossRT;
 				StaticSetRenderTexture("inscatter2D",_inscatterRT.GetNative());
 				StaticSetRenderTexture("Loss2D", _lossRT.GetNative());

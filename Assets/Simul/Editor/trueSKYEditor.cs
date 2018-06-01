@@ -57,6 +57,11 @@ namespace simul
 		{
 			trueSKY.ShowRainTextures=!trueSKY.ShowRainTextures;
 		}
+		[MenuItem("Window/trueSky/Show Water Textures #&p", false, 200000)]
+		public static void ShowWaterTextures()
+		{
+			trueSKY.ShowWaterTextures = !trueSKY.ShowWaterTextures;
+		}
 		[MenuItem("Window/trueSky/Show Cubemaps #&m", false, 200000)]
 		public static void ShowCubemaps()
 		{
@@ -84,6 +89,8 @@ namespace simul
 		bool interpolation = false;
 		[SerializeField]
 		static bool precipitation = false;
+		[SerializeField]
+		static bool water = false;
 		public override void OnInspectorGUI()
 		{
 			trueSKY trueSky = (trueSKY)target;
@@ -124,8 +131,12 @@ namespace simul
 					clouds = EditorGUILayout.Foldout(clouds,"Clouds");
                     if (clouds)
                     {
-                        EditorGUILayout.BeginVertical(cloudsStyle);
-                        trueSky.IntegrationScheme = EditorGUILayout.IntSlider("Integration Scheme", trueSky.IntegrationScheme, 0, 1);
+						string[] options = new string[]
+						{
+							"Grid", "Fixed",
+						};
+						EditorGUILayout.BeginVertical(cloudsStyle);
+                        trueSky.IntegrationScheme = EditorGUILayout.Popup("Integration Scheme", trueSky.IntegrationScheme, options);
                         trueSky.CubemapResolution = EditorGUILayout.IntSlider("Cubemap Resolution", trueSky.CubemapResolution, 16, 2048);
                         if (trueSky.SimulVersion > trueSky.MakeSimulVersion(4, 1))
                         { 
@@ -220,6 +231,13 @@ namespace simul
 						trueSky.MinimumStarPixelSize = EditorGUILayout.FloatField("Minimum Star Pixel Size", trueSky.MinimumStarPixelSize);
 						EditorGUILayout.Space();
 					}
+
+					water = EditorGUILayout.Foldout(water, "Water");
+					if (water)
+					{
+						trueSky.RenderWater = EditorGUILayout.Toggle("Render Water", trueSky.RenderWater);
+						EditorGUILayout.Space();
+					}
 				}
 				// Sound settings
 				debugging = EditorGUILayout.Foldout(debugging, "Debugging");
@@ -281,9 +299,9 @@ namespace simul
 		if(trueSKY.advancedMode)
 		if(GUILayout.Button("Export Package"))
 		{
-			string simul_dir = "C:/Simul/master/Simul";
+			string simul_dir = "C:/Simul/4.2/Simul";
 			string dir=simul_dir+"/Products/TrueSky/Release/";
-			string version = "3.50.0.";
+			string version = "4.2.0.";
 			string version_file=simul_dir+"/version.txt";
 			try
 			{
@@ -297,7 +315,7 @@ namespace simul
 				UnityEngine.Debug.Log(e);
 				UnityEngine.Debug.Log("The version string file could not be read: "+version_file);
 			}
-			string filenameRoot = "trueSKYPlugin-Unity2017-" + version;
+			string filenameRoot = "trueSKYPlugin-Unity2018-" + version;
 			string[] aFilePaths=Directory.GetFiles(dir,filenameRoot+"*.unitypackage");
 			int largest=1;
 			foreach(string p in aFilePaths)

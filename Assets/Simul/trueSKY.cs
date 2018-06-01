@@ -10,6 +10,7 @@ using System.Threading;
 using System.Diagnostics;
 using UnityEngine.Rendering;
 using System.Collections.Generic;
+using UnityEngine.Experimental.Rendering;
 
 namespace simul
 {
@@ -226,6 +227,18 @@ namespace simul
 		[DllImport(SimulImports.renderer_dll)]		private static extern void	StaticRenderKeyframeSetBool		(uint uid,string name,bool value);
 		[DllImport(SimulImports.renderer_dll)]		private static extern bool	StaticRenderKeyframeGetBool		(uint uid,string name);
 
+		[DllImport(SimulImports.renderer_dll)]		private static extern void StaticCreateBoundedWaterObject	(uint ID, float[] dimension, float[] location);
+		[DllImport(SimulImports.renderer_dll)]		private static extern void StaticRemoveBoundedWaterObject	(uint ID);
+
+		[DllImport(SimulImports.renderer_dll)]		private static extern void StaticAddWaterProbe				(uint ID, float[] location);
+		[DllImport(SimulImports.renderer_dll)]		private static extern void StaticRemoveWaterProbe			(uint ID);
+		[DllImport(SimulImports.renderer_dll)]		private static extern void StaticUpdateWaterProbePosition	(uint ID, float[] location);
+		[DllImport(SimulImports.renderer_dll)]		private static extern void StaticGetWaterProbeValues		(uint ID);
+
+		[DllImport(SimulImports.renderer_dll)]		private static extern void StaticSetWaterFloat	(string name, int ID, float value);
+		[DllImport(SimulImports.renderer_dll)]		private static extern void StaticSetWaterInt	(string name, int ID, int value);
+		[DllImport(SimulImports.renderer_dll)]		private static extern void StaticSetWaterBool	(string name, int ID, bool value);
+		[DllImport(SimulImports.renderer_dll)]		private static extern void StaticSetWaterVector	(string name, int ID, float[] value);
 
 		[DllImport(SimulImports.renderer_dll)]		private static extern int StaticGetRenderString(string name, StringBuilder str, int len);
 		[DllImport(SimulImports.renderer_dll)]		private static extern void StaticSetRenderString(string name, string value);
@@ -589,7 +602,30 @@ namespace simul
             }
         }
 
-        [SerializeField]
+		[SerializeField]
+		bool _renderWater = false;
+		public bool RenderWater
+		{
+			get
+			{
+				return _renderWater;
+			}
+			set
+			{
+				if (_renderWater != value) try
+					{
+						_renderWater = value;
+						StaticSetRenderBool("renderWater", Application.isPlaying || _renderWater);
+						//RepaintAll();
+					}
+					catch (Exception exc)
+					{
+						UnityEngine.Debug.Log(exc.ToString());
+					}
+			}
+		}
+
+		[SerializeField]
         Vector3 _godRaysGrid = new Vector3(64, 32, 32);
         public Vector3 GodRaysGrid
         {
@@ -1206,6 +1242,8 @@ namespace simul
 		[SerializeField]
 		static public bool _showRainTextures = false;
 		[SerializeField]
+		static public bool _showWaterTextures = false;
+		[SerializeField]
 		bool _simulationTimeRain = false;
 		[SerializeField]
 		int _MaxPrecipitationParticles = 100000;
@@ -1692,6 +1730,25 @@ namespace simul
 					}
 			}
 		}
+		static public bool ShowWaterTextures
+		{
+			get
+			{
+				return _showWaterTextures;
+			}
+			set
+			{
+				if (_showWaterTextures != value) try
+					{
+						_showWaterTextures = value;
+						StaticSetRenderBool("ShowWaterTextures", _showWaterTextures);
+					}
+					catch (Exception exc)
+					{
+						UnityEngine.Debug.Log(exc.ToString());
+					}
+			}
+		}
 		static public bool ShowCubemaps
 		{
 			get
@@ -2107,7 +2164,25 @@ namespace simul
                 SetNightTextures();
                 StaticSetRenderBool("SimulationTimeRain", _simulationTimeRain);
 				StaticSetRenderFloat("render:maxsunradiance", _maxSunRadiance);
-            }
+				StaticSetRenderBool("EnableBoundlessOcean", true);
+				float[] location = new float[]
+				{
+					0.0f, 0.0f, 600.0f,
+				};
+				float[] absorption = new float[]
+				{
+					0.2916f, 0.0474f, 0.0092f,
+				};
+				float[] scattering = new float[]
+				{
+					0.17f, 0.2f, 0.234f,
+				};
+				StaticSetWaterVector("location", -1, location);
+				StaticSetWaterVector("absorption", -1, absorption);
+				StaticSetWaterVector("scattering", -1, scattering);
+				StaticSetWaterFloat("beaufortScale", -1, 6);
+				
+			}
 			catch (Exception exc)
 			{
 				UnityEngine.Debug.Log(exc.ToString());
@@ -2368,6 +2443,7 @@ namespace simul
 #endif
 
 				StaticSetRenderBool("RenderSky", true);
+				StaticSetRenderBool("RenderWater", _renderWater);
 				StaticSetRenderBool("ReverseDepth", false);
 				StaticSetRenderBool("EnableRendering", _renderInEditMode);
 				StaticSetRenderBool("ShowFades", _showFades);
