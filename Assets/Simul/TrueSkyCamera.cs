@@ -228,7 +228,20 @@ namespace simul
 					else
 						UnityEngine.Debug.LogError("Shader not found: trueSKY needs flippedDepthShader.shader, located in the Assets/Simul/Resources directory");
 				}
-				depthMaterial = _flippedDepthMaterial;
+			 	depthMaterial = _flippedDepthMaterial;
+#if UNITY_DEPTH_ACCESS
+// unsupported due to missing Unity features.
+				if (_msaaDepthMaterial8== null)
+				{
+					_MSAADepthShader8 = Resources.Load("MSAADepthShader8", typeof(Shader)) as Shader;
+					if (_MSAADepthShader8 != null)
+						_msaaDepthMaterial8 = new Material(_MSAADepthShader8);
+					else
+						UnityEngine.Debug.LogError("Shader not found: trueSKY needs flippedDepthShader.shader, located in the Assets/Simul/Resources directory");
+				}
+				
+				UnityEngine.Debug.Log("msaa");
+#endif
 			}
 			else
 			{

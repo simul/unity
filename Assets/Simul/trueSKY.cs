@@ -102,9 +102,9 @@ namespace simul
 		{
 			UnityEngine.Debug.LogWarning("Resolving " + args.Name);
 #if _WIN32
-			return Assembly.Load("Assets\\Plugins\\x86\\dependencies\\" + args.Name);
+			return Assembly.Load("Assets/Plugins/x86/dependencies/" + args.Name);
 #else
-			return Assembly.Load("Assets\\Plugins\\x86_64\\dependencies\\" + args.Name);
+			return Assembly.Load("Assets/Plugins/x86_64/dependencies/" + args.Name);
 #endif
 		}
 #endif
@@ -166,6 +166,8 @@ namespace simul
 #else
 #if UNITY_PS4
 			public const string renderer_dll = @"TrueSkyPluginRender";
+#elif UNITY_XBOXONE
+			public const string renderer_dll = @"TrueSkyPluginRender_MD";
 #elif UNITY_IPHONE || UNITY_SWITCH
 			public const string renderer_dll = @"__Internal";
 #elif _WIN32
@@ -174,7 +176,7 @@ namespace simul
 			public const string renderer_dll = @"TrueSkyPluginRender_MT";
 #endif
 #endif
-    }
+	}
 
 	[ExecuteInEditMode]
 	public class trueSKY : MonoBehaviour
@@ -391,7 +393,7 @@ namespace simul
 
         public uint Insert2DCloudKeyframe(float t)
 		{
-            if (SimulVersionMinor == 1)
+			if (SimulVersion < MakeSimulVersion(4, 2) )
             {
                 return StaticRenderInsertKeyframe(2, t);
             }
@@ -413,9 +415,9 @@ namespace simul
 			return StaticRenderGetKeyframeByIndex(1,index);
 		}
 
-        public uint GetCloud2DKeyframeByIndex(int index)
+		public uint GetCloud2DKeyframeByIndex(int index)
 		{
-            if (SimulVersionMinor == 1)
+			if (SimulVersion < MakeSimulVersion(4, 2) )
             {
                 return StaticRenderGetKeyframeByIndex(2, index);
             }
@@ -949,7 +951,7 @@ namespace simul
 			try
 			{
 				StaticSetRenderInt("2DClouds:" + name, value);
-		}
+		    }
 			catch (Exception exc)
 			{
 				UnityEngine.Debug.Log(exc.ToString());
@@ -972,7 +974,7 @@ namespace simul
 		}
 
 		[SerializeField]
-        float _time;
+		float _time;
 		/// <summary>
 		/// Time in the sequence, set from some external script, e.g. the sequence editor, or modified per-frame by the speed value.
 		/// </summary>
@@ -1208,15 +1210,15 @@ namespace simul
 		[SerializeField]
 		int _MaxPrecipitationParticles = 100000;
 
-        [SerializeField]
-        bool _changedAmortInEd = false;
-        public bool ChangeAmortInEd
-        {
-            get { return _changedAmortInEd; }
-            set { _changedAmortInEd = value; }
-        }
+		[SerializeField]
+		bool _changedAmortInEd = false;
+		public bool ChangeAmortInEd
+		{
+			get { return _changedAmortInEd; }
+			set { _changedAmortInEd = value; }
+		}
 
-        [SerializeField]
+		[SerializeField]
 		int _amortization = 2;
 		[SerializeField]
 		int _atmosphericsAmortization=2;
@@ -1234,11 +1236,11 @@ namespace simul
 					{
 						_amortization = value;
 						StaticSetRenderInt("Amortization", _amortization);
-                        if (!Application.isPlaying)
-                        {
-                            ChangeAmortInEd = true;
-                        }
-                    }
+						if (!Application.isPlaying)
+						{
+							ChangeAmortInEd = true;
+						}
+					}
 					catch (Exception exc)
 					{
 						UnityEngine.Debug.Log(exc.ToString());
@@ -1257,11 +1259,11 @@ namespace simul
 					{
 						_atmosphericsAmortization = value;
 						StaticSetRenderInt("AtmosphericsAmortization", _atmosphericsAmortization);
-                        if (!Application.isPlaying)
-                        {
-                            ChangeAmortInEd = true;
-                        }
-                    }
+						if (!Application.isPlaying)
+						{
+							ChangeAmortInEd = true;
+						}
+					}
 					catch (Exception exc)
 					{
 						UnityEngine.Debug.Log(exc.ToString());
@@ -1568,7 +1570,7 @@ namespace simul
 					{
 						_cloudThresholdDistanceKm = value;
 						StaticSetRenderFloat("render:CloudThresholdDistanceKm", _cloudThresholdDistanceKm);
-                    }
+					}
 					catch(Exception exc)
 					{
 						UnityEngine.Debug.Log(exc.ToString());
@@ -1827,7 +1829,7 @@ namespace simul
 				if (_CubemapResolution != value) try
 					{
 						_CubemapResolution = value;
-						StaticSetRenderInt("MaximumCubemapResolution",  _CubemapResolution);
+						StaticSetRenderInt("MaximumCubemapResolution", _CubemapResolution);
 					}
 					catch (Exception exc)
 					{
@@ -1847,14 +1849,14 @@ namespace simul
 			set
 			{
 				if (_IntegrationScheme != value) try
-				{
-					_IntegrationScheme = value;
+					{
+						_IntegrationScheme = value;
 					StaticSetRenderBool("gridrendering", _IntegrationScheme==0);
-				}
-				catch (Exception exc)
-				{
-					UnityEngine.Debug.Log(exc.ToString());
-				}
+					}
+					catch (Exception exc)
+					{
+						UnityEngine.Debug.Log(exc.ToString());
+					}
 			}
 		}
 
@@ -1869,14 +1871,14 @@ namespace simul
 			set
 			{
 				if (_MaxCloudDistanceKm != value) try
-				{
-					_MaxCloudDistanceKm = value;
-					StaticSetRenderFloat("render:maxclouddistancekm", _MaxCloudDistanceKm);
-				}
-				catch (Exception exc)
-				{
-					UnityEngine.Debug.Log(exc.ToString());
-				}
+					{
+						_MaxCloudDistanceKm = value;
+						StaticSetRenderFloat("render:maxclouddistancekm", _MaxCloudDistanceKm);
+					}
+					catch (Exception exc)
+					{
+						UnityEngine.Debug.Log(exc.ToString());
+					}
 			}
 		}
 
@@ -2001,14 +2003,14 @@ namespace simul
 			set
 			{
 				if (_IndirectLight != value) try
-				{
-					_IndirectLight = value;
-					StaticSetRenderFloat("render:indirectlight", _IndirectLight);
-				}
-				catch (Exception exc)
-				{
-					UnityEngine.Debug.Log(exc.ToString());
-				}
+					{
+						_IndirectLight = value;
+						StaticSetRenderFloat("render:indirectlight", _IndirectLight);
+					}
+					catch (Exception exc)
+					{
+						UnityEngine.Debug.Log(exc.ToString());
+					}
 			}
 		}
 
@@ -2082,30 +2084,30 @@ namespace simul
 		bool _rendering_initialized = false;
 		void Update()
 		{
-            try
+			try
 			{
 				if (!_initialized)
 					Init();
 				if (Application.isPlaying)
-                {
+				{
 					_time += Time.deltaTime * (_speed / (24.0F * 60.0F * 60.0F));
-                }
+				}
 
-                // Update simulation values
-                //if (ChangeAmortInEd && Application.isPlaying)
-                {
-                    //UnityEngine.Debug.Log("Amortization:" + _amortization + " AtmosAmortization:" + _atmosphericsAmortization);
+				// Update simulation values
+				//if (ChangeAmortInEd && Application.isPlaying)
+				{
+					//UnityEngine.Debug.Log("Amortization:" + _amortization + " AtmosAmortization:" + _atmosphericsAmortization);
 					StaticSetRenderInt("render:AtmosphericsAmortization", _atmosphericsAmortization);
 					StaticSetRenderInt("render:Amortization", _amortization);
-                    ChangeAmortInEd = false;
-                }
+					ChangeAmortInEd = false;
+				}
 				StaticSetRenderFloat("Time", _time);
 				StaticSetRenderFloat("RealTime", Time.time);
 				StaticTick(0.0f);
-                SetNightTextures();
-                StaticSetRenderBool("SimulationTimeRain", _simulationTimeRain);
+				SetNightTextures();
+				StaticSetRenderBool("SimulationTimeRain", _simulationTimeRain);
 				StaticSetRenderFloat("render:maxsunradiance", _maxSunRadiance);
-            }
+			}
 			catch (Exception exc)
 			{
 				UnityEngine.Debug.Log(exc.ToString());
@@ -2271,9 +2273,9 @@ namespace simul
 				UnityEngine.Debug.LogError("Only one trueSKY object should be instantiated.");
 			}
 			else
-            {
+			{
 				trueSkySingleton = this;
-            }
+			}
 		}
 
 #if UNITY_EDITOR
@@ -2283,7 +2285,7 @@ namespace simul
 #endif
 		void OnDestroy()     
 		{
-            // Release what was accumulating beforehand
+			// Release what was accumulating beforehand
             if (_initialized) 			
 			{  
 				StaticPopPath ("ShaderBinaryPath");
@@ -2291,10 +2293,21 @@ namespace simul
 				StaticPopPath ("TexturePath");
 			}
 		}
+		public static string GetShaderbinSourceDir(string target)
+		{
+			char s = Path.DirectorySeparatorChar;
+			string assetsPath = Environment.CurrentDirectory + s + "Assets";
+			string simul = assetsPath + s + "Simul";
+			// Custom shader binary folder
+			string shaderFolderSrt;
+			shaderFolderSrt = "shaderbin"+s+ target;
+			string shaderbinSource = simul + s + shaderFolderSrt;
+			return shaderbinSource;
+		}
 
 		void Init()
 		{
-            try
+			try
 			{
 				if (_initialized)
 					return;
@@ -2307,14 +2320,14 @@ namespace simul
 
 				SimulImports.Init();
 
-                // Get Simul version
-                IntPtr ma = Marshal.AllocHGlobal(sizeof(int));
-                IntPtr mi = Marshal.AllocHGlobal(sizeof(int));
-                IntPtr bu = Marshal.AllocHGlobal(sizeof(int));
-                GetSimulVersion(ma, mi, bu);
-                SimulVersionMajor = Marshal.ReadInt32(ma);
-                SimulVersionMinor = Marshal.ReadInt32(mi);
-                SimulVersionBuild = Marshal.ReadInt32(bu);
+				// Get Simul version
+				IntPtr ma = Marshal.AllocHGlobal(sizeof(int));
+				IntPtr mi = Marshal.AllocHGlobal(sizeof(int));
+				IntPtr bu = Marshal.AllocHGlobal(sizeof(int));
+				GetSimulVersion(ma, mi, bu);
+				SimulVersionMajor = Marshal.ReadInt32(ma);
+				SimulVersionMinor = Marshal.ReadInt32(mi);
+				SimulVersionBuild = Marshal.ReadInt32(bu);
 
 				UnityEngine.Debug.Log("trueSKY version:" + SimulVersionMajor + "." + SimulVersionMinor + "." + SimulVersionBuild);
 
@@ -2326,17 +2339,17 @@ namespace simul
                 if(!Application.isEditor)
                 {
 #if UNITY_PS4
-                    StaticPushPath("ShaderBinaryPath", Application.dataPath + @"\Simul\shaderbin\ps4");
+                    StaticPushPath("ShaderBinaryPath", Application.streamingAssetsPath + @"/Simul/shaderbin/ps4");
 #elif UNITY_WSA || UNITY_STANDALONE_WIN
-                    StaticPushPath("ShaderBinaryPath", Application.dataPath + @"\Simul\shaderbin\x86_64");
+                    StaticPushPath("ShaderBinaryPath", Application.dataPath + @"/Simul/shaderbin/x86_64");
 #endif
-                    StaticPushPath("TexturePath", Application.dataPath + @"\Simul\Media\Textures");
+                    StaticPushPath("TexturePath", Application.dataPath + @"/Simul/Media/Textures");
                 }
                 else
                 {
-                    StaticPushPath("ShaderBinaryPath", Application.dataPath + @"\Simul\shaderbin\x86_64");
-                    StaticPushPath("ShaderPath", Application.dataPath + @"\Simul\shaderbin\x86_64");
-                    StaticPushPath("TexturePath", Application.dataPath + @"\Simul\Media\Textures");
+                    StaticPushPath("ShaderBinaryPath", Application.dataPath + @"/Simul/shaderbin/x86_64");
+                    StaticPushPath("ShaderPath", Application.dataPath + @"/Simul/shaderbin/x86_64");
+                    StaticPushPath("TexturePath", Application.dataPath + @"/Simul/Media/Textures");
                 }
 
 				StaticInitInterface();
@@ -2376,7 +2389,7 @@ namespace simul
 				StaticSetRenderFloat("depthsamplingpixelrange", _depthSamplingPixelRange);
 				StaticSetRenderFloat("maxsunradiance", _maxSunRadiance);
 
-                SetNightTextures();
+				SetNightTextures();
 
 #if UNITY_EDITOR
 				StaticSetRenderBool("ShowCelestialDisplay",_showCelestials);

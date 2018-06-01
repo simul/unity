@@ -153,7 +153,9 @@ namespace simul
 		protected RenderTextureHolder unityDepthTexture = new RenderTextureHolder();
 		static protected Material _flippedDepthMaterial = null;
 		static protected Material _deferredDepthMaterial= null;
+		static protected Material _msaaDepthMaterial8 = null; 
 		static protected Shader _flippedShader  = null;
+		static protected Shader _MSAADepthShader8 = null;
 		static protected Shader _deferredShader = null;
         protected CommandBuffer storebuf        = null;
 		protected CommandBuffer blitbuf         = null;
@@ -372,8 +374,10 @@ namespace simul
 		{
 			_flippedDepthMaterial = null;
 			_deferredDepthMaterial = null;
+			_msaaDepthMaterial8 = null;
 			_flippedShader = null;
 			_deferredShader = null;
+			_MSAADepthShader8 = null;
 		}
 
 		void OnEnable ()

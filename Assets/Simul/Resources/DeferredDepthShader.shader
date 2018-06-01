@@ -1,4 +1,4 @@
-﻿Shader "Custom/DepthShader"
+﻿Shader "Custom/DeferredDepthShader"
 {
 	CGINCLUDE
 	#pragma target 3.0
