@@ -186,7 +186,7 @@ namespace simul
 #if TRUESKY_LOGGING
                 UnityEngine.Debug.Log ("EnsureDepthTexture resized texture for "+view_id +" to "+required_width+","+camera.pixelHeight); 
 #endif
-                RenderTexture rt = new RenderTexture(required_width, (int)camera.pixelHeight, 32, RenderTextureFormat.ARGBFloat);
+                RenderTexture rt = new RenderTexture(required_width, (int)camera.pixelHeight, 0, RenderTextureFormat.ARGBFloat);
 				depthTexture.renderTexture=rt;
 				rt.Create();
 			}
@@ -269,7 +269,7 @@ namespace simul
 		}
 		static public void ViewMatrixToTrueSkyFormat(RenderStyle renderStyle,Matrix4x4 m,float[] view,int offset=0,bool swap_yz=true)
 		{
-		// transform?
+		    // transform?
 			if (trueSKY.GetTrueSky() == null)
 				return;
             offset *= 16;
@@ -281,26 +281,26 @@ namespace simul
 			Matrix4x4 y;
 			if (swap_yz)
 			{
-			// Swap the y and z columns - this makes a left-handed matrix into right-handed:
-			y.m00=	n.m00;
-			y.m01=	n.m02;
-			y.m02=	n.m01;
-			y.m03=	n.m03;
+			    // Swap the y and z columns - this makes a left-handed matrix into right-handed:
+			    y.m00=	n.m00;
+			    y.m01=	n.m02;
+			    y.m02=	n.m01;
+			    y.m03=	n.m03;
 
-			y.m10=	n.m10;
-			y.m11=	n.m12;
-			y.m12=	n.m11;
-			y.m13=	n.m13;
+			    y.m10=	n.m10;
+			    y.m11=	n.m12;
+			    y.m12=	n.m11;
+			    y.m13=	n.m13;
 
-			y.m20=	n.m20;
-			y.m21=	n.m22;
-			y.m22=	n.m21;
-			y.m23=	n.m23;
-// Swap the position values as well, as Unity uses y=up, we use z:
-			y.m30=	n.m30 * metresPerUnit;
-			y.m31=	n.m32 * metresPerUnit;
-			y.m32=	n.m31 * metresPerUnit;
-			y.m33=	n.m33;
+			    y.m20=	n.m20;
+			    y.m21=	n.m22;
+			    y.m22=	n.m21;
+			    y.m23=	n.m23;
+                // Swap the position values as well, as Unity uses y=up, we use z:
+			    y.m30=	n.m30 * metresPerUnit;
+			    y.m31=	n.m32 * metresPerUnit;
+			    y.m32=	n.m31 * metresPerUnit;
+			    y.m33=	n.m33;
 			}
 			else
 			{
@@ -349,7 +349,7 @@ namespace simul
 		}
 		public virtual RenderStyle GetRenderStyle()
 		{
-			RenderStyle renderStyle = RenderStyle.UNITY_STYLE_DEFERRED;
+			RenderStyle renderStyle = RenderStyle.UNITY_STYLE;
 			var cam=GetComponent<Camera>();
 			if (cam.actualRenderingPath != RenderingPath.DeferredLighting
 				&&cam.actualRenderingPath!=RenderingPath.DeferredShading)

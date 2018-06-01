@@ -193,13 +193,14 @@ namespace simul
 
             // Copy Unity camera depth
             {
+                blitbuf.SetRenderTarget(depthTexture.renderTexture);
 				blitbuf.Blit(_dummyTexture, (RenderTexture)depthTexture.renderTexture, depthMaterial);
 			}
 			PrepareMatrices();
             if (showDepthTexture!=null)
 				blitbuf.Blit(_dummyTexture, showDepthTexture, depthMaterial);
 			
-          //  storebuf.IssuePluginEvent(UnityGetStoreStateFunc(), TRUESKY_EVENT_ID + cbuf_view_id);
+            //  storebuf.IssuePluginEvent(UnityGetStoreStateFunc(), TRUESKY_EVENT_ID + cbuf_view_id);
 			buf.IssuePluginEvent(UnityGetRenderEventFunc(),TRUESKY_EVENT_ID + cbuf_view_id);
 			overlay_buf.IssuePluginEvent(UnityGetOverlayFunc(),TRUESKY_EVENT_ID + cbuf_view_id);
 			post_translucent_buf.IssuePluginEvent (UnityGetPostTranslucentFunc(), TRUESKY_EVENT_ID + cbuf_view_id);
@@ -208,8 +209,10 @@ namespace simul
 		void PrepareDepthMaterial()
 		{
 			RenderStyle renderStyle = GetRenderStyle();
-			depthMaterial = null;
-			if ((renderStyle & RenderStyle.UNITY_STYLE_DEFERRED) != RenderStyle.UNITY_STYLE_DEFERRED)
+			depthMaterial           = null;
+            Camera cam              = GetComponent<Camera>();
+            bool toTexture          = cam.allowHDR || cam.allowMSAA || cam.renderingPath == RenderingPath.DeferredShading;
+            if (!toTexture && (renderStyle & RenderStyle.UNITY_STYLE_DEFERRED) != RenderStyle.UNITY_STYLE_DEFERRED)
 			{
 				if(_flippedDepthMaterial==null)
 				{
@@ -245,7 +248,7 @@ namespace simul
 						UnityEngine.Debug.LogError("Shader not found: trueSKY needs DeferredDepthShader.shader, located in the Assets/Simul/Resources directory");
 				}
 				depthMaterial = _deferredDepthMaterial;
-			}
+            }
 		}
 
 		void PrepareMatrices()
@@ -260,7 +263,8 @@ namespace simul
 
                 // View and projection: non-stereo rendering
 				Matrix4x4 m = cam.worldToCameraMatrix;
-                Matrix4x4 p =  GL.GetGPUProjectionMatrix(cam.projectionMatrix, true);
+                bool toTexture = cam.allowHDR || cam.allowMSAA || cam.renderingPath == RenderingPath.DeferredShading;
+                Matrix4x4 p =  GL.GetGPUProjectionMatrix(cam.projectionMatrix, toTexture);
                 ViewMatrixToTrueSkyFormat(renderStyle, m, viewMatrices);
                 ProjMatrixToTrueSkyFormat(renderStyle, p, projMatrices);
 

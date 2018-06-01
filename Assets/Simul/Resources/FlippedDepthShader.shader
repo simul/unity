@@ -4,11 +4,6 @@ Shader "Custom/DepthShader"
 {
 	Properties
 	{
-		_MainTex ("Base (RGB)", 2D) = "white" {}
-		texelScale ("texelScale", Vector) = (0, 0,0) 
-		xoffset ("X Offset", Float) = 0
-		xscale ("X Scale", Float) = 0
-		texSize ("Texture size", Vector)= (500, 500,0) 
 	}
 	CGINCLUDE
 	#include "UnityCG.cginc"
@@ -16,30 +11,20 @@ Shader "Custom/DepthShader"
 	struct v2f
 	{
 		float4 pos : SV_POSITION;
-
 		float2 uv : TEXCOORD0;
 	};
-	sampler2D _MainTex;
-	float xoffset;
-	float xscale;
-	float2 texSize; 
 	v2f vert( appdata_img v )
 	{
 		v2f o;
-		o.pos = UnityObjectToClipPos(v.vertex);
-		o.uv =  v.texcoord.xy;
-		// Because of Unity/GLSL limitations, we must modify the texcoord to get a good copy.
-		o.uv.y	=1.0-o.uv.y+.5/texSize.y;
-		o.pos.x*=xscale;
-		o.pos.x+=xoffset;
+		o.pos 	= UnityObjectToClipPos(v.vertex);
+		o.uv 	= v.texcoord.xy;
+		o.uv.y	= 1.0 - o.uv.y;
 		return o;
 	}
 	float4 frag(v2f i) : SV_Target
 	{
-		float4 ret;
-		ret.a=1.0;
 		float depth = tex2D(_CameraDepthTexture,i.uv).r;
-		ret.rgb=float3(depth,depth,depth);
+		float4 ret 	= float4(depth,depth,depth,1.0);
 		return ret;
 	}
 	ENDCG
