@@ -761,38 +761,6 @@ namespace simul
             }
         }
 
-        // 4.2 only
-        [SerializeField]
-        int _worleyTextureSize = 64;
-        public int WorleyTextureSize
-        {
-            get
-            {
-                return _worleyTextureSize;
-            }
-            set
-            {
-                _worleyTextureSize = value;
-				StaticSetRenderInt("render:CellNoiseTextureSize", _worleyTextureSize);
-            }
-        }
-
-        // 4.2 only
-        [SerializeField]
-        float _worleyWavelengthKm = 8.7f;
-        public float WorleyWavelengthKm
-        {
-            get
-            {
-                return _worleyWavelengthKm;
-            }
-            set
-            {
-                _worleyWavelengthKm = value;
-                StaticSetRenderFloat("WorleyWavelengthKm", _worleyWavelengthKm);
-            }
-        }
-
         //! Set a floating-point property of the Sky layer.
         void SetFloat(string str, float value)
 		{
@@ -1960,7 +1928,10 @@ namespace simul
 				if (_CellNoiseWavelengthKm != value) try
 					{
 						_CellNoiseWavelengthKm = value;
-						StaticSetRenderFloat("render:cellnoisewavelengthkm", _CellNoiseWavelengthKm);
+						if (SimulVersion >= MakeSimulVersion(4, 2))
+							StaticSetRenderFloat("render:cellnoisewavelengthkm", _CellNoiseWavelengthKm);
+						else
+							StaticSetRenderFloat("WorleyWavelengthKm", _CellNoiseWavelengthKm);
 					}
 					catch (Exception exc)
 					{
@@ -1968,7 +1939,6 @@ namespace simul
 					}
 			}
 		}
-
 
 		float _DirectLight = 1.0F;
 		[SerializeField]
@@ -2413,7 +2383,6 @@ namespace simul
 			{
 				StaticSetRenderFloat("render:EdgeNoisePersistence", _edgeNoisePersistence);
 				StaticSetRenderFloat("render:EdgeNoiseWavelengthKm", _edgeNoiseWavelengthKm);
-				StaticSetRenderFloat("render:CellNoiseWavelengthKm", _worleyWavelengthKm);
 				StaticSetRenderFloat("render:highdetailproportion", _HighDetailProportion);
 				StaticSetRenderFloat("render:mediumdetailproportion", _MediumDetailProportion);
 				StaticSetRenderFloat("render:precipitationradiusmetres", _PrecipitationRadiusMetres);

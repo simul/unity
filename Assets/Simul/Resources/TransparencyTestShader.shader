@@ -47,7 +47,7 @@
 			// Get opacity from the cloud vis texture
 			float2 screenUV			= IN.screenPos.xy / IN.screenPos.w;
 			float4 vis				= tex2D(_CloudVisibility, screenUV);
-			const float maxDistance = 300000.0;
+			const float maxDistance = 300000.0; 
 			float dist				= length(_WorldSpaceCameraPos - IN.worldPos) / maxDistance;
 			float opacity			= 1.0 - saturate((dist - vis.w) / (vis.x * _FadeFactor));
 		

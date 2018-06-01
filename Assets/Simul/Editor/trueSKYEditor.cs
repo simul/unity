@@ -181,11 +181,7 @@ namespace simul
 						EditorGUILayout.LabelField("Cell Noise", EditorStyles.boldLabel);
 						trueSky.CellNoiseTextureSize = EditorGUILayout.IntSlider("Texture Size", trueSky.CellNoiseTextureSize, 32, 256);
 						trueSky.CellNoiseWavelengthKm = EditorGUILayout.Slider("Wavelength Km", trueSky.CellNoiseWavelengthKm, 0.01f, 50.0f);
-						EditorGUILayout.Space();
-
-						EditorGUILayout.LabelField("Cloud Noise Settings", EditorStyles.boldLabel);
-						trueSky.WorleyWavelengthKm = EditorGUILayout.Slider("Worley Wavelength Km", trueSky.WorleyWavelengthKm, 0.0f, 50.0f);
-						trueSky.WorleyTextureSize = EditorGUILayout.IntSlider("Worley Texture Size", trueSky.WorleyTextureSize, 8, 512);
+						trueSky.CellNoiseTextureSize = EditorGUILayout.IntSlider("Texture Size", trueSky.CellNoiseTextureSize, 8, 128);
 						EditorGUILayout.Space();
 					}
 

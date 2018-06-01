@@ -10,12 +10,12 @@ namespace simul
 	[ExecuteInEditMode]
 	public class TrueSkyCamera : TrueSkyCameraBase
 	{
-        [DllImport(SimulImports.renderer_dll)]
-        protected static extern System.IntPtr UnityGetOverlayFunc();
-        [DllImport(SimulImports.renderer_dll)]
-        protected static extern System.IntPtr UnityGetPostTranslucentFunc();
+		[DllImport(SimulImports.renderer_dll)]
+		protected static extern System.IntPtr UnityGetOverlayFunc();
+		[DllImport(SimulImports.renderer_dll)]
+		protected static extern System.IntPtr UnityGetPostTranslucentFunc();
 
-        protected float[] cubemapTransformMatrix = new float[16];
+		protected float[] cubemapTransformMatrix = new float[16];
 		protected float[] rainDepthMatrix = new float[16];
 		protected float[] rainDepthProjection = new float[16];
 		protected float rainDepthTextureScale;
@@ -23,108 +23,109 @@ namespace simul
 		{
 			return StaticGetOrAddView((System.IntPtr)view_ident);
 		}
+		// We will STORE the activeTexture from the camera and hope it's valid next frame.
+		RenderTexture activeTexture = null;
+		public RenderTexture inscatterRT;
+		public RenderTexture cloudShadowRT;
+		public RenderTexture lossRT;
+		public RenderTexture cloudVisibilityRT;
+		public bool FlipOverlays = false;
+		public RenderTexture showDepthTexture = null;
 
-        public RenderTexture inscatterRT;
-        public RenderTexture cloudShadowRT;
-        public RenderTexture lossRT;
-        public RenderTexture cloudVisibilityRT;
-        public bool FlipOverlays                = false;
-        public RenderTexture showDepthTexture   = null;
+		RenderTextureHolder _cloudShadowRT = new RenderTextureHolder();
+		RenderTextureHolder _inscatterRT = new RenderTextureHolder();
+		RenderTextureHolder _lossRT = new RenderTextureHolder();
+		RenderTextureHolder _cloudVisibilityRT = new RenderTextureHolder();
 
-        RenderTextureHolder _cloudShadowRT      = new RenderTextureHolder();
-        RenderTextureHolder _inscatterRT        = new RenderTextureHolder();
-        RenderTextureHolder _lossRT             = new RenderTextureHolder();
-        RenderTextureHolder _cloudVisibilityRT  = new RenderTextureHolder();
-
-		RenderTextureHolder _rainDepthRT		= new RenderTextureHolder();
+		RenderTextureHolder _rainDepthRT = new RenderTextureHolder();
 		protected RenderTextureHolder reflectionProbeTexture = new RenderTextureHolder();
-        protected CommandBuffer overlay_buf                 = null;
-        protected CommandBuffer post_translucent_buf        = null;
+		protected CommandBuffer overlay_buf = null;
+		protected CommandBuffer post_translucent_buf = null;
 
-        /// <summary>
-        /// This material is used the blit the camera's depth to a render target
-        /// that we'll send to the plugin
-        /// </summary>
-        Material depthMaterial = null;
+		/// <summary>
+		/// This material is used the blit the camera's depth to a render target
+		/// that we'll send to the plugin
+		/// </summary>
+		Material depthMaterial = null;
 
-        //Mesh screenQuad = null;
+		//Mesh screenQuad = null;
 
-        /// <summary>
-        /// If true, both XR eyes are expected to be rendered to the same texture.
-        /// </summary>
-        public bool ShareBuffersForVR = true;
+		/// <summary>
+		/// If true, both XR eyes are expected to be rendered to the same texture.
+		/// </summary>
+		public bool ShareBuffersForVR = true;
 		public TrueSkyRainDepthCamera RainDepthCamera = null;
-        /// <summary>
-        /// Generates an apropiate RenderStyle acording with this camera settings
-        /// and takes into account if stereo (XR) is enabled.
-        /// </summary>
-        /// <returns> A RenderStyle used by the plugin </returns>
+		/// <summary>
+		/// Generates an apropiate RenderStyle acording with this camera settings
+		/// and takes into account if stereo (XR) is enabled.
+		/// </summary>
+		/// <returns> A RenderStyle used by the plugin </returns>
 		public override RenderStyle GetRenderStyle()
 		{
 #if !UNITY_SWITCH
-            UnityEngine.XR.XRSettings.showDeviceView = true;
+			UnityEngine.XR.XRSettings.showDeviceView = true;
 #endif
-            RenderStyle r = base.GetRenderStyle();
-            if (trueSKY.GetTrueSky().DepthBlending)
-            {
+			RenderStyle r = base.GetRenderStyle();
+			if (trueSKY.GetTrueSky().DepthBlending)
+			{
 				r = r | RenderStyle.DEPTH_BLENDING;
-            }
-            Camera cam = GetComponent<Camera>();
+			}
+			Camera cam = GetComponent<Camera>();
 			if (cam.stereoEnabled)
 			{
 				StereoTargetEyeMask activeEye = cam.stereoTargetEye;
 				r = r | RenderStyle.VR_STYLE;
-                if (activeEye == StereoTargetEyeMask.Right) 
-                {
+				if (activeEye == StereoTargetEyeMask.Right)
+				{
 					r = r | RenderStyle.VR_STYLE_ALTERNATE_EYE;
-                }
-                if (activeEye == StereoTargetEyeMask.Both && ShareBuffersForVR)
-                {
-                    r = r | RenderStyle.VR_STYLE_SIDE_BY_SIDE;
-                }
+				}
+				if (activeEye == StereoTargetEyeMask.Both && ShareBuffersForVR)
+				{
+					r = r | RenderStyle.VR_STYLE_SIDE_BY_SIDE;
+				}
 			}
-            return r;
-        }
-               
-        protected override int GetRequiredDepthTextureWidth()
+			return r;
+		}
+
+		protected override int GetRequiredDepthTextureWidth()
 		{
 			var cam = GetComponent<Camera>();
-            if (cam.stereoEnabled && cam.stereoTargetEye == StereoTargetEyeMask.Both)
+			if (cam.stereoEnabled && cam.stereoTargetEye == StereoTargetEyeMask.Both)
 			{
 #if UNITY_SWITCH
                 return 0;
 #else
-                return UnityEngine.XR.XRSettings.eyeTextureDesc.width;
+				return UnityEngine.XR.XRSettings.eyeTextureDesc.width;
 #endif
-            }
-            else
-            {
-                return base.GetRequiredDepthTextureWidth();
-            }
+			}
+			else
+			{
+				return base.GetRequiredDepthTextureWidth();
+			}
 		}
 
-        void OnEnable()
-        {
-            // Actually create the hardware resources of the render targets
-            if (cloudShadowRT)
-                cloudShadowRT.Create();
-            if(lossRT)
-                lossRT.Create();
-            if(inscatterRT)
-                inscatterRT.Create();
-            if(cloudVisibilityRT)
-                cloudVisibilityRT.Create();
-        }
+		void OnEnable()
+		{
+			// Actually create the hardware resources of the render targets
+			if (cloudShadowRT)
+				cloudShadowRT.Create();
+			if (lossRT)
+				lossRT.Create();
+			if (inscatterRT)
+				inscatterRT.Create();
+			if (cloudVisibilityRT)
+				cloudVisibilityRT.Create();
+		}
 
-        private void Start()
-        {
-            // We'll use the cubemap rt from the cubemap probe to provide reflections to the rain
-            reflectionProbeTexture.renderTexture = GameObject.FindObjectOfType<TrueSkyCubemapProbe>().GetRenderTexture();
-            if(!reflectionProbeTexture.renderTexture)
-                Debug.LogWarning("Could not find a TrueSkyCubemapProbe in the scene, this object is needed to provide reflections to the rain and as a ambient light source for your scene.");
-        }
+		private void Start()
+		{
+			// We'll use the cubemap rt from the cubemap probe to provide reflections to the rain
+			reflectionProbeTexture.renderTexture = GameObject.FindObjectOfType<TrueSkyCubemapProbe>().GetRenderTexture();
+			if (!reflectionProbeTexture.renderTexture)
+				Debug.LogWarning("Could not find a TrueSkyCubemapProbe in the scene, this object is needed to provide reflections to the rain and as a ambient light source for your scene.");
+		}
 
-        void OnDestroy()
+		void OnDestroy()
 		{
 			OnDisable();
 		}
@@ -136,13 +137,14 @@ namespace simul
 
 		void RemoveCommandBuffers()
 		{
-            RemoveBuffer("trueSKY store state");
+			RemoveBuffer("trueSKY store state");
 			RemoveBuffer("trueSKY render");
 			RemoveBuffer("trueSKY depth");
 			RemoveBuffer("trueSKY overlay");
 			RemoveBuffer("trueSKY post translucent");
 		}
-
+		UnityViewStruct unityViewStruct=new UnityViewStruct();
+		System.IntPtr unityViewStructPtr = Marshal.AllocHGlobal(Marshal.SizeOf(new UnityViewStruct()));
 		void OnPreRender()
 		{
 			if(!enabled||!gameObject.activeInHierarchy)
@@ -207,14 +209,28 @@ namespace simul
 			PrepareMatrices();
             if (showDepthTexture!=null)
 				blitbuf.Blit(_dummyTexture, showDepthTexture, depthMaterial);
+			unityViewStruct.nativeColourRenderBuffer = (System.IntPtr)0;
+			unityViewStruct.nativeDepthRenderBuffer = (System.IntPtr)0;
+			if (activeTexture != null)
+			{
+				unityViewStruct.nativeColourRenderBuffer = activeTexture.colorBuffer.GetNativeRenderBufferPtr();
+				unityViewStruct.nativeDepthRenderBuffer = activeTexture.depthBuffer.GetNativeRenderBufferPtr();
+			}
+			storebuf.IssuePluginEvent(UnityGetStoreStateFunc(), TRUESKY_EVENT_ID + cbuf_view_id);
+			Marshal.StructureToPtr(unityViewStruct, unityViewStructPtr, true);
 
-            storebuf.IssuePluginEvent(UnityGetStoreStateFunc(), TRUESKY_EVENT_ID + cbuf_view_id);
-            buf.IssuePluginEvent(UnityGetRenderEventFunc(),TRUESKY_EVENT_ID + cbuf_view_id);
+			buf.IssuePluginEventAndData(UnityGetRenderEventFuncWithData(),TRUESKY_EVENT_ID + cbuf_view_id, unityViewStructPtr);
 			overlay_buf.IssuePluginEvent(UnityGetOverlayFunc(),TRUESKY_EVENT_ID + cbuf_view_id);
 			post_translucent_buf.IssuePluginEvent (UnityGetPostTranslucentFunc(), TRUESKY_EVENT_ID + cbuf_view_id);
 		}
 
-		void PrepareDepthMaterial()
+		void OnPostRender()
+		{
+			Camera cam = GetComponent<Camera>();
+			activeTexture = cam.activeTexture;
+		}
+
+			void PrepareDepthMaterial()
 		{
 			RenderStyle renderStyle = GetRenderStyle();
 			depthMaterial = null;
