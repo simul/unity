@@ -14,6 +14,8 @@ namespace simul
 		protected static extern System.IntPtr UnityGetOverlayFunc();
 		[DllImport(SimulImports.renderer_dll)]
 		protected static extern System.IntPtr UnityGetPostTranslucentFunc();
+		[DllImport(SimulImports.renderer_dll)]
+		protected static extern System.IntPtr UnityGetPostTranslucentFuncWithData(); 
 
 		protected float[] cubemapTransformMatrix = new float[16];
 		protected float[] rainDepthMatrix = new float[16];
@@ -220,8 +222,8 @@ namespace simul
 			Marshal.StructureToPtr(unityViewStruct, unityViewStructPtr, true);
 
 			buf.IssuePluginEventAndData(UnityGetRenderEventFuncWithData(),TRUESKY_EVENT_ID + cbuf_view_id, unityViewStructPtr);
-			overlay_buf.IssuePluginEvent(UnityGetOverlayFunc(),TRUESKY_EVENT_ID + cbuf_view_id);
-			post_translucent_buf.IssuePluginEvent (UnityGetPostTranslucentFunc(), TRUESKY_EVENT_ID + cbuf_view_id);
+			overlay_buf.IssuePluginEventAndData(UnityGetOverlayFuncWithData(),TRUESKY_EVENT_ID + cbuf_view_id, unityViewStructPtr);
+			post_translucent_buf.IssuePluginEventAndData(UnityGetPostTranslucentFuncWithData(), TRUESKY_EVENT_ID + cbuf_view_id, unityViewStructPtr);
 		}
 
 		void OnPostRender()
@@ -230,7 +232,7 @@ namespace simul
 			activeTexture = cam.activeTexture;
 		}
 
-			void PrepareDepthMaterial()
+		void PrepareDepthMaterial()
 		{
 			RenderStyle renderStyle = GetRenderStyle();
 			depthMaterial = null;
