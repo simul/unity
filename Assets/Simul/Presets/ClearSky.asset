@@ -11,4 +11,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dcdfbea2e7338ed4ba21f9f27c8815df, type: 3}
   m_Name: ClearSky
   m_EditorClassIdentifier: 
-  SequenceAsText: "{\n\t\"skyKeyframer\":\n\t{\n\t}\n}\n"
+  SequenceAsText: "{\n\t\"skyKeyframer\":\n\t{\n\t\t\"keyframes\":\n\t\t[\n\t\t{\n\t\t\t\"Haze\":
+    \"               0\"\n\t\t\t\"HazeBaseKm\": \"               0\"\n\t\t\t\"HazeEccentricity\":
+    \"0.8199999928474426\"\n\t\t\t\"HazeScaleKm\": \"             0.5\"\n\t\t\t\"Mie\":
+    \"0.004600000102072954,0.004600000102072954,0.004600000102072954,0.004600000102072954\"\n\t\t\t\"StoreAsColours\":
+    \"false\"\n\t\t}\n\t\t]\n\t}\n}\n"
