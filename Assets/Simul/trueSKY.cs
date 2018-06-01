@@ -10,6 +10,7 @@ using System.Threading;
 using System.Diagnostics;
 using UnityEngine.Rendering;
 using System.Collections.Generic;
+using UnityEngine.Experimental.Rendering;
 
 namespace simul
 {
@@ -102,9 +103,9 @@ namespace simul
 		{
 			UnityEngine.Debug.LogWarning("Resolving " + args.Name);
 #if _WIN32
-			return Assembly.Load("Assets\\Plugins\\x86\\dependencies\\" + args.Name);
+			return Assembly.Load("Assets/Plugins/x86/dependencies/" + args.Name);
 #else
-			return Assembly.Load("Assets\\Plugins\\x86_64\\dependencies\\" + args.Name);
+			return Assembly.Load("Assets/Plugins/x86_64/dependencies/" + args.Name);
 #endif
 		}
 #endif
@@ -226,6 +227,18 @@ namespace simul
 		[DllImport(SimulImports.renderer_dll)]		private static extern void	StaticRenderKeyframeSetBool		(uint uid,string name,bool value);
 		[DllImport(SimulImports.renderer_dll)]		private static extern bool	StaticRenderKeyframeGetBool		(uint uid,string name);
 
+		[DllImport(SimulImports.renderer_dll)]		private static extern void StaticCreateBoundedWaterObject	(uint ID, float[] dimension, float[] location);
+		[DllImport(SimulImports.renderer_dll)]		private static extern void StaticRemoveBoundedWaterObject	(uint ID);
+
+		[DllImport(SimulImports.renderer_dll)]		private static extern void StaticAddWaterProbe				(uint ID, float[] location);
+		[DllImport(SimulImports.renderer_dll)]		private static extern void StaticRemoveWaterProbe			(uint ID);
+		[DllImport(SimulImports.renderer_dll)]		private static extern void StaticUpdateWaterProbePosition	(uint ID, float[] location);
+		[DllImport(SimulImports.renderer_dll)]		private static extern void StaticGetWaterProbeValues		(uint ID);
+
+		[DllImport(SimulImports.renderer_dll)]		private static extern void StaticSetWaterFloat	(string name, int ID, float value);
+		[DllImport(SimulImports.renderer_dll)]		private static extern void StaticSetWaterInt	(string name, int ID, int value);
+		[DllImport(SimulImports.renderer_dll)]		private static extern void StaticSetWaterBool	(string name, int ID, bool value);
+		[DllImport(SimulImports.renderer_dll)]		private static extern void StaticSetWaterVector	(string name, int ID, float[] value);
 
 		[DllImport(SimulImports.renderer_dll)]		private static extern int StaticGetRenderString(string name, StringBuilder str, int len);
 		[DllImport(SimulImports.renderer_dll)]		private static extern void StaticSetRenderString(string name, string value);
@@ -346,7 +359,7 @@ namespace simul
 			float ret=StaticGetRenderFloatAtPosition("Cloud",x);
 			return ret;
 		}
-		public float GetCloudShadowAtPosition (Vector3 pos)
+		public float GetCloudShadowAtPosition(Vector3 pos)
 		{
 			Vector3 convertedPos = UnityToTrueSkyPosition (pos);
 			float[] x= { convertedPos.x,convertedPos.y,convertedPos.z };		  
@@ -393,7 +406,7 @@ namespace simul
 
         public uint Insert2DCloudKeyframe(float t)
 		{
-            if (SimulVersionMinor == 1)
+			if (SimulVersion < MakeSimulVersion(4, 2) )
             {
                 return StaticRenderInsertKeyframe(2, t);
             }
@@ -417,7 +430,7 @@ namespace simul
 
         public uint GetCloud2DKeyframeByIndex(int index)
 		{
-            if (SimulVersionMinor == 1)
+			if (SimulVersion < MakeSimulVersion(4, 2) )
             {
                 return StaticRenderGetKeyframeByIndex(2, index);
             }
@@ -589,7 +602,30 @@ namespace simul
             }
         }
 
-        [SerializeField]
+		[SerializeField]
+		bool _renderWater = false;
+		public bool RenderWater
+		{
+			get
+			{
+				return _renderWater;
+			}
+			set
+			{
+				if (_renderWater != value) try
+					{
+						_renderWater = value;
+						StaticSetRenderBool("renderWater", Application.isPlaying || _renderWater);
+						//RepaintAll();
+					}
+					catch (Exception exc)
+					{
+						UnityEngine.Debug.Log(exc.ToString());
+					}
+			}
+		}
+
+		[SerializeField]
         Vector3 _godRaysGrid = new Vector3(64, 32, 32);
         public Vector3 GodRaysGrid
         {
@@ -758,38 +794,6 @@ namespace simul
             {
                 _edgeNoiseWavelengthKm = value;
 				StaticSetRenderFloat("render:EdgeNoiseWavelengthKm", _edgeNoiseWavelengthKm);
-            }
-        }
-
-        // 4.2 only
-        [SerializeField]
-        int _worleyTextureSize = 64;
-        public int WorleyTextureSize
-        {
-            get
-            {
-                return _worleyTextureSize;
-            }
-            set
-            {
-                _worleyTextureSize = value;
-				StaticSetRenderInt("render:CellNoiseTextureSize", _worleyTextureSize);
-            }
-        }
-
-        // 4.2 only
-        [SerializeField]
-        float _worleyWavelengthKm = 8.7f;
-        public float WorleyWavelengthKm
-        {
-            get
-            {
-                return _worleyWavelengthKm;
-            }
-            set
-            {
-                _worleyWavelengthKm = value;
-                StaticSetRenderFloat("WorleyWavelengthKm", _worleyWavelengthKm);
             }
         }
 
@@ -1205,6 +1209,8 @@ namespace simul
 		static public bool _showCloudCrossSections = false;
 		[SerializeField]
 		static public bool _showRainTextures = false;
+		[SerializeField]
+		static public bool _showWaterTextures = false;
 		[SerializeField]
 		bool _simulationTimeRain = false;
 		[SerializeField]
@@ -1692,6 +1698,25 @@ namespace simul
 					}
 			}
 		}
+		static public bool ShowWaterTextures
+		{
+			get
+			{
+				return _showWaterTextures;
+			}
+			set
+			{
+				if (_showWaterTextures != value) try
+					{
+						_showWaterTextures = value;
+						StaticSetRenderBool("ShowWaterTextures", _showWaterTextures);
+					}
+					catch (Exception exc)
+					{
+						UnityEngine.Debug.Log(exc.ToString());
+					}
+			}
+		}
 		static public bool ShowCubemaps
 		{
 			get
@@ -1960,7 +1985,10 @@ namespace simul
 				if (_CellNoiseWavelengthKm != value) try
 					{
 						_CellNoiseWavelengthKm = value;
-						StaticSetRenderFloat("render:cellnoisewavelengthkm", _CellNoiseWavelengthKm);
+						if (SimulVersion >= MakeSimulVersion(4, 2))
+							StaticSetRenderFloat("render:cellnoisewavelengthkm", _CellNoiseWavelengthKm);
+						else
+							StaticSetRenderFloat("WorleyWavelengthKm", _CellNoiseWavelengthKm);
 					}
 					catch (Exception exc)
 					{
@@ -1968,7 +1996,6 @@ namespace simul
 					}
 			}
 		}
-
 
 		float _DirectLight = 1.0F;
 		[SerializeField]
@@ -2107,7 +2134,9 @@ namespace simul
                 SetNightTextures();
                 StaticSetRenderBool("SimulationTimeRain", _simulationTimeRain);
 				StaticSetRenderFloat("render:maxsunradiance", _maxSunRadiance);
-            }
+
+				
+			}
 			catch (Exception exc)
 			{
 				UnityEngine.Debug.Log(exc.ToString());
@@ -2293,6 +2322,17 @@ namespace simul
 				StaticPopPath ("TexturePath");
 			}
 		}
+		public static string GetShaderbinSourceDir(string target)
+		{
+			char s = Path.DirectorySeparatorChar;
+			string assetsPath = Environment.CurrentDirectory + s + "Assets";
+			string simul = assetsPath + s + "Simul";
+			// Custom shader binary folder
+			string shaderFolderSrt;
+			shaderFolderSrt = "shaderbin"+s+ target;
+			string shaderbinSource = simul + s + shaderFolderSrt;
+			return shaderbinSource;
+		}
 
 		void Init()
 		{
@@ -2328,17 +2368,17 @@ namespace simul
                 if(!Application.isEditor)
                 {
 #if UNITY_PS4
-                    StaticPushPath("ShaderBinaryPath", Application.dataPath + @"\Simul\shaderbin\ps4");
+                    StaticPushPath("ShaderBinaryPath", Application.streamingAssetsPath + @"/Simul/shaderbin/ps4");
 #elif UNITY_WSA || UNITY_STANDALONE_WIN
-                    StaticPushPath("ShaderBinaryPath", Application.dataPath + @"\Simul\shaderbin\x86_64");
+                    StaticPushPath("ShaderBinaryPath", Application.dataPath + @"/Simul/shaderbin/x86_64");
 #endif
-                    StaticPushPath("TexturePath", Application.dataPath + @"\Simul\Media\Textures");
+                    StaticPushPath("TexturePath", Application.dataPath + @"/Simul/Media/Textures");
                 }
                 else
                 {
-                    StaticPushPath("ShaderBinaryPath", Application.dataPath + @"\Simul\shaderbin\x86_64");
-                    StaticPushPath("ShaderPath", Application.dataPath + @"\Simul\shaderbin\x86_64");
-                    StaticPushPath("TexturePath", Application.dataPath + @"\Simul\Media\Textures");
+                    StaticPushPath("ShaderBinaryPath", Application.dataPath + @"/Simul/shaderbin/x86_64");
+                    StaticPushPath("ShaderPath", Application.dataPath + @"/Simul/shaderbin/x86_64");
+                    StaticPushPath("TexturePath", Application.dataPath + @"/Simul/Media/Textures");
                 }
 
 				StaticInitInterface();
@@ -2357,6 +2397,7 @@ namespace simul
 #endif
 
 				StaticSetRenderBool("RenderSky", true);
+				StaticSetRenderBool("RenderWater", _renderWater);
 				StaticSetRenderBool("ReverseDepth", false);
 				StaticSetRenderBool("EnableRendering", _renderInEditMode);
 				StaticSetRenderBool("ShowFades", _showFades);
@@ -2377,8 +2418,7 @@ namespace simul
 				StaticSetRenderFloat("render:crepuscularraysstrength", _crepuscularRaysStrength);
 				StaticSetRenderFloat("depthsamplingpixelrange", _depthSamplingPixelRange);
 				StaticSetRenderFloat("maxsunradiance", _maxSunRadiance);
-
-                SetNightTextures();
+				SetNightTextures();
 
 #if UNITY_EDITOR
 				StaticSetRenderBool("ShowCelestialDisplay",_showCelestials);
@@ -2402,7 +2442,6 @@ namespace simul
 			{
 				StaticSetRenderFloat("render:EdgeNoisePersistence", _edgeNoisePersistence);
 				StaticSetRenderFloat("render:EdgeNoiseWavelengthKm", _edgeNoiseWavelengthKm);
-				StaticSetRenderFloat("render:CellNoiseWavelengthKm", _worleyWavelengthKm);
 				StaticSetRenderFloat("render:highdetailproportion", _HighDetailProportion);
 				StaticSetRenderFloat("render:mediumdetailproportion", _MediumDetailProportion);
 				StaticSetRenderFloat("render:precipitationradiusmetres", _PrecipitationRadiusMetres);

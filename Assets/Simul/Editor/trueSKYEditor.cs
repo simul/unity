@@ -57,6 +57,11 @@ namespace simul
 		{
 			trueSKY.ShowRainTextures=!trueSKY.ShowRainTextures;
 		}
+		[MenuItem("Window/trueSky/Show Water Textures #&p", false, 200000)]
+		public static void ShowWaterTextures()
+		{
+			trueSKY.ShowWaterTextures = !trueSKY.ShowWaterTextures;
+		}
 		[MenuItem("Window/trueSky/Show Cubemaps #&m", false, 200000)]
 		public static void ShowCubemaps()
 		{
@@ -84,6 +89,8 @@ namespace simul
 		bool interpolation = false;
 		[SerializeField]
 		static bool precipitation = false;
+		[SerializeField]
+		static bool water = false;
 		public override void OnInspectorGUI()
 		{
 			trueSKY trueSky = (trueSKY)target;
@@ -124,8 +131,12 @@ namespace simul
 					clouds = EditorGUILayout.Foldout(clouds,"Clouds");
                     if (clouds)
                     {
-                        EditorGUILayout.BeginVertical(cloudsStyle);
-                        trueSky.IntegrationScheme = EditorGUILayout.IntSlider("Integration Scheme", trueSky.IntegrationScheme, 0, 1);
+						string[] options = new string[]
+						{
+							"Grid", "Fixed",
+						};
+						EditorGUILayout.BeginVertical(cloudsStyle);
+                        trueSky.IntegrationScheme = EditorGUILayout.Popup("Integration Scheme", trueSky.IntegrationScheme, options);
                         trueSky.CubemapResolution = EditorGUILayout.IntSlider("Cubemap Resolution", trueSky.CubemapResolution, 16, 2048);
                         if (trueSky.SimulVersion > trueSky.MakeSimulVersion(4, 1))
                         { 
@@ -181,11 +192,7 @@ namespace simul
 						EditorGUILayout.LabelField("Cell Noise", EditorStyles.boldLabel);
 						trueSky.CellNoiseTextureSize = EditorGUILayout.IntSlider("Texture Size", trueSky.CellNoiseTextureSize, 32, 256);
 						trueSky.CellNoiseWavelengthKm = EditorGUILayout.Slider("Wavelength Km", trueSky.CellNoiseWavelengthKm, 0.01f, 50.0f);
-						EditorGUILayout.Space();
-
-						EditorGUILayout.LabelField("Cloud Noise Settings", EditorStyles.boldLabel);
-						trueSky.WorleyWavelengthKm = EditorGUILayout.Slider("Worley Wavelength Km", trueSky.WorleyWavelengthKm, 0.0f, 50.0f);
-						trueSky.WorleyTextureSize = EditorGUILayout.IntSlider("Worley Texture Size", trueSky.WorleyTextureSize, 8, 512);
+						trueSky.CellNoiseTextureSize = EditorGUILayout.IntSlider("Texture Size", trueSky.CellNoiseTextureSize, 8, 128);
 						EditorGUILayout.Space();
 					}
 
@@ -218,6 +225,13 @@ namespace simul
 						trueSky.backgroundTexture = (Texture)EditorGUILayout.ObjectField("Cosmic Background", trueSky.backgroundTexture, typeof(Texture), false);
 						trueSky.moonTexture = (Texture)EditorGUILayout.ObjectField("Moon Texture", trueSky.moonTexture, typeof(Texture), false);
 						trueSky.MinimumStarPixelSize = EditorGUILayout.FloatField("Minimum Star Pixel Size", trueSky.MinimumStarPixelSize);
+						EditorGUILayout.Space();
+					}
+
+					water = EditorGUILayout.Foldout(water, "Water");
+					if (water)
+					{
+						trueSky.RenderWater = EditorGUILayout.Toggle("Render Water", trueSky.RenderWater);
 						EditorGUILayout.Space();
 					}
 				}
@@ -281,9 +295,9 @@ namespace simul
 		if(trueSKY.advancedMode)
 		if(GUILayout.Button("Export Package"))
 		{
-			string simul_dir = "C:/Simul/master/Simul";
+			string simul_dir = "C:/Simul/4.2/Simul";
 			string dir=simul_dir+"/Products/TrueSky/Release/";
-			string version = "3.50.0.";
+			string version = "4.2.0.";
 			string version_file=simul_dir+"/version.txt";
 			try
 			{
@@ -297,7 +311,7 @@ namespace simul
 				UnityEngine.Debug.Log(e);
 				UnityEngine.Debug.Log("The version string file could not be read: "+version_file);
 			}
-			string filenameRoot = "trueSKYPlugin-Unity2017-" + version;
+			string filenameRoot = "trueSKYPlugin-Unity2018-" + version;
 			string[] aFilePaths=Directory.GetFiles(dir,filenameRoot+"*.unitypackage");
 			int largest=1;
 			foreach(string p in aFilePaths)

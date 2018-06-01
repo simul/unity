@@ -4,6 +4,7 @@ using UnityEditor;
 using UnityEditor.Callbacks;
 using System.IO;
 using System;
+using simul;
 
 namespace simul
 {
@@ -43,11 +44,12 @@ namespace simul
             
 			char s = Path.DirectorySeparatorChar;
 			string buildDirectory = pathToBuiltProject.Replace(".exe", "_Data");
-
+			String targetstr = "x86_64";
             // Per-platform changes
 			if(target == BuildTarget.PS4)
 			{
                 buildDirectory += s + "Media" + s;
+				targetstr = "ps4";
 			}
             if(target == BuildTarget.WSAPlayer)
             {
@@ -55,7 +57,9 @@ namespace simul
             }
             if(target == BuildTarget.Switch)
             {
-                string fixedPath    = pathToBuiltProject;
+				targetstr = "nx";
+
+				string fixedPath    = pathToBuiltProject;
                 int lastSep         = fixedPath.LastIndexOf("/");
                 fixedPath           = fixedPath.Remove(lastSep);
                 buildDirectory      = fixedPath + "/StagingArea/Data";
@@ -64,29 +68,19 @@ namespace simul
             Debug.Log("Build directory is: " + buildDirectory);
 
             // Copy shaders
-			string assetsPath       = Environment.CurrentDirectory + s + "Assets";
-			string simul            = assetsPath + s + "Simul";
-            string shaderbinSource  = simul + s + "shaderbin" + s + ToPlatformName(target);
-			string shaderbinBuild   = buildDirectory + s + "Simul" + s + "shaderbin" + s + ToPlatformName(target);
+			string assetsPath = Environment.CurrentDirectory + s + "Assets";
+			string shaderbinSource = trueSKY.GetShaderbinSourceDir(targetstr);
+			string shaderbinBuild = buildDirectory + s + "Simul" + s + "shaderbin";
 			DirectoryCopy.Copy(shaderbinSource, shaderbinBuild, true, true);
 			Debug.Log("DirectoryCopy: " + shaderbinSource + "->" + shaderbinBuild);
 
-            // Copy media
+			string simul = assetsPath + s + "Simul";
+			// Copy media
 			string MediaSource = simul + s + "Media";
 			string MediaBuild = buildDirectory + s + "Simul" + s + "Media";
 			DirectoryCopy.Copy(MediaSource, MediaBuild, true, false, false, false);
             Debug.Log("DirectoryCopy: " + MediaSource + "->" + MediaBuild);
 
-            // If building for ps4 also copy to StreamingAssets folder
-            if (target == BuildTarget.PS4)
-            {
-                string saDir = buildDirectory + s + "StreamingAssets" + s + "Simul" + s + "shaderbin" + s + ToPlatformName(target);
-                DirectoryCopy.Copy(shaderbinSource, saDir, true, true, false, false);
-                Debug.Log("DirectoryCopy: " + shaderbinSource + "->" + saDir);
-                saDir = buildDirectory + s + "StreamingAssets" + s + "Simul" + s + "Media";
-                DirectoryCopy.Copy(MediaSource, saDir, true, true, false, false);
-                Debug.Log("DirectoryCopy: " + MediaSource + "->" + saDir);
-            }
         }
 	}
 }
