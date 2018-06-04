@@ -11,13 +11,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dcdfbea2e7338ed4ba21f9f27c8815df, type: 3}
   m_Name: Cumulus
   m_EditorClassIdentifier: 
-  SequenceAsText: "{\n\t\"cloudKeyframer\":\n\t{\n\t\t\"keyframes\":\n\t\t[\n\t\t{\n\t\t\t\"baseNoiseFactor\":
-    \"0.5\"\n\t\t\t\"churn\": \"               1\"\n\t\t\t\"cloud_base_km\": \"               2\"\n\t\t\t\"cloud_height_km\":
-    \"4.0\"\n\t\t\t\"cloud_width_km\": \"50.0\"\n\t\t\t\"cloudiness\": \"0.5\"\n\t\t\t\"diffusivity\":
-    \"0.01\"\n\t\t\t\"direct_light\": \"               1\"\n\t\t\t\"distributionBaseLayer\":
-    \"0.239999994635582\"\n\t\t\t\"distributionTransition\": \"0.2000000029802322\"\n\t\t\t\"edgeSharpness\":
-    \"             0.1\"\n\t\t\t\"extinction\": \"0.003\"\n\t\t\t\"fractal_amplitude\":
-    \"               2.4\"\n\t\t\t\"fractal_wavelength\": \"              26\"\n\t\t\t\"godrayStrength\":
-    \"               0\"\n\t\t\t\"indirect_light\": \"0.45\"\n\t\t\t\"light_asymmetry\":
-    \"0.870\"\n\t\t\t\"octaves\": \"3\"\n\t\t\t\"persistence\": \"0.6\"\n\t\t\t\"upperDensity\":
-    \"0.546\"\n\t\t}\n\t\t]\n\t}\n}\n"
+  SequenceAsText: "{\n\t\"cloudKeyframer\":\n\t{\n\t\t\"CloudShadowRange\": \"           80000\"\n\t\t\"DayLoop\":
+    \"true\"\n\t\t\"EdgeNoiseResolution\": \"16\"\n\t\t\"EdgeNoiseFrequency\": \"4\"\n\t\t\"EdgeNoiseOctaves\":
+    \"4\"\n\t\t\"EdgeNoisePersistence\": \"0.557\"\n\t\t\"EdgeNoiseTextureSize\":
+    \"16\"\n\t\t\"ExplicitOffsets\": \"false\"\n\t\t\"GodraysSteps\": \"60\"\n\t\t\"GridHeight\":
+    \"16\"\n\t\t\"GridWidth\": \"128\"\n\t\t\"LoopRange\": \"               1\"\n\t\t\"LoopStart\":
+    \"               0\"\n\t\t\"MeetHorizon\": \"false\"\n\t\t\"NoisePeriod\": \"
+    \              4\"\n\t\t\"NoiseResolution\": \"8\"\n\t\t\"OverrideWind\": \"false\"\n\t\t\"ShadowTextureSize\":
+    \"64\"\n\t\t\"Visible\": \"true\"\n\t\t\"Wrap\": \"true\"\n\t}\n}\n"
