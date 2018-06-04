@@ -384,6 +384,7 @@ namespace simul
 					"Assets/Simul/Plugins/x86_64/dependencies/plugins/platforms",
 					"Assets/Simul/Plugins/WSA",
 					"Assets/Simul/demo",
+					"Assets/Simul/demo/Materials",
 					"Assets/Simul/Editor",
 					"Assets/Simul/Gizmos",
 					"Assets/Simul/Media/textures",
@@ -391,8 +392,9 @@ namespace simul
 					"Assets/Simul/Presets",
 					"Assets/Simul/qss",
 					"Assets/Simul/Resources",
+					"Assets/Simul"
 				};
-				AssetDatabase.ExportPackage(paths, fileName, ExportPackageOptions.Recurse | ExportPackageOptions.IncludeDependencies);
+				AssetDatabase.ExportPackage(paths, fileName, ExportPackageOptions.IncludeDependencies);
 
 				UnityEngine.Debug.Log("Exported: "+fileName);
 			}
