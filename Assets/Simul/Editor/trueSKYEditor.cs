@@ -362,22 +362,22 @@ namespace simul
 			{
 				string[] paths = 
 				{
-					"Assets/Simul/shaderbin/x86_64",
-					"Assets/Simul/Plugins/x86_64",
+					"Assets/Simul/shaderbin/x86_64/",
+					"Assets/Simul/Plugins/x86_64/",
 					"Assets/Simul/Plugins/x86_64/dependencies/",
-					"Assets/Simul/Plugins/x86_64/dependencies/plugins/bearer",
-					"Assets/Simul/Plugins/x86_64/dependencies/plugins/platforms",
-					"Assets/Simul/Plugins/WSA",
-					"Assets/Simul/demo",
-					"Assets/Simul/demo/Materials",
-					"Assets/Simul/Editor",
-					"Assets/Simul/Gizmos",
-					"Assets/Simul/Media/textures",
-					"Assets/Simul/Prefabs",
-					"Assets/Simul/Presets",
-					"Assets/Simul/qss",
-					"Assets/Simul/Resources",
-					"Assets/Simul"
+					"Assets/Simul/Plugins/x86_64/dependencies/plugins/bearer/",
+					"Assets/Simul/Plugins/x86_64/dependencies/plugins/platforms/",
+					"Assets/Simul/Plugins/WSA/",
+					"Assets/Simul/demo/",
+					"Assets/Simul/demo/Materials/",
+					"Assets/Simul/Editor/",
+					"Assets/Simul/Gizmos/",
+					"Assets/Simul/Media/textures/",
+					"Assets/Simul/Prefabs/",
+					"Assets/Simul/Presets/",
+					"Assets/Simul/qss/",
+					"Assets/Simul/Resources/",
+					"Assets/Simul/"
 				};
 				AssetDatabase.ExportPackage(paths, fileName, ExportPackageOptions.IncludeDependencies);
 
