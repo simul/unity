@@ -74,12 +74,10 @@ namespace simul
         {
             EnsureDepthTexture();
             Camera cam = GetComponent<Camera>();
-            if (buf == null)
+            if (mainCommandBuffer == null)
             {
-                storebuf        = new CommandBuffer();
-                storebuf.name   = "trueSKY store state";
-                buf             = new CommandBuffer();
-                buf.name        = "render trueSKY";
+                mainCommandBuffer             = new CommandBuffer();
+                mainCommandBuffer.name        = "render trueSKY";
                 cbuf_view_id    = -1;
             }
             if (cbuf_view_id != InternalGetViewId())
@@ -91,16 +89,13 @@ namespace simul
             if (bufs.Length != 2)
             {
                 cam.RemoveCommandBuffers(CameraEvent.BeforeImageEffectsOpaque);
-                cam.AddCommandBuffer(CameraEvent.BeforeImageEffectsOpaque, storebuf);
-                cam.AddCommandBuffer(CameraEvent.BeforeImageEffectsOpaque, buf);
+                cam.AddCommandBuffer(CameraEvent.BeforeImageEffectsOpaque, mainCommandBuffer);
             }
-            buf.Clear();
-            storebuf.Clear();
+            mainCommandBuffer.Clear();
             cbuf_view_id = InternalGetViewId();
 
-            storebuf.IssuePluginEvent(UnityGetStoreStateFunc(), TRUESKY_EVENT_ID + cbuf_view_id);
-            buf.ClearRenderTarget(true, true, new Color(0.0F, 0.0F, 0.0F, 1.0F), 1.0F);
-            buf.IssuePluginEvent(UnityGetRenderEventFunc(), TRUESKY_EVENT_ID + cbuf_view_id);
+            mainCommandBuffer.ClearRenderTarget(true, true, new Color(0.0F, 0.0F, 0.0F, 1.0F), 1.0F);
+            mainCommandBuffer.IssuePluginEvent(UnityGetRenderEventFunc(), TRUESKY_EVENT_ID + cbuf_view_id);
         }
 
         float[] cview = new float[16];

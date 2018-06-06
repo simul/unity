@@ -9,6 +9,7 @@ QDockWidget
 {
 	background-color: transparent;
 }
+
 QWidget:disabled
 {
 	background-color: #656565;
@@ -82,12 +83,12 @@ QAccordion QCheckBox#accordionCheckBox
 
 QAccordion QCheckBox#accordionCheckBox::indicator:unchecked
 {
-	image: url(:/images/dark_qss/right_arrow.png);
+	image: url(:/dark_qss/images/dark_qss/right_arrow.png);
 }
 
 QAccordion QCheckBox#accordionCheckBox::indicator:checked
 {
-	image: url(:/images/dark_qss/down_arrow.png);
+	image: url(:/dark_qss/images/dark_qss/down_arrow.png);
 }
 
 QCheckBox#accordionCheckBox:hover
@@ -154,12 +155,12 @@ QHeaderView::section
 /* style the sort indicator */
 QHeaderView::down-arrow
 {
-	image: url(:/images/dark_qss/down_arrow.png);
+	image: url(:/dark_qss/images/dark_qss/down_arrow.png);
 }
 
 QHeaderView::up-arrow
 {
-	image: url(:/images/dark_qss/up_arrow.png);
+	image: url(:/dark_qss/images/dark_qss/up_arrow.png);
 }
 
 
@@ -335,32 +336,6 @@ QDateEdit::drop-down
 	image: url(:/qss_icons/images/down_arrow.png);
 	
  }
-
-/* Reserve 1 pixel space in padding. When we get the focus,
-	kill the padding and enlarge the border. This makes the items
-	glow. */
-QLineEdit
-{
-	color: white;
-	border-width: 1px;
-	padding: 1px;
-	border-style: solid;
-	border-color: silver;
-	border-radius: 5px;
-}
-
-/* As above, eliminate the padding and increase the border. */
-QLineEdit:focus
-{
-	background-color: #9098a0;
-	border-color: white;
-	border-width: 2px;
-	padding: 1px 0px 0px 0px;
-}
-
-	background: none;
-}
-
 /* A QToolTip is a QLabel ... */
 QToolTip
 {
@@ -598,6 +573,28 @@ QLineEdit#rayleighRed, #wavelengthNmRed, #mieRed
 	background-color: rgba(64,64,128)
 }
 
+
+/* Reserve 1 pixel space in padding. When we get the focus,
+	kill the padding and enlarge the border. This makes the items
+	glow. */
+QLineEdit
+{
+	color: white;
+	border-width: 1px;
+	padding: 1px;
+	border-style: solid;
+	border-color: silver;
+	border-radius: 5px;
+}
+
+/* As above, eliminate the padding and increase the border. */
+QLineEdit:focus
+{
+	background-color: #9098a0;
+	border-color: white;
+	border-width: 2px;
+	padding: 1px 0px 0px 0px;
+}
 
 QGroupBox
 {

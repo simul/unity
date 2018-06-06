@@ -103,9 +103,18 @@ namespace simul
 		[DllImport(SimulImports.renderer_dll)]
         protected static extern System.IntPtr UnityGetRenderEventFunc();
         [DllImport(SimulImports.renderer_dll)]
+		protected static extern System.IntPtr UnityGetRenderEventFuncWithData();
+		[DllImport(SimulImports.renderer_dll)]
+		protected static extern System.IntPtr UnityGetOverlayFuncWithData(); 
+		[DllImport(SimulImports.renderer_dll)]
         protected static extern System.IntPtr UnityGetStoreStateFunc();
         #endregion
-
+		[StructLayout(LayoutKind.Sequential)]
+		public struct UnityViewStruct
+		{
+			public System.IntPtr nativeColourRenderBuffer;
+			public System.IntPtr nativeDepthRenderBuffer;
+		}
         protected int view_ident;
         protected int view_id=-1;
 		protected static int last_view_ident = 0;
@@ -153,13 +162,9 @@ namespace simul
 		protected RenderTextureHolder unityDepthTexture = new RenderTextureHolder();
 		static protected Material _flippedDepthMaterial = null;
 		static protected Material _deferredDepthMaterial= null;
-		static protected Material _msaaDepthMaterial8 = null; 
 		static protected Shader _flippedShader  = null;
-		static protected Shader _MSAADepthShader8 = null;
 		static protected Shader _deferredShader = null;
-        protected CommandBuffer storebuf        = null;
-		protected CommandBuffer blitbuf         = null;
-		protected CommandBuffer buf             = null;
+		protected CommandBuffer mainCommandBuffer  = null;
 		protected int cbuf_view_id              = -1;
 		public int GetViewId()
 		{
@@ -374,10 +379,8 @@ namespace simul
 		{
 			_flippedDepthMaterial = null;
 			_deferredDepthMaterial = null;
-			_msaaDepthMaterial8 = null;
 			_flippedShader = null;
 			_deferredShader = null;
-			_MSAADepthShader8 = null;
 		}
 
 		void OnEnable ()

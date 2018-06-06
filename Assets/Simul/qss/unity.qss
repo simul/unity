@@ -1,13 +1,15 @@
 QWidget
 {
-	color: silver;
+	color: #333333;
+
 	background-color: transparent;
 }
 
 QDockWidget
 {
-	background-color: rgba(54,54,255,255);
+	background-color: transparent;
 }
+
 QWidget:disabled
 {
 	background-color: #656565;
@@ -15,7 +17,7 @@ QWidget:disabled
 
 QPropertyPanel
 {
-	background-color: rgba(54,54,54,255);
+	background-color: transparent;
 }
 
 .QAccordion
@@ -28,34 +30,46 @@ QAccordion
 	background-color: rgba(35,35,35,255);
 }
 
+QAccordion#main,QAccordion#cloudRendering
+{
+	background-color: rgba(35,80,35,255);
+}
+
+QAccordion#shape
+{
+	background-color: rgba(35,35,95,255);
+}
+
+QAccordion#effects,QAccordion#precipitation
+{
+	background-color: rgba(35,55,75,255);
+}
+
 QAccordion#cloudWindow
 {
 	background-color: rgba(35,80,35,255);
 }
-QAccordion#cloudRendering
-{
-	background-color: rgba(35,35,95,255);
-}
-QAccordion#precipitation
-{
-	background-color: rgba(35,55,75,255);
-}
+
 QAccordion#noise
 {
 	background-color: rgba(85,55,35,255);
 }
+
 QAccordion#lighting
 {
 	background-color: rgba(125,35,35,255);
 }
+
 QAccordion#update
 {
 	background-color: rgba(85,75,35,255);
 }
+
 QAccordion#viewProperties
 {
 	background-color: rgba(35,55,155,255);
 }
+
 QAccordion#camera
 {
 	background-color: rgba(75,75,75,255);
@@ -69,12 +83,12 @@ QAccordion QCheckBox#accordionCheckBox
 
 QAccordion QCheckBox#accordionCheckBox::indicator:unchecked
 {
-	image: url(:/images/dark_qss/right_arrow.png);
+	image: url(:/light_qss/images/light_Qss/right_arrow.png);
 }
 
 QAccordion QCheckBox#accordionCheckBox::indicator:checked
 {
-	image: url(:/images/dark_qss/down_arrow.png);
+	image: url(:/light_qss/images/light_Qss/down_arrow.png);
 }
 
 QCheckBox#accordionCheckBox:hover
@@ -90,7 +104,7 @@ DirectX11Widget
 
 .QScrollArea
 {
-	background-color: rgba(25,25,25, 255);
+	background-color: transparent;
 	border: 5px;
 }
  
@@ -141,12 +155,12 @@ QHeaderView::section
 /* style the sort indicator */
 QHeaderView::down-arrow
 {
-	image: url(:/dark_qss/images/dark_qss/down_arrow.png);
+	image: url(:/light_qss/images/light_qss/down_arrow.png);
 }
 
 QHeaderView::up-arrow
 {
-	image: url(:/dark_qss/images/dark_qss/up_arrow.png);
+	image: url(:/light_qss/images/light_qss/up_arrow.png);
 }
 
 
@@ -204,6 +218,172 @@ QPushButton:checked
 	padding-top: 5px;
 }
 
+QToolButton
+{ /* all types of tool button */
+	background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
+								stop: 0 #484848, stop: 1 dimgrey);
+	border: none;
+}
+
+QToolButton:hover
+{
+	background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #484848, stop: 1 dimgrey);
+}
+
+QToolButton:pressed
+{
+	background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #484848, stop: 1 dimgrey);
+	padding-left: 2px;
+	padding-top: 2px;
+}
+
+QToolButton:checked
+{
+	background-image: url(:/qss_icons/images/null.png);
+	background-repeat: repeat-x;
+	background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 midnightblue, stop: 1 dodgerblue);
+}
+
+QToolButton#back
+{
+	background-image: url(:/qss_icons/images/Buttons/Back32.png);
+	background-repeat: repeat-none;
+    background-origin: content;
+}
+
+ 
+/* Bold text on status bar looks awful. */
+QStatusBar QLabel
+{
+	font: normal;
+}
+
+QStatusBar::item
+{
+	border-width: 1;
+	border-color: gainsboro;
+	border-style: solid;
+	border-radius: 2;
+}
+
+/* Password character */
+QLineEdit[echoMode="2"]
+{
+	lineedit-password-character: 9679;
+}
+
+QComboBox, QLineEdit, QTextEdit, QListView
+{
+	background-color: #9098a0;
+	selection-color: #0a214c;
+	selection-background-color: dodgerblue;
+}
+
+QVectorEdit[colourEdit="true"] QLineEdit#x
+{
+	background-color: rgba(192,0,0)
+}
+
+QVectorEdit[colourEdit="true"] QLineEdit#y
+{
+	background-color: rgba(0,128,0)
+}
+
+QVectorEdit[colourEdit="true"] QLineEdit#z
+{
+	background-color: rgba(0,64,255)
+}
+
+QLineEdit#rayleighRed, #wavelengthNmRed, #mieRed
+{
+	background-color: rgba(192,0,0)
+}
+
+#rayleighGreen, #wavelengthNmGreen, #mieGreen
+{
+	background-color: rgba(0,128,0)
+}
+
+#rayleighBlue, #wavelengthNmBlue, #mieBlue
+{
+	background-color: rgba(0,64,255)
+}
+
+
+QDateEdit
+{
+	border: 1px solid silver;
+	border-radius: 3px;
+	padding: 1px 18px 1px 3px;
+	min-width: 6em;
+}
+ 
+QDateEdit::drop-down
+{
+	background-color: #484848;
+	subcontrol-origin: padding;
+	subcontrol-position: top right;
+	width: 15px;
+
+	border-left-width: 1px;
+	border-left-color: darkgray;
+	border-left-style: solid; /* just a single line */
+	border-top-right-radius: 3px; /* same radius as the QComboBox */
+	border-bottom-right-radius: 3px;
+	
+	image: url(:/qss_icons/images/down_arrow.png);
+	
+ }
+/* A QToolTip is a QLabel ... */
+QToolTip
+{
+	border: 2px solid gainsboro;
+	padding: 5px;
+	border-radius: 3px;
+	opacity: 200;
+}
+
+QCheckBox
+{
+	spacing: 5px;
+}
+
+QCheckBox::indicator
+{
+	width: 13px;
+	height: 13px;
+}
+
+/* Nice to have the background color change when hovered. */
+QRadioButton:hover, QCheckBox:hover
+{
+	background-color: #484848;
+}
+QDial
+{
+	color:rgba(185, 185, 185, 255);
+	background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0 rgba(125, 125, 125, 255), stop:1 rgba(185, 185, 185, 255));
+	border: 2px solid #CC7000;
+}
+
+QDial#daytimeHourDial
+{
+	color:rgba(185, 185, 185, 255);
+	background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0 rgba(72, 72, 72, 255), stop:1 rgba(105,105,105, 255));
+	border: 2px solid #CC7000;
+}
+
+QDialog
+{
+	background-color: #484848;
+}
+/* Force the dialog's buttons to follow the Windows guidelines. */
+QDialogButtonBox
+{
+	button-layout: 0;
+}
+
+
 QTabWidget::pane
 { /* The tab widget frame */
 	border: none;
@@ -219,6 +399,7 @@ QTabWidget::pane
      left: 0px; /* move to the right by 5px */
 	background: #FF0000;
  }
+
 QTabBar::tab
 {
 	min-width: 16ex;
@@ -270,7 +451,7 @@ QScrollBar::handle:vertical
 
 QScrollBar::sub-line:vertical
 {
-    image: url(:/images/light_qss/down_arrow.png);
+    image: url(:/light_qss/images/light_Qss/down_arrow.png);
     height: 6px;
     width: 7px;
     margin: 1px 0 1px 0;
@@ -283,7 +464,7 @@ QScrollBar::sub-line:vertical
 
 QScrollBar::add-line:vertical
 {
-    image: url(:/images/light_qss/up_arrow.png);
+    image: url(:/light_qss/images/light_Qss/up_arrow.png);
     height: 6px;
     width: 7px;
     margin: 1px 0 1px 0;
@@ -382,6 +563,7 @@ QGroupBox
 
 QGroupBox::title
 {
+	background-color:transparent;
 	font: bold large;
 	font-family: "Times";
 	border-radius: 0px;

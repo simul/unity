@@ -14,6 +14,8 @@ namespace simul
         protected static extern System.IntPtr UnityGetOverlayFunc();
         [DllImport(SimulImports.renderer_dll)]
         protected static extern System.IntPtr UnityGetPostTranslucentFunc();
+		[DllImport(SimulImports.renderer_dll)]
+		protected static extern System.IntPtr UnityGetPostTranslucentFuncWithData(); 
 
         protected float[] cubemapTransformMatrix = new float[16];
 		protected float[] rainDepthMatrix = new float[16];
@@ -23,7 +25,8 @@ namespace simul
 		{
 			return StaticGetOrAddView((System.IntPtr)view_ident);
 		}
-
+		// We will STORE the activeTexture from the camera and hope it's valid next frame.
+		RenderTexture activeTexture = null;
         public RenderTexture inscatterRT;
         public RenderTexture cloudShadowRT;
         public RenderTexture lossRT;
@@ -142,7 +145,8 @@ namespace simul
 			RemoveBuffer("trueSKY overlay");
 			RemoveBuffer("trueSKY post translucent");
 		}
-
+		UnityViewStruct unityViewStruct=new UnityViewStruct();
+		System.IntPtr unityViewStructPtr = Marshal.AllocHGlobal(Marshal.SizeOf(new UnityViewStruct()));
 		void OnPreRender()
 		{
 			if(!enabled||!gameObject.activeInHierarchy)
@@ -152,15 +156,11 @@ namespace simul
 			GetComponent<Camera>().depthTextureMode|=DepthTextureMode.Depth;
 			PreRender();
 			Camera cam=GetComponent<Camera>();
-            if (buf == null) 
+            if (mainCommandBuffer == null) 
 			{
 				RemoveCommandBuffers();
-                storebuf                    = new CommandBuffer();
-                storebuf.name               = "trueSKY store state";
-				buf                         = new CommandBuffer();
-				buf.name                    = "trueSKY render";
-				blitbuf                     = new CommandBuffer();
-				blitbuf.name                = "trueSKY depth";
+				mainCommandBuffer           = new CommandBuffer();
+				mainCommandBuffer.name      = "trueSKY render";
 				overlay_buf                 = new CommandBuffer();
 				overlay_buf.name            = "trueSKY overlay";
 				post_translucent_buf        = new CommandBuffer();
@@ -175,43 +175,36 @@ namespace simul
 			}
             CommandBuffer[] bufs = cam.GetCommandBuffers(CameraEvent.BeforeImageEffectsOpaque);
 			PrepareDepthMaterial();
-            if (bufs.Length != 3) 
+            if (bufs.Length != 1) 
 			{
 				RemoveCommandBuffers();
-                cam.AddCommandBuffer(CameraEvent.BeforeImageEffectsOpaque, storebuf);
-				cam.AddCommandBuffer(CameraEvent.BeforeImageEffectsOpaque, blitbuf);
-				cam.AddCommandBuffer(CameraEvent.BeforeImageEffectsOpaque, buf);
+				cam.AddCommandBuffer(CameraEvent.BeforeImageEffectsOpaque, mainCommandBuffer);
 				cam.AddCommandBuffer(CameraEvent.AfterForwardAlpha, post_translucent_buf);
 				cam.AddCommandBuffer(CameraEvent.AfterEverything, overlay_buf);
 			}
-            storebuf.Clear();
-            buf.Clear();
-			blitbuf.Clear();
+            mainCommandBuffer.Clear();
 			overlay_buf.Clear();
 			post_translucent_buf.Clear();
             cbuf_view_id = InternalGetViewId();
-
-            // Copy Unity camera depth
-            // In previous versions of unity, we would do a blitbuf.Blit() but from
-            // Unity 2017.1 > this is broken for XR. Now we are calling DrawProcedural() and then
-            // on then vertex shader we will output the vertex positions and also the uvs.
-            // Unity will force two drawcalls for this DrawProcedural(), each one with the viewport
-            // set for each eye EX: 1) (0,0,1280,1420)  2) (1280,0,1280,1420) thats why inside the
-            // DeferredDepthShader we check the current eye index. The ideal thing will be to tell
-            // unity to make this call just once but I don't thik thats going to happen.
-            {
-                blitbuf.SetRenderTarget((RenderTexture)depthTexture.renderTexture);
-                blitbuf.DrawProcedural(Matrix4x4.identity, depthMaterial, 0, MeshTopology.Triangles, 6);
-                blitbuf.SetRenderTarget(Graphics.activeColorBuffer);
-            }
 			PrepareMatrices();
-            if (showDepthTexture!=null)
-				blitbuf.Blit(_dummyTexture, showDepthTexture, depthMaterial);
+			unityViewStruct.nativeColourRenderBuffer = (System.IntPtr)0;
+			unityViewStruct.nativeDepthRenderBuffer = (System.IntPtr)0;
+			if (activeTexture != null)
+			{
+				unityViewStruct.nativeColourRenderBuffer = activeTexture.colorBuffer.GetNativeRenderBufferPtr();
+				unityViewStruct.nativeDepthRenderBuffer = activeTexture.depthBuffer.GetNativeRenderBufferPtr();
+			}
+			Marshal.StructureToPtr(unityViewStruct, unityViewStructPtr, true);
 
-            storebuf.IssuePluginEvent(UnityGetStoreStateFunc(), TRUESKY_EVENT_ID + cbuf_view_id);
-            buf.IssuePluginEvent(UnityGetRenderEventFunc(),TRUESKY_EVENT_ID + cbuf_view_id);
-			overlay_buf.IssuePluginEvent(UnityGetOverlayFunc(),TRUESKY_EVENT_ID + cbuf_view_id);
-			post_translucent_buf.IssuePluginEvent (UnityGetPostTranslucentFunc(), TRUESKY_EVENT_ID + cbuf_view_id);
+			mainCommandBuffer.IssuePluginEventAndData(UnityGetRenderEventFuncWithData(),TRUESKY_EVENT_ID + cbuf_view_id, unityViewStructPtr);
+			overlay_buf.IssuePluginEventAndData(UnityGetOverlayFuncWithData(),TRUESKY_EVENT_ID + cbuf_view_id, unityViewStructPtr);
+			post_translucent_buf.IssuePluginEventAndData(UnityGetPostTranslucentFuncWithData(), TRUESKY_EVENT_ID + cbuf_view_id, unityViewStructPtr);
+		}
+
+		void OnPostRender()
+		{
+			Camera cam = GetComponent<Camera>();
+			activeTexture = cam.activeTexture;
 		}
 
 		void PrepareDepthMaterial()
@@ -229,19 +222,6 @@ namespace simul
 						UnityEngine.Debug.LogError("Shader not found: trueSKY needs flippedDepthShader.shader, located in the Assets/Simul/Resources directory");
 				}
 			 	depthMaterial = _flippedDepthMaterial;
-#if UNITY_DEPTH_ACCESS
-// unsupported due to missing Unity features.
-				if (_msaaDepthMaterial8== null)
-				{
-					_MSAADepthShader8 = Resources.Load("MSAADepthShader8", typeof(Shader)) as Shader;
-					if (_MSAADepthShader8 != null)
-						_msaaDepthMaterial8 = new Material(_MSAADepthShader8);
-					else
-						UnityEngine.Debug.LogError("Shader not found: trueSKY needs flippedDepthShader.shader, located in the Assets/Simul/Resources directory");
-				}
-				
-				UnityEngine.Debug.Log("msaa");
-#endif
 			}
 			else
 			{

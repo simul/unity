@@ -1960,7 +1960,10 @@ namespace simul
 				if (_CellNoiseWavelengthKm != value) try
 					{
 						_CellNoiseWavelengthKm = value;
+						if (SimulVersion >= MakeSimulVersion(4, 2))
 						StaticSetRenderFloat("render:cellnoisewavelengthkm", _CellNoiseWavelengthKm);
+						else
+							StaticSetRenderFloat("WorleyWavelengthKm", _CellNoiseWavelengthKm);
 					}
 					catch (Exception exc)
 					{
