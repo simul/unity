@@ -322,7 +322,7 @@ namespace simul
 			largest++;
 			string fileName=dir+filenameRoot+largest.ToString("D4")+".unitypackage";
 			//UnityEngine.Debug.Log(fileName);
-			ExportPackage(fileName);
+			ExportPackage(fileName,"x64");
 		}
 		EditorGUILayout.EndHorizontal();
 
@@ -338,28 +338,48 @@ namespace simul
 			}
 		}
 
-	/// <summary>
-	/// This command is run from the CI server to test that the just-installed trueSKY package is ok.
-	/// </summary>
-	static void Test()
-	{
-		UnityEngine.Debug.Log("Test installed trueSKY Package");
-		EditorApplication.Exit(0);
-	}
-	static void ExportPackageCmdLine()
-	{
-        Application.SetStackTraceLogType (LogType.Error|LogType.Assert|LogType.Exception|LogType.Warning|LogType.Log,StackTraceLogType.None);
-		string f = CommandLineReader.GetCustomArgument("Filename");
-		f = f.Replace("\"", "");
-		UnityEngine.Debug.Log("ExportPackageCmdLine "+f);
-		ExportPackage(f);
-	}
-	static void ExportPackage(string fileName)
-	{
-		UnityEngine.Debug.Log("C:/trueSKY.unitypackage =" + fileName+"? "+("C:/trueSKY.unitypackage" == fileName));
-		AssetDatabase.ExportPackage("Assets/Simul", fileName, ExportPackageOptions.Recurse | ExportPackageOptions.IncludeDependencies);
+		/// <summary>
+		/// This command is run from the CI server to test that the just-installed trueSKY package is ok.
+		/// </summary>
+		static void Test()
+		{
+			UnityEngine.Debug.Log("Test installed trueSKY Package");
+			EditorApplication.Exit(0);
+		}
 
-		UnityEngine.Debug.Log("Exported: "+fileName);
-	}
+		static void ExportPackageCmdLine()
+		{
+    	    Application.SetStackTraceLogType (LogType.Error|LogType.Assert|LogType.Exception|LogType.Warning|LogType.Log,StackTraceLogType.None);
+			string f 	= CommandLineReader.GetCustomArgument("Filename");
+			f 			= f.Replace("\"", "");
+			string p 	= CommandLineReader.GetCustomArgument("Platform");
+			UnityEngine.Debug.Log("ExportPackageCmdLine "+f + ", " + p);
+			ExportPackage(f,p);
+		}
+
+		static void ExportPackage(string fileName,string platform)
+		{
+			if(platform == "x64")
+			{
+				AssetDatabase.ExportPackage("Assets/Simul", fileName, ExportPackageOptions.Recurse | ExportPackageOptions.IncludeDependencies);
+
+				UnityEngine.Debug.Log("Exported: "+fileName);
+			}
+			else if(platform == "PS4")
+			{
+				string[] paths = 
+				{
+					"Assets/Simul/shaderbin/ps4",
+					"Assets/Simul/Plugins/PS4"
+				};
+				AssetDatabase.ExportPackage(paths, fileName, ExportPackageOptions.Recurse | ExportPackageOptions.IncludeDependencies);
+
+				UnityEngine.Debug.Log("Exported: "+ fileName);
+			}
+			else
+			{
+				UnityEngine.Debug.Log("Unknown platform:" + platform);
+			}
+		}
 	}
 }
