@@ -37,12 +37,12 @@ namespace simul
 		{
 			trueSKY.CycleCompositingView();
 		}
-		[MenuItem("Window/trueSky/ShowCloudCrossSections #&c", false, 200000)]
+		[MenuItem("Window/trueSky/Show Cloud CrossSections #&c", false, 200000)]
 		public static void ShowCloudCrossSections()
 		{
 			trueSKY.ShowCloudCrossSections=!trueSKY.ShowCloudCrossSections;
 		}
-		[MenuItem("Window/trueSky/ShowAtmosphericTables &a", false, 200000)]
+		[MenuItem("Window/trueSky/Show Atmospheric Tables &a", false, 200000)]
 		public static void ShowAtmosphericTables()
 		{
 			trueSKY.ShowAtmosphericTables=!trueSKY.ShowAtmosphericTables;

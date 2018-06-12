@@ -227,13 +227,13 @@ namespace simul
 		[DllImport(SimulImports.renderer_dll)]		private static extern void	StaticRenderKeyframeSetBool		(uint uid,string name,bool value);
 		[DllImport(SimulImports.renderer_dll)]		private static extern bool	StaticRenderKeyframeGetBool		(uint uid,string name);
 
-		[DllImport(SimulImports.renderer_dll)]		private static extern void StaticCreateBoundedWaterObject	(uint ID, float[] dimension, float[] location);
+		[DllImport(SimulImports.renderer_dll)]		private static extern bool StaticCreateBoundedWaterObject	(uint ID, float[] dimension, float[] location);
 		[DllImport(SimulImports.renderer_dll)]		private static extern void StaticRemoveBoundedWaterObject	(uint ID);
 
 		[DllImport(SimulImports.renderer_dll)]		private static extern void StaticAddWaterProbe				(uint ID, float[] location);
 		[DllImport(SimulImports.renderer_dll)]		private static extern void StaticRemoveWaterProbe			(uint ID);
 		[DllImport(SimulImports.renderer_dll)]		private static extern void StaticUpdateWaterProbePosition	(uint ID, float[] location);
-		[DllImport(SimulImports.renderer_dll)]		private static extern void StaticGetWaterProbeValues		(uint ID);
+		[DllImport(SimulImports.renderer_dll)]		private static extern Vector4 StaticGetWaterProbeValues		(uint ID);
 
 		[DllImport(SimulImports.renderer_dll)]		private static extern void StaticSetWaterFloat	(string name, int ID, float value);
 		[DllImport(SimulImports.renderer_dll)]		private static extern void StaticSetWaterInt	(string name, int ID, int value);
@@ -616,7 +616,6 @@ namespace simul
 					{
 						_renderWater = value;
 						StaticSetRenderBool("renderWater", Application.isPlaying || _renderWater);
-						//RepaintAll();
 					}
 					catch (Exception exc)
 					{
@@ -2134,8 +2133,9 @@ namespace simul
                 SetNightTextures();
                 StaticSetRenderBool("SimulationTimeRain", _simulationTimeRain);
 				StaticSetRenderFloat("render:maxsunradiance", _maxSunRadiance);
+				StaticSetRenderBool("RenderWater", _renderWater);
 
-				
+
 			}
 			catch (Exception exc)
 			{
@@ -2418,6 +2418,7 @@ namespace simul
 				StaticSetRenderFloat("render:crepuscularraysstrength", _crepuscularRaysStrength);
 				StaticSetRenderFloat("depthsamplingpixelrange", _depthSamplingPixelRange);
 				StaticSetRenderFloat("maxsunradiance", _maxSunRadiance);
+
 				SetNightTextures();
 
 #if UNITY_EDITOR
