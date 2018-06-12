@@ -12,7 +12,7 @@ namespace simul
 	public class TrueSkyWaterProbe : MonoBehaviour
 	{
 		#region imports
-		[DllImport(SimulImports.renderer_dll)]	private static extern void StaticAddWaterProbe(uint ID, float[] location);
+		[DllImport(SimulImports.renderer_dll)]	private static extern bool StaticAddWaterProbe(uint ID, float[] location);
 		[DllImport(SimulImports.renderer_dll)]	private static extern void StaticRemoveWaterProbe(uint ID);
 		[DllImport(SimulImports.renderer_dll)]	private static extern void StaticUpdateWaterProbePosition(uint ID, float[] location);
 		[DllImport(SimulImports.renderer_dll)]	private static extern Vector4 StaticGetWaterProbeValues(uint ID);
@@ -34,6 +34,7 @@ namespace simul
 		private trueSKY mTsInstance;
 		private uint ID;
 		private bool active;
+		private bool waterProbeCreated;
 		private float depth;
 		private Vector3 direction;
 		private static uint ProbeIDCount = 0;
@@ -42,6 +43,7 @@ namespace simul
 		{
 			ProbeIDCount++;
 			ID = ProbeIDCount;
+			waterProbeCreated = false;
 		}
 
 		~TrueSkyWaterProbe()
@@ -87,6 +89,10 @@ namespace simul
 			float[] location = new float[] {(transform.position.z + mTsInstance.transform.position.x) * mTsInstance.MetresPerUnit,
 											(transform.position.x + mTsInstance.transform.position.z) * mTsInstance.MetresPerUnit,
 											(transform.position.y + mTsInstance.transform.position.y) * mTsInstance.MetresPerUnit};
+
+			if(!waterProbeCreated)
+				waterProbeCreated = StaticAddWaterProbe(ID, location);
+
 			StaticUpdateWaterProbePosition(ID, location);
 		}
 
@@ -96,7 +102,7 @@ namespace simul
 			float[] location = new float[] {(transform.position.z + mTsInstance.transform.position.x) * mTsInstance.MetresPerUnit,
 											(transform.position.x + mTsInstance.transform.position.z) * mTsInstance.MetresPerUnit,
 											(transform.position.y + mTsInstance.transform.position.y) * mTsInstance.MetresPerUnit};
-			StaticAddWaterProbe(ID, location);
+			waterProbeCreated = StaticAddWaterProbe(ID, location);
 		}
 	}
 }
