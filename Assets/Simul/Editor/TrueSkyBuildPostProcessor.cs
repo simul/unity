@@ -70,7 +70,7 @@ namespace simul
             // Copy shaders
 			string assetsPath = Environment.CurrentDirectory + s + "Assets";
 			string shaderbinSource = trueSKY.GetShaderbinSourceDir(targetstr);
-			string shaderbinBuild = buildDirectory + s + "Simul" + s + "shaderbin";
+			string shaderbinBuild = buildDirectory + s + "Simul" + s + "shaderbin" + s + targetstr;
 			DirectoryCopy.Copy(shaderbinSource, shaderbinBuild, true, true);
 			Debug.Log("DirectoryCopy: " + shaderbinSource + "->" + shaderbinBuild);
 
