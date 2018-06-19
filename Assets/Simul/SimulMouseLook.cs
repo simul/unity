@@ -21,7 +21,6 @@ using System.Collections;
 [ExecuteInEditMode]
 public class SimulMouseLook : MonoBehaviour
 {
-#if UNITY_EDITOR
 	public enum RotationAxes { MouseXAndY = 0, MouseX = 1, MouseY = 2 }
 	public RotationAxes axes = RotationAxes.MouseXAndY;
 	public bool workWhenPlaying = true;
@@ -47,7 +46,8 @@ public class SimulMouseLook : MonoBehaviour
 	Vector3 new_rot_speed;
     Vector3 speed;
     Vector3 new_speed;
-    void OnGUI()
+#if UNITY_EDITOR
+	void OnGUI()
 	{
 		if (Application.isPlaying && !workWhenPlaying)
 			return;
@@ -111,7 +111,8 @@ public class SimulMouseLook : MonoBehaviour
             }
         }
     }
-    void ApplyTranslation(Vector3 rspeed)
+#endif
+	void ApplyTranslation(Vector3 rspeed)
     {
         Vector3 up = transform.up;
         Vector3 right = transform.right;
@@ -139,12 +140,22 @@ public class SimulMouseLook : MonoBehaviour
 		tiltZ += rot_speed.z;
 		transform.localEulerAngles = new Vector3(-rotationY, rotationX, tiltZ);
 	}
+	void GamePad()
+	{
+		if (GetComponent<GamePad>())
+		{
+			GamePad pad = GetComponent<GamePad>();
+			new_rot_speed += 25.0F*pad.leftStick;
+			new_speed += 25.0F*pad.rightstick;
+		}
+	}
 	void Update()
 	{
 		if (Application.isPlaying)
 		{
 			if (workWhenPlaying)
 			{
+				GamePad();
 				if (TiltTurn > 0.0F)
 					new_rot_speed.z = -TiltTurn * new_rot_speed.x;
 				rot_speed *= (damping);
@@ -165,5 +176,4 @@ public class SimulMouseLook : MonoBehaviour
             ApplyTranslation(speed);
         }
 	}
-#endif
 }

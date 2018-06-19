@@ -43,6 +43,8 @@ namespace simul
 		protected RenderTextureHolder reflectionProbeTexture = new RenderTextureHolder();
         protected CommandBuffer overlay_buf                 = null;
         protected CommandBuffer post_translucent_buf        = null;
+		/// Blitbuf is now only for in-editor use.
+		protected CommandBuffer blitbuf = null;
 
         /// <summary>
         /// This material is used the blit the camera's depth to a render target
@@ -118,6 +120,13 @@ namespace simul
             if(cloudVisibilityRT)
                 cloudVisibilityRT.Create();
         }
+		public bool editorMode
+		{
+			get
+			{
+				return Application.isEditor&&!Application.isPlaying;
+			}
+		}
 
         private void Start()
         {
@@ -165,6 +174,8 @@ namespace simul
 				overlay_buf.name            = "trueSKY overlay";
 				post_translucent_buf        = new CommandBuffer();
 				post_translucent_buf.name   = "trueSKY post translucent";
+				blitbuf = new CommandBuffer();
+				blitbuf.name = "trueSKY depth blit for editor only";
 				cbuf_view_id                = -1;
 			}
             if (cbuf_view_id != InternalGetViewId()) 
@@ -175,30 +186,41 @@ namespace simul
 			}
             CommandBuffer[] bufs = cam.GetCommandBuffers(CameraEvent.BeforeImageEffectsOpaque);
 			PrepareDepthMaterial();
-            if (bufs.Length != 1) 
+			int requiredNumber = 1 + (editorMode ? 1 : 0);
+            if (bufs.Length != requiredNumber) 
 			{
 				RemoveCommandBuffers();
+				if(editorMode)
+					cam.AddCommandBuffer(CameraEvent.BeforeImageEffectsOpaque, blitbuf);
 				cam.AddCommandBuffer(CameraEvent.BeforeImageEffectsOpaque, mainCommandBuffer);
 				cam.AddCommandBuffer(CameraEvent.AfterForwardAlpha, post_translucent_buf);
 				cam.AddCommandBuffer(CameraEvent.AfterEverything, overlay_buf);
 			}
             mainCommandBuffer.Clear();
+			blitbuf.Clear();
 			overlay_buf.Clear();
 			post_translucent_buf.Clear();
             cbuf_view_id = InternalGetViewId();
+			if (editorMode)
+			{
+				blitbuf.SetRenderTarget((RenderTexture)depthTexture.renderTexture);
+				blitbuf.DrawProcedural(Matrix4x4.identity, depthMaterial, 0, MeshTopology.Triangles, 6);
+				blitbuf.SetRenderTarget(Graphics.activeColorBuffer);
+			}
 			PrepareMatrices();
 			unityViewStruct.nativeColourRenderBuffer = (System.IntPtr)0;
 			unityViewStruct.nativeDepthRenderBuffer = (System.IntPtr)0;
 			if (activeTexture != null)
 			{
 				unityViewStruct.nativeColourRenderBuffer = activeTexture.colorBuffer.GetNativeRenderBufferPtr();
-				unityViewStruct.nativeDepthRenderBuffer = activeTexture.depthBuffer.GetNativeRenderBufferPtr();
+				if (!editorMode)
+					unityViewStruct.nativeDepthRenderBuffer = activeTexture.depthBuffer.GetNativeRenderBufferPtr();
 			}
 			Marshal.StructureToPtr(unityViewStruct, unityViewStructPtr, true);
 
 			mainCommandBuffer.IssuePluginEventAndData(UnityGetRenderEventFuncWithData(),TRUESKY_EVENT_ID + cbuf_view_id, unityViewStructPtr);
-			overlay_buf.IssuePluginEventAndData(UnityGetOverlayFuncWithData(),TRUESKY_EVENT_ID + cbuf_view_id, unityViewStructPtr);
 			post_translucent_buf.IssuePluginEventAndData(UnityGetPostTranslucentFuncWithData(), TRUESKY_EVENT_ID + cbuf_view_id, unityViewStructPtr);
+			overlay_buf.IssuePluginEventAndData(UnityGetOverlayFuncWithData(),TRUESKY_EVENT_ID + cbuf_view_id, unityViewStructPtr);
 		}
 
 		void OnPostRender()
@@ -290,8 +312,6 @@ namespace simul
 				{
 					targetViewports[i].w        = depthTexture.renderTexture.width;
 					targetViewports[i].h        = depthTexture.renderTexture.height;
-                    targetViewports[i].zfar     = 1.0f;
-                    targetViewports[i].znear    = 0.0F;
 				}
 
 #if !UNITY_SWITCH
@@ -329,14 +349,14 @@ namespace simul
                 if (FlipOverlays)
                     unityRenderOptions = unityRenderOptions | UnityRenderOptions.FLIP_OVERLAYS;
                 // NOTE (Nacho): we need to update the plugin internally
-                if (ShareBuffersForVR)
+               // if (ShareBuffersForVR)
                     //unityRenderOptions = unityRenderOptions | UnityRenderOptions.NO_SEPARATION;
 
                 UnitySetRenderFrameValues(view_id
                     ,viewMatrices
                     ,projMatrices
                     ,overlayProjMatrix
-					,depthTexture.GetNative()
+					, editorMode ? depthTexture.GetNative() : (System.IntPtr)0
 					,depthViewports
 					,targetViewports
 					,renderStyle

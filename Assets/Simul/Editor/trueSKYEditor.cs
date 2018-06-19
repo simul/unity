@@ -124,8 +124,12 @@ namespace simul
 					clouds = EditorGUILayout.Foldout(clouds,"Clouds");
 					if (clouds)
 					{
+						string[] options = new string[]
+						{
+							"Grid", "Fixed",
+						};
 						EditorGUILayout.BeginVertical(cloudsStyle);
-						trueSky.IntegrationScheme = EditorGUILayout.IntSlider("Integration Scheme", trueSky.IntegrationScheme, 0, 1);
+                        trueSky.IntegrationScheme = EditorGUILayout.Popup("Integration Scheme", trueSky.IntegrationScheme, options);
 						trueSky.CubemapResolution = EditorGUILayout.IntSlider("Cubemap Resolution", trueSky.CubemapResolution, 16, 2048);
                         if (trueSky.SimulVersion > trueSky.MakeSimulVersion(4, 1))
                         { 
@@ -281,9 +285,9 @@ namespace simul
 		if(trueSKY.advancedMode)
 		if(GUILayout.Button("Export Package"))
 		{
-			string simul_dir = "C:/Simul/master/Simul";
+			string simul_dir = "C:/Simul/4.1a/Simul";
 			string dir=simul_dir+"/Products/TrueSky/Release/";
-			string version = "3.50.0.";
+			string version = "4.1.0.";
 			string version_file=simul_dir+"/version.txt";
 			try
 			{

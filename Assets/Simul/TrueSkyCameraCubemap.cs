@@ -58,8 +58,6 @@ namespace simul
                 targetViewport[0].x = targetViewport[0].y = 0;
                 targetViewport[0].w = depthTexture.renderTexture.width;
                 targetViewport[0].h = depthTexture.renderTexture.height;
-                targetViewport[0].znear = 0.0f;
-                targetViewport[0].zfar  = 1.0f;
                 UnitySetRenderFrameValues
                 (
                     view_id, viewMatrices, projMatrices, cproj

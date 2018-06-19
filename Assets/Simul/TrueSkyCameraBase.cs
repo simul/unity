@@ -70,7 +70,6 @@ namespace simul
 		public struct Viewport
 		{
 			public int x,y,w,h;
-			public float znear,zfar;
 		};
         [DllImport(SimulImports.renderer_dll)]
         protected static extern void UnitySetRenderFrameValues(int view_id
