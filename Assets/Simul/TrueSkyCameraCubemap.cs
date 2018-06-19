@@ -52,16 +52,8 @@ namespace simul
                 depthViewports[0].w = depthHeight;
 
                 targetViewport[0].x = targetViewport[0].y = 0;
-<<<<<<< HEAD
-                targetViewport[0].w = depthTexture.renderTexture.width;
-                targetViewport[0].h = depthTexture.renderTexture.height;
-=======
                 targetViewport[0].w = depthWidth;
                 targetViewport[0].h = depthHeight;
-                targetViewport[0].znear = 0.0f;
-                targetViewport[0].zfar  = 1.0f;
-
->>>>>>> 9bb8a6d31cb006904fd93dafa3124c756b693cf4
                 UnitySetRenderFrameValues
                 (
                     view_id
