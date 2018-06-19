@@ -1972,7 +1972,6 @@ namespace simul
 			}
 		}
 
-
 		float _DirectLight = 1.0F;
 		[SerializeField]
 		public float DirectLight

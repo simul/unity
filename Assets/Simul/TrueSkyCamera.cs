@@ -10,19 +10,21 @@ namespace simul
 	[ExecuteInEditMode]
 	public class TrueSkyCamera : TrueSkyCameraBase
 	{
-        #region Dll imports
         [DllImport(SimulImports.renderer_dll)]
         protected static extern System.IntPtr UnityGetOverlayFunc();
         [DllImport(SimulImports.renderer_dll)]
         protected static extern System.IntPtr UnityGetPostTranslucentFunc();
 		[DllImport(SimulImports.renderer_dll)]
 		protected static extern System.IntPtr UnityGetPostTranslucentFuncWithData();
-        #endregion
 
         protected float[] cubemapTransformMatrix = new float[16];
 		protected float[] rainDepthMatrix = new float[16];
 		protected float[] rainDepthProjection = new float[16];
 		protected float rainDepthTextureScale;
+		protected override int InternalGetViewId()
+		{
+			return StaticGetOrAddView((System.IntPtr)view_ident);
+		}
 		// We will STORE the activeTexture from the camera and hope it's valid next frame.
 		RenderTexture activeTexture = null;
         public RenderTexture inscatterRT;
@@ -38,26 +40,25 @@ namespace simul
         RenderTextureHolder _cloudVisibilityRT  = new RenderTextureHolder();
 
 		RenderTextureHolder _rainDepthRT		= new RenderTextureHolder();
-
 		protected RenderTextureHolder reflectionProbeTexture = new RenderTextureHolder();
         protected CommandBuffer overlay_buf                 = null;
         protected CommandBuffer post_translucent_buf        = null;
 		/// Blitbuf is now only for in-editor use.
 		protected CommandBuffer blitbuf = null;
 
-        UnityViewStruct unityViewStruct                         = new UnityViewStruct();
-        System.IntPtr unityViewStructPtr                        = Marshal.AllocHGlobal(Marshal.SizeOf(new UnityViewStruct()));
-
         /// <summary>
         /// This material is used the blit the camera's depth to a render target
         /// that we'll send to the plugin
-        public bool ShareBuffersForVR                           = true;
+		/// </summary>
+		Material depthMaterial = null;
 
         //Mesh screenQuad = null;
+
         /// <summary>
         /// If true, both XR eyes are expected to be rendered to the same texture.
+		/// </summary>
+		public bool ShareBuffersForVR = true;
 		public TrueSkyRainDepthCamera RainDepthCamera = null;
-
         /// <summary>
         /// Generates an apropiate RenderStyle acording with this camera settings
         /// and takes into account if stereo (XR) is enabled.
@@ -90,11 +91,6 @@ namespace simul
             return r;
         }
 
-        protected override int InternalGetViewId()
-        {
-            return StaticGetOrAddView((System.IntPtr)view_ident);
-        }
-
         protected override int GetRequiredDepthTextureWidth()
 		{
 			var cam = GetComponent<Camera>();
@@ -123,8 +119,6 @@ namespace simul
                 inscatterRT.Create();
             if(cloudVisibilityRT)
                 cloudVisibilityRT.Create();
-
-            GetComponent<Camera>().forceIntoRenderTexture = true;
         }
 		public bool editorMode
 		{
@@ -160,7 +154,8 @@ namespace simul
 			RemoveBuffer("trueSKY overlay");
 			RemoveBuffer("trueSKY post translucent");
 		}
-
+		UnityViewStruct unityViewStruct=new UnityViewStruct();
+		System.IntPtr unityViewStructPtr = Marshal.AllocHGlobal(Marshal.SizeOf(new UnityViewStruct()));
 		void OnPreRender()
 		{
 			if(!enabled||!gameObject.activeInHierarchy)
@@ -190,6 +185,8 @@ namespace simul
 				cam.RemoveCommandBuffers(CameraEvent.AfterEverything);
 			}
             CommandBuffer[] bufs = cam.GetCommandBuffers(CameraEvent.BeforeImageEffectsOpaque);
+			if(editorMode)
+				PrepareDepthMaterial();
 			int requiredNumber = 1 + (editorMode ? 1 : 0);
             if (bufs.Length != requiredNumber) 
 			{
@@ -245,7 +242,7 @@ namespace simul
 
                 // View and projection: non-stereo rendering
 				Matrix4x4 m = cam.worldToCameraMatrix;
-                bool toTexture  = cam.allowHDR || cam.allowMSAA || cam.renderingPath == RenderingPath.DeferredShading || cam.forceIntoRenderTexture;
+				bool toTexture = cam.allowHDR || cam.allowMSAA || cam.renderingPath == RenderingPath.DeferredShading;
                 Matrix4x4 p =  GL.GetGPUProjectionMatrix(cam.projectionMatrix, toTexture);
                 ViewMatrixToTrueSkyFormat(renderStyle, m, viewMatrices);
                 ProjMatrixToTrueSkyFormat(renderStyle, p, projMatrices);
@@ -369,6 +366,38 @@ namespace simul
 					StaticSetMatrix4x4("RainDepthProjection", rainDepthProjection);
 					StaticSetRenderFloat("RainDepthTextureScale", rainDepthTextureScale);
 				}
+			}
+		}
+
+		void PrepareDepthMaterial()
+		{
+			RenderStyle renderStyle = GetRenderStyle();
+			depthMaterial           = null;
+            Camera cam              = GetComponent<Camera>();
+            bool toTexture          = cam.allowHDR || cam.allowMSAA || cam.renderingPath == RenderingPath.DeferredShading;
+            if (!toTexture && (renderStyle & RenderStyle.UNITY_STYLE_DEFERRED) != RenderStyle.UNITY_STYLE_DEFERRED)
+			{
+				if(_flippedDepthMaterial==null)
+				{
+					_flippedShader=Resources.Load("FlippedDepthShader",typeof(Shader)) as Shader;
+					if(_flippedShader!=null)
+						_flippedDepthMaterial=new Material(_flippedShader);
+					else
+						UnityEngine.Debug.LogError("Shader not found: trueSKY needs flippedDepthShader.shader, located in the Assets/Simul/Resources directory");
+				}
+				depthMaterial = _flippedDepthMaterial;
+			}
+			else
+			{
+				if(_deferredDepthMaterial==null)
+				{
+					_deferredShader=Resources.Load("DeferredDepthShader",typeof(Shader)) as Shader;
+					if(_deferredShader!=null)
+						_deferredDepthMaterial=new Material(_deferredShader);
+					else
+						UnityEngine.Debug.LogError("Shader not found: trueSKY needs DeferredDepthShader.shader, located in the Assets/Simul/Resources directory");
+				}
+				depthMaterial = _deferredDepthMaterial;
 			}
 		}
 	}

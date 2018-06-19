@@ -12,32 +12,39 @@ namespace simul
     public class TrueSkyCameraCubemap : TrueSkyCameraBase
     {
         private bool doFlipY                = true;
-        Viewport[] targetViewport           = new Viewport[3];
-
-        RenderTexture activeTexture         = null;
-        UnityViewStruct unityViewStruct     = new UnityViewStruct();
-        System.IntPtr unityViewStructPtr    = Marshal.AllocHGlobal(Marshal.SizeOf(new UnityViewStruct()));
-
-        /// <summary>
-        /// Sets if we should flip vertically the probe
-        /// </summary>
+        // Seted from the TrueSkyCubemapProbe
         public bool DoFlipY
         {
             get { return doFlipY; }
             set { doFlipY = value; }
         }
 
+        Material PrepareDepthMaterial()
+        {
+            Material mat = null;
+            if (_deferredDepthMaterial == null)
+            {
+                _deferredShader = Resources.Load("DeferredDepthShader", typeof(Shader)) as Shader;
+                if (_deferredShader != null)
+                    _deferredDepthMaterial = new Material(_deferredShader);
+                else
+                    UnityEngine.Debug.LogError("Shader not found: trueSKY needs DeferredDepthShader.shader, located in the Assets/Simul/Resources directory");
+            }
+            mat = _deferredDepthMaterial;
+            _deferredDepthMaterial.SetFloat("xoffset", 0.0f);
+            _deferredDepthMaterial.SetFloat("xscale", 1.0f);
+            return mat;
+        }
+
+        Viewport[] targetViewport = new Viewport[3];
         void PrepareMatrices()
         {
             RenderStyle renderStyle = GetRenderStyle() | RenderStyle.CUBEMAP_STYLE;
             view_id                 = InternalGetViewId();
-            Camera cam              = GetComponent<Camera>();
-            int depthWidth          = cam.pixelWidth;
-            int depthHeight         = cam.pixelHeight;
-
             if (view_id >= 0)
-            {
-                Matrix4x4 m = cam.worldToCameraMatrix;
+			{
+				Camera cam = GetComponent<Camera>();
+				Matrix4x4 m = cam.worldToCameraMatrix;
                 Matrix4x4 p = cam.projectionMatrix;
                 // https://docs.unity3d.com/ScriptReference/Camera-projectionMatrix.html
                 if (doFlipY)
@@ -46,8 +53,11 @@ namespace simul
                 }
                 ViewMatrixToTrueSkyFormat(renderStyle, m, viewMatrices);
                 ProjMatrixToTrueSkyFormat(renderStyle, p, projMatrices);
+				// Query depth size
+				int depthWidth = cam.pixelWidth;
+				int depthHeight = cam.pixelHeight;
 
-                depthViewports[0].x = depthViewports[0].y = 0;
+				depthViewports[0].x = depthViewports[0].y = 0;
                 depthViewports[0].z = depthWidth;
                 depthViewports[0].w = depthHeight;
 
@@ -56,18 +66,9 @@ namespace simul
                 targetViewport[0].h = depthHeight;
                 UnitySetRenderFrameValues
                 (
-                    view_id
-                    , viewMatrices
-                    , projMatrices
-                    , cproj
-                    , System.IntPtr.Zero/*depthTexture.GetNative()*/
-                    , depthViewports
-                    , targetViewport
-                    , renderStyle
-                    , exposure
-                    , gamma
-                    , Time.frameCount
-                    , UnityRenderOptions.DEFAULT
+                    view_id, viewMatrices, projMatrices, cproj
+                    ,depthTexture.GetNative(), depthViewports, targetViewport
+                    ,renderStyle, exposure, gamma, Time.frameCount, UnityRenderOptions.DEFAULT
                     , Graphics.activeColorBuffer.GetNativeRenderBufferPtr()
                 );
             }
@@ -75,6 +76,7 @@ namespace simul
 
         void OnPreRender()
         {
+            EnsureDepthTexture();
             Camera cam = GetComponent<Camera>();
             if (mainCommandBuffer == null)
             {
@@ -96,17 +98,8 @@ namespace simul
             mainCommandBuffer.Clear();
             cbuf_view_id = InternalGetViewId();
 
-            // Query the color and depth buffers
-            unityViewStruct.nativeColourRenderBuffer    = (System.IntPtr)0;
-            unityViewStruct.nativeDepthRenderBuffer     = (System.IntPtr)0;
-            if (activeTexture != null)
-            {
-                unityViewStruct.nativeColourRenderBuffer    = activeTexture.colorBuffer.GetNativeRenderBufferPtr();
-                unityViewStruct.nativeDepthRenderBuffer     = activeTexture.depthBuffer.GetNativeRenderBufferPtr();
-            }
-            Marshal.StructureToPtr(unityViewStruct, unityViewStructPtr, true);
             mainCommandBuffer.ClearRenderTarget(true, true, new Color(0.0F, 0.0F, 0.0F, 1.0F), 1.0F);
-            mainCommandBuffer.IssuePluginEventAndData(UnityGetRenderEventFuncWithData(), TRUESKY_EVENT_ID + cbuf_view_id, unityViewStructPtr);
+            mainCommandBuffer.IssuePluginEvent(UnityGetRenderEventFunc(), TRUESKY_EVENT_ID + cbuf_view_id);
         }
 
         float[] cview = new float[16];
@@ -126,7 +119,6 @@ namespace simul
 
         private void OnPostRender()
         {
-            activeTexture = GetComponent<Camera>().activeTexture;
         }
     }
 }
