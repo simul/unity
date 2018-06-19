@@ -230,7 +230,7 @@ namespace simul
 		[DllImport(SimulImports.renderer_dll)]		private static extern bool StaticCreateBoundedWaterObject	(uint ID, float[] dimension, float[] location);
 		[DllImport(SimulImports.renderer_dll)]		private static extern void StaticRemoveBoundedWaterObject	(uint ID);
 
-		[DllImport(SimulImports.renderer_dll)]		private static extern void StaticAddWaterProbe				(uint ID, float[] location);
+		[DllImport(SimulImports.renderer_dll)]		private static extern bool StaticAddWaterProbe				(uint ID, float[] location);
 		[DllImport(SimulImports.renderer_dll)]		private static extern void StaticRemoveWaterProbe			(uint ID);
 		[DllImport(SimulImports.renderer_dll)]		private static extern void StaticUpdateWaterProbePosition	(uint ID, float[] location);
 		[DllImport(SimulImports.renderer_dll)]		private static extern Vector4 StaticGetWaterProbeValues		(uint ID);
