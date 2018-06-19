@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using System.Collections;
 using System.Threading;
 using System.Runtime.InteropServices;
 using UnityEngine.Rendering;
@@ -11,7 +10,7 @@ namespace simul
 	{
 		public class RenderTextureHolder
 		{
-			public RenderTexture renderTexture=null;
+			public RenderTexture renderTexture = null;
 			public System.IntPtr GetNative()
 			{
 				if(cachedRenderTexture!=renderTexture)
@@ -24,24 +23,27 @@ namespace simul
 				}
 				return _nativeTexturePtr;
 			}
-			/*	GetNativeRenderBufferPtr is not properly supported by Unity, so don't use.
-			 *	public System.IntPtr GetNativeDepth()
-				{
-					if (cachedRenderTexture != renderTexture)
-					{
-						_nativeDepthTexturePtr = (System.IntPtr)0;
-					}
-					if (_nativeDepthTexturePtr == (System.IntPtr)0 && renderTexture != null)
-					{
-						_nativeDepthTexturePtr = renderTexture.depthBuffer.GetNativeRenderBufferPtr();
-					}
-					return _nativeDepthTexturePtr;
-				}*/
 
 			protected Texture cachedRenderTexture=null;
 			protected System.IntPtr _nativeTexturePtr=(System.IntPtr)0;
 			protected System.IntPtr _nativeDepthTexturePtr = (System.IntPtr)0; 
 		};
+
+        protected int view_ident;
+        protected int view_id                       =-1;
+		protected static int last_view_ident        = 0;
+
+        protected float[] viewMatrices              = new float[48];
+        protected float[] projMatrices              = new float[48];
+        protected  int4[] depthViewports            = new int4[3];
+
+        protected static Mutex mut                  = new Mutex ();
+        public bool flippedView                     = true;
+        public float exposure                       = 1.0F;
+        public float gamma                          = 1.0F;
+		protected CommandBuffer mainCommandBuffer   = null;
+		protected int cbuf_view_id                  = -1;
+
 		public enum RenderStyle
 		{
 			 DEFAULT_STYLE          = 0
@@ -54,12 +56,14 @@ namespace simul
 			, VR_STYLE_SIDE_BY_SIDE = 256
 			, DEPTH_BLENDING        = 512
 		};
+
         public enum UnityRenderOptions
         {
             DEFAULT         = 0
             ,FLIP_OVERLAYS  = 1      //! Compensate for Unity's texture flipping
             ,NO_SEPARATION  = 2      //! Faster
         }; 
+
         #region imports
         //! An event ID that will hopefully be sufficiently unique to trueSKY - if not, change this.
         protected const int TRUESKY_EVENT_ID = 13476;
@@ -109,41 +113,38 @@ namespace simul
 		[DllImport(SimulImports.renderer_dll)]
         protected static extern System.IntPtr UnityGetStoreStateFunc();
         #endregion
+
 		[StructLayout(LayoutKind.Sequential)]
 		public struct UnityViewStruct
 		{
 			public System.IntPtr nativeColourRenderBuffer;
 			public System.IntPtr nativeDepthRenderBuffer;
 		}
-        protected int view_ident;
-        protected int view_id=-1;
-		protected static int last_view_ident = 0;
 
-        protected float[] viewMatrices = new float[48];
-        protected float[] projMatrices = new float[48];
-        protected  int4[] depthViewports = new int4[3];
         public TrueSkyCameraBase ()
 		{
 			view_ident = last_view_ident + 1;
 			last_view_ident++;
         }
+
         ~TrueSkyCameraBase()
         {
             StaticRemoveView(view_id);
         }
+
 		protected void RemoveBuffer(string name)
 		{
-			Camera cam=GetComponent<Camera>();
-			CommandBuffer[] opaque=cam.GetCommandBuffers(CameraEvent.BeforeImageEffectsOpaque);
-			CommandBuffer[] after=cam.GetCommandBuffers(CameraEvent.AfterEverything);
-            CommandBuffer[] afterF = cam.GetCommandBuffers(CameraEvent.AfterForwardAlpha);
-			CommandBuffer[] bufs = new CommandBuffer[opaque.Length + afterF.Length + after.Length];
+			Camera cam              = GetComponent<Camera>();
+			CommandBuffer[] opaque  = cam.GetCommandBuffers(CameraEvent.BeforeImageEffectsOpaque);
+			CommandBuffer[] after   = cam.GetCommandBuffers(CameraEvent.AfterEverything);
+            CommandBuffer[] afterF  = cam.GetCommandBuffers(CameraEvent.AfterForwardAlpha);
+			CommandBuffer[] bufs    = new CommandBuffer[opaque.Length + afterF.Length + after.Length];
 			opaque.CopyTo(bufs, 0);
 			after.CopyTo(bufs, opaque.Length);
             afterF.CopyTo(bufs, opaque.Length + after.Length);
-			for (int i =0;i<bufs.Length; i=i+1)
+            for (int i = 0; i < bufs.Length; i = i + 1) 
 			{
-				CommandBuffer b=bufs[i];
+                CommandBuffer b = bufs[i];
 				if(b.name==name)
 				{
 					cam.RemoveCommandBuffer(CameraEvent.AfterEverything,b);
@@ -153,49 +154,24 @@ namespace simul
 				}
 			}
 		}
-		protected static Mutex mut  = new Mutex ();
-        public bool flippedView     = true;
-        public float exposure       = 1.0F;
-        public float gamma          = 1.0F;
-		static protected Texture2D _dummyTexture;
-		protected RenderTextureHolder depthTexture      = new RenderTextureHolder();
-		protected RenderTextureHolder unityDepthTexture = new RenderTextureHolder();
-		static protected Material _flippedDepthMaterial = null;
-		static protected Material _deferredDepthMaterial= null;
-		static protected Shader _flippedShader  = null;
-		static protected Shader _deferredShader = null;
-		protected CommandBuffer mainCommandBuffer  = null;
-		protected int cbuf_view_id              = -1;
+
 		public int GetViewId()
 		{
 			return view_id;
 		}
+
 		protected virtual int InternalGetViewId()
 		{
 			return StaticGetOrAddView((System.IntPtr)view_ident);
 		}
+
 		protected virtual int GetRequiredDepthTextureWidth()
         {
             var cam = GetComponent<Camera>();
-            int w =cam.pixelWidth;
+            int w   = cam.pixelWidth;
             return w;
 		}
-		protected virtual void EnsureDepthTexture()
-		{
-			int required_width = GetRequiredDepthTextureWidth();
-			if (depthTexture.renderTexture == null
-				|| depthTexture.renderTexture.width != required_width
-				|| depthTexture.renderTexture.height != GetComponent<Camera>().pixelHeight)
-			{
-				Camera camera = GetComponent<Camera>();
-#if TRUESKY_LOGGING
-                UnityEngine.Debug.Log ("EnsureDepthTexture resized texture for "+view_id +" to "+required_width+","+camera.pixelHeight); 
-#endif
-                RenderTexture rt = new RenderTexture(required_width, (int)camera.pixelHeight, 32, RenderTextureFormat.ARGBFloat);
-				depthTexture.renderTexture=rt;
-				rt.Create();
-			}
-		}
+
 		protected void PreRender()
 		{
 			if (!enabled || !gameObject.activeInHierarchy)
@@ -203,26 +179,24 @@ namespace simul
 				UnityEngine.Debug.Log ("OnPreRender disabled"); 
 				return;
 			}
-			SimulImports.Init ();
-			mut.WaitOne ();
+			SimulImports.Init();
+			mut.WaitOne();
 			try
 			{
 				view_id = InternalGetViewId();
-				EnsureDepthTexture();
-                // Unity can't Blit without a source texture, so we create a small, unused dummy texture.
-                if (_dummyTexture == null) 
-					_dummyTexture=new Texture2D(1,1,TextureFormat.Alpha8,false);
 			}
 			finally
 			{
 			}
-			mut.ReleaseMutex ();
+			mut.ReleaseMutex();
 
 		}
+
 		void OnPreRender()
 		{
 			PreRender();
 		}
+
 		static public void MatrixTransform(float[] mat)
 		{
 			mat[00]=-1f;
@@ -245,7 +219,8 @@ namespace simul
 			mat[14]=0f;
 			mat[15]=1f;
 		}
-		protected float[] projMatrix = new float[16];
+
+		protected float[] projMatrix        = new float[16];
 		protected float[] overlayProjMatrix = new float[16];
 		protected void ProjMatrixToTrueSkyFormat(RenderStyle renderStyle, Matrix4x4 m,float[] proj, int offset = 0)
         {
@@ -272,6 +247,7 @@ namespace simul
 			proj[offset+14] = m.m32 ;          
 			proj[offset+15] = m.m33 * metresPerUnit;
 		}
+
 		static public void ViewMatrixToTrueSkyFormat(RenderStyle renderStyle,Matrix4x4 m,float[] view,int offset=0,bool swap_yz=true)
 		{
 		    // transform?
@@ -352,6 +328,7 @@ namespace simul
 			view[offset+14] = z.m32;
 			view[offset+15] = z.m33;
 		}
+
 		public virtual RenderStyle GetRenderStyle()
 		{
 			RenderStyle renderStyle = RenderStyle.UNITY_STYLE_DEFERRED;
@@ -365,26 +342,6 @@ namespace simul
 					renderStyle = RenderStyle.UNITY_STYLE;
 			}
 			return renderStyle;
-		}
-		bool _initialized = false;
-
-		void Awake ()
-		{
-			if (_initialized)
-				return;
-			_initialized = true;
-		}
-
-		void OnDisable ()
-		{
-			_flippedDepthMaterial = null;
-			_deferredDepthMaterial = null;
-			_flippedShader = null;
-			_deferredShader = null;
-		}
-
-		void OnEnable ()
-		{
 		}
 	}
 }
