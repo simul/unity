@@ -36,32 +36,33 @@ namespace simul
 		{
 			// Stick ID is the player ID + 1
 			stickID = playerId + 1;
-
 			ToggleGamePad(false);
 		}
 
 		void Update()
 		{
+            if(Application.isConsolePlatform)
+            {
 #if UNITY_PS4
-			if (PS4Input.PadIsConnected(playerId))
-			{
-				// Set the gamepad to the start values for the player
-				if (!hasSetupGamepad)
-					ToggleGamePad(true);
+			    if (PS4Input.PadIsConnected(playerId))
+			    {
+			    	// Set the gamepad to the start values for the player
+			    	if (!hasSetupGamepad)
+			    		ToggleGamePad(true);
 
-				// Handle each part individually
-				Thumbsticks();
+			    	// Handle each part individually
+			    	Thumbsticks();
 
-				// Options button is on its own, so we'll do it here
-				if (Input.GetKey((KeyCode)Enum.Parse(typeof(KeyCode), "Joystick" + stickID + "Button7", true)))
-				{
+			    	// Options button is on its own, so we'll do it here
+			    	if (Input.GetKey((KeyCode)Enum.Parse(typeof(KeyCode), "Joystick" + stickID + "Button7", true)))
+			    	{
 
-					// Reset the gyro orientation to default
-					PS4Input.PadResetOrientation(playerId);
-				}
+			    		// Reset the gyro orientation to default
+			    		PS4Input.PadResetOrientation(playerId);
+			    	}
+			    }
 #endif
-
-			}
+            }
 			else if (hasSetupGamepad)
 				ToggleGamePad(false);
 		}
