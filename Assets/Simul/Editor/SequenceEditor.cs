@@ -92,7 +92,7 @@ namespace simul
 					startInfo.UseShellExecute = false;
 					startInfo.WindowStyle = ProcessWindowStyle.Hidden;
 					startInfo.FileName = dllPath1 + s + "vcredist_x86.exe";
-					//startInfo.Arguments = "/q";
+				
 					try
 					{
 						// Start the process with the info we specified.

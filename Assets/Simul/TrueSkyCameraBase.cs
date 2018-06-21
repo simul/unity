@@ -24,19 +24,6 @@ namespace simul
 				}
 				return _nativeTexturePtr;
 			}
-			/*	GetNativeRenderBufferPtr is not properly supported by Unity, so don't use.
-			 *	public System.IntPtr GetNativeDepth()
-				{
-					if (cachedRenderTexture != renderTexture)
-					{
-						_nativeDepthTexturePtr = (System.IntPtr)0;
-					}
-					if (_nativeDepthTexturePtr == (System.IntPtr)0 && renderTexture != null)
-					{
-						_nativeDepthTexturePtr = renderTexture.depthBuffer.GetNativeRenderBufferPtr();
-					}
-					return _nativeDepthTexturePtr;
-				}*/
 
 			protected Texture cachedRenderTexture=null;
 			protected System.IntPtr _nativeTexturePtr=(System.IntPtr)0;

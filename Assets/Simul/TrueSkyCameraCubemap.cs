@@ -42,22 +42,27 @@ namespace simul
             RenderStyle renderStyle = GetRenderStyle() | RenderStyle.CUBEMAP_STYLE;
             view_id = InternalGetViewId();
             if (view_id >= 0)
-            {
-                Matrix4x4 m = GetComponent<Camera>().worldToCameraMatrix;
-                Matrix4x4 p = GetComponent<Camera>().projectionMatrix;
-                // https://docs.unity3d.com/ScriptReference/Camera-projectionMatrix.html
-                if (doFlipY)
+			{
+				Camera cam = GetComponent<Camera>();
+				Matrix4x4 m = cam.worldToCameraMatrix;
+                Matrix4x4 p = cam.projectionMatrix;
+				int depthWidth = cam.pixelWidth;
+				int depthHeight = cam.pixelHeight;
+				// https://docs.unity3d.com/ScriptReference/Camera-projectionMatrix.html
+				if (doFlipY)
                 {
                     p[1, 1] = -1.0f;
                 }
                 ViewMatrixToTrueSkyFormat(renderStyle, m, viewMatrices);
                 ProjMatrixToTrueSkyFormat(renderStyle, p, projMatrices);
+
                 depthViewports[0].x = depthViewports[0].y = 0;
-                depthViewports[0].z = depthTexture.renderTexture.width;
-                depthViewports[0].w = depthTexture.renderTexture.height;
+                depthViewports[0].z = depthWidth;
+                depthViewports[0].w = depthHeight;
+
                 targetViewport[0].x = targetViewport[0].y = 0;
-                targetViewport[0].w = depthTexture.renderTexture.width;
-                targetViewport[0].h = depthTexture.renderTexture.height;
+                targetViewport[0].w = depthWidth;
+                targetViewport[0].h = depthHeight;
                 UnitySetRenderFrameValues
                 (
                     view_id, viewMatrices, projMatrices, cproj
@@ -105,9 +110,14 @@ namespace simul
             return cview;
         }
 
-        public void Cleanup() // called from trueskycubemapprobe when destroyed
+        public void Cleanup() 
         {
+            // Called from trueskycubemapprobe when destroyed
             StaticRemoveView(view_id);
+        }
+
+        private void OnPostRender()
+        {
         }
     }
 }

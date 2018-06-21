@@ -185,7 +185,8 @@ namespace simul
 				cam.RemoveCommandBuffers(CameraEvent.AfterEverything);
 			}
             CommandBuffer[] bufs = cam.GetCommandBuffers(CameraEvent.BeforeImageEffectsOpaque);
-			PrepareDepthMaterial();
+			if(editorMode)
+				PrepareDepthMaterial();
 			int requiredNumber = 1 + (editorMode ? 1 : 0);
             if (bufs.Length != requiredNumber) 
 			{
@@ -263,9 +264,13 @@ namespace simul
 
 				ProjMatrixToTrueSkyFormat(RenderStyle.UNITY_STYLE, p, overlayProjMatrix);
 
+                // Query depth size
+                int depthWidth      = cam.pixelWidth;
+                int depthHeight     = cam.pixelHeight; 
+
 				depthViewports[0].x = depthViewports[0].y = 0;
-				depthViewports[0].z = depthTexture.renderTexture.width;
-				depthViewports[0].w = depthTexture.renderTexture.height;
+                depthViewports[0].z = depthWidth;
+                depthViewports[0].w = depthHeight;
 
 				// There are now three viewports. 1 and 2 are for left and right eyes in VR.
 				targetViewports[0].x = targetViewports[0].y = 0;
@@ -278,8 +283,8 @@ namespace simul
 				}
 				for (int i = 0; i < 3; i++)
 				{
-					targetViewports[i].w = depthTexture.renderTexture.width;
-					targetViewports[i].h = depthTexture.renderTexture.height;
+					targetViewports[i].w        = depthWidth;
+					targetViewports[i].h        = depthHeight;
 				}
 
 #if !UNITY_SWITCH
