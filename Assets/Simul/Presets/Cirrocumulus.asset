@@ -3,7 +3,7 @@
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
+  m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 0}
   m_Enabled: 1
@@ -11,26 +11,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dcdfbea2e7338ed4ba21f9f27c8815df, type: 3}
   m_Name: Cirrocumulus
   m_EditorClassIdentifier: 
-  SequenceAsText: "{\n\t\"cloud2DKeyframer\":\n\t{\n\t\t\"CloudShadowRange\": \"           80000\"\n\t\t\"DayLoop\":
-    \"true\"\n\t\t\"EdgeNoiseFrequency\": \"16\"\n\t\t\"EdgeNoiseOctaves\": \"7\"\n\t\t\"EdgeNoisePersistence\":
-    \"0.6819999814033508\"\n\t\t\"EdgeNoiseTextureSize\": \"128\"\n\t\t\"ExplicitOffsets\":
-    \"false\"\n\t\t\"GodraysSteps\": \"60\"\n\t\t\"GridHeight\": \"16\"\n\t\t\"GridWidth\":
-    \"128\"\n\t\t\"LoopRange\": \"               1\"\n\t\t\"LoopStart\": \"               0\"\n\t\t\"MeetHorizon\":
-    \"false\"\n\t\t\"NoisePeriod\": \"               4\"\n\t\t\"NoiseResolution\":
-    \"8\"\n\t\t\"OverrideWind\": \"false\"\n\t\t\"ShadowTextureSize\": \"64\"\n\t\t\"Visible\":
-    \"true\"\n\t\t\"Wrap\": \"true\"\n\t\t\"keyframes\":\n\t\t[\n\t\t{\n\t\t\t\"ambient_light\":
+  SequenceAsText: "{\n\t\"cloudKeyframer\":\n\t{\n\t\t\"keyframes\":\n\t\t[\n\t\t{\n\t\t\t\"ambient_light\":
     \"               1\"\n\t\t\t\"baseNoiseFactor\": \"0.2000000029802322\"\n\t\t\t\"churn\":
     \"6.367955207824707\"\n\t\t\t\"cloud_base_km\": \"               9\"\n\t\t\t\"cloud_height_km\":
-    \"1.905269980430603\"\n\t\t\t\"cloudiness\": \"0.4230000078678131\"\n\t\t\t\"diffusivity\":
-    \"0.8970000147819519\"\n\t\t\t\"direct_light\": \"               1\"\n\t\t\t\"distributionBaseLayer\":
-    \"0.239999994635582\"\n\t\t\t\"distributionTransition\": \"0.2000000029802322\"\n\t\t\t\"edgeSharpness\":
-    \"0.6683310270309448\"\n\t\t\t\"extinction\": \"0.07673615217208862\"\n\t\t\t\"fractal_amplitude\":
-    \"               0\"\n\t\t\t\"fractal_wavelength\": \" 6309.5732421875\"\n\t\t\t\"godrayStrength\":
-    \"               0\"\n\t\t\t\"indirect_light\": \"0.9959999918937683\"\n\t\t\t\"light_asymmetry\":
-    \"0.8700000047683716\"\n\t\t\t\"lightning\": \"               0\"\n\t\t\t\"octaves\":
-    \"2\"\n\t\t\t\"offsetx\": \"               0\"\n\t\t\t\"offsety\": \"  33458.40234375\"\n\t\t\t\"persistence\":
-    \"0.7770000100135803\"\n\t\t\t\"precipitation\": \"               0\"\n\t\t\t\"precipitation_waver\":
-    \"               0\"\n\t\t\t\"precipitation_wind_effect\": \"               0\"\n\t\t\t\"rain_to_snow\":
-    \"               0\"\n\t\t\t\"time\": \"           0.125\"\n\t\t\t\"upperDensity\":
+    \"1.905269980430603\"\n\t\t\t\"cloud_width_km\": \"30.980\"\n\t\t\t\"cloudiness\":
+    \"0.4230000078678131\"\n\t\t\t\"diffusivity\": \"0.8970000147819519\"\n\t\t\t\"direct_light\":
+    \"               1\"\n\t\t\t\"distributionBaseLayer\": \"0.239999994635582\"\n\t\t\t\"distributionTransition\":
+    \"0.2000000029802322\"\n\t\t\t\"edgeSharpness\": \"0.6683310270309448\"\n\t\t\t\"extinction\":
+    \"0.07673615217208862\"\n\t\t\t\"fractal_amplitude\": \"               0\"\n\t\t\t\"fractal_wavelength\":
+    \" 6309.5732421875\"\n\t\t\t\"godrayStrength\": \"               0\"\n\t\t\t\"indirect_light\":
+    \"0.9959999918937683\"\n\t\t\t\"light_asymmetry\": \"0.8700000047683716\"\n\t\t\t\"lightning\":
+    \"               0\"\n\t\t\t\"octaves\": \"2\"\n\t\t\t\"persistence\": \"0.7770000100135803\"\n\t\t\t\"upperDensity\":
     \"0.5709999799728394\"\n\t\t\t\"wind_direction\": \"               0\"\n\t\t\t\"wind_speed\":
-    \"3.098000049591065\"\n\t\t}\n\t\t]\n\t\t\"storms\":\n\t\t[\n\t\t]\n\t}\n}\n"
+    \"3.098000049591065\"\n\t\t}\n\t\t]\n\t}\n}\n"

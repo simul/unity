@@ -24,19 +24,6 @@ namespace simul
 				}
 				return _nativeTexturePtr;
 			}
-			/*	GetNativeRenderBufferPtr is not properly supported by Unity, so don't use.
-			 *	public System.IntPtr GetNativeDepth()
-				{
-					if (cachedRenderTexture != renderTexture)
-					{
-						_nativeDepthTexturePtr = (System.IntPtr)0;
-					}
-					if (_nativeDepthTexturePtr == (System.IntPtr)0 && renderTexture != null)
-					{
-						_nativeDepthTexturePtr = renderTexture.depthBuffer.GetNativeRenderBufferPtr();
-					}
-					return _nativeDepthTexturePtr;
-				}*/
 
 			protected Texture cachedRenderTexture=null;
 			protected System.IntPtr _nativeTexturePtr=(System.IntPtr)0;
@@ -70,7 +57,6 @@ namespace simul
 		public struct Viewport
 		{
 			public int x,y,w,h;
-			public float znear,zfar;
 		};
         [DllImport(SimulImports.renderer_dll)]
         protected static extern void UnitySetRenderFrameValues(int view_id
@@ -164,9 +150,7 @@ namespace simul
 		static protected Material _deferredDepthMaterial= null;
 		static protected Shader _flippedShader  = null;
 		static protected Shader _deferredShader = null;
-        protected CommandBuffer storebuf        = null;
-		protected CommandBuffer blitbuf         = null;
-		protected CommandBuffer buf             = null;
+		protected CommandBuffer mainCommandBuffer  = null;
 		protected int cbuf_view_id              = -1;
 		public int GetViewId()
 		{

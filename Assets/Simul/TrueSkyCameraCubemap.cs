@@ -42,24 +42,27 @@ namespace simul
             RenderStyle renderStyle = GetRenderStyle() | RenderStyle.CUBEMAP_STYLE;
             view_id = InternalGetViewId();
             if (view_id >= 0)
-            {
-                Matrix4x4 m = GetComponent<Camera>().worldToCameraMatrix;
-                Matrix4x4 p = GetComponent<Camera>().projectionMatrix;
-                // https://docs.unity3d.com/ScriptReference/Camera-projectionMatrix.html
-                if (doFlipY)
+			{
+				Camera cam = GetComponent<Camera>();
+				Matrix4x4 m = cam.worldToCameraMatrix;
+                Matrix4x4 p = cam.projectionMatrix;
+				int depthWidth = cam.pixelWidth;
+				int depthHeight = cam.pixelHeight;
+				// https://docs.unity3d.com/ScriptReference/Camera-projectionMatrix.html
+				if (doFlipY)
                 {
                     p[1, 1] = -1.0f;
                 }
                 ViewMatrixToTrueSkyFormat(renderStyle, m, viewMatrices);
                 ProjMatrixToTrueSkyFormat(renderStyle, p, projMatrices);
+
                 depthViewports[0].x = depthViewports[0].y = 0;
-                depthViewports[0].z = depthTexture.renderTexture.width;
-                depthViewports[0].w = depthTexture.renderTexture.height;
+                depthViewports[0].z = depthWidth;
+                depthViewports[0].w = depthHeight;
+
                 targetViewport[0].x = targetViewport[0].y = 0;
-                targetViewport[0].w = depthTexture.renderTexture.width;
-                targetViewport[0].h = depthTexture.renderTexture.height;
-                targetViewport[0].znear = 0.0f;
-                targetViewport[0].zfar  = 1.0f;
+                targetViewport[0].w = depthWidth;
+                targetViewport[0].h = depthHeight;
                 UnitySetRenderFrameValues
                 (
                     view_id, viewMatrices, projMatrices, cproj
@@ -74,12 +77,10 @@ namespace simul
         {
             EnsureDepthTexture();
             Camera cam = GetComponent<Camera>();
-            if (buf == null)
+            if (mainCommandBuffer == null)
             {
-                storebuf        = new CommandBuffer();
-                storebuf.name   = "trueSKY store state";
-                buf             = new CommandBuffer();
-                buf.name        = "render trueSKY";
+                mainCommandBuffer             = new CommandBuffer();
+                mainCommandBuffer.name        = "render trueSKY";
                 cbuf_view_id    = -1;
             }
             if (cbuf_view_id != InternalGetViewId())
@@ -91,16 +92,13 @@ namespace simul
             if (bufs.Length != 2)
             {
                 cam.RemoveCommandBuffers(CameraEvent.BeforeImageEffectsOpaque);
-                cam.AddCommandBuffer(CameraEvent.BeforeImageEffectsOpaque, storebuf);
-                cam.AddCommandBuffer(CameraEvent.BeforeImageEffectsOpaque, buf);
+                cam.AddCommandBuffer(CameraEvent.BeforeImageEffectsOpaque, mainCommandBuffer);
             }
-            buf.Clear();
-            storebuf.Clear();
+            mainCommandBuffer.Clear();
             cbuf_view_id = InternalGetViewId();
 
-            storebuf.IssuePluginEvent(UnityGetStoreStateFunc(), TRUESKY_EVENT_ID + cbuf_view_id);
-            buf.ClearRenderTarget(true, true, new Color(0.0F, 0.0F, 0.0F, 1.0F), 1.0F);
-            buf.IssuePluginEvent(UnityGetRenderEventFunc(), TRUESKY_EVENT_ID + cbuf_view_id);
+            mainCommandBuffer.ClearRenderTarget(true, true, new Color(0.0F, 0.0F, 0.0F, 1.0F), 1.0F);
+            mainCommandBuffer.IssuePluginEvent(UnityGetRenderEventFunc(), TRUESKY_EVENT_ID + cbuf_view_id);
         }
 
         float[] cview = new float[16];
@@ -112,9 +110,14 @@ namespace simul
             return cview;
         }
 
-        public void Cleanup() // called from trueskycubemapprobe when destroyed
+        public void Cleanup() 
         {
+            // Called from trueskycubemapprobe when destroyed
             StaticRemoveView(view_id);
+        }
+
+        private void OnPostRender()
+        {
         }
     }
 }
