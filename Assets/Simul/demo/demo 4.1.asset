@@ -30,7 +30,7 @@ MonoBehaviour:
     \"32\"\n\t\t\"ExplicitOffsets\": \"false\"\n\t\t\"GodraysSteps\": \"30\"\n\t\t\"GridHeight\":
     \"16\"\n\t\t\"GridWidth\": \"128\"\n\t\t\"LoopRange\": \"               1\"\n\t\t\"LoopStart\":
     \"               0\"\n\t\t\"MaxCloudDistanceKm\": \"             300\"\n\t\t\"MaxPrecipitationParticles\":
-    \"216000\"\n\t\t\"NoisePeriod\": \"               4\"\n\t\t\"NoiseResolution\":
+    \"21600\"\n\t\t\"NoisePeriod\": \"               4\"\n\t\t\"NoiseResolution\":
     \"8\"\n\t\t\"OverrideWind\": \"false\"\n\t\t\"PrecipitationRadiusMetres\": \"
     \              6\"\n\t\t\"PrecipitationThresholdKm\": \"0.2000000029802322\"\n\t\t\"RainDropSizeMm\":
     \"             2.5\"\n\t\t\"RainFallSpeedMS\": \"               6\"\n\t\t\"RenderMode\":
@@ -42,7 +42,7 @@ MonoBehaviour:
     \"               1\"\n\t\t\t\"baseNoiseFactor\": \"             0.5\"\n\t\t\t\"churn\":
     \"               1\"\n\t\t\t\"cloud_base_km\": \"               3\"\n\t\t\t\"cloud_height_km\":
     \"               5\"\n\t\t\t\"cloud_width_km\": \"              50\"\n\t\t\t\"cloudiness\":
-    \"0.7200000286102295\"\n\t\t\t\"diffusivity\": \"0.009999999776482582\"\n\t\t\t\"direct_light\":
+    \"0.8999999761581421\"\n\t\t\t\"diffusivity\": \"0.009999999776482582\"\n\t\t\t\"direct_light\":
     \"               1\"\n\t\t\t\"distributionBaseLayer\": \"0.239999994635582\"\n\t\t\t\"distributionTransition\":
     \"0.2000000029802322\"\n\t\t\t\"edgeSharpness\": \"0.1000000014901161\"\n\t\t\t\"extinction\":
     \"0.003000000026077032\"\n\t\t\t\"fractal_amplitude\": \"2.400000095367432\"\n\t\t\t\"fractal_wavelength\":

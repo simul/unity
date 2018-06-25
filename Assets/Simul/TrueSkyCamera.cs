@@ -120,11 +120,12 @@ namespace simul
             if(cloudVisibilityRT)
                 cloudVisibilityRT.Create();
         }
+
 		public bool editorMode
 		{
 			get
 			{
-				return Application.isEditor&&!Application.isPlaying;
+				return (Application.isEditor && !Application.isPlaying);
 			}
 		}
 
@@ -153,12 +154,13 @@ namespace simul
 			RemoveBuffer("trueSKY depth");
 			RemoveBuffer("trueSKY overlay");
 			RemoveBuffer("trueSKY post translucent");
+            RemoveBuffer("trueSKY depth blit for editor only");
 		}
 		UnityViewStruct unityViewStruct=new UnityViewStruct();
 		System.IntPtr unityViewStructPtr = Marshal.AllocHGlobal(Marshal.SizeOf(new UnityViewStruct()));
 		void OnPreRender()
 		{
-			if(!enabled||!gameObject.activeInHierarchy)
+            if (!enabled||!gameObject.activeInHierarchy)
 			{
 				return;
 			}
@@ -218,7 +220,6 @@ namespace simul
 					unityViewStruct.nativeDepthRenderBuffer = activeTexture.depthBuffer.GetNativeRenderBufferPtr();
 			}
 			Marshal.StructureToPtr(unityViewStruct, unityViewStructPtr, true);
-
 			mainCommandBuffer.IssuePluginEventAndData(UnityGetRenderEventFuncWithData(),TRUESKY_EVENT_ID + cbuf_view_id, unityViewStructPtr);
 			post_translucent_buf.IssuePluginEventAndData(UnityGetPostTranslucentFuncWithData(), TRUESKY_EVENT_ID + cbuf_view_id, unityViewStructPtr);
 			overlay_buf.IssuePluginEventAndData(UnityGetOverlayFuncWithData(),TRUESKY_EVENT_ID + cbuf_view_id, unityViewStructPtr);
@@ -228,9 +229,14 @@ namespace simul
 		{
 			Camera cam = GetComponent<Camera>();
 			activeTexture = cam.activeTexture;
-		}
+        }
 
-		void PrepareMatrices()
+        // private void OnRenderImage(RenderTexture source, RenderTexture destination)
+        // {
+        //     Graphics.Blit(source, destination);
+        // }
+
+        void PrepareMatrices()
 		{
             Viewport[] targetViewports  = new Viewport[3];
             RenderStyle renderStyle     = GetRenderStyle();
@@ -242,8 +248,9 @@ namespace simul
 
                 // View and projection: non-stereo rendering
 				Matrix4x4 m = cam.worldToCameraMatrix;
-				bool toTexture = cam.allowHDR || cam.allowMSAA || cam.renderingPath == RenderingPath.DeferredShading;
+				bool toTexture = cam.allowHDR || cam.allowMSAA || cam.renderingPath == RenderingPath.DeferredShading || cam.targetTexture;
                 Matrix4x4 p =  GL.GetGPUProjectionMatrix(cam.projectionMatrix, toTexture);
+
                 ViewMatrixToTrueSkyFormat(renderStyle, m, viewMatrices);
                 ProjMatrixToTrueSkyFormat(renderStyle, p, projMatrices);
 

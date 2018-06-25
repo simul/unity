@@ -241,7 +241,7 @@ Prefab:
         type: 2}
       propertyPath: m_TargetTexture
       value: 
-      objectReference: {fileID: 1536948154}
+      objectReference: {fileID: 1101511516}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 5d66a7a14c6827c468352ddcdac58f98, type: 2}
   m_IsPrefabParent: 0
@@ -617,6 +617,37 @@ Light:
   m_PrefabParentObject: {fileID: 108698730321076416, guid: 7eac24742d48c5044bb42c3961fedd7b,
     type: 2}
   m_PrefabInternal: {fileID: 1715562915}
+--- !u!84 &1101511516
+RenderTexture:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_Name: 
+  m_ImageContentsHash:
+    serializedVersion: 2
+    Hash: 00000000000000000000000000000000
+  m_ForcedFallbackFormat: 4
+  m_DownscaleFallback: 0
+  m_Width: 128
+  m_Height: 128
+  m_AntiAliasing: 1
+  m_DepthFormat: 2
+  m_ColorFormat: 14
+  m_MipMap: 0
+  m_GenerateMips: 1
+  m_SRGB: 1
+  m_UseDynamicScale: 0
+  m_BindMS: 0
+  m_TextureSettings:
+    serializedVersion: 2
+    m_FilterMode: 1
+    m_Aniso: 0
+    m_MipBias: 0
+    m_WrapU: 1
+    m_WrapV: 1
+    m_WrapW: 1
+  m_Dimension: 2
+  m_VolumeDepth: 1
 --- !u!1 &1123832692
 GameObject:
   m_ObjectHideFlags: 0
@@ -809,8 +840,8 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1171386193}
-  m_LocalRotation: {x: 0.10073853, y: -0.067427084, z: -0.006842891, w: -0.99260193}
-  m_LocalPosition: {x: 76.80795, y: 456.18387, z: -68.173874}
+  m_LocalRotation: {x: 0.1897662, y: 0.47011545, z: -0.1042644, w: 0.8556338}
+  m_LocalPosition: {x: 79.77869, y: 2564.1685, z: -70.87628}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -855,40 +886,14 @@ Prefab:
       propertyPath: m_RootOrder
       value: 2
       objectReference: {fileID: 0}
+    - target: {fileID: 114473444571011960, guid: 698036921c1a72841870d3c21aa8dc43,
+        type: 2}
+      propertyPath: SimulVersionMinor
+      value: 2
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 698036921c1a72841870d3c21aa8dc43, type: 2}
   m_IsPrefabParent: 0
---- !u!84 &1536948154
-RenderTexture:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_Name: 
-  m_ImageContentsHash:
-    serializedVersion: 2
-    Hash: 00000000000000000000000000000000
-  m_ForcedFallbackFormat: 4
-  m_DownscaleFallback: 0
-  m_Width: 128
-  m_Height: 128
-  m_AntiAliasing: 1
-  m_DepthFormat: 2
-  m_ColorFormat: 14
-  m_MipMap: 0
-  m_GenerateMips: 1
-  m_SRGB: 1
-  m_UseDynamicScale: 0
-  m_BindMS: 0
-  m_TextureSettings:
-    serializedVersion: 2
-    m_FilterMode: 1
-    m_Aniso: 0
-    m_MipBias: 0
-    m_WrapU: 1
-    m_WrapV: 1
-    m_WrapW: 1
-  m_Dimension: 2
-  m_VolumeDepth: 1
 --- !u!1001 &1715562915
 Prefab:
   m_ObjectHideFlags: 0
@@ -910,19 +915,19 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 4810226483687538, guid: 7eac24742d48c5044bb42c3961fedd7b, type: 2}
       propertyPath: m_LocalRotation.x
-      value: -0.23247945
+      value: -0.2326748
       objectReference: {fileID: 0}
     - target: {fileID: 4810226483687538, guid: 7eac24742d48c5044bb42c3961fedd7b, type: 2}
       propertyPath: m_LocalRotation.y
-      value: 0.5000338
+      value: 0.5033901
       objectReference: {fileID: 0}
     - target: {fileID: 4810226483687538, guid: 7eac24742d48c5044bb42c3961fedd7b, type: 2}
       propertyPath: m_LocalRotation.z
-      value: -0.141395
+      value: -0.14287424
       objectReference: {fileID: 0}
     - target: {fileID: 4810226483687538, guid: 7eac24742d48c5044bb42c3961fedd7b, type: 2}
       propertyPath: m_LocalRotation.w
-      value: -0.8221478
+      value: -0.81978524
       objectReference: {fileID: 0}
     - target: {fileID: 4810226483687538, guid: 7eac24742d48c5044bb42c3961fedd7b, type: 2}
       propertyPath: m_RootOrder
@@ -931,7 +936,22 @@ Prefab:
     - target: {fileID: 108698730321076416, guid: 7eac24742d48c5044bb42c3961fedd7b,
         type: 2}
       propertyPath: m_CookieSize
-      value: 100000
+      value: 600000
+      objectReference: {fileID: 0}
+    - target: {fileID: 108698730321076416, guid: 7eac24742d48c5044bb42c3961fedd7b,
+        type: 2}
+      propertyPath: m_Color.g
+      value: 0.9598858
+      objectReference: {fileID: 0}
+    - target: {fileID: 108698730321076416, guid: 7eac24742d48c5044bb42c3961fedd7b,
+        type: 2}
+      propertyPath: m_Color.b
+      value: 0.85340613
+      objectReference: {fileID: 0}
+    - target: {fileID: 108698730321076416, guid: 7eac24742d48c5044bb42c3961fedd7b,
+        type: 2}
+      propertyPath: m_Intensity
+      value: 2.486207
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 7eac24742d48c5044bb42c3961fedd7b, type: 2}
