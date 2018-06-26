@@ -92,7 +92,7 @@ namespace simul
 					
 					boundedWaterObjectCreated = StaticCreateBoundedWaterObject((uint)ID, dimension, location);
 					StaticSetWaterBool("Render", ID, _render);
-					StaticSetRenderBool("EnableBoundlessOcean", _render && _boundlessOcean);
+					StaticSetRenderBool("EnableBoundlessOcean", false);
 				}
 				else
 				{
@@ -112,7 +112,7 @@ namespace simul
 			set
 			{
 				_beaufortScale = value;
-				if (_boundlessOcean)
+				if ((boundlessIdentifier == this) && _boundlessOcean)
 				{
 					StaticSetWaterFloat("beaufortScale", -1, _beaufortScale);
 				}
@@ -134,10 +134,11 @@ namespace simul
 			set
 			{
 				_windDirection = value;
-				if (_boundlessOcean)
+				if ((boundlessIdentifier == this) && _boundlessOcean )
 				{
 					StaticSetWaterFloat("windDirection", -1, _windDirection * 6.28f);
-				} else
+				}
+				else
 				{
 					StaticSetWaterFloat("windDirection", ID, _windDirection * 6.28f);
 				}
@@ -360,7 +361,7 @@ namespace simul
 		public int ID;
 
 		private static TrueSkyWaterObject boundlessIdentifier = null;
-		private static int IDCount = 0;
+		static int IDCount = 0;
 
 		public TrueSkyWaterObject()
 		{
@@ -401,18 +402,7 @@ namespace simul
 											((transform.localPosition.y + _dimension.y / 2.0f) + mTsInstance.transform.position.y) * mTsInstance.MetresPerUnit} ;
 			float[] dimension = new float[] { _dimension.x * mTsInstance.MetresPerUnit, _dimension.z * mTsInstance.MetresPerUnit, _dimension.y * mTsInstance.MetresPerUnit };
 
-			if (_boundlessOcean)
-			{
-				if (boundedWaterObjectCreated)
-				{
-					StaticSetWaterBool("Render", ID, false);
-					StaticRemoveBoundedWaterObject((uint)ID);
-					boundedWaterObjectCreated = false;
-				}
-				StaticSetRenderBool("EnableBoundlessOcean", _render && _boundlessOcean);
-				StaticSetWaterVector("location", -1, location);
-			}
-			else
+			if (!_boundlessOcean)
 			{
 				if (transform.hasChanged)
 				{
@@ -422,14 +412,37 @@ namespace simul
 
 				if (!boundedWaterObjectCreated)
 				{
-					
 					boundedWaterObjectCreated = StaticCreateBoundedWaterObject((uint)ID, dimension, location);
-					StaticSetWaterBool("Render", ID, _render);
 				}
-				StaticSetWaterBool("Render", ID, _render);
-				StaticSetWaterVector("location", ID, location);
-				StaticSetWaterVector("dimension", ID, dimension);
 
+				if (boundedWaterObjectCreated)
+				{
+					StaticSetWaterBool("Render", ID, _render);
+					StaticSetWaterVector("location", ID, location);
+					StaticSetWaterVector("dimension", ID, dimension);
+					StaticSetWaterFloat("beaufortScale", ID, _beaufortScale);
+					StaticSetWaterFloat("windDirection", ID, _windDirection * 6.28f);
+					StaticSetWaterFloat("windDependency", ID, _windDependency);
+				}
+
+			}
+			else
+			{
+				if (boundlessIdentifier == null)
+				{
+					boundlessIdentifier = this;
+					if (boundedWaterObjectCreated)
+					{
+						StaticRemoveBoundedWaterObject((uint)ID);
+						boundedWaterObjectCreated = false;
+					}
+				}
+				StaticSetRenderBool("EnableBoundlessOcean", _render && _boundlessOcean);
+				//StaticSetWaterBool("Render", ID, false);
+				StaticSetWaterVector("location", -1, location);
+				StaticSetWaterFloat("beaufortScale", -1, _beaufortScale);
+				StaticSetWaterFloat("windDirection", -1, _windDirection * 6.28f);
+				StaticSetWaterFloat("windDependency", -1, _windDependency);
 			}
 		}
 
@@ -455,7 +468,6 @@ namespace simul
 
 			if (!_boundlessOcean)
 			{
-
 				boundedWaterObjectCreated = StaticCreateBoundedWaterObject((uint)ID, dimension, location);
 				StaticSetWaterBool("Render", ID, _render);
 				StaticSetWaterVector("location", ID, location);
@@ -492,7 +504,6 @@ namespace simul
 					StaticSetWaterFloat("windDirection", ID, _windDirection * 6.28f);
 					StaticSetWaterFloat("windDependency", ID, _windDependency);
 				}
-
 			}
 		}
 	}

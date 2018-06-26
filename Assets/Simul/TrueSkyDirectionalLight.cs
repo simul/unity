@@ -28,11 +28,11 @@ public class TrueSkyDirectionalLight : MonoBehaviour
     {
         if(mLightComponent && mTsInstance)
         {
-            UpdateLight();
-            if(mLightComponent.cookie)
-            {
-                UpdateCookie();
-            }
+			if (mLightComponent.cookie)
+			{
+				UpdateCookie();
+			}
+			UpdateLight();
         }
     }
     float intensity_scale = 0.1F;
@@ -104,6 +104,6 @@ public class TrueSkyDirectionalLight : MonoBehaviour
         float shadowSize            = mTsInstance.getCloudShadowScale();
         //float halfShadowSize        = shadowSize * 0.5f;
         transform.position          = new Vector3(0.0f, sunHeight, 0.0f);
-        mLightComponent.cookieSize  = shadowSize * 2;
+        mLightComponent.cookieSize  = shadowSize / 4.0f;
     }
 }
