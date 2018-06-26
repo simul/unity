@@ -11,6 +11,11 @@ namespace simul
 {
 	public class TrueSkySetupWizard : EditorWindow
 	{
+		public TrueSkySetupWizard()
+		{
+			minSize = new Vector2(400.0F, 300.0F);
+			maxSize = new Vector2(400.0F, 300.0F);
+		}
 		enum Stage
 		{
 			PRE_START, START, FIND_SEQUENCE, FIND_CAMERA, FIND_TRUESKY, FIND_SUN, FINISH
@@ -68,7 +73,7 @@ namespace simul
 		[MenuItem("GameObject/Initialize trueSKY in Scene", false, 100000)]
 		public static void InitTrueSkySequence()
 		{
-			TrueSkySetupWizard w = (TrueSkySetupWizard)EditorWindow.GetWindow(typeof(TrueSkySetupWizard));
+			TrueSkySetupWizard w = (TrueSkySetupWizard)EditorWindow.GetWindow(typeof(TrueSkySetupWizard),true,"Initialize trueSKY",true);
 			Texture iconTexture = Resources.Load("trueSKY Icon") as Texture;
 			w.titleContent = new GUIContent(" trueSKY", iconTexture);
 		}
@@ -92,17 +97,26 @@ namespace simul
 				stage = Stage.START;
 			}
 			GUIStyle textStyle = new GUIStyle();
+			textStyle.margin = new RectOffset(12, 12, 4, 4);
 			textStyle.wordWrap = true;
-
+			
+			GUIStyle defaultButtonStyle = new GUIStyle(GUI.skin.button);
 			if (EditorGUIUtility.isProSkin)
+			{
 				textStyle.normal.textColor = Color.white;
+				defaultButtonStyle.normal.textColor = Color.white;
+			}
+			else
+			{
+				defaultButtonStyle.normal.textColor = Color.black;
+			}
 			GUILayout.Label("Initialize trueSKY in Scene", EditorStyles.boldLabel);
 
 			if (stage == Stage.START)
 			{
 				GetSceneFilename();
 				if (sceneFilename.Length > 0)
-					GUILayout.Label("This wizard will initialize trueSKY for the current scene:\n\n" + sceneFilename + ".", textStyle);
+					GUILayout.Label("This wizard will initialize trueSKY for the current scene.\n\n\tScene: " + sceneFilename , textStyle);
 				else
 				{
 					GUILayout.Label("This wizard will initialize trueSKY for the current scene.\nThe current scene has not yet been saved - plase do this first, so the wizard knows where to put the trueSKY data.", textStyle);
@@ -184,7 +198,7 @@ namespace simul
                 }
 				else if (directionalLights >= 1)
                 {
-					GUILayout.Label ("There's 1 or more directional lights on the scene. TrueSKY only needs one directional light.");
+					GUILayout.Label ("There's 1 or more directional lights on the scene. TrueSKY only needs one directional light.", textStyle);
                     lightGameObject = lights[0].gameObject;
                     lightComponent  = lightGameObject.GetComponent<TrueSkyDirectionalLight>();
                 } 
@@ -192,27 +206,25 @@ namespace simul
 			if (stage == Stage.FINISH)
 			{
 				GUILayout.Label("When you click Finish, trueSKY will be initialized for this scene.", textStyle);
-
-				//EditorGUILayout.LabelField("Remove standard distance fog",GUILayout.Width(48));
+				
 				removeFog = GUILayout.Toggle(removeFog, "Remove standard distance fog");
-				//EditorGUILayout.LabelField("Remove skybox from camera",GUILayout.Width(48));
 				removeSkybox = GUILayout.Toggle(removeSkybox, "Remove default skybox from camera");
 				if (Camera.main == null && !createAMainCamera) 
 				{
-					createCubemapProbeObj = GUILayout.Toggle (createCubemapProbeObj, "Add trueSKY Cubemap Probe to trueSKY Object (will replace any existing)");
+					createCubemapProbeObj = GUILayout.Toggle (createCubemapProbeObj, "Add trueSKY Cubemap Probe to trueSKY Object (will replace any existing)", textStyle);
 
 					createCubemapProbeCam = false;  	// set to false as no main camera, so can't attach to cam
 				} 
 				else 
 				{
-					createCubemapProbeCam = GUILayout.Toggle (createCubemapProbeCam, "Add trueSKY Cubemap Probe to main camera (will replace any existing)");
+					createCubemapProbeCam = GUILayout.Toggle (createCubemapProbeCam, "Add trueSKY Cubemap Probe to main camera (will replace any existing)", textStyle);
 
 					createCubemapProbeObj = false;	 	// want to assign to main cam as it exists, so don't allow option to assign to obj
 				}
 
-				GUILayout.Label ("\n\nTo view more information on using trueSKY for Unity, along with code reference\npages and a detailed explanation of the sequencer, please click the button below\n");
+				GUILayout.Label ("\n\nTo view more information on using trueSKY for Unity, along with code reference pages and a detailed explanation of the sequencer, please click the button below.", textStyle);
 
-				if (GUILayout.Button ("Launch Documentation"))
+				if (GUILayout.Button ("Launch Documentation",defaultButtonStyle))
 					Application.OpenURL ("http://docs.simul.co/unity");
 
 			}
@@ -227,7 +239,7 @@ namespace simul
 					Close();
 				if (sceneFilename.Length == 0)
 					GUI.enabled = false;
-				if (GUILayout.Button("Next"))
+				if (GUILayout.Button("Next",defaultButtonStyle))
 					OnWizardNext();
 				if (sceneFilename.Length == 0)
 					GUI.enabled = true;
@@ -236,14 +248,14 @@ namespace simul
 			{
 				if (GUILayout.Button("Back"))
 					OnWizardBack();
-				if (GUILayout.Button("Next"))
+				if (GUILayout.Button("Next", defaultButtonStyle))
 					OnWizardNext();
 			}
 			else
 			{
 				if (GUILayout.Button("Back"))
 					OnWizardBack();
-				if (GUILayout.Button("Finish"))
+				if (GUILayout.Button("Finish", defaultButtonStyle))
 				{
 					Finish();
 					Close();
@@ -297,7 +309,7 @@ namespace simul
                 string relativePath = UnityEngine.SceneManagement.SceneManager.GetActiveScene().path;
                 relativePath        = relativePath.Remove(0, 7);    //remove Assets/
                 string curScenPath  = projPath + "/" + relativePath;
-                UnityEngine.Debug.Log("Current scene path:" + curScenPath);     
+                //UnityEngine.Debug.Log("Current scene path:" + curScenPath);     
                            
 				// 1. Is there a sequence asset in the current scene's assets directory?
 				string dir = Path.GetDirectoryName (curScenPath);
@@ -400,12 +412,13 @@ namespace simul
                 Light dirLight  = lightGameObject.AddComponent<Light>();
                 dirLight.type   = LightType.Directional;
                 lightComponent  = lightGameObject.AddComponent<TrueSkyDirectionalLight>();
-            }
+			}
             // If there is a light, but without the component, add it:
 			if (lightComponent == null)
 			{
                 lightComponent = lightGameObject.AddComponent<TrueSkyDirectionalLight>();
-            }
+			}
+			RenderSettings.sun = lightGameObject.GetComponent<Light>();
 			if (removeFog)
 			{
 				RenderSettings.fog = false;
