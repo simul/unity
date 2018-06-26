@@ -302,15 +302,12 @@ namespace simul
                     int halfEyeWidth    = fullEyeWidth / 2;
                     int eyeHeight       = UnityEngine.XR.XRSettings.eyeTextureDesc.height;
 
-                    // This values can be configured Unity side
-                    float vpScale       = UnityEngine.XR.XRSettings.renderViewportScale;
-                    float resScale      = UnityEngine.XR.XRSettings.eyeTextureResolutionScale;
-                    float maskScale     = UnityEngine.XR.XRSettings.occlusionMaskScale;
-
-                    // Debug.Log(fullEyeWidth + "(" + halfEyeWidth + ")" + " , " + eyeHeight);
-                    // Debug.Log("VP Scale: " + vpScale);
-                    // Debug.Log("Res Scale: " + resScale);
-                    // Debug.Log("Mask Scale: " + maskScale);
+                    // This is the viewport that we reset to (default vp):
+                    // it must cover all the texture
+                    depthViewports[0].x = targetViewports[0].x = 0;
+                    depthViewports[0].y = targetViewports[0].y = 0;
+                    depthViewports[0].z = targetViewports[0].w = fullEyeWidth;
+                    depthViewports[0].w = targetViewports[0].h = eyeHeight;
 
                     // Left eye viewports
                     depthViewports[1].x = targetViewports[1].x = 0;
@@ -328,9 +325,8 @@ namespace simul
                 UnityRenderOptions unityRenderOptions = UnityRenderOptions.DEFAULT;
                 if (FlipOverlays)
                     unityRenderOptions = unityRenderOptions | UnityRenderOptions.FLIP_OVERLAYS;
-                // NOTE (Nacho): we need to update the plugin internally
-               // if (ShareBuffersForVR)
-                    //unityRenderOptions = unityRenderOptions | UnityRenderOptions.NO_SEPARATION;
+                if (ShareBuffersForVR)
+                    unityRenderOptions = unityRenderOptions | UnityRenderOptions.NO_SEPARATION;
 
                 UnitySetRenderFrameValues(view_id
                     ,viewMatrices
