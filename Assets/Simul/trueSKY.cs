@@ -2285,16 +2285,7 @@ namespace simul
 		{
 		}
 #endif
-		void OnDestroy()     
-		{
-			// Release what was accumulating beforehand
-            if (_initialized) 			
-			{  
-				StaticPopPath ("ShaderBinaryPath");
-				StaticPopPath ("ShaderPath");
-				StaticPopPath ("TexturePath");
-			}
-		}
+
 		public static string GetShaderbinSourceDir(string target)
 		{
 			char s = Path.DirectorySeparatorChar;

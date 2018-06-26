@@ -57,7 +57,7 @@ MonoBehaviour:
     \"            0.25\"\n\t\t\t\"rain_to_snow\": \"               0\"\n\t\t\t\"simulation\":
     \"               0\"\n\t\t\t\"time\": \"0.3571428656578064\"\n\t\t\t\"upperDensity\":
     \"0.699999988079071\"\n\t\t\t\"wind_direction\": \"               0\"\n\t\t\t\"wind_speed\":
-    \"               0\"\n\t\t}\n\t\t]\n\t\t\"storms\":\n\t\t[\n\t\t]\n\t}\n\t\"skyKeyframer\":\n\t{\n\t\t\"BackgroundBrightness\":
+    \"               1\"\n\t\t}\n\t\t]\n\t\t\"storms\":\n\t\t[\n\t\t]\n\t}\n\t\"skyKeyframer\":\n\t{\n\t\t\"BackgroundBrightness\":
     \"9.999999747378752e-06\"\n\t\t\"BackgroundTexture\": \"\"\n\t\t\"BaseOzone\":
     \"0.05999999865889549,0.03999999910593033,0.009999999776482582,               0\"\n\t\t\"BrightnessPower\":
     \"            0.25\"\n\t\t\"ColourWavelengthsNm\": \"             630,             540,
@@ -74,7 +74,7 @@ MonoBehaviour:
     \"0.05000000074505806\"\n\t\t\"Rayleigh\": \"0.007120206020772457,0.01319106016308069,0.02735298313200474\"\n\t\t\"StarBrightness\":
     \" 3235.9365234375\"\n\t\t\"StartDayNumber\": \"0\"\n\t\t\"SunIrradiance\": \"
     \             25,              25,              25\"\n\t\t\"SunRadiusArcMinutes\":
-    \"              16\"\n\t\t\"SunTexture\": \"\"\n\t\t\"Time\": \"0.3499999940395355\"\n\t\t\"TimezoneHours\":
+    \"              16\"\n\t\t\"SunTexture\": \"\"\n\t\t\"Time\": \"0.2700000107288361\"\n\t\t\"TimezoneHours\":
     \"               0\"\n\t\t\"atmosphereThicknessKm\": \"              64\"\n\t\t\"planetRadiusKm\":
     \"            6378\"\n\t\t\"keyframes\":\n\t\t[\n\t\t{\n\t\t\t\"AutoMie\": \"true\"\n\t\t\t\"Haze\":
     \"               1\"\n\t\t\t\"HazeBaseKm\": \"               0\"\n\t\t\t\"HazeEccentricity\":
