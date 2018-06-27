@@ -59,6 +59,7 @@
         v2f o;
         outpos  = float4(vertices[vid], 1.0);
         o.uv    = GetUv(vid);
+        o.uv.y  = 1.0 - o.uv.y;
         return o;
     }
 
