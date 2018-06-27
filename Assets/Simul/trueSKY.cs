@@ -2285,7 +2285,6 @@ namespace simul
 		{
 		}
 #endif
-
 		public static string GetShaderbinSourceDir(string target)
 		{
 			char s = Path.DirectorySeparatorChar;
