@@ -248,7 +248,7 @@ namespace simul
 
                 // View and projection: non-stereo rendering
 				Matrix4x4 m = cam.worldToCameraMatrix;
-				bool toTexture = cam.allowHDR || cam.allowMSAA || cam.renderingPath == RenderingPath.DeferredShading || cam.targetTexture;
+				bool toTexture = cam.allowHDR || cam.allowMSAA || cam.renderingPath == RenderingPath.DeferredShading || cam.targetTexture || cam.forceIntoRenderTexture;
                 Matrix4x4 p =  GL.GetGPUProjectionMatrix(cam.projectionMatrix, toTexture);
 
                 ViewMatrixToTrueSkyFormat(renderStyle, m, viewMatrices);
@@ -377,7 +377,7 @@ namespace simul
 			RenderStyle renderStyle = GetRenderStyle();
 			depthMaterial           = null;
             Camera cam              = GetComponent<Camera>();
-            bool toTexture          = cam.allowHDR || cam.allowMSAA || cam.renderingPath == RenderingPath.DeferredShading;
+            bool toTexture          = cam.allowHDR || cam.allowMSAA || cam.renderingPath == RenderingPath.DeferredShading || cam.targetTexture || cam.forceIntoRenderTexture;
             if (!toTexture && (renderStyle & RenderStyle.UNITY_STYLE_DEFERRED) != RenderStyle.UNITY_STYLE_DEFERRED)
 			{
 				if(_flippedDepthMaterial==null)
@@ -401,7 +401,7 @@ namespace simul
 						UnityEngine.Debug.LogError("Shader not found: trueSKY needs DeferredDepthShader.shader, located in the Assets/Simul/Resources directory");
 				}
 				depthMaterial = _deferredDepthMaterial;
-			}
-		}
+            }
+        }
 	}
 }

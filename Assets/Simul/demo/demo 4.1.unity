@@ -241,7 +241,7 @@ Prefab:
         type: 2}
       propertyPath: m_TargetTexture
       value: 
-      objectReference: {fileID: 550910648}
+      objectReference: {fileID: 556679294}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 5d66a7a14c6827c468352ddcdac58f98, type: 2}
   m_IsPrefabParent: 0
@@ -518,7 +518,7 @@ Transform:
   m_Father: {fileID: 1992217406}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!84 &550910648
+--- !u!84 &556679294
 RenderTexture:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
@@ -775,7 +775,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5965457e5bb97d748a35da6a145d349b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  flippedView: 1
+  flippedView: 0
   exposure: 1
   gamma: 1
   inscatterRT: {fileID: 8400000, guid: a60675db333863f489c8f7a794463b70, type: 2}
@@ -825,7 +825,7 @@ Camera:
   m_CullingMask:
     serializedVersion: 2
     m_Bits: 4294967295
-  m_RenderingPath: 3
+  m_RenderingPath: -1
   m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0
   m_TargetEye: 3
@@ -842,7 +842,7 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1171386193}
-  m_LocalRotation: {x: 0.06745695, y: -0.49760738, z: -0.038860273, w: -0.8639018}
+  m_LocalRotation: {x: 0.005384843, y: -0.4248577, z: -0.0025272882, w: -0.90524065}
   m_LocalPosition: {x: 77.73299, y: 735.34467, z: -72.505394}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
