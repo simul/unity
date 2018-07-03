@@ -884,15 +884,15 @@ namespace simul
 			}
 			return value;
 		}
-
+        //! Sets the storm centre in metres. This method will apply the Metres Per Unit modifier
 		public void SetStormCentre(float x, float y)
 		{
 			int num=GetNumStorms();
 			for(int i=0;i<num;i++)	
 			{
 				uint s=GetStormByIndex(i);
-				StaticRenderKeyframeSetFloat(s, "CentreKmx", x / 1000.0F);
-				StaticRenderKeyframeSetFloat(s, "CentreKmy", y/ 1000.0F);
+				StaticRenderKeyframeSetFloat(s, "CentreKmx", (x/MetresPerUnit) / 1000.0F);
+				StaticRenderKeyframeSetFloat(s, "CentreKmy", (y / MetresPerUnit) / 1000.0F);
 			}
 		}
 		//! Set an int property of the Sky layer.
@@ -954,7 +954,7 @@ namespace simul
 			try
 			{
 				StaticSetRenderInt("2DClouds:" + name, value);
-		}
+		    }
 			catch (Exception exc)
 			{
 				UnityEngine.Debug.Log(exc.ToString());
@@ -977,7 +977,7 @@ namespace simul
 		}
 
 		[SerializeField]
-        float _time;
+		float _time;
 		/// <summary>
 		/// Time in the sequence, set from some external script, e.g. the sequence editor, or modified per-frame by the speed value.
 		/// </summary>
