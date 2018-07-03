@@ -881,15 +881,15 @@ namespace simul
 			}
 			return value;
 		}
-
+        //! Sets the storm centre in metres. This method will apply the Metres Per Unit modifier
 		public void SetStormCentre(float x, float y)
 		{
 			int num=GetNumStorms();
 			for(int i=0;i<num;i++)	
 			{
 				uint s=GetStormByIndex(i);
-				StaticRenderKeyframeSetFloat(s, "CentreKmx", x / 1000.0F);
-				StaticRenderKeyframeSetFloat(s, "CentreKmy", y/ 1000.0F);
+				StaticRenderKeyframeSetFloat(s, "CentreKmx", (x/MetresPerUnit) / 1000.0F);
+				StaticRenderKeyframeSetFloat(s, "CentreKmy", (y / MetresPerUnit) / 1000.0F);
 			}
 		}
 		//! Set an int property of the Sky layer.
@@ -1960,7 +1960,10 @@ namespace simul
 				if (_CellNoiseWavelengthKm != value) try
 					{
 						_CellNoiseWavelengthKm = value;
+						if (SimulVersion >= MakeSimulVersion(4, 2))
 						StaticSetRenderFloat("render:cellnoisewavelengthkm", _CellNoiseWavelengthKm);
+						else
+							StaticSetRenderFloat("WorleyWavelengthKm", _CellNoiseWavelengthKm);
 					}
 					catch (Exception exc)
 					{
@@ -1968,7 +1971,6 @@ namespace simul
 					}
 			}
 		}
-
 
 		float _DirectLight = 1.0F;
 		[SerializeField]
@@ -2283,16 +2285,6 @@ namespace simul
 		{
 		}
 #endif
-		void OnDestroy()     
-		{
-			// Release what was accumulating beforehand
-            if (_initialized) 			
-			{  
-				StaticPopPath ("ShaderBinaryPath");
-				StaticPopPath ("ShaderPath");
-				StaticPopPath ("TexturePath");
-			}
-		}
 		public static string GetShaderbinSourceDir(string target)
 		{
 			char s = Path.DirectorySeparatorChar;
