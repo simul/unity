@@ -121,11 +121,19 @@ namespace simul
                 cloudVisibilityRT.Create();
         }
 
+        public bool IsPPStak
+        {
+            get
+            {
+                return System.Type.GetType("UnityEngine.PostProcessing.PostProcessingBehaviour") != null;
+            }
+        }
+
 		public bool editorMode
 		{
 			get
 			{
-				return (Application.isEditor && !Application.isPlaying);
+				return IsPPStak || (Application.isEditor && !Application.isPlaying);
 			}
 		}
 
@@ -154,7 +162,7 @@ namespace simul
 			RemoveBuffer("trueSKY depth");
 			RemoveBuffer("trueSKY overlay");
 			RemoveBuffer("trueSKY post translucent");
-            RemoveBuffer("trueSKY depth blit for editor only");
+            RemoveBuffer("trueSKY depth blit");
 		}
 		UnityViewStruct unityViewStruct=new UnityViewStruct();
 		System.IntPtr unityViewStructPtr = Marshal.AllocHGlobal(Marshal.SizeOf(new UnityViewStruct()));
@@ -177,7 +185,7 @@ namespace simul
 				post_translucent_buf        = new CommandBuffer();
 				post_translucent_buf.name   = "trueSKY post translucent";
 				blitbuf = new CommandBuffer();
-				blitbuf.name = "trueSKY depth blit for editor only";
+				blitbuf.name = "trueSKY depth blit";
 				cbuf_view_id                = -1;
 			}
             if (cbuf_view_id != InternalGetViewId()) 
