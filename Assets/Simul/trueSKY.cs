@@ -2088,7 +2088,7 @@ namespace simul
 		{
 			try
 			{
-				if (!_initialized)
+                if (!_initialized)
 					Init();
 				if (Application.isPlaying)
 				{

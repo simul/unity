@@ -139,10 +139,23 @@ namespace simul
 
         private void Start()
         {
-            // We'll use the cubemap rt from the cubemap probe to provide reflections to the rain
-            reflectionProbeTexture.renderTexture = GameObject.FindObjectOfType<TrueSkyCubemapProbe>().GetRenderTexture();
-            if(!reflectionProbeTexture.renderTexture)
-                Debug.LogWarning("Could not find a TrueSkyCubemapProbe in the scene, this object is needed to provide reflections to the rain and as a ambient light source for your scene.");
+            var probes = FindObjectsOfType<TrueSkyCubemapProbe>();
+            if(probes.Length <= 0)
+            {
+                Debug.LogWarning("Could not find a TrueSkyCubemapProbe object");
+            }
+            else
+            {
+                for (int i = 0; i < probes.Length; i++) 
+                {
+                    // We will ignore disabled probes:
+                    if(probes[i].enabled && probes[i].isActiveAndEnabled)
+                    {
+                        reflectionProbeTexture.renderTexture = probes[i].GetRenderTexture();
+                        break;
+                    }
+                }
+            }
         }
 
         void OnDestroy()

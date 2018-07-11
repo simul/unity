@@ -173,14 +173,11 @@ namespace simul
             if (GetComponent<Renderer>())
                 GetComponent<Renderer>().enabled = false;
             
-            // TO-DO: this is as it should be (once we integrate the Skylights we won't have it anyway) 
-            // if (skyOnly)
-                dummyCam.cullingMask = 0;
+            // TO-DO: this is as it should be (once we integrate the Skylights we won't have it anyway) // if (skyOnly)
+            dummyCam.cullingMask = 0;
 
             // Render to the cubemap (using the mask to only render a face at a time)
-            bool renderResult = false;
-            renderResult = dummyCam.RenderToCubemap(cubemapRenderTexture, faceMask);
-            if (!renderResult)
+            if (!dummyCam.RenderToCubemap(cubemapRenderTexture, faceMask))
             {
                 Debug.LogWarning("Failed to capture the probe");
             }

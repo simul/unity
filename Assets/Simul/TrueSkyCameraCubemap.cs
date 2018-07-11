@@ -116,9 +116,5 @@ namespace simul
             // Called from trueskycubemapprobe when destroyed
             StaticRemoveView(view_id);
         }
-
-        private void OnPostRender()
-        {
-        }
     }
 }
