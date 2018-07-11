@@ -172,9 +172,11 @@ namespace simul
             // Disable any renderer attached to this object which may get in the way of our cam
             if (GetComponent<Renderer>())
                 GetComponent<Renderer>().enabled = false;
-            
-            // TO-DO: this is as it should be (once we integrate the Skylights we won't have it anyway) // if (skyOnly)
-            dummyCam.cullingMask = 0;
+
+            if (skyOnly)
+            {
+                dummyCam.cullingMask = 0;
+            }
 
             // Render to the cubemap (using the mask to only render a face at a time)
             if (!dummyCam.RenderToCubemap(cubemapRenderTexture, faceMask))
