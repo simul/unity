@@ -891,8 +891,8 @@ namespace simul
 			for(int i=0;i<num;i++)	
 			{
 				uint s=GetStormByIndex(i);
-				StaticRenderKeyframeSetFloat(s, "CentreKmx", (x/MetresPerUnit) / 1000.0F);
-				StaticRenderKeyframeSetFloat(s, "CentreKmy", (y / MetresPerUnit) / 1000.0F);
+				StaticRenderKeyframeSetFloat(s, "CentreKmx", (x * MetresPerUnit) / 1000.0F);
+				StaticRenderKeyframeSetFloat(s, "CentreKmy", (y * MetresPerUnit) / 1000.0F);
 			}
 		}
 		//! Set an int property of the Sky layer.
