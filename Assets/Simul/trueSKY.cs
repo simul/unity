@@ -58,7 +58,16 @@ namespace simul
 		public float optical_thickness_metres;
 		public float first_contact_metres;
 	};
-	class SimulImports
+    public struct ExportLightningStrike
+    {
+        public int id;
+        public vec3 pos;
+        public vec3 endpos;
+        public float brightness;
+        public vec3 colour;
+        public int age;
+    };
+    class SimulImports
 	{ 
 		static bool _initialized = false;
 #if !UNITY_EDITOR && UNITY_SWITCH
@@ -247,6 +256,7 @@ namespace simul
 		[DllImport(SimulImports.renderer_dll)]		public static extern int GetNumStorms();
 		[DllImport(SimulImports.renderer_dll)]		public static extern uint GetStormAtTime(float t);
 		[DllImport(SimulImports.renderer_dll)]		public static extern uint GetStormByIndex(int i);
+        [DllImport(SimulImports.renderer_dll)]      public static extern int StaticGetLightningBolts(IntPtr s, int maxnum);
 
 		#endregion
 		#region API
@@ -505,6 +515,33 @@ namespace simul
 		{  
 			StaticRenderKeyframeSetInt(uid, name, value);
 		}
+        /// <summary>
+        /// Retrieve the active strike. end and start position in metres.
+        /// </summary>
+        /// <returns></returns>
+        public ExportLightningStrike GetCurrentStrike()
+        {
+            IntPtr unmanagedResultPtr = Marshal.AllocHGlobal(Marshal.SizeOf(typeof(ExportLightningStrike)));
+            StaticGetLightningBolts(unmanagedResultPtr, 1);
+
+            var strike = (ExportLightningStrike)Marshal.PtrToStructure(unmanagedResultPtr, typeof(ExportLightningStrike));
+            strike.pos.x /= MetresPerUnit;
+            strike.pos.y /= MetresPerUnit;
+            strike.pos.z /= MetresPerUnit;
+            strike.endpos.x /= MetresPerUnit;
+            strike.endpos.y /= MetresPerUnit;
+            strike.endpos.z /= MetresPerUnit;
+
+            var c = strike.pos.y;
+            strike.pos.y = strike.pos.z;
+            strike.pos.z = c;
+
+            c = strike.endpos.y;
+            strike.endpos.y = strike.endpos.z;
+            strike.endpos.z = c;
+
+            return strike;
+        }
 
 		// --- Conversion functions for TrueSky position/direction <=> Unity position/direction ---
 		static public Vector3 TrueSkyToUnityPosition(Vector3 ts_pos)
