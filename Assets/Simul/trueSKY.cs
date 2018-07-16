@@ -244,6 +244,7 @@ namespace simul
 		[DllImport(SimulImports.renderer_dll)]		public static extern uint GetStormAtTime(float t);
 		[DllImport(SimulImports.renderer_dll)]		public static extern uint GetStormByIndex(int i);
         [DllImport(SimulImports.renderer_dll)]      public static extern int StaticGetLightningBolts(IntPtr s, int maxnum);
+        [DllImport(SimulImports.renderer_dll)]      public static extern int StaticSpawnLightning2(IntPtr startpos, IntPtr endpos,float magnitude, IntPtr colour);
 
         #endregion
         #region API
@@ -505,7 +506,6 @@ namespace simul
         /// <summary>
         /// Retrieve the active strike. end and start position in metres.
         /// </summary>
-        /// <returns></returns>
         public ExportLightningStrike GetCurrentStrike()
         {
             IntPtr unmanagedResultPtr = Marshal.AllocHGlobal(Marshal.SizeOf(typeof(ExportLightningStrike)));
@@ -528,6 +528,32 @@ namespace simul
             strike.endpos.z = c;
 
             return strike;
+        }
+        /// <summary>
+        /// Spawns a strike.
+        /// </summary>
+        /// <param name="start"> Staring position of the strike (unity units) </param>
+        /// <param name="end"> End position of the strike (unity units) </param>
+        public void SpawnStrike(Vector3 start, Vector3 end)
+        {
+            start *= MetresPerUnit;
+            end *= MetresPerUnit;
+
+            IntPtr unmanagedStart = Marshal.AllocHGlobal(sizeof(float) * 3);
+            IntPtr unmanagedEnd = Marshal.AllocHGlobal(sizeof(float) * 3);
+            IntPtr unmanagedColour = Marshal.AllocHGlobal(sizeof(float) * 3);
+            float[] ns = { start.x, start.z, start.y };
+            float[] ne = { end.x, end.z, end.y };
+            float[] nc = { 1.0f, 1.0f, 1.0f };
+            Marshal.Copy(ns, 0, unmanagedStart, 3);
+            Marshal.Copy(ne, 0, unmanagedEnd, 3);
+            Marshal.Copy(nc, 0, unmanagedColour, 3);
+
+            StaticSpawnLightning2(unmanagedStart, unmanagedEnd,0.0f, unmanagedColour);
+
+            Marshal.FreeHGlobal(unmanagedStart);
+            Marshal.FreeHGlobal(unmanagedEnd);
+            Marshal.FreeHGlobal(unmanagedColour);
         }
 
 		// --- Conversion functions for TrueSky position/direction <=> Unity position/direction ---
@@ -889,7 +915,7 @@ namespace simul
 			float value = 0.0F;
 			try
 			{
-				value = StaticGetRenderFloat("Clouds:" + name);
+				value = StaticGetRenderFloat("clouds:" + name);
 			}
 			catch (Exception exc)
 			{
