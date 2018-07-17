@@ -504,7 +504,8 @@ namespace simul
 			StaticRenderKeyframeSetInt(uid, name, value);
 		}
         /// <summary>
-        /// Retrieve the active strike. end and start position in metres.
+        /// Retrieves the active strike, pos and endpos are in unity units. The strike is only
+        /// valid if 'id' is not 0.
         /// </summary>
         public ExportLightningStrike GetCurrentStrike()
         {

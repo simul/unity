@@ -57,10 +57,10 @@ MonoBehaviour:
   SimulVersionBuild: 0
   _metresPerUnit: 1
   _renderInEditMode: 1
-  _minimumStarPixelSize: 1
+  _minimumStarPixelSize: 10
   _godRaysGrid: {x: 32, y: 32, z: 32}
   _crepuscularRaysStrength: 1
-  _depthSamplingPixelRange: 1.5
+  _depthSamplingPixelRange: 3.37
   _maxSunRadiance: 150000
   _edgeNoiseFrequency: 7
   _edgeNoiseOctaves: 5
@@ -70,7 +70,7 @@ MonoBehaviour:
   _edgeNoiseWavelengthKm: 1.3
   _worleyTextureSize: 64
   _worleyWavelengthKm: 2.3
-  _time: 0.35
+  _time: 0.3
   _speed: 100
   _HighDetailProportion: 0.576
   _MediumDetailProportion: 1
@@ -80,16 +80,16 @@ MonoBehaviour:
   _simulationTimeRain: 0
   _MaxPrecipitationParticles: 100000
   _changedAmortInEd: 0
-  _amortization: 2
-  _atmosphericsAmortization: 2
+  _amortization: 1
+  _atmosphericsAmortization: 1
   _depthBlending: 1
   _maxCpuProfileLevel: 3
   _maxGpuProfileLevel: 3
   _backgroundTexture: {fileID: 0}
   _moonTexture: {fileID: 2800000, guid: 3541739e0b9713341bb6b93137f4fabe, type: 3}
-  _sequence: {fileID: 11400000, guid: aa830ef1db867b648a37d89cbb5a74e1, type: 2}
-  _CloudSteps: 250
-  _CubemapResolution: 477
+  _sequence: {fileID: 11400000, guid: c3874f764be4c6144b28c29a5868a75e, type: 2}
+  _CloudSteps: 200
+  _CubemapResolution: 256
 --- !u!114 &114891581999645932
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -106,5 +106,8 @@ MonoBehaviour:
   gamma: 0.44
   updatePeriodSeconds: 0.5
   skyOnly: 1
+  probeCullingMask:
+    serializedVersion: 2
+    m_Bits: 0
   renderTextureFormat: 0
   flipProbeY: 1
