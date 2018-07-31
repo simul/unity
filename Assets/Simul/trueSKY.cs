@@ -259,10 +259,13 @@ namespace simul
         [DllImport(SimulImports.renderer_dll)]      public static extern int StaticGetLightningBolts(IntPtr s, int maxnum);
         [DllImport(SimulImports.renderer_dll)]      public static extern int StaticSpawnLightning2(IntPtr startpos, IntPtr endpos,float magnitude, IntPtr colour);
 
+
+		[DllImport(SimulImports.renderer_dll)]
+		public static extern System.IntPtr GetRenderingInterface();
 		#endregion
 		#region API
 
-        public int SimulVersionMajor            = 0;
+		public int SimulVersionMajor            = 0;
         public int SimulVersionMinor            = 0;
         public int SimulVersionBuild            = 0;
 

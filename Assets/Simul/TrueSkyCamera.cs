@@ -45,6 +45,7 @@ namespace simul
 		protected CommandBuffer post_translucent_buf = null;
 		/// Blitbuf is now only for in-editor use.
 		protected CommandBuffer blitbuf = null;
+		protected CommandBuffer deferred_buf = null; 
 
 		/// <summary>
 		/// This material is used the blit the camera's depth to a render target
@@ -197,6 +198,9 @@ namespace simul
 				overlay_buf.name            = "trueSKY overlay";
 				post_translucent_buf        = new CommandBuffer();
 				post_translucent_buf.name   = "trueSKY post translucent";
+				deferred_buf = new CommandBuffer();
+				deferred_buf.name = "trueSKY defered contexts";
+				
 				blitbuf = new CommandBuffer();
 				blitbuf.name = "trueSKY depth blit";
 				cbuf_view_id                = -1;
@@ -210,20 +214,23 @@ namespace simul
             CommandBuffer[] bufs = cam.GetCommandBuffers(CameraEvent.BeforeImageEffectsOpaque);
 			if(editorMode)
 				PrepareDepthMaterial();
-			int requiredNumber = 1 + (editorMode ? 1 : 0);
+			int requiredNumber = 1 + (editorMode ? 2 : 0);
             if (bufs.Length != requiredNumber) 
 			{
 				RemoveCommandBuffers();
 				if(editorMode)
-					cam.AddCommandBuffer(CameraEvent.BeforeImageEffectsOpaque, blitbuf);
+					cam.AddCommandBuffer(CameraEvent.BeforeImageEffectsOpaque, blitbuf); 
 				cam.AddCommandBuffer(CameraEvent.BeforeImageEffectsOpaque, mainCommandBuffer);
 				cam.AddCommandBuffer(CameraEvent.AfterForwardAlpha, post_translucent_buf);
 				cam.AddCommandBuffer(CameraEvent.AfterEverything, overlay_buf);
+				if (editorMode)
+					cam.AddCommandBuffer(CameraEvent.AfterEverything, deferred_buf); 
 			}
             mainCommandBuffer.Clear();
 			blitbuf.Clear();
 			overlay_buf.Clear();
 			post_translucent_buf.Clear();
+			deferred_buf.Clear();
             cbuf_view_id = InternalGetViewId();
 			if (editorMode)
 			{
@@ -241,10 +248,12 @@ namespace simul
 					unityViewStruct.nativeDepthRenderBuffer = activeTexture.depthBuffer.GetNativeRenderBufferPtr();
 			}
 			Marshal.StructureToPtr(unityViewStruct, unityViewStructPtr, true);
-
 			mainCommandBuffer.IssuePluginEventAndData(UnityGetRenderEventFuncWithData(),TRUESKY_EVENT_ID + cbuf_view_id, unityViewStructPtr);
 			post_translucent_buf.IssuePluginEventAndData(UnityGetPostTranslucentFuncWithData(), TRUESKY_EVENT_ID + cbuf_view_id, unityViewStructPtr);
 			overlay_buf.IssuePluginEventAndData(UnityGetOverlayFuncWithData(), TRUESKY_EVENT_ID + cbuf_view_id, unityViewStructPtr);
+
+			if (editorMode)
+				post_translucent_buf.IssuePluginEventAndData(UnityGetExecuteDeferredFunc(), TRUESKY_EVENT_ID + cbuf_view_id, unityViewStructPtr);
 		}
 
 		void OnPostRender()
@@ -265,8 +274,9 @@ namespace simul
 
 				// View and projection: non-stereo rendering
 				Matrix4x4 m = cam.worldToCameraMatrix;
-				bool toTexture = cam.allowHDR || cam.allowMSAA || cam.renderingPath == RenderingPath.DeferredShading;
+				bool toTexture = cam.allowHDR || cam.allowMSAA || cam.renderingPath == RenderingPath.DeferredShading || cam.targetTexture;
 				Matrix4x4 p = GL.GetGPUProjectionMatrix(cam.projectionMatrix, toTexture);
+
 				ViewMatrixToTrueSkyFormat(renderStyle, m, viewMatrices);
 				ProjMatrixToTrueSkyFormat(renderStyle, p, projMatrices);
 
@@ -341,9 +351,8 @@ namespace simul
 				UnityRenderOptions unityRenderOptions = UnityRenderOptions.DEFAULT;
 				if (FlipOverlays)
 					unityRenderOptions = unityRenderOptions | UnityRenderOptions.FLIP_OVERLAYS;
-				// NOTE (Nacho): we need to update the plugin internally
-				// if (ShareBuffersForVR)
-				//unityRenderOptions = unityRenderOptions | UnityRenderOptions.NO_SEPARATION;
+                if (ShareBuffersForVR)
+                    unityRenderOptions = unityRenderOptions | UnityRenderOptions.NO_SEPARATION;
 
 				UnitySetRenderFrameValues(view_id
 					, viewMatrices
