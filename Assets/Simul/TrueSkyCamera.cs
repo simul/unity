@@ -120,7 +120,6 @@ namespace simul
             if(cloudVisibilityRT)
                 cloudVisibilityRT.Create();
         }
-
         public bool IsPPStak
         {
             get
@@ -251,11 +250,6 @@ namespace simul
 			Camera cam = GetComponent<Camera>();
 			activeTexture = cam.activeTexture;
         }
-
-        // private void OnRenderImage(RenderTexture source, RenderTexture destination)
-        // {
-        //     Graphics.Blit(source, destination);
-        // }
 
         void PrepareMatrices()
 		{

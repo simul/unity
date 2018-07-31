@@ -92,7 +92,7 @@ namespace simul
 					startInfo.UseShellExecute = false;
 					startInfo.WindowStyle = ProcessWindowStyle.Hidden;
 					startInfo.FileName = dllPath1 + s + "vcredist_x86.exe";
-					//startInfo.Arguments = "/q";
+				
 					try
 					{
 						// Start the process with the info we specified.
@@ -215,6 +215,21 @@ namespace simul
 			,UNITY_STYLE_DEFERRED = 6
 			,VISION_STYLE = 8
 		};
+		[DllImport("kernel32", SetLastError = true)]
+		static extern IntPtr LoadLibrary(string lpFileName);
+		[DllImport("kernel32", CharSet = CharSet.Ansi, ExactSpelling = true, SetLastError = true)]
+		static extern UIntPtr GetProcAddress(IntPtr hModule, string procName);
+
+		bool LibraryHasExport(string lib,string procName)
+		{
+			IntPtr hModule = LoadLibrary(lib);
+			if(hModule != (IntPtr)0)
+			{
+				if (GetProcAddress(hModule, procName) != (UIntPtr)0)
+					return true;
+			}
+			return false;
+		}
 
 		[DllImport(SequenceEditorImports.editor_dll)]
 		private static extern void EnableUILogging(string logfile);
@@ -224,6 +239,9 @@ namespace simul
 		private static extern void CloseUI(System.IntPtr OwnerHWND);
 		[DllImport(SequenceEditorImports.editor_dll)]
 		private static extern void HideUI(System.IntPtr OwnerHWND);
+
+		[DllImport(SequenceEditorImports.editor_dll)]
+		private static extern int SetRenderingInterface(System.IntPtr OwnerHWND, System.IntPtr RenderingInterface);
 
 		[DllImport(SequenceEditorImports.editor_dll)]
 		private static extern int StaticGetString(System.IntPtr OwnerHWND, string name, StringBuilder str, int len);
@@ -419,6 +437,9 @@ namespace simul
 			if (EditorGUIUtility.isProSkin)
 				skin = "unity_dark";
 			OpenUI(handle, r, r, Env, Style.UNITY_STYLE,skin);
+
+			//if (LibraryHasExport("TrueSkyPluginRender_MT.dll","GetRenderingInterface")
+			//	SetRenderingInterface(handle, trueSky.GetRenderingInterface());
 
 			// Edit the .sq file that this asset is imported from.
 			local_path = local_path.Replace(".asset", ".sq");
