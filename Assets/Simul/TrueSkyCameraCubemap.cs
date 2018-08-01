@@ -46,8 +46,6 @@ namespace simul
 				Camera cam = GetComponent<Camera>();
 				Matrix4x4 m = cam.worldToCameraMatrix;
                 Matrix4x4 p = cam.projectionMatrix;
-				int depthWidth = cam.pixelWidth;
-				int depthHeight = cam.pixelHeight;
 				// https://docs.unity3d.com/ScriptReference/Camera-projectionMatrix.html
 				if (doFlipY)
                 {
@@ -55,6 +53,9 @@ namespace simul
                 }
                 ViewMatrixToTrueSkyFormat(renderStyle, m, viewMatrices);
                 ProjMatrixToTrueSkyFormat(renderStyle, p, projMatrices);
+				// Query depth size
+				int depthWidth = cam.pixelWidth;
+				int depthHeight = cam.pixelHeight;
 
                 depthViewports[0].x = depthViewports[0].y = 0;
                 depthViewports[0].z = depthWidth;
