@@ -15,7 +15,7 @@ namespace simul
 		[DllImport(SimulImports.renderer_dll)]	private static extern bool StaticAddWaterProbe(uint ID, float[] location);
 		[DllImport(SimulImports.renderer_dll)]	private static extern void StaticRemoveWaterProbe(uint ID);
 		[DllImport(SimulImports.renderer_dll)]	private static extern void StaticUpdateWaterProbePosition(uint ID, float[] location);
-		[DllImport(SimulImports.renderer_dll)]	private static extern Vector4 StaticGetWaterProbeValues(uint ID);
+		[DllImport(SimulImports.renderer_dll)]	private static extern void StaticGetWaterProbeValues(uint ID, float[] result);
 		#endregion
 
 		[SerializeField]
@@ -60,13 +60,14 @@ namespace simul
 
 		public void UpdateProbeValues()
 		{
-			Vector4 values = StaticGetWaterProbeValues(ID);
-			if (values.x == -1.0 && values.y == -1.0 && values.z == -1.0 && values.w == -1.0)
+			float[] values = new float[] {0.0f, 0.0f, 0.0f, 0.0f};
+			StaticGetWaterProbeValues(ID, values);
+			if (values[0] == -1.0 && values[1] == -1.0 && values[2] == -1.0 && values[3] == -1.0)
 				active = false;
 			else
 				active = true;
-			depth = values.x + values.w;
-			direction = new Vector3(values.z, values.y, values.w);
+			depth = values[0] + values[3];
+			direction = new Vector3(values[2], values[1], values[3]);
 		}
 
 		public bool IsActive()
