@@ -89,14 +89,19 @@ namespace simul
 				EditorGUILayout.BeginVertical();
 				{
 					advanced = EditorGUILayout.Foldout(advanced, "Advanced Water Options");
+
+					waterObject.ProfileBufferResolution = (int)EditorGUILayout.Slider("Profile Buffer Resolution", waterObject.ProfileBufferResolution, 512, 4096);
+
 					if (advanced)
 					{
 						waterObject.AdvancedWaterOptions = EditorGUILayout.Toggle("Enable Advanced Water Options", waterObject.AdvancedWaterOptions);
 						if (waterObject.AdvancedWaterOptions)
 						{
-							waterObject.WindSpeed = EditorGUILayout.Slider("Wind Speed", waterObject.WindSpeed, 0.0f, 200.0f);
-							waterObject.WaveAmplitude = EditorGUILayout.Slider("Wave Amplitude", waterObject.WaveAmplitude, 0.0f, 1.0f);
-							waterObject.ChoppyScale = EditorGUILayout.Slider("ChoppyScale", waterObject.ChoppyScale, 0.0f, 4.0f);
+							waterObject.WindSpeed = EditorGUILayout.Slider("Wind Speed", waterObject.WindSpeed, 0.0f, 40.0f);
+							waterObject.WaveAmplitude = EditorGUILayout.Slider("Wave Amplitude", waterObject.WaveAmplitude, 0.0f, 2.0f);
+							waterObject.MaxWaveLength = EditorGUILayout.Slider("Max WaveLength", waterObject.MaxWaveLength, 1.01f, 100.0f);
+							waterObject.MinWaveLength = EditorGUILayout.Slider("Min WaveLength", waterObject.MinWaveLength, 0.01f, 1.0f);
+							//waterObject.ChoppyScale = EditorGUILayout.Slider("ChoppyScale", waterObject.ChoppyScale, 0.0f, 4.0f);
 						}
 						if (waterObject.BoundlessOcean)
 						{
@@ -104,8 +109,8 @@ namespace simul
 							waterObject.EnableFoam = EditorGUILayout.Toggle("Enable Foam", waterObject.EnableFoam);
 							if (waterObject.EnableFoam && waterObject.AdvancedWaterOptions)
 							{
-								waterObject.FoamHeight = EditorGUILayout.Slider("Foam Height", waterObject.FoamHeight, 0.0f, 20.0f);
-								waterObject.FoamChurn = EditorGUILayout.Slider("Foam FoamChurn", waterObject.FoamChurn, 0.0f, 20.0f);
+								waterObject.FoamStrength = EditorGUILayout.Slider("Foam Strength", waterObject.FoamStrength, 0.0f, 1.0f);
+								//waterObject.FoamChurn = EditorGUILayout.Slider("Foam FoamChurn", waterObject.FoamChurn, 0.0f, 20.0f);
 							}
 						}
 					}

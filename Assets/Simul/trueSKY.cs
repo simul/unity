@@ -862,6 +862,38 @@ namespace simul
             }
         }
 
+        // 4.2 only
+        [SerializeField]
+        int _worleyTextureSize = 64;
+        public int WorleyTextureSize
+        {
+            get
+            {
+                return _worleyTextureSize;
+            }
+            set
+            {
+                _worleyTextureSize = value;
+				StaticSetRenderInt("render:CellNoiseTextureSize", _worleyTextureSize);
+            }
+        }
+
+        // 4.2 only
+        [SerializeField]
+        float _worleyWavelengthKm = 8.7f;
+        public float WorleyWavelengthKm
+        {
+            get
+            {
+                return _worleyWavelengthKm;
+            }
+            set
+            {
+                _worleyWavelengthKm = value;
+                StaticSetRenderFloat("WorleyWavelengthKm", _worleyWavelengthKm);
+            }
+        }
+
         //! Set a floating-point property of the Sky layer.
         void SetFloat(string str, float value)
 		{

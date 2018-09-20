@@ -230,6 +230,28 @@ namespace simul
 		}
 
 		[SerializeField]
+		int _profileBufferResolution = 2048;
+		public int ProfileBufferResolution
+		{
+			get
+			{
+				return _profileBufferResolution;
+			}
+			set
+			{
+				_profileBufferResolution = value;
+				if (_boundlessOcean)
+				{
+					StaticSetWaterInt("profilebufferresolution", -1, _profileBufferResolution);
+				}
+				else
+				{
+					StaticSetWaterInt("profilebufferresolution", ID, _profileBufferResolution);
+				}
+			}
+		}
+
+		[SerializeField]
 		bool _advancedWaterOptions = false;
 		public bool AdvancedWaterOptions
 		{
@@ -244,7 +266,7 @@ namespace simul
 		}
 
 		[SerializeField]
-		float _windSpeed = 30.0f;
+		float _windSpeed = 10.0f;
 		public float WindSpeed
 		{
 			get
@@ -256,17 +278,17 @@ namespace simul
 				_windSpeed = value;
 				if (_boundlessOcean)
 				{
-					StaticSetWaterFloat("windSpeed", -1, _windSpeed);
+					StaticSetWaterFloat("windSpeed", -1, _windSpeed / 2.0f);
 				}
 				else
 				{
-					StaticSetWaterFloat("windSpeed", ID, _windSpeed);
+					StaticSetWaterFloat("windSpeed", ID, _windSpeed / 2.0f);
 				}
 			}
 		}
 
 		[SerializeField]
-		float _waveAmplitude = 0.5f;
+		float _waveAmplitude = 1.0f;
 		public float WaveAmplitude
 		{
 			get
@@ -286,7 +308,7 @@ namespace simul
 				}
 			}
 		}
-
+		/*
 		[SerializeField]
 		float _choppyScale = 2.0f;
 		public float ChoppyScale
@@ -308,6 +330,51 @@ namespace simul
 				}
 			}
 		}
+		*/
+
+		[SerializeField]
+		float _maxWavelength = 50.0f;
+		public float MaxWaveLength
+		{
+			get
+			{
+				return _maxWavelength;
+			}
+			set
+			{
+				_maxWavelength = value;
+				if (_boundlessOcean)
+				{
+					StaticSetWaterFloat("maxWavelength", -1, _maxWavelength);
+				}
+				else
+				{
+					StaticSetWaterFloat("maxWavelength", ID, _maxWavelength);
+				}
+			}
+		}
+
+		[SerializeField]
+		float _minWavelength = 0.04f;
+		public float MinWaveLength
+		{
+			get
+			{
+				return _minWavelength;
+			}
+			set
+			{
+				_minWavelength = value;
+				if (_boundlessOcean)
+				{
+					StaticSetWaterFloat("minWavelength", -1, _minWavelength);
+				}
+				else
+				{
+					StaticSetWaterFloat("minWavelength", ID, _minWavelength);
+				}
+			}
+		}
 
 		[SerializeField]
 		bool _enableFoam = true;
@@ -326,21 +393,21 @@ namespace simul
 		}
 
 		[SerializeField]
-		float _foamHeight = 2.0f;
-		public float FoamHeight
+		float _foamStrength = 0.45f;
+		public float FoamStrength
 		{
 			get
 			{
-				return _foamHeight;
+				return _foamStrength;
 			}
 			set
 			{
-				_foamHeight = value;
+				_foamStrength = value;
 				if (_boundlessOcean)
-					StaticSetRenderFloat("OceanFoamHeight", _foamHeight);
+					StaticSetRenderFloat("OceanFoamStrength", _foamStrength / 2.0f);
 			}
 		}
-
+		/*
 		[SerializeField]
 		float _foamChurn = 4.0f;
 		public float FoamChurn
@@ -356,6 +423,7 @@ namespace simul
 					StaticSetRenderFloat("OceanFoamChurn", _foamChurn);
 			}
 		}
+		*/
 		#endregion
 
 		public int ID;
