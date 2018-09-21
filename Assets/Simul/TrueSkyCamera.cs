@@ -223,8 +223,8 @@ namespace simul
 				cam.AddCommandBuffer(CameraEvent.BeforeImageEffectsOpaque, mainCommandBuffer);
 				cam.AddCommandBuffer(CameraEvent.AfterForwardAlpha, post_translucent_buf);
 				cam.AddCommandBuffer(CameraEvent.AfterEverything, overlay_buf);
-				if (editorMode)
-					cam.AddCommandBuffer(CameraEvent.AfterEverything, deferred_buf); 
+				//if (editorMode)
+					//cam.AddCommandBuffer(CameraEvent.AfterEverything, deferred_buf); 
 			}
             mainCommandBuffer.Clear();
 			blitbuf.Clear();
@@ -252,7 +252,7 @@ namespace simul
 			post_translucent_buf.IssuePluginEventAndData(UnityGetPostTranslucentFuncWithData(), TRUESKY_EVENT_ID + cbuf_view_id, unityViewStructPtr);
 			overlay_buf.IssuePluginEventAndData(UnityGetOverlayFuncWithData(), TRUESKY_EVENT_ID + cbuf_view_id, unityViewStructPtr);
 
-			if (editorMode)
+			if (editorMode && (trueSKY.GetTrueSky().SimulVersion >= trueSKY.GetTrueSky().MakeSimulVersion(4, 2)))
 				post_translucent_buf.IssuePluginEventAndData(UnityGetExecuteDeferredFunc(), TRUESKY_EVENT_ID + cbuf_view_id, unityViewStructPtr);
 		}
 
