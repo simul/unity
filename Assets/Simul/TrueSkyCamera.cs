@@ -252,8 +252,8 @@ namespace simul
 			post_translucent_buf.IssuePluginEventAndData(UnityGetPostTranslucentFuncWithData(), TRUESKY_EVENT_ID + cbuf_view_id, unityViewStructPtr);
 			overlay_buf.IssuePluginEventAndData(UnityGetOverlayFuncWithData(), TRUESKY_EVENT_ID + cbuf_view_id, unityViewStructPtr);
 
-			if (editorMode && (trueSKY.GetTrueSky().SimulVersion >= trueSKY.GetTrueSky().MakeSimulVersion(4, 2)))
-				post_translucent_buf.IssuePluginEventAndData(UnityGetExecuteDeferredFunc(), TRUESKY_EVENT_ID + cbuf_view_id, unityViewStructPtr);
+			//if (editorMode && (trueSKY.GetTrueSky().SimulVersion >= trueSKY.GetTrueSky().MakeSimulVersion(4, 2)))
+				//post_translucent_buf.IssuePluginEventAndData(UnityGetExecuteDeferredFunc(), TRUESKY_EVENT_ID + cbuf_view_id, unityViewStructPtr);
 		}
 
 		void OnPostRender()
