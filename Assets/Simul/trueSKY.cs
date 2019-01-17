@@ -191,7 +191,7 @@ namespace simul
 	public class trueSKY : MonoBehaviour
 	{
 		#region Imports
-        [DllImport(SimulImports.renderer_dll)]      private static extern void GetSimulVersion(IntPtr major, IntPtr minor, IntPtr build);
+		[DllImport(SimulImports.renderer_dll)]      private static extern void GetSimulVersion(IntPtr major, IntPtr minor, IntPtr build);
 
 		[DllImport(SimulImports.renderer_dll)]		private static extern void StaticEnableLogging(string logfile);
 		[DllImport(SimulImports.renderer_dll)]		private static extern int StaticInitInterface();
@@ -249,9 +249,9 @@ namespace simul
         #endregion
         #region API
 
-        public int SimulVersionMajor            = 0;
-        public int SimulVersionMinor            = 0;
-        public int SimulVersionBuild            = 0;
+		public int SimulVersionMajor            = 0;
+		public int SimulVersionMinor            = 0;
+		public int SimulVersionBuild            = 0;
 
 		public int SimulVersion
 		{
@@ -290,7 +290,7 @@ namespace simul
 		{
 			Vector3 convertedPos = UnityToTrueSkyPosition (pos);   			// convert from Unity format to trueSKY  
 
-			float[] p = { convertedPos.x, convertedPos.y, convertedPos.z };   
+			float[] p = { convertedPos.x, convertedPos.y, convertedPos.z };
 			float[] i = { irradiance.x, irradiance.z, irradiance.y };
 			StaticSetPointLight(id, p, min_radius,max_radius, i);
 		}
@@ -313,7 +313,7 @@ namespace simul
 		}
 		public VolumeQueryResult GetCloudQuery(int id, Vector3 pos)
 		{
-			Vector3 convertedPos = UnityToTrueSkyPosition (pos);  			// convert from Unity format to trueSKY
+			Vector3 convertedPos = UnityToTrueSkyPosition(pos);  			// convert from Unity format to trueSKY
 
 			VolumeQueryResult res = new VolumeQueryResult();
 			IntPtr unmanagedPosPtr = Marshal.AllocHGlobal(12);
@@ -352,27 +352,26 @@ namespace simul
 		}
 		public float GetCloudAtPosition(Vector3 pos)
 		{
-			Vector3 convertedPos = UnityToTrueSkyPosition (pos);
-			float[] x= { convertedPos.x,convertedPos.y,convertedPos.z };		  
-			float ret=StaticGetRenderFloatAtPosition("Cloud",x);
+			Vector3 convertedPos = UnityToTrueSkyPosition(pos);
+			float[] x = { convertedPos.x, convertedPos.y, convertedPos.z };
+			float ret = StaticGetRenderFloatAtPosition("Cloud", x);
 			return ret;
 		}
-		public float GetCloudShadowAtPosition (Vector3 pos)
+		public float GetCloudShadowAtPosition(Vector3 pos)
 		{
-			Vector3 convertedPos = UnityToTrueSkyPosition (pos);
-			float[] x= { convertedPos.x,convertedPos.y,convertedPos.z };		  
-			float ret=StaticGetRenderFloatAtPosition("CloudShadow",x);
-			return ret; 
+			Vector3 convertedPos = UnityToTrueSkyPosition(pos);
+			float[] x = { convertedPos.x, convertedPos.y, convertedPos.z };
+			float ret = StaticGetRenderFloatAtPosition("CloudShadow", x);
+			return ret;
 		}
 		public float GetPrecipitationAtPosition(Vector3 pos)
 		{
-			Vector3 convertedPos = UnityToTrueSkyPosition (pos);
-			float[] x = { convertedPos.x, convertedPos.y, convertedPos.z };								 
+			Vector3 convertedPos = UnityToTrueSkyPosition(pos);
+			float[] x = { convertedPos.x, convertedPos.y, convertedPos.z };
 			float ret = StaticGetRenderFloatAtPosition("Precipitation", x);
 			return ret;
 		}
 		// These are for keyframe editing:
-        // These are for keyframe editing:
 		public int GetNumSkyKeyframes()
 		{
 			return StaticRenderGetNumKeyframes(0);
@@ -383,13 +382,13 @@ namespace simul
 			return StaticRenderGetNumKeyframes(1);
 		}
 
-        public int GetNumCloud2DKeyframes()
+		public int GetNumCloud2DKeyframes()
 		{
-            if(SimulVersionMinor == 1)
-            {
-			    return StaticRenderGetNumKeyframes(2);
-            }
-            return -1;
+			if (SimulVersionMinor == 1)
+			{
+				return StaticRenderGetNumKeyframes(2);
+			}
+			return -1;
 		}
 
 		public uint InsertSkyKeyframe(float t)
@@ -402,13 +401,13 @@ namespace simul
 			return StaticRenderInsertKeyframe(1,t);
 		}
 
-        public uint Insert2DCloudKeyframe(float t)
+		public uint Insert2DCloudKeyframe(float t)
 		{
-			if (SimulVersion < MakeSimulVersion(4, 2) )
-            {
-                return StaticRenderInsertKeyframe(2, t);
-            }
-            return 0;
+			if (SimulVersion < MakeSimulVersion(4, 2))
+			{
+				return StaticRenderInsertKeyframe(2, t);
+			}
+			return 0;
 		}
 
 		public void DeleteKeyframe(uint uid)
@@ -428,11 +427,11 @@ namespace simul
 
 		public uint GetCloud2DKeyframeByIndex(int index)
 		{
-			if (SimulVersion < MakeSimulVersion(4, 2) )
-            {
-                return StaticRenderGetKeyframeByIndex(2, index);
-            }
-            return 0;
+			if (SimulVersion < MakeSimulVersion(4, 2))
+			{
+				return StaticRenderGetKeyframeByIndex(2, index);
+			}
+			return 0;
 		}
 
 		public uint GetInterpolatedCloudKeyframe(int layer)
@@ -481,26 +480,26 @@ namespace simul
 
 		public uint GetStormUidByIndex(int index)
 		{
-			return GetStormByIndex (index);
+			return GetStormByIndex(index);
 		}
 		public uint GetStormUidAtTime(float time)
 		{
-			return GetStormAtTime (time);
+			return GetStormAtTime(time);
 		}
 		public float GetStormFloat(uint uid, string name)
-		{  
+		{
 			return StaticRenderKeyframeGetFloat(uid, name);
 		}
 		public void SetStormFloat(uint uid, string name, float value)
-		{  
-		 	StaticRenderKeyframeSetFloat(uid, name, value);
+		{
+			StaticRenderKeyframeSetFloat(uid, name, value);
 		}
 		public int GetStormInt(uint uid, string name)
-		{  
+		{
 			return StaticRenderKeyframeGetInt(uid, name);
 		}
 		public void SetStormInt(uint uid, string name, int value)
-		{  
+		{
 			StaticRenderKeyframeSetInt(uid, name, value);
 		}
         /// <summary>
@@ -512,50 +511,50 @@ namespace simul
             IntPtr unmanagedResultPtr = Marshal.AllocHGlobal(Marshal.SizeOf(typeof(ExportLightningStrike)));
             StaticGetLightningBolts(unmanagedResultPtr, 1);
 
-            var strike = (ExportLightningStrike)Marshal.PtrToStructure(unmanagedResultPtr, typeof(ExportLightningStrike));
-            strike.pos.x /= MetresPerUnit;
-            strike.pos.y /= MetresPerUnit;
-            strike.pos.z /= MetresPerUnit;
-            strike.endpos.x /= MetresPerUnit;
-            strike.endpos.y /= MetresPerUnit;
-            strike.endpos.z /= MetresPerUnit;
+			var strike = (ExportLightningStrike)Marshal.PtrToStructure(unmanagedResultPtr, typeof(ExportLightningStrike));
+			strike.pos.x /= MetresPerUnit;
+			strike.pos.y /= MetresPerUnit;
+			strike.pos.z /= MetresPerUnit;
+			strike.endpos.x /= MetresPerUnit;
+			strike.endpos.y /= MetresPerUnit;
+			strike.endpos.z /= MetresPerUnit;
 
-            var c = strike.pos.y;
-            strike.pos.y = strike.pos.z;
-            strike.pos.z = c;
+			var c = strike.pos.y;
+			strike.pos.y = strike.pos.z;
+			strike.pos.z = c;
 
-            c = strike.endpos.y;
-            strike.endpos.y = strike.endpos.z;
-            strike.endpos.z = c;
+			c = strike.endpos.y;
+			strike.endpos.y = strike.endpos.z;
+			strike.endpos.z = c;
 
-            return strike;
-        }
-        /// <summary>
-        /// Spawns a strike.
-        /// </summary>
-        /// <param name="start"> Staring position of the strike (unity units) </param>
-        /// <param name="end"> End position of the strike (unity units) </param>
-        public void SpawnStrike(Vector3 start, Vector3 end)
-        {
-            start *= MetresPerUnit;
-            end *= MetresPerUnit;
+			return strike;
+		}
+		/// <summary>
+		/// Spawns a strike.
+		/// </summary>
+		/// <param name="start"> Staring position of the strike (unity units) </param>
+		/// <param name="end"> End position of the strike (unity units) </param>
+		public void SpawnStrike(Vector3 start, Vector3 end)
+		{
+			start *= MetresPerUnit;
+			end *= MetresPerUnit;
 
-            IntPtr unmanagedStart = Marshal.AllocHGlobal(sizeof(float) * 3);
-            IntPtr unmanagedEnd = Marshal.AllocHGlobal(sizeof(float) * 3);
-            IntPtr unmanagedColour = Marshal.AllocHGlobal(sizeof(float) * 3);
-            float[] ns = { start.x, start.z, start.y };
-            float[] ne = { end.x, end.z, end.y };
-            float[] nc = { 1.0f, 1.0f, 1.0f };
-            Marshal.Copy(ns, 0, unmanagedStart, 3);
-            Marshal.Copy(ne, 0, unmanagedEnd, 3);
-            Marshal.Copy(nc, 0, unmanagedColour, 3);
+			IntPtr unmanagedStart = Marshal.AllocHGlobal(sizeof(float) * 3);
+			IntPtr unmanagedEnd = Marshal.AllocHGlobal(sizeof(float) * 3);
+			IntPtr unmanagedColour = Marshal.AllocHGlobal(sizeof(float) * 3);
+			float[] ns = { start.x, start.z, start.y };
+			float[] ne = { end.x, end.z, end.y };
+			float[] nc = { 1.0f, 1.0f, 1.0f };
+			Marshal.Copy(ns, 0, unmanagedStart, 3);
+			Marshal.Copy(ne, 0, unmanagedEnd, 3);
+			Marshal.Copy(nc, 0, unmanagedColour, 3);
 
-            StaticSpawnLightning2(unmanagedStart, unmanagedEnd,0.0f, unmanagedColour);
+			StaticSpawnLightning2(unmanagedStart, unmanagedEnd, 0.0f, unmanagedColour);
 
-            Marshal.FreeHGlobal(unmanagedStart);
-            Marshal.FreeHGlobal(unmanagedEnd);
-            Marshal.FreeHGlobal(unmanagedColour);
-        }
+			Marshal.FreeHGlobal(unmanagedStart);
+			Marshal.FreeHGlobal(unmanagedEnd);
+			Marshal.FreeHGlobal(unmanagedColour);
+		}
 
 		// --- Conversion functions for TrueSky position/direction <=> Unity position/direction ---
 		static public Vector3 TrueSkyToUnityPosition(Vector3 ts_pos)
@@ -638,40 +637,40 @@ namespace simul
 			}
 		}
 
-        [SerializeField]
-        float _minimumStarPixelSize = 1.0f;
-        public float MinimumStarPixelSize
-        {
-            get
-            {
-                return _minimumStarPixelSize;
-            }
-            set
-            {
-                _minimumStarPixelSize = value;
+		[SerializeField]
+		float _minimumStarPixelSize = 1.0f;
+		public float MinimumStarPixelSize
+		{
+			get
+			{
+				return _minimumStarPixelSize;
+			}
+			set
+			{
+				_minimumStarPixelSize = value;
 				StaticSetRenderFloat("render:minimumstarpixelsize", _minimumStarPixelSize);
             }
         }
 
-        [SerializeField]
-        Vector3 _godRaysGrid = new Vector3(64, 32, 32);
-        public Vector3 GodRaysGrid
-        {
-            get
-            {
-                return _godRaysGrid;
-            }
-            set
-            {
-                _godRaysGrid = value;
-                // To be safe, clamp to [8,64]
-                _godRaysGrid.x = Mathf.Clamp((int)_godRaysGrid.x, 8, 64);
-                _godRaysGrid.y = Mathf.Clamp((int)_godRaysGrid.y, 8, 64);
-                _godRaysGrid.z = Mathf.Clamp((int)_godRaysGrid.z, 8, 64);
-                StaticSetRenderInt("godraysgrid.x", (int)_godRaysGrid.x);
-                StaticSetRenderInt("godraysgrid.y", (int)_godRaysGrid.y);
-                StaticSetRenderInt("godraysgrid.z", (int)_godRaysGrid.z);
-            }
+		[SerializeField]
+		Vector3 _godRaysGrid = new Vector3(64, 32, 32);
+		public Vector3 GodRaysGrid
+		{
+			get
+			{
+				return _godRaysGrid;
+			}
+			set
+			{
+				_godRaysGrid = value;
+				// To be safe, clamp to [8,64]
+				_godRaysGrid.x = Mathf.Clamp((int)_godRaysGrid.x, 8, 64);
+				_godRaysGrid.y = Mathf.Clamp((int)_godRaysGrid.y, 8, 64);
+				_godRaysGrid.z = Mathf.Clamp((int)_godRaysGrid.z, 8, 64);
+				StaticSetRenderInt("godraysgrid.x", (int)_godRaysGrid.x);
+				StaticSetRenderInt("godraysgrid.y", (int)_godRaysGrid.y);
+				StaticSetRenderInt("godraysgrid.z", (int)_godRaysGrid.z);
+			}
 		}
 
 		[SerializeField]
@@ -689,35 +688,35 @@ namespace simul
 			}
 		}
 
-		
-		[SerializeField]
-        float _depthSamplingPixelRange = 1.5f;
-        public float DepthSamplingPixelRange
-        {
-            get
-            {
-                return _depthSamplingPixelRange;
-            }
-            set
-            {
-                _depthSamplingPixelRange = value;
-                StaticSetRenderFloat("depthsamplingpixelrange", _depthSamplingPixelRange);
-            }
-        }
 
-        [SerializeField]
-        float _maxSunRadiance = 5000.0f;
-        public float MaxSunRadiance
-        {
-            get
-            {
-                return _maxSunRadiance;
-            }
-            set
-            {
-                _maxSunRadiance = Mathf.Max(value, 0.0f);
-                StaticSetRenderFloat("maxsunradiance", _maxSunRadiance);
-            }
+		[SerializeField]
+		float _depthSamplingPixelRange = 1.5f;
+		public float DepthSamplingPixelRange
+		{
+			get
+			{
+				return _depthSamplingPixelRange;
+			}
+			set
+			{
+				_depthSamplingPixelRange = value;
+				StaticSetRenderFloat("depthsamplingpixelrange", _depthSamplingPixelRange);
+			}
+		}
+
+		[SerializeField]
+		float _maxSunRadiance = 5000.0f;
+		public float MaxSunRadiance
+		{
+			get
+			{
+				return _maxSunRadiance;
+			}
+			set
+			{
+				_maxSunRadiance = Mathf.Max(value, 0.0f);
+				StaticSetRenderFloat("maxsunradiance", _maxSunRadiance);
+			}
 		}
 		bool _adjustSunRadius = false;
 		public bool AdjustSunRadius
@@ -732,53 +731,53 @@ namespace simul
 				StaticSetRenderBool("adjustsunradius", _adjustSunRadius);
 			}
 		}
-		
-        [SerializeField]
-        int _edgeNoiseFrequency = 4;
-        public int EdgeNoiseFrequency
-        {
-            get
-            {
-                return _edgeNoiseFrequency;
-            }
-            set
-            {
-                _edgeNoiseFrequency = value;
-                StaticSetRenderInt("edgenoisefrequency",_edgeNoiseFrequency);
-            }
-        }
 
-        [SerializeField]
-        int _edgeNoiseOctaves = 3;
-        public int EdgeNoiseOctaves
-        {
-            get
-            {
-                return _edgeNoiseOctaves;
-            }
-            set
-            {
-                _edgeNoiseOctaves = value;
-                StaticSetRenderInt("edgenoiseoctaves", _edgeNoiseOctaves);
-            }
-        }
+		[SerializeField]
+		int _edgeNoiseFrequency = 4;
+		public int EdgeNoiseFrequency
+		{
+			get
+			{
+				return _edgeNoiseFrequency;
+			}
+			set
+			{
+				_edgeNoiseFrequency = value;
+				StaticSetRenderInt("edgenoisefrequency", _edgeNoiseFrequency);
+			}
+		}
 
-        [SerializeField]
-        int _edgeNoiseTextureSize = 64;
-        public int EdgeNoiseTextureSize
-        {
-            get
-            {
-                return _edgeNoiseTextureSize;
-            }
-            set
-            {
-                _edgeNoiseTextureSize = value;
+		[SerializeField]
+		int _edgeNoiseOctaves = 3;
+		public int EdgeNoiseOctaves
+		{
+			get
+			{
+				return _edgeNoiseOctaves;
+			}
+			set
+			{
+				_edgeNoiseOctaves = value;
+				StaticSetRenderInt("edgenoiseoctaves", _edgeNoiseOctaves);
+			}
+		}
+
+		[SerializeField]
+		int _edgeNoiseTextureSize = 64;
+		public int EdgeNoiseTextureSize
+		{
+			get
+			{
+				return _edgeNoiseTextureSize;
+			}
+			set
+			{
+				_edgeNoiseTextureSize = value;
 				StaticSetRenderInt("render:edgenoisetexturesize", _edgeNoiseTextureSize);
-            }
-        }
+			}
+		}
 
-        // 4.2 only
+		// 4.2 only
 		[SerializeField]
 		int _CellNoiseTextureSize = 64;
 		public int CellNoiseTextureSize
@@ -794,71 +793,71 @@ namespace simul
 			}
 		}
 
-        [SerializeField]
-        float _edgeNoisePersistence = 0.63f;
-        public float EdgeNoisePersistence
-        {
-            get
-            {
-                return _edgeNoisePersistence;
-            }
-            set
-            {
-                _edgeNoisePersistence = value;
+		[SerializeField]
+		float _edgeNoisePersistence = 0.63f;
+		public float EdgeNoisePersistence
+		{
+			get
+			{
+				return _edgeNoisePersistence;
+			}
+			set
+			{
+				_edgeNoisePersistence = value;
 				StaticSetRenderFloat("render:EdgeNoisePersistence", _edgeNoisePersistence);
-            }
-        }
+			}
+		}
 
-        // 4.2 only
-        [SerializeField]
-        float _edgeNoiseWavelengthKm = 2.5f;
-        public float EdgeNoiseWavelengthKm
-        {
-            get
-            {
-                return _edgeNoiseWavelengthKm;
-            }
-            set
-            {
-                _edgeNoiseWavelengthKm = value;
+		// 4.2 only
+		[SerializeField]
+		float _edgeNoiseWavelengthKm = 2.5f;
+		public float EdgeNoiseWavelengthKm
+		{
+			get
+			{
+				return _edgeNoiseWavelengthKm;
+			}
+			set
+			{
+				_edgeNoiseWavelengthKm = value;
 				StaticSetRenderFloat("render:EdgeNoiseWavelengthKm", _edgeNoiseWavelengthKm);
-            }
-        }
+			}
+		}
 
-        // 4.2 only
-        [SerializeField]
-        int _worleyTextureSize = 64;
-        public int WorleyTextureSize
-        {
-            get
-            {
-                return _worleyTextureSize;
-            }
-            set
-            {
-                _worleyTextureSize = value;
+		// 4.2 only
+		[SerializeField]
+		int _worleyTextureSize = 64;
+		public int WorleyTextureSize
+		{
+			get
+			{
+				return _worleyTextureSize;
+			}
+			set
+			{
+				_worleyTextureSize = value;
 				StaticSetRenderInt("render:CellNoiseTextureSize", _worleyTextureSize);
-            }
-        }
+			}
+		}
 
-        // 4.2 only
-        [SerializeField]
-        float _worleyWavelengthKm = 8.7f;
-        public float WorleyWavelengthKm
-        {
-            get
-            {
-                return _worleyWavelengthKm;
-            }
-            set
-            {
-                _worleyWavelengthKm = value;
-                StaticSetRenderFloat("WorleyWavelengthKm", _worleyWavelengthKm);
-            }
-        }
+		// 4.2 only
+		[SerializeField]
+		float _worleyWavelengthKm = 8.7f;
+		public float WorleyWavelengthKm
+		{
+			get
+			{
+				return _worleyWavelengthKm;
+			}
+			set
+			{
+				_worleyWavelengthKm = value;
+				StaticSetRenderFloat("WorleyWavelengthKm", _worleyWavelengthKm);
+			}
+		}
 
-        //! Set a floating-point property of the Sky layer.
-        void SetFloat(string str, float value)
+		//! Set a floating-point property of the Sky layer.
+		void SetFloat(string str, float value)
 		{
 			try
 			{
@@ -925,8 +924,8 @@ namespace simul
 			return value;
 		}
 
-        //! Set a floating-point property of the 2D cloud layer.
-        public void Set2DCloudFloat(string name, float value)
+		//! Set a floating-point property of the 2D cloud layer.
+		public void Set2DCloudFloat(string name, float value)
 		{
 			SetFloat("2DClouds:" + name, value);
 		}
@@ -1009,13 +1008,13 @@ namespace simul
 			return value;
 		}
 
-        //! Set an integer property of the 2D cloud layer.
-        public void Set2DCloudInt(string name, int value)
+		//! Set an integer property of the 2D cloud layer.
+		public void Set2DCloudInt(string name, int value)
 		{
 			try
 			{
 				StaticSetRenderInt("2DClouds:" + name, value);
-		    }
+			}
 			catch (Exception exc)
 			{
 				UnityEngine.Debug.Log(exc.ToString());
@@ -1071,6 +1070,52 @@ namespace simul
 				}
 			}
 		}
+
+		[SerializeField]
+		int _interpolationMode = 0;
+		public int InterpolationMode
+		{
+			get
+			{
+				return _interpolationMode;
+			}
+			set
+			{
+				if (_interpolationMode != value) try
+					{
+						_interpolationMode = value;
+						StaticSetRenderInt("interpolationmode", _interpolationMode);
+					}
+					catch (Exception exc)
+					{
+						UnityEngine.Debug.Log(exc.ToString());
+					}
+			}
+		}
+
+		[SerializeField]
+		bool _instantUpdate = true;
+		public bool InstantUpdate
+		{
+			get
+			{
+				return _instantUpdate;
+			}
+			set
+			{
+				if (_instantUpdate != value) try
+					{
+						_instantUpdate = value;
+						StaticSetRenderBool("instantupdate", _instantUpdate);
+					}
+					catch (Exception exc)
+					{
+						UnityEngine.Debug.Log(exc.ToString());
+					}
+			}
+		}
+
+		
 		/// <summary>
 		///  This is equivalent to setting trueSky.time, except that time "jumps" to the new value, so cached textures are reset.
 		///  This avoid artefacts due to time changing fast in the editor.
@@ -1274,15 +1319,15 @@ namespace simul
 		[SerializeField]
 		int _MaxPrecipitationParticles = 100000;
 
-		[SerializeField]
-		bool _changedAmortInEd = false;
-		public bool ChangeAmortInEd
-		{
-			get { return _changedAmortInEd; }
-			set { _changedAmortInEd = value; }
-		}
+        [SerializeField]
+        bool _changedAmortInEd = false;
+        public bool ChangeAmortInEd
+        {
+            get { return _changedAmortInEd; }
+            set { _changedAmortInEd = value; }
+        }
 
-		[SerializeField]
+        [SerializeField]
 		int _amortization = 2;
 		[SerializeField]
 		int _atmosphericsAmortization=2;
@@ -1352,7 +1397,7 @@ namespace simul
 					}
 			}
 		}
-
+		[SerializeField]
 		public bool SimulationTimeRain
 		{
 			get
@@ -1372,7 +1417,7 @@ namespace simul
 					}
 			}
 		}
-
+		[SerializeField]
 		public int MaxPrecipitationParticles
 		{
 			get
@@ -1392,6 +1437,7 @@ namespace simul
 					}
 			}
 		}
+		[SerializeField]
 		float _PrecipitationRadiusMetres = 6.0F;
 		public float PrecipitationRadiusMetres
 		{
@@ -1412,6 +1458,7 @@ namespace simul
 					}
 			}
 		}
+		[SerializeField]
 		float _RainFallSpeedMS = 6.0F;
 		public float RainFallSpeedMS
 		{
@@ -1432,6 +1479,7 @@ namespace simul
 					}
 			}
 		}
+		[SerializeField]
 		float _SnowFallSpeedMS = 0.5F;
 		public float SnowFallSpeedMS
 		{
@@ -1452,6 +1500,8 @@ namespace simul
 					}
 			}
 		}
+
+		[SerializeField]
 		float _RainDropSizeMm = 2.5F;
 		public float RainDropSizeMm
 		{
@@ -1472,6 +1522,8 @@ namespace simul
 					}
 			}
 		}
+
+		[SerializeField]
 		float _SnowFlakeSizeMm = 5.0F;
 		public float SnowFlakeSizeMm
 		{
@@ -1492,6 +1544,8 @@ namespace simul
 					}
 			}
 		}
+
+		[SerializeField]
 		float _PrecipitationWindEffect = 0.25F;
 		public float PrecipitationWindEffect
 		{
@@ -1512,6 +1566,8 @@ namespace simul
 					}
 			}
 		}
+
+		[SerializeField]
 		float _PrecipitationWaver = 0.7F;
 		public float PrecipitationWaver
 		{
@@ -1532,6 +1588,8 @@ namespace simul
 					}
 			}
 		}
+
+		[SerializeField]
 		float _PrecipitationWaverTimescaleS = 4.0F;
 		public float PrecipitationWaverTimescaleS
 		{
@@ -1552,6 +1610,8 @@ namespace simul
 					}
 			}
 		}
+
+		[SerializeField]
 		float _PrecipitationThresholdKm = 0.2F;
 		public float PrecipitationThresholdKm
 		{
@@ -1913,19 +1973,19 @@ namespace simul
 			set
 			{
 				if (_IntegrationScheme != value) try
-					{
-						_IntegrationScheme = value;
+				{
+					_IntegrationScheme = value;
 					StaticSetRenderBool("gridrendering", _IntegrationScheme==0);
-					}
-					catch (Exception exc)
-					{
-						UnityEngine.Debug.Log(exc.ToString());
-					}
+				}
+				catch (Exception exc)
+				{
+					UnityEngine.Debug.Log(exc.ToString());
+				}
 			}
 		}
 
-		float _MaxCloudDistanceKm = 0;
 		[SerializeField]
+		float _MaxCloudDistanceKm = 0;
 		public float MaxCloudDistanceKm
 		{
 			get
@@ -1935,19 +1995,19 @@ namespace simul
 			set
 			{
 				if (_MaxCloudDistanceKm != value) try
-					{
-						_MaxCloudDistanceKm = value;
-						StaticSetRenderFloat("render:maxclouddistancekm", _MaxCloudDistanceKm);
-					}
-					catch (Exception exc)
-					{
-						UnityEngine.Debug.Log(exc.ToString());
-					}
+				{
+					_MaxCloudDistanceKm = value;
+					StaticSetRenderFloat("render:maxclouddistancekm", _MaxCloudDistanceKm);
+				}
+				catch (Exception exc)
+				{
+					UnityEngine.Debug.Log(exc.ToString());
+				}
 			}
 		}
 
-		float _RenderGridXKm = 0.4F;
 		[SerializeField]
+		float _RenderGridXKm = 0.4F;
 		public float RenderGridXKm
 		{
 			get
@@ -1967,8 +2027,9 @@ namespace simul
 					}
 			}
 		}
-		float _RenderGridZKm = 0.4F;
+
 		[SerializeField]
+		float _RenderGridZKm = 0.4F;
 		public float RenderGridZKm
 		{
 			get
@@ -1989,8 +2050,8 @@ namespace simul
 			}
 		}
 
-		float _MaxFractalAmplitudeKm = 3.0F;
 		[SerializeField]
+		float _MaxFractalAmplitudeKm = 3.0F;
 		public float MaxFractalAmplitudeKm
 		{
 			get
@@ -2011,8 +2072,8 @@ namespace simul
 			}
 		}
 
-		float _CellNoiseWavelengthKm = 8.7F;
 		[SerializeField]
+		float _CellNoiseWavelengthKm = 8.7F;
 		public float CellNoiseWavelengthKm
 		{
 			get
@@ -2025,7 +2086,7 @@ namespace simul
 					{
 						_CellNoiseWavelengthKm = value;
 						if (SimulVersion >= MakeSimulVersion(4, 2))
-						StaticSetRenderFloat("render:cellnoisewavelengthkm", _CellNoiseWavelengthKm);
+							StaticSetRenderFloat("render:cellnoisewavelengthkm", _CellNoiseWavelengthKm);
 						else
 							StaticSetRenderFloat("WorleyWavelengthKm", _CellNoiseWavelengthKm);
 					}
@@ -2036,8 +2097,8 @@ namespace simul
 			}
 		}
 
-		float _DirectLight = 1.0F;
 		[SerializeField]
+		float _DirectLight = 1.0F;
 		public float DirectLight
 		{
 			get
@@ -2058,8 +2119,8 @@ namespace simul
 			}
 		}
 
-		float _IndirectLight = 1.0F;
 		[SerializeField]
+		float _IndirectLight = 1.0F;
 		public float IndirectLight
 		{
 			get
@@ -2069,19 +2130,19 @@ namespace simul
 			set
 			{
 				if (_IndirectLight != value) try
-					{
-						_IndirectLight = value;
-						StaticSetRenderFloat("render:indirectlight", _IndirectLight);
-					}
-					catch (Exception exc)
-					{
-						UnityEngine.Debug.Log(exc.ToString());
-					}
+				{
+					_IndirectLight = value;
+					StaticSetRenderFloat("render:indirectlight", _IndirectLight);
+				}
+				catch (Exception exc)
+				{
+					UnityEngine.Debug.Log(exc.ToString());
+				}
 			}
 		}
 
-		float _AmbientLight = 1.0F;
 		[SerializeField]
+		float _AmbientLight = 1.0F;
 		public float AmbientLight
 		{
 			get
@@ -2102,8 +2163,8 @@ namespace simul
 			}
 		}
 
-		float _Extinction = 4.0F;
 		[SerializeField]
+		float _Extinction = 4.0F;
 		public float Extinction
 		{
 			get
@@ -2115,7 +2176,7 @@ namespace simul
 				if (_Extinction != value) try
 					{
 						_Extinction = value;
-						StaticSetRenderFloat("render:extinctionperkm", _Extinction);
+						StaticSetRenderFloat("render:extinction", _Extinction);
 					}
 					catch (Exception exc)
 					{
@@ -2124,8 +2185,8 @@ namespace simul
 			}
 		}
 
-		float _MieAsymmetry = 0.87F;
 		[SerializeField]
+		float _MieAsymmetry = 0.87F;
 		public float MieAsymmetry
 		{
 			get
@@ -2349,6 +2410,7 @@ namespace simul
 		{
 		}
 #endif
+
 		public static string GetShaderbinSourceDir(string target)
 		{
 			char s = Path.DirectorySeparatorChar;
@@ -2490,7 +2552,7 @@ namespace simul
 				StaticSetRenderFloat("render:directlight", _DirectLight);
 				StaticSetRenderFloat("render:indirectlight", _IndirectLight);
 				StaticSetRenderFloat("render:ambientlight", _AmbientLight);
-				StaticSetRenderFloat("render:extinctionperkm", _Extinction);
+				StaticSetRenderFloat("render:extinction", _Extinction);
 				StaticSetRenderFloat("render:mieasymmetry", _MieAsymmetry);
 				StaticSetRenderFloat("render:minimumstarpixelsize", _minimumStarPixelSize);
 				_rendering_initialized = true;
