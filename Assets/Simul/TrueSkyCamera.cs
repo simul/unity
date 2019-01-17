@@ -31,18 +31,18 @@ namespace simul
 		public RenderTexture cloudShadowRT;
 		public RenderTexture lossRT;
 		public RenderTexture cloudVisibilityRT;
-		public bool FlipOverlays = false;
-		public RenderTexture showDepthTexture = null;
+		public bool FlipOverlays				= false;
+		public RenderTexture showDepthTexture	= null;
 
-		RenderTextureHolder _cloudShadowRT = new RenderTextureHolder();
-		RenderTextureHolder _inscatterRT = new RenderTextureHolder();
-		RenderTextureHolder _lossRT = new RenderTextureHolder();
-		RenderTextureHolder _cloudVisibilityRT = new RenderTextureHolder();
+		RenderTextureHolder _cloudShadowRT		= new RenderTextureHolder();
+		RenderTextureHolder _inscatterRT		= new RenderTextureHolder();
+		RenderTextureHolder _lossRT				= new RenderTextureHolder();
+		RenderTextureHolder _cloudVisibilityRT	= new RenderTextureHolder();
 
-		RenderTextureHolder _rainDepthRT = new RenderTextureHolder();
+		RenderTextureHolder _rainDepthRT		= new RenderTextureHolder();
 		protected RenderTextureHolder reflectionProbeTexture = new RenderTextureHolder();
-		protected CommandBuffer overlay_buf = null;
-		protected CommandBuffer post_translucent_buf = null;
+		protected CommandBuffer overlay_buf 				= null;
+		protected CommandBuffer post_translucent_buf		= null;
 		/// Blitbuf is now only for in-editor use.
 		protected CommandBuffer blitbuf = null;
 		protected CommandBuffer deferred_buf = null; 
@@ -188,7 +188,7 @@ namespace simul
 			}
 			GetComponent<Camera>().depthTextureMode|=DepthTextureMode.Depth;
 			PreRender();
-			Camera cam=GetComponent<Camera>();
+			Camera cam = GetComponent<Camera>();
             if (mainCommandBuffer == null) 
 			{
 				RemoveCommandBuffers();
@@ -199,7 +199,7 @@ namespace simul
 				post_translucent_buf        = new CommandBuffer();
 				post_translucent_buf.name   = "trueSKY post translucent";
 				deferred_buf = new CommandBuffer();
-				deferred_buf.name = "trueSKY defered contexts";
+				deferred_buf.name = "trueSKY deferred contexts";
 				
 				blitbuf = new CommandBuffer();
 				blitbuf.name = "trueSKY depth blit";
@@ -219,7 +219,7 @@ namespace simul
 			{
 				RemoveCommandBuffers();
 				if(editorMode)
-					cam.AddCommandBuffer(CameraEvent.BeforeImageEffectsOpaque, blitbuf); 
+					cam.AddCommandBuffer(CameraEvent.BeforeImageEffectsOpaque, blitbuf);
 				cam.AddCommandBuffer(CameraEvent.BeforeImageEffectsOpaque, mainCommandBuffer);
 				cam.AddCommandBuffer(CameraEvent.AfterForwardAlpha, post_translucent_buf);
 				cam.AddCommandBuffer(CameraEvent.AfterEverything, overlay_buf);
@@ -241,7 +241,7 @@ namespace simul
 			PrepareMatrices();
 			unityViewStruct.nativeColourRenderBuffer = (System.IntPtr)0;
 			unityViewStruct.nativeDepthRenderBuffer = (System.IntPtr)0;
-			if (activeTexture!=null)
+			if (activeTexture != null)
 			{
 				unityViewStruct.nativeColourRenderBuffer = activeTexture.colorBuffer.GetNativeRenderBufferPtr();
 				if (!editorMode)
@@ -264,9 +264,9 @@ namespace simul
 
 		void PrepareMatrices()
 		{
-			Viewport[] targetViewports = new Viewport[3];
-			RenderStyle renderStyle = GetRenderStyle();
-			int view_id = InternalGetViewId();
+			Viewport[] targetViewports	= new Viewport[3];
+			RenderStyle renderStyle		= GetRenderStyle();
+			int view_id 				= InternalGetViewId();
 
 			if (view_id >= 0)
 			{
@@ -310,9 +310,9 @@ namespace simul
 				if (cam.actualRenderingPath != RenderingPath.DeferredLighting &&
 					cam.actualRenderingPath != RenderingPath.DeferredShading)
 				{
-					Vector3 screen_0 = cam.ViewportToScreenPoint(new Vector3(0, 0, 0));
-					targetViewports[0].x = (int)(screen_0.x);
-					targetViewports[0].y = (int)(screen_0.y);
+					Vector3 screen_0        = cam.ViewportToScreenPoint(new Vector3(0,0,0));
+					targetViewports[0].x    = (int)(screen_0.x);
+					targetViewports[0].y    = (int)(screen_0.y);
 				}
 				for (int i = 0; i < 3; i++)
 				{
@@ -355,25 +355,25 @@ namespace simul
                     unityRenderOptions = unityRenderOptions | UnityRenderOptions.NO_SEPARATION;
 
 				UnitySetRenderFrameValues(view_id
-					, viewMatrices
-					, projMatrices
-					, overlayProjMatrix
-					, editorMode ? depthTexture.GetNative() : (System.IntPtr)0
-					, depthViewports
-					, targetViewports
-					, renderStyle
-					, exposure
-					, gamma
-					, Time.frameCount
-					, unityRenderOptions
-					, Graphics.activeColorBuffer.GetNativeRenderBufferPtr());
+					,viewMatrices
+					,projMatrices
+					,overlayProjMatrix
+					,editorMode ? depthTexture.GetNative() : (System.IntPtr)0
+					,depthViewports
+					,targetViewports
+					,renderStyle
+					,exposure
+					,gamma
+					,Time.frameCount
+					,unityRenderOptions
+					,Graphics.activeColorBuffer.GetNativeRenderBufferPtr());
 
-				_inscatterRT.renderTexture = inscatterRT;
-				_cloudVisibilityRT.renderTexture = cloudVisibilityRT;
-				_cloudShadowRT.renderTexture = cloudShadowRT;
+				_inscatterRT.renderTexture          = inscatterRT;
+				_cloudVisibilityRT.renderTexture    = cloudVisibilityRT;
+				_cloudShadowRT.renderTexture        = cloudShadowRT;
 
-				_lossRT.renderTexture = lossRT;
-				StaticSetRenderTexture("inscatter2D", _inscatterRT.GetNative());
+				_lossRT.renderTexture               = lossRT;
+				StaticSetRenderTexture("inscatter2D",_inscatterRT.GetNative());
 				StaticSetRenderTexture("Loss2D", _lossRT.GetNative());
 				StaticSetRenderTexture("CloudVisibilityRT", _cloudVisibilityRT.GetNative());
 				if (reflectionProbeTexture.renderTexture)

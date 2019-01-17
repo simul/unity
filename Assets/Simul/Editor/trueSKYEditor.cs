@@ -115,7 +115,13 @@ namespace simul
 				{
 					trueSky.time = EditorGUILayout.FloatField("Time", trueSky.time);
 					trueSky.speed = EditorGUILayout.FloatField("Speed", trueSky.speed);
-                    if (trueSky.SimulVersion >= trueSky.MakeSimulVersion(4, 2))
+					string[] options = new string[]
+						{
+							"Fixed Number", "Fixed Gametime", "Fixed Realtime",
+						};
+					trueSky.InterpolationMode = EditorGUILayout.Popup("Interpolation Mode", trueSky.InterpolationMode, options);
+					trueSky.InstantUpdate = EditorGUILayout.Toggle("Instant Update", trueSky.InstantUpdate);
+					if (trueSky.SimulVersion >= trueSky.MakeSimulVersion(4, 2))
                     {
                         trueSky.HighDetailProportion = EditorGUILayout.Slider("High Detail", trueSky.HighDetailProportion,0.0F,1.0F);
 					    trueSky.MediumDetailProportion = EditorGUILayout.Slider("Medium Detail", trueSky.MediumDetailProportion, trueSky.HighDetailProportion, 1.0F);
