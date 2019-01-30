@@ -2555,6 +2555,7 @@ namespace simul
 				StaticSetRenderBool("ShowCloudCrossSections", _showCloudCrossSections);
 				StaticSetRenderBool("ShowRainTextures", _showRainTextures);
 				StaticSetRenderBool("SimulationTimeRain", _simulationTimeRain);
+				StaticSetRenderBool("instantupdate", _instantUpdate);
 				StaticSetRenderInt("MaximumCubemapResolution", _CubemapResolution);
 				StaticSetRenderInt("CloudSteps", _CloudSteps);
 				StaticSetRenderFloat("SimpleCloudShadowing", _cloudShadowing);
