@@ -2459,14 +2459,25 @@ namespace simul
 #if UNITY_PS4
                     StaticPushPath("ShaderBinaryPath", Application.streamingAssetsPath + @"/Simul/shaderbin/ps4");
 #elif UNITY_WSA || UNITY_STANDALONE_WIN
-                    StaticPushPath("ShaderBinaryPath", Application.dataPath + @"/Simul/shaderbin/x86_64");
+					if(SystemInfo.graphicsDeviceType==GraphicsDeviceType.Vulkan)
+						StaticPushPath("ShaderBinaryPath", Application.dataPath + @"/Simul/shaderbin/vulkan");
+					else
+						StaticPushPath("ShaderBinaryPath", Application.dataPath + @"/Simul/shaderbin/x86_64");
 #endif
                     StaticPushPath("TexturePath", Application.dataPath + @"/Simul/Media/Textures");
                 }
                 else
                 {
-                    StaticPushPath("ShaderBinaryPath", Application.dataPath + @"/Simul/shaderbin/x86_64");
-                    StaticPushPath("ShaderPath", Application.dataPath + @"/Simul/shaderbin/x86_64");
+					if (SystemInfo.graphicsDeviceType == GraphicsDeviceType.Vulkan)
+					{
+						StaticPushPath("ShaderBinaryPath", Application.dataPath + @"/Simul/shaderbin/vulkan");
+						StaticPushPath("ShaderPath", Application.dataPath + @"/Simul/shaderbin/vulkan");
+					}
+					else
+					{
+						StaticPushPath("ShaderBinaryPath", Application.dataPath + @"/Simul/shaderbin/x86_64");
+						StaticPushPath("ShaderPath", Application.dataPath + @"/Simul/shaderbin/x86_64");
+					}
                     StaticPushPath("TexturePath", Application.dataPath + @"/Simul/Media/Textures");
                 }
 

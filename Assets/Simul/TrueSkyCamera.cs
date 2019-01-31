@@ -10,6 +10,7 @@ namespace simul
 	[ExecuteInEditMode]
 	public class TrueSkyCamera : TrueSkyCameraBase
 	{
+		int lastFrameCount =-1;
 		[DllImport(SimulImports.renderer_dll)]
 		protected static extern System.IntPtr UnityGetOverlayFunc();
 		[DllImport(SimulImports.renderer_dll)]
@@ -126,8 +127,8 @@ namespace simul
         {
             get
             {
-                return System.Type.GetType("UnityEngine.PostProcessing.PostProcessingBehaviour") != null;
-            }
+                return System.Type.GetType("UnityEngine.PostProcessing.PostProcessingBehaviour") != null || SystemInfo.graphicsDeviceType == GraphicsDeviceType.Vulkan;
+			}
         }
 
 		public bool editorMode
@@ -184,6 +185,7 @@ namespace simul
 		{
 			if(!enabled||!gameObject.activeInHierarchy)
 			{
+				UnityEngine.Debug.Log("Failed to draw");
 				return;
 			}
 			GetComponent<Camera>().depthTextureMode|=DepthTextureMode.Depth;
@@ -238,24 +240,37 @@ namespace simul
 				blitbuf.DrawProcedural(Matrix4x4.identity, depthMaterial, 0, MeshTopology.Triangles, 6);
 				blitbuf.SetRenderTarget(Graphics.activeColorBuffer);
 			}
+			if (lastFrameCount == Time.renderedFrameCount)
+			{
+				duplicateFrames++;
+				if (duplicateFrames >= 10)
+				{
+					lastFrameCount = localFrameCount++;
+					//UnityEngine.Debug.Log("RenderedFrameCount is not increasing. Value is " + Time.renderedFrameCount);
+					//return;
+				}
+			}
+			else
+			{
+				duplicateFrames = 0;
+			}
 			PrepareMatrices();
 			unityViewStruct.nativeColourRenderBuffer = (System.IntPtr)0;
 			unityViewStruct.nativeDepthRenderBuffer = (System.IntPtr)0;
 			if (activeTexture!=null)
 			{
 				unityViewStruct.nativeColourRenderBuffer = activeTexture.colorBuffer.GetNativeRenderBufferPtr();
-				if (!editorMode)
+				if (!editorMode )
 					unityViewStruct.nativeDepthRenderBuffer = activeTexture.depthBuffer.GetNativeRenderBufferPtr();
 			}
 			Marshal.StructureToPtr(unityViewStruct, unityViewStructPtr, true);
 			mainCommandBuffer.IssuePluginEventAndData(UnityGetRenderEventFuncWithData(),TRUESKY_EVENT_ID + cbuf_view_id, unityViewStructPtr);
-			post_translucent_buf.IssuePluginEventAndData(UnityGetPostTranslucentFuncWithData(), TRUESKY_EVENT_ID + cbuf_view_id, unityViewStructPtr);
-			overlay_buf.IssuePluginEventAndData(UnityGetOverlayFuncWithData(), TRUESKY_EVENT_ID + cbuf_view_id, unityViewStructPtr);
+			//post_translucent_buf.IssuePluginEventAndData(UnityGetPostTranslucentFuncWithData(), TRUESKY_EVENT_ID + cbuf_view_id, unityViewStructPtr);
+			//overlay_buf.IssuePluginEventAndData(UnityGetOverlayFuncWithData(), TRUESKY_EVENT_ID + cbuf_view_id, unityViewStructPtr);
 
-			//if (editorMode && (trueSKY.GetTrueSky().SimulVersion >= trueSKY.GetTrueSky().MakeSimulVersion(4, 2)))
-				//post_translucent_buf.IssuePluginEventAndData(UnityGetExecuteDeferredFunc(), TRUESKY_EVENT_ID + cbuf_view_id, unityViewStructPtr);
 		}
-
+		int duplicateFrames = 0;
+		int localFrameCount = 0;
 		void OnPostRender()
 		{
 			Camera cam = GetComponent<Camera>();
@@ -364,10 +379,27 @@ namespace simul
 					, renderStyle
 					, exposure
 					, gamma
-					, Time.frameCount
+					, Time.renderedFrameCount
 					, unityRenderOptions
 					, Graphics.activeColorBuffer.GetNativeRenderBufferPtr());
 
+
+				unityViewStruct.view_id= view_id;
+				unityViewStruct.framenumber=Time.renderedFrameCount;
+				unityViewStruct.exposure=exposure;
+				unityViewStruct.gamma=gamma;
+				unityViewStruct.viewMatrices4x4=viewMatrices;
+				unityViewStruct.projMatrices4x4=projMatrices;
+				unityViewStruct.overlayProjMatrix4x4=overlayProjMatrix;
+				unityViewStruct.depthTexture = editorMode ? depthTexture.GetNative() : (System.IntPtr)0;
+				unityViewStruct.depthViewports= depthViewports;
+				unityViewStruct.targetViewports=targetViewports;
+				unityViewStruct.renderStyle=renderStyle;
+				unityViewStruct.unityRenderOptions=unityRenderOptions;
+				unityViewStruct.colourTexture= Graphics.activeColorBuffer.GetNativeRenderBufferPtr();
+
+
+				lastFrameCount = Time.renderedFrameCount;
 				_inscatterRT.renderTexture = inscatterRT;
 				_cloudVisibilityRT.renderTexture = cloudVisibilityRT;
 				_cloudShadowRT.renderTexture = cloudShadowRT;

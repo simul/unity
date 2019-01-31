@@ -102,6 +102,19 @@ namespace simul
 		{
 			public System.IntPtr nativeColourRenderBuffer;
 			public System.IntPtr nativeDepthRenderBuffer;
+			public int view_id;
+			public int framenumber;
+			public float exposure;
+			public float gamma;
+			public float[] viewMatrices4x4;
+			public float[] projMatrices4x4;
+			public float[] overlayProjMatrix4x4;
+			public System.IntPtr depthTexture;
+			public int4[] depthViewports;
+			public Viewport[] targetViewports;
+			public RenderStyle renderStyle;
+			public UnityRenderOptions unityRenderOptions;
+			public System.IntPtr colourTexture;
 		}
 		protected int view_ident;
         protected int view_id=-1;

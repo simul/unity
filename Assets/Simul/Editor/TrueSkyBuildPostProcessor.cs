@@ -73,6 +73,13 @@ namespace simul
 			string shaderbinBuild = buildDirectory + s + "Simul" + s + "shaderbin" + s + targetstr;
 			DirectoryCopy.Copy(shaderbinSource, shaderbinBuild, true, true);
 			Debug.Log("DirectoryCopy: " + shaderbinSource + "->" + shaderbinBuild);
+			if (target == BuildTarget.StandaloneWindows || target == BuildTarget.StandaloneWindows64)
+			{
+				shaderbinSource = trueSKY.GetShaderbinSourceDir("vulkan");
+				shaderbinBuild = buildDirectory + s + "Simul" + s + "shaderbin" + s + "vulkan";
+				DirectoryCopy.Copy(shaderbinSource, shaderbinBuild, true, true);
+				Debug.Log("DirectoryCopy: " + shaderbinSource + "->" + shaderbinBuild);
+			}
 
 			string simul = assetsPath + s + "Simul";
 			// Copy media

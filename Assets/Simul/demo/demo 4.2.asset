@@ -4,10 +4,12 @@
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
+  m_GeneratorAsset: {fileID: 0}
   m_Script: {fileID: 11500000, guid: dcdfbea2e7338ed4ba21f9f27c8815df, type: 3}
   m_Name: demo 4.2
   m_EditorClassIdentifier: 
@@ -20,8 +22,8 @@ MonoBehaviour:
     \"true\"\n\t\t\"keyframes\":\n\t\t[\n\t\t{\n\t\t\t\"EdgeWorleyNoise\": \"0.5559999942779541\"\n\t\t\t\"WorleyNoise\":
     \"0.6299999952316284\"\n\t\t\t\"WorleyScale\": \"9.708000183105469\"\n\t\t\t\"baseNoiseFactor\":
     \"0.4900000095367432\"\n\t\t\t\"churn\": \"1.282330632209778\"\n\t\t\t\"cloud_base_km\":
-    \"3.49399995803833\"\n\t\t\t\"cloud_height_km\": \"6.175000190734863\"\n\t\t\t\"cloud_width_km\":
-    \"158.6000061035156\"\n\t\t\t\"cloudiness\": \"0.8320000171661377\"\n\t\t\t\"diffusivity\":
+    \"1.351999998092651\"\n\t\t\t\"cloud_height_km\": \"6.175000190734863\"\n\t\t\t\"cloud_width_km\":
+    \"158.6000061035156\"\n\t\t\t\"cloudiness\": \"0.6159999966621399\"\n\t\t\t\"diffusivity\":
     \"0.2409999966621399\"\n\t\t\t\"distributionBaseLayer\": \"0.239999994635582\"\n\t\t\t\"distributionTransition\":
     \"0.2000000029802322\"\n\t\t\t\"edgeSharpness\": \"0.6723269820213318\"\n\t\t\t\"fractal_amplitude\":
     \"1.44543981552124\"\n\t\t\t\"maxDensityGm3\": \"1.23800003528595\"\n\t\t\t\"octaves\":
