@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 using UnityEngine.Rendering;
 using System.Collections.Generic;
 
-namespace simul 
+namespace simul
 {
 	[ExecuteInEditMode]
 	public class TrueSkyCamera : TrueSkyCameraBase
