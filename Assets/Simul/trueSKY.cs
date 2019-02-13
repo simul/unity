@@ -475,7 +475,7 @@ namespace simul
 				return StaticRenderKeyframeGetFloat(uid,name);
 			if(StaticRenderKeyframeHasInt(uid,name))
 				return StaticRenderKeyframeGetInt(uid,name);
-			return 0;
+			return 0.0f;
 		}
 
 		public uint GetStormUidByIndex(int index)
