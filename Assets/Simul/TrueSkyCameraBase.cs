@@ -11,7 +11,7 @@ namespace simul
 	{
 		public class RenderTextureHolder
 		{
-			public RenderTexture renderTexture=null;
+			public RenderTexture renderTexture = null;
 			public System.IntPtr GetNative()
 			{
 				if(cachedRenderTexture!=renderTexture)
@@ -121,17 +121,17 @@ namespace simul
         }
 		protected void RemoveBuffer(string name)
 		{
-			Camera cam=GetComponent<Camera>();
-			CommandBuffer[] opaque=cam.GetCommandBuffers(CameraEvent.BeforeImageEffectsOpaque);
-			CommandBuffer[] after=cam.GetCommandBuffers(CameraEvent.AfterEverything);
-            CommandBuffer[] afterF = cam.GetCommandBuffers(CameraEvent.AfterForwardAlpha);
-			CommandBuffer[] bufs = new CommandBuffer[opaque.Length + afterF.Length + after.Length];
+			Camera cam				= GetComponent<Camera>();
+			CommandBuffer[] opaque	= cam.GetCommandBuffers(CameraEvent.BeforeImageEffectsOpaque);
+			CommandBuffer[] after	= cam.GetCommandBuffers(CameraEvent.AfterEverything);
+            CommandBuffer[] afterF	= cam.GetCommandBuffers(CameraEvent.AfterForwardAlpha);
+			CommandBuffer[] bufs	= new CommandBuffer[opaque.Length + afterF.Length + after.Length];
 			opaque.CopyTo(bufs, 0);
 			after.CopyTo(bufs, opaque.Length);
             afterF.CopyTo(bufs, opaque.Length + after.Length);
-			for (int i =0;i<bufs.Length; i=i+1)
+			for (int i =0; i<bufs.Length; i=i+1)
 			{
-				CommandBuffer b=bufs[i];
+				CommandBuffer b = bufs[i];
 				if(b.name==name)
 				{
 					cam.RemoveCommandBuffer(CameraEvent.AfterEverything,b);
@@ -165,7 +165,7 @@ namespace simul
 		protected virtual int GetRequiredDepthTextureWidth()
         {
             var cam = GetComponent<Camera>();
-            int w =cam.pixelWidth;
+            int w	= cam.pixelWidth;
             return w;
 		}
 		protected virtual void EnsureDepthTexture()
@@ -191,8 +191,8 @@ namespace simul
 				UnityEngine.Debug.Log ("OnPreRender disabled"); 
 				return;
 			}
-			SimulImports.Init ();
-			mut.WaitOne ();
+			SimulImports.Init();
+			mut.WaitOne();
 			try
 			{
 				view_id = InternalGetViewId();
@@ -204,7 +204,7 @@ namespace simul
 			finally
 			{
 			}
-			mut.ReleaseMutex ();
+			mut.ReleaseMutex();
 
 		}
 		void OnPreRender()
@@ -233,7 +233,7 @@ namespace simul
 			mat[14]=0f;
 			mat[15]=1f;
 		}
-		protected float[] projMatrix = new float[16];
+		protected float[] projMatrix		= new float[16];
 		protected float[] overlayProjMatrix = new float[16];
 		protected void ProjMatrixToTrueSkyFormat(RenderStyle renderStyle, Matrix4x4 m,float[] proj, int offset = 0)
         {

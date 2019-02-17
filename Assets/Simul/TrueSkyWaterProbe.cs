@@ -48,7 +48,10 @@ namespace simul
 
 		~TrueSkyWaterProbe()
 		{
-			StaticRemoveWaterProbe(ID);
+			if (mTsInstance.SimulVersion >= mTsInstance.MakeSimulVersion(4, 2))
+			{
+				StaticRemoveWaterProbe(ID);
+			}
 		}
 
 		//Editor only function
@@ -60,14 +63,17 @@ namespace simul
 
 		public void UpdateProbeValues()
 		{
-			float[] values = new float[] {0.0f, 0.0f, 0.0f, 0.0f};
-			StaticGetWaterProbeValues(ID, values);
-			if (values[0] == -1.0 && values[1] == -1.0 && values[2] == -1.0 && values[3] == -1.0)
-				active = false;
-			else
-				active = true;
-			depth = values[0] + values[3];
-			direction = new Vector3(values[2], values[1], values[3]);
+			if (mTsInstance.SimulVersion >= mTsInstance.MakeSimulVersion(4, 2))
+			{
+				float[] values = new float[] { 0.0f, 0.0f, 0.0f, 0.0f };
+				StaticGetWaterProbeValues(ID, values);
+				if (values[0] == -1.0 && values[1] == -1.0 && values[2] == -1.0 && values[3] == -1.0)
+					active = false;
+				else
+					active = true;
+				depth = values[0] + values[3];
+				direction = new Vector3(values[2], values[1], values[3]);
+			}
 		}
 
 		public bool IsActive()
@@ -87,23 +93,30 @@ namespace simul
 
 		void Update()
 		{
-			float[] location = new float[] {(transform.position.z + mTsInstance.transform.position.x) * mTsInstance.MetresPerUnit,
+			if (mTsInstance.SimulVersion >= mTsInstance.MakeSimulVersion(4, 2))
+			{
+				
+				float[] location = new float[] {(transform.position.z + mTsInstance.transform.position.x) * mTsInstance.MetresPerUnit,
 											(transform.position.x + mTsInstance.transform.position.z) * mTsInstance.MetresPerUnit,
 											(transform.position.y + mTsInstance.transform.position.y) * mTsInstance.MetresPerUnit};
 
-			if(!waterProbeCreated)
-				waterProbeCreated = StaticAddWaterProbe(ID, location);
+				if (!waterProbeCreated)
+					waterProbeCreated = StaticAddWaterProbe(ID, location);
 
-			StaticUpdateWaterProbePosition(ID, location);
+				StaticUpdateWaterProbePosition(ID, location);
+			}
 		}
 
 		private void Start()
 		{
 			mTsInstance = trueSKY.GetTrueSky();
-			float[] location = new float[] {(transform.position.z + mTsInstance.transform.position.x) * mTsInstance.MetresPerUnit,
+			if (mTsInstance.SimulVersion >= mTsInstance.MakeSimulVersion(4, 2))
+			{
+				float[] location = new float[] {(transform.position.z + mTsInstance.transform.position.x) * mTsInstance.MetresPerUnit,
 											(transform.position.x + mTsInstance.transform.position.z) * mTsInstance.MetresPerUnit,
 											(transform.position.y + mTsInstance.transform.position.y) * mTsInstance.MetresPerUnit};
-			waterProbeCreated = StaticAddWaterProbe(ID, location);
+				waterProbeCreated = StaticAddWaterProbe(ID, location);
+			}
 		}
 	}
 }
