@@ -99,15 +99,15 @@ namespace simul
 			EditorGUILayout.BeginVertical();
 			{
 				// General truesky settings
-					trueSky.sequence = (Sequence)EditorGUILayout.ObjectField("Sequence Asset", trueSky.sequence, typeof(Sequence), false);
-					trueSky.MetresPerUnit = EditorGUILayout.FloatField("Metres per Unit", trueSky.MetresPerUnit);
-					if (trueSky.SimulVersion < trueSky.MakeSimulVersion(4, 2))
-					{
-						trueSky.CloudThresholdDistanceKm = EditorGUILayout.Slider("Threshold Distance (km)", trueSky.CloudThresholdDistanceKm, 0.0F, 10.0F);
-						trueSky.DepthBlending = EditorGUILayout.Toggle("Depth Blending", trueSky.DepthBlending);
-						trueSky.MinimumStarPixelSize = EditorGUILayout.FloatField("Minimum Star Pixel Size", trueSky.MinimumStarPixelSize);
-					}
-					EditorGUILayout.Space();
+				trueSky.sequence = (Sequence)EditorGUILayout.ObjectField("Sequence Asset", trueSky.sequence, typeof(Sequence), false);
+				trueSky.MetresPerUnit = EditorGUILayout.FloatField("Metres per Unit", trueSky.MetresPerUnit);
+				if (trueSky.SimulVersion < trueSky.MakeSimulVersion(4, 2))
+				{
+					trueSky.CloudThresholdDistanceKm = EditorGUILayout.Slider("Threshold Distance (km)", trueSky.CloudThresholdDistanceKm, 0.0F, 10.0F);
+					trueSky.DepthBlending = EditorGUILayout.Toggle("Depth Blending", trueSky.DepthBlending);
+					trueSky.MinimumStarPixelSize = EditorGUILayout.FloatField("Minimum Star Pixel Size", trueSky.MinimumStarPixelSize);
+				}
+				EditorGUILayout.Space();
 
 				// Interpolation settings
 				interpolation = EditorGUILayout.Foldout(interpolation, "Update");
@@ -115,7 +115,13 @@ namespace simul
 				{
 					trueSky.time = EditorGUILayout.FloatField("Time", trueSky.time);
 					trueSky.speed = EditorGUILayout.FloatField("Speed", trueSky.speed);
-                    if (trueSky.SimulVersion >= trueSky.MakeSimulVersion(4, 2))
+					string[] options = new string[]
+						{
+							"Fixed Number", "Fixed Gametime", "Fixed Realtime",
+						};
+					trueSky.InterpolationMode = EditorGUILayout.Popup("Interpolation Mode", trueSky.InterpolationMode, options);
+					trueSky.InstantUpdate = EditorGUILayout.Toggle("Instant Update", trueSky.InstantUpdate);
+					if (trueSky.SimulVersion >= trueSky.MakeSimulVersion(4, 2))
                     {
                         trueSky.HighDetailProportion = EditorGUILayout.Slider("High Detail", trueSky.HighDetailProportion,0.0F,1.0F);
 					    trueSky.MediumDetailProportion = EditorGUILayout.Slider("Medium Detail", trueSky.MediumDetailProportion, trueSky.HighDetailProportion, 1.0F);
