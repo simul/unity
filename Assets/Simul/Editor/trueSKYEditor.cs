@@ -5,6 +5,8 @@ using System.Text.RegularExpressions;
 using UnityEditor;
 //Used for File IO
 using System.IO;
+using System.Collections;
+using UnityEditor.Build.Reporting;
 
 namespace simul
 {
@@ -67,6 +69,11 @@ namespace simul
 		public static void RecompileShaders()
 		{
 			trueSKY.RecompileShaders();
+		}
+		[MenuItem("Window/trueSky/Build SimulTest #&b", false, 200000)]
+		public static void BuildTest()
+		{
+			BuildSimulTest("C:/temp/x64", "x64");
 		}
 		[SerializeField]
 		static bool celestial = false;
@@ -249,12 +256,12 @@ namespace simul
 							recomp = true;
 						}
 					}
-					trueSky.maxGpuProfileLevel = EditorGUILayout.IntSlider("GPU Level", trueSky.maxGpuProfileLevel, 0, 8);
-					trueSky.maxCpuProfileLevel = EditorGUILayout.IntSlider("CPU Level", trueSky.maxCpuProfileLevel, 0, 8);
 					showProfiling = EditorGUILayout.Foldout(showProfiling,"Profiling");
 					
 					if (showProfiling)
 					{
+						trueSky.maxGpuProfileLevel = EditorGUILayout.IntSlider("GPU Level", trueSky.maxGpuProfileLevel, 0, 8);
+						trueSky.maxCpuProfileLevel = EditorGUILayout.IntSlider("CPU Level", trueSky.maxCpuProfileLevel, 0, 8);
 						trueSky.SetBool("Profiling", true);
 						GUIStyle style = new GUIStyle();
 						style.richText = true;
@@ -346,6 +353,66 @@ namespace simul
 			EditorApplication.Exit(0);
 		}
 
+		static void BuildSimulTestCmdLine()
+		{
+			Application.SetStackTraceLogType(LogType.Error | LogType.Assert | LogType.Exception | LogType.Warning | LogType.Log, StackTraceLogType.None);
+			string f = CommandLineReader.GetCustomArgument("Path");
+			f = f.Replace("\"", "");
+			string p = CommandLineReader.GetCustomArgument("Platform");
+			UnityEngine.Debug.Log("ExportPackageCmdLine " + f + ", " + p);
+			BuildSimulTest(f, p);
+		}
+		static void BuildSimulTest(string path, string platform)
+		{
+			BuildPlayerOptions buildPlayerOptions = new BuildPlayerOptions();
+			buildPlayerOptions.scenes = new[] { "Assets/Simul/SimulTest/TestLevel.unity" };
+			
+			string fullPath = path;
+			buildPlayerOptions.locationPathName = fullPath+"/SimulTest.exe";
+			try
+			{
+				if (Directory.Exists(fullPath))
+					System.IO.Directory.Delete(fullPath, true);
+			}
+			catch(Exception )
+			{
+
+			}
+
+			if (platform == "x64")
+			{
+				buildPlayerOptions.target = BuildTarget.StandaloneWindows64;
+			}
+			else if (platform == "Linux")
+			{
+				buildPlayerOptions.target = BuildTarget.StandaloneLinux64;
+			}
+			else if (platform == "XboxOne")
+			{
+				buildPlayerOptions.target = BuildTarget.XboxOne;
+			}
+			else if (platform == "PS4")
+			{
+				buildPlayerOptions.target = BuildTarget.PS4;
+			}
+			else
+			{
+				UnityEngine.Debug.LogError("Unknown platform:" + platform);
+				return;
+			}
+			buildPlayerOptions.options = BuildOptions.Development|BuildOptions.AllowDebugging;
+			BuildReport report = BuildPipeline.BuildPlayer(buildPlayerOptions);
+			BuildSummary summary = report.summary;
+			if (summary.result == BuildResult.Succeeded)
+			{
+				Debug.Log("SimulTest Build succeeded: " + summary.totalSize + " bytes");
+			}
+			if (summary.result == BuildResult.Failed)
+			{
+				Debug.LogError("SimulTest Build failed");
+			}
+		}
+
 		static void ExportPackageCmdLine()
 		{
     	    Application.SetStackTraceLogType (LogType.Error|LogType.Assert|LogType.Exception|LogType.Warning|LogType.Log,StackTraceLogType.None);
@@ -379,6 +446,25 @@ namespace simul
 			{
 				UnityEngine.Debug.Log("Unknown platform:" + platform);
 			}
+		}
+		static void TakeScreenshot(string fileName)
+		{
+			var cam = GameObject.Find("Main Camera").GetComponent<Camera>();
+			var renderTexture = new RenderTexture(Screen.width, Screen.height, 24);
+			cam.targetTexture = renderTexture;
+			cam.Render();
+			cam.targetTexture = null;
+
+			RenderTexture.active = renderTexture;
+			Texture2D screenshot = new Texture2D(Screen.width, Screen.height, TextureFormat.RGB24, false);
+			screenshot.ReadPixels(new Rect(0, 0, Screen.width, Screen.height), 0, 0);
+			screenshot.Apply();
+			RenderTexture.active = null;
+
+			//Encode screenshot to PNG
+			byte[] bytes = screenshot.EncodeToPNG();
+			UnityEngine.Object.Destroy(screenshot);
+			File.WriteAllBytes(fileName, bytes);
 		}
 	}
 }
