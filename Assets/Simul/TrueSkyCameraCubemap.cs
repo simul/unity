@@ -71,10 +71,24 @@ namespace simul
                     ,renderStyle, exposure, gamma, Time.frameCount, UnityRenderOptions.DEFAULT
                     ,Graphics.activeColorBuffer.GetNativeRenderBufferPtr()
                 );
-            }
-        }
-
-        void OnPreRender()
+				unityViewStruct.view_id = view_id;
+				unityViewStruct.framenumber = Time.renderedFrameCount;
+				unityViewStruct.exposure = exposure;
+				unityViewStruct.gamma = gamma;
+				unityViewStruct.viewMatrices4x4 = viewMatrices;
+				unityViewStruct.projMatrices4x4 = projMatrices;
+				unityViewStruct.overlayProjMatrix4x4 = overlayProjMatrix;
+				unityViewStruct.depthTexture =  (System.IntPtr)0;
+				unityViewStruct.depthViewports = depthViewports;
+				unityViewStruct.targetViewports = targetViewport;
+				unityViewStruct.renderStyle = renderStyle;
+				unityViewStruct.unityRenderOptions = UnityRenderOptions.DEFAULT;
+				unityViewStruct.colourTexture = Graphics.activeColorBuffer.GetNativeRenderBufferPtr();
+			}
+		}
+		UnityViewStruct unityViewStruct = new UnityViewStruct();
+		System.IntPtr unityViewStructPtr = Marshal.AllocHGlobal(Marshal.SizeOf(new UnityViewStruct()));
+		void OnPreRender()
         {
             EnsureDepthTexture();
             Camera cam = GetComponent<Camera>();
@@ -89,7 +103,9 @@ namespace simul
                 cam.RemoveCommandBuffers(CameraEvent.BeforeImageEffectsOpaque);
             }
             PrepareMatrices();
-            CommandBuffer[] bufs = cam.GetCommandBuffers(CameraEvent.BeforeImageEffectsOpaque);
+
+
+			CommandBuffer[] bufs = cam.GetCommandBuffers(CameraEvent.BeforeImageEffectsOpaque);
             if (bufs.Length != 2)
             {
                 cam.RemoveCommandBuffers(CameraEvent.BeforeImageEffectsOpaque);
@@ -99,8 +115,11 @@ namespace simul
             cbuf_view_id = InternalGetViewId();
 
             mainCommandBuffer.ClearRenderTarget(true, true, new Color(0.0F, 0.0F, 0.0F, 1.0F), 1.0F);
-            mainCommandBuffer.IssuePluginEvent(UnityGetRenderEventFunc(), TRUESKY_EVENT_ID + cbuf_view_id);
-        }
+			unityViewStruct.nativeColourRenderBuffer = (System.IntPtr)Graphics.activeColorBuffer.GetNativeRenderBufferPtr();
+			unityViewStruct.nativeDepthRenderBuffer = (System.IntPtr)Graphics.activeDepthBuffer.GetNativeRenderBufferPtr();
+			Marshal.StructureToPtr(unityViewStruct, unityViewStructPtr, true);
+			mainCommandBuffer.IssuePluginEventAndData(UnityGetRenderEventFuncWithData(), TRUESKY_EVENT_ID + cbuf_view_id, unityViewStructPtr);
+		}
 
         float[] cview = new float[16];
         float[] cproj = new float[16];

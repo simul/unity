@@ -66,8 +66,9 @@ namespace simul
             }
 #endif
 
-            // Has the update frequency changed?
-            if (_updatePeriodSeconds != updatePeriodSeconds)
+
+			// Has the update frequency changed?
+			if (_updatePeriodSeconds != updatePeriodSeconds)
             {
                 CancelInvoke();
                 _updatePeriodSeconds = updatePeriodSeconds;
@@ -80,8 +81,8 @@ namespace simul
             }
             // If it's zero, update once per frame.
             if (!Application.isPlaying || _updatePeriodSeconds <= 0.0F)
-            {
-                if (trueSkyCameraCubemap)
+			{
+				if (trueSkyCameraCubemap)
                 {
                     trueSkyCameraCubemap.GetComponent<TrueSkyCameraCubemap>().DoFlipY = flipProbeY;
                 }
@@ -112,8 +113,8 @@ namespace simul
         /// This is the function that creates the cubemap images
         /// </summary>
         void DoUpdate()
-        {
-            if (textureSize != 8 && textureSize != 16 && textureSize != 32 && textureSize != 64
+		{
+			if (textureSize != 8 && textureSize != 16 && textureSize != 32 && textureSize != 64
                 && textureSize != 128 && textureSize != 256 && textureSize != 512)
                 textureSize = 32;   // if textureSize (inc. from inspector) isn't pow of 2 & between 8-512, then overwrite with default
                                     
@@ -128,21 +129,21 @@ namespace simul
                 dummyCam.depthTextureMode   |= DepthTextureMode.Depth;
                 trueSkyCameraCubemap        = aDummyCamObject.AddComponent<TrueSkyCameraCubemap>();
                 _initialized                = false;
-            }
+			}
 
-            // Null checks
-            if (dummyCam == null)
+			// Null checks
+			if (dummyCam == null)
                 return;
-            if (cubemapRenderTexture == null)
+			if (cubemapRenderTexture == null)
                 CreateTexture();
             // Don't render if is not ready yet
             if(!cubemapRenderTexture.IsCreated())
-            {
-                return;
-            }
-
-            // Setup camera to render
-            dummyCam.gameObject.transform.position = transform.position;
+			{
+				CreateTexture();
+				return;
+			}
+			// Setup camera to render
+			dummyCam.gameObject.transform.position = transform.position;
             dummyCam.gameObject.transform.rotation = transform.rotation;
             if (trueSkyCameraCubemap != null)
             {
@@ -159,9 +160,9 @@ namespace simul
             {
                 dummyCam.targetTexture = cubemapRenderTexture;
                 _initialized = false;
-            }
+			}
 
-            int faceMask = 63;
+			int faceMask = 63;
             if (_initialized && last_face >= 0)
             {
                 faceMask = 1 << last_face;
@@ -211,7 +212,8 @@ namespace simul
         void CreateTexture()
         {
             if (cubemapRenderTexture == null
-                || cubemapRenderTexture.width != textureSize
+				||!cubemapRenderTexture.IsCreated()
+				|| cubemapRenderTexture.width != textureSize
                 || cubemapRenderTexture.depth != 24
                 || cubemapRenderTexture.format != renderTextureFormat
                 || cubemapRenderTexture.dimension != UnityEngine.Rendering.TextureDimension.Cube

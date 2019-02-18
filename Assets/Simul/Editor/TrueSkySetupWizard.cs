@@ -384,6 +384,7 @@ namespace simul
 				GameObject g = new GameObject("trueSky");
 				trueSky = g.AddComponent<trueSKY>();
 			}
+#if CREATE_PROBE
 			if (createCubemapProbeCam || createCubemapProbeObj) {  			// must be after trueSKY obj assigned, in case assigning probe to this instead of mainCam
  
 				UnityEngine.Object[] objects = FindObjectsOfType(typeof(TrueSkyCubemapProbe));
@@ -398,15 +399,15 @@ namespace simul
 				if (createCubemapProbeCam) 
 					mainCamera.gameObject.AddComponent<TrueSkyCubemapProbe> ();
 
-				else if (createCubemapProbeObj) 	
+				else if (createCubemapProbeObj)
 					trueSky.gameObject.AddComponent<TrueSkyCubemapProbe> ();
 
 				Material trueSKYSkyboxMat = Resources.Load ("trueSKYSkybox", typeof(Material)) as Material;
 				RenderSettings.skybox = trueSKYSkyboxMat;
-			}  
-
-            // If there is not light on the scene, add one:
-            if(lightGameObject == null)
+			}
+#endif
+			// If there is not light on the scene, add one:
+			if (lightGameObject == null)
             {
                 lightGameObject = new GameObject("TrueSkyDirectionalLight");
                 Light dirLight  = lightGameObject.AddComponent<Light>();
