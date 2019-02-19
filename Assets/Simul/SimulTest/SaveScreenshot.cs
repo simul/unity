@@ -38,15 +38,21 @@ public class SaveScreenshot : MonoBehaviour
             }
             try
             {
-                string fullPath = Application.dataPath + "/../" + filename;
-                got_screenshot = true;
-                Texture2D texture2d = ScreenCapture.CaptureScreenshotAsTexture(1);
+                string fullPath = filename;
+				if (!filename.Contains(":"))
+					fullPath=Application.dataPath + "/../Screenshots/" + filename;
+				fullPath = fullPath.Replace("\\", "/");
+				string path = fullPath.Substring(0, fullPath.LastIndexOf('/'));
+				string name = fullPath.Substring(path.Length + 1);
+				System.IO.Directory.CreateDirectory(path);
+				Texture2D texture2d = ScreenCapture.CaptureScreenshotAsTexture(1);
                 // Encode texture into PNG
                 byte[] bytes = texture2d.EncodeToPNG();
                 Object.Destroy(texture2d);
                 // For testing purposes, also write to a file in the project folder
                 File.WriteAllBytes(fullPath, bytes);
-            }
+				got_screenshot = true;
+			}
             catch (System.Exception e)
 			{
 				UnityEngine.Debug.Log(e.ToString());
