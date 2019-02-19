@@ -61,7 +61,7 @@ public class SaveScreenshot : MonoBehaviour
 				else if (filename.Contains(".tga"))
 					bytes = texture2d.EncodeToTGA();
 				else
-					bytes= texture2d.EncodeToJPG();
+					bytes= texture2d.EncodeToJPG(100);
                 // For testing purposes, also write to a file in the project folder
                 File.WriteAllBytes(fullPath, bytes);
 				got_screenshot = true;
