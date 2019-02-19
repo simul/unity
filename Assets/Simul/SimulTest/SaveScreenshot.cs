@@ -58,8 +58,6 @@ public class SaveScreenshot : MonoBehaviour
 					bytes = texture2d.EncodeToPNG();
 				else if (filename.Contains(".exr"))
 					bytes = texture2d.EncodeToEXR();
-				else if (filename.Contains(".tga"))
-					bytes = texture2d.EncodeToTGA();
 				else
 					bytes= texture2d.EncodeToJPG(100);
                 // For testing purposes, also write to a file in the project folder
@@ -69,10 +67,10 @@ public class SaveScreenshot : MonoBehaviour
             catch (System.Exception e)
 			{
 				UnityEngine.Debug.Log(e.ToString());
-				Application.Quit(1);
+    			System.Environment.Exit(1);
             }
         }
         else
-            Application.Quit(0);
+    		System.Environment.Exit(0);
 	}
 }
