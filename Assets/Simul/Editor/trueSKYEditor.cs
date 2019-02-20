@@ -461,24 +461,5 @@ namespace simul
 				UnityEngine.Debug.Log("Unknown platform:" + platform);
 			}
 		}
-		static void TakeScreenshot(string fileName)
-		{
-			var cam = GameObject.Find("Main Camera").GetComponent<Camera>();
-			var renderTexture = new RenderTexture(Screen.width, Screen.height, 24);
-			cam.targetTexture = renderTexture;
-			cam.Render();
-			cam.targetTexture = null;
-
-			RenderTexture.active = renderTexture;
-			Texture2D screenshot = new Texture2D(Screen.width, Screen.height, TextureFormat.RGB24, false);
-			screenshot.ReadPixels(new Rect(0, 0, Screen.width, Screen.height), 0, 0);
-			screenshot.Apply();
-			RenderTexture.active = null;
-
-			//Encode screenshot to PNG
-			byte[] bytes = screenshot.EncodeToPNG();
-			UnityEngine.Object.Destroy(screenshot);
-			File.WriteAllBytes(fileName, bytes);
-		}
 	}
 }
