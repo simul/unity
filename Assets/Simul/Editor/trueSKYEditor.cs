@@ -6,7 +6,6 @@ using UnityEditor;
 //Used for File IO
 using System.IO;
 using System.Collections;
-using UnityEditor.Build.Reporting;
 
 namespace simul
 {
@@ -407,15 +406,18 @@ namespace simul
 				return;
 			}
 			buildPlayerOptions.options = BuildOptions.Development|BuildOptions.AllowDebugging;
-			BuildReport report = BuildPipeline.BuildPlayer(buildPlayerOptions);
-			BuildSummary summary = report.summary;
-			if (summary.result == BuildResult.Succeeded)
+			try
 			{
-				Debug.Log("SimulTest Build succeeded: " + summary.totalSize + " bytes");
+				string result = BuildPipeline.BuildPlayer(buildPlayerOptions);
+				if (result != "")
+				{
+					Debug.LogError("SimulTest Build Error:");
+					Debug.LogError(result);
+				}
 			}
-			if (summary.result == BuildResult.Failed)
+			catch (Exception e)
 			{
-				Debug.LogError("SimulTest Build failed");
+				Debug.LogError(e.ToString());
 			}
 		}
 
