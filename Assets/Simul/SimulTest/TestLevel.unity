@@ -321,7 +321,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 934878211}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ba5ee80a3e6669d4690187396550828c, type: 3}
+  m_Script: {fileID: 11500000, guid: 2845439ac4ce3d443b3fb404526e8fa8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!4 &934878213
@@ -366,8 +366,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   SimulVersionMajor: 4
-  SimulVersionMinor: 1
-  SimulVersionBuild: 2320
+  SimulVersionMinor: 2
+  SimulVersionBuild: 2322
   _metresPerUnit: 1
   _renderInEditMode: 1
   _minimumStarPixelSize: 1
@@ -411,7 +411,7 @@ MonoBehaviour:
   _maxGpuProfileLevel: 4
   _backgroundTexture: {fileID: 0}
   _moonTexture: {fileID: 0}
-  _sequence: {fileID: 0}
+  _sequence: {fileID: 11400000, guid: a8403513ffabff943a047061ecb3bdca, type: 2}
   _CloudSteps: 200
   _CubemapResolution: 256
   _MaxCloudDistanceKm: 0
