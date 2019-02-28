@@ -62,6 +62,7 @@ public class SaveScreenshot : MonoBehaviour
 					bytes = texture2d.EncodeToTGA();
 				else
 					bytes= texture2d.EncodeToJPG(100);
+				UnityEngine.Debug.Log("Saving to "+ fullPath);
                 // For testing purposes, also write to a file in the project folder
                 File.WriteAllBytes(fullPath, bytes);
 				got_screenshot = true;
