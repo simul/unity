@@ -405,7 +405,7 @@ namespace simul
 				UnityEngine.Debug.LogError("Unknown platform:" + platform);
 				return;
 			}
-			buildPlayerOptions.options = BuildOptions.Development|BuildOptions.AllowDebugging;
+			buildPlayerOptions.options = BuildOptions.AllowDebugging;
 			try
 			{
 				string result = BuildPipeline.BuildPlayer(buildPlayerOptions);

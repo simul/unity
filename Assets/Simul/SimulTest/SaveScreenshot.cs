@@ -21,6 +21,7 @@ public class SaveScreenshot : MonoBehaviour
 					if (parts[0].CompareTo("-wait") == 0)
 						waitCount = System.Int32.Parse(parts[1]);
 				}
+				Debug.developerConsoleVisible = false;
 			}
 			catch (System.Exception)
 			{
