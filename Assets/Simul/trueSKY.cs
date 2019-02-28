@@ -27,38 +27,42 @@ namespace simul
 		public float y;
 		public float z;
 		public float w;
-	}; 
-	 [StructLayout(LayoutKind.Sequential, Pack = 1)]
+	};
+	[StructLayout(LayoutKind.Sequential, Pack = 1)]
 	public struct VolumeQueryResult
 	{
-		public vec3 pos_m;
+		public vec4 pos_m;
 		public int valid;
 		public float density;
 		public float direct_light;
 		public float indirect_light;
 		public float ambient_light;
 		public float precipitation;
+		public float rain_to_snow;
+		public float padding;
 	};
 	[StructLayout(LayoutKind.Sequential, Pack = 1)]
 	public struct LightingQueryResult
 	{
-		public vec3 pos;
-		public int valid;
+		public vec4 pos;
 		public vec4 sunlight;      // we use vec4's here to avoid padding.
 		public vec4 moonlight;
 		public vec4 ambient;
+		public vec3 padding;
+		public int valid;
 	};
 	public struct LineQueryResult
 	{
-		public vec3 pos1_m;
+		public vec4 pos1_m;
+		public vec4 pos2_m;
+		public vec3 padding;
 		public int valid;
-		public vec3 pos2_m;
 		public float density;
 		public float visibility;
 		public float optical_thickness_metres;
 		public float first_contact_metres;
 	};
-    public struct ExportLightningStrike
+	public struct ExportLightningStrike
     {
         public int id;
         public vec3 pos;
