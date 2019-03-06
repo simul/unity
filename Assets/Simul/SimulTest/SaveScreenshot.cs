@@ -19,6 +19,7 @@ public class SaveScreenshot : MonoBehaviour
 					if (parts[0].CompareTo("-wait") == 0)
 						waitCount = System.Int32.Parse(parts[1]);
 				}
+				Debug.developerConsoleVisible = false;
 			}
 			catch (System.Exception)
 			{
@@ -62,7 +63,6 @@ public class SaveScreenshot : MonoBehaviour
 					bytes= texture2d.EncodeToJPG(100);
 				UnityEngine.Debug.Log("Saving to "+ fullPath);
                 // For testing purposes, also write to a file in the project folder
-                File.WriteAllBytes(fullPath, bytes);
 				FileStream fileStream = new FileStream(
 					  fullPath, FileMode.Create,
 					  FileAccess.ReadWrite, FileShare.ReadWrite);
