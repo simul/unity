@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 using UnityEngine.Rendering;
 using System.Collections.Generic;
 
-namespace simul 
+namespace simul
 {
 	[ExecuteInEditMode]
 	public class TrueSkyCamera : TrueSkyCameraBase
@@ -126,8 +126,8 @@ namespace simul
         {
             get
             {
-                return System.Type.GetType("UnityEngine.PostProcessing.PostProcessingBehaviour") != null;
-            }
+                return System.Type.GetType("UnityEngine.PostProcessing.PostProcessingBehaviour") != null || SystemInfo.graphicsDeviceType == GraphicsDeviceType.Vulkan;
+			}
         }
 
 		public bool editorMode
@@ -184,6 +184,7 @@ namespace simul
 		{
 			if(!enabled||!gameObject.activeInHierarchy)
 			{
+				UnityEngine.Debug.Log("Failed to draw");
 				return;
 			}
 			GetComponent<Camera>().depthTextureMode|=DepthTextureMode.Depth;

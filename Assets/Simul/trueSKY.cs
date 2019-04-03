@@ -42,11 +42,12 @@ namespace simul
 	[StructLayout(LayoutKind.Sequential, Pack = 1)]
 	public struct LightingQueryResult
 	{
-		public vec3 pos;
-		public int valid;
+		public vec4 pos;
 		public vec4 sunlight;      // we use vec4's here to avoid padding.
 		public vec4 moonlight;
 		public vec4 ambient;
+		public vec3 padding;
+		public int valid;
 	};
 	public struct LineQueryResult
 	{
@@ -241,7 +242,7 @@ namespace simul
 
 		[DllImport(SimulImports.renderer_dll)]		private static extern bool StaticAddWaterProbe				(uint ID, float[] location);
 		[DllImport(SimulImports.renderer_dll)]		private static extern void StaticRemoveWaterProbe			(uint ID);
-		[DllImport(SimulImports.renderer_dll)]		private static extern void StaticUpdateWaterProbePosition	(uint ID, float[] location);
+		[DllImport(SimulImports.renderer_dll)]		private static extern void StaticUpdateWaterProbeValues     (uint ID, float[] location);
 		[DllImport(SimulImports.renderer_dll)]		private static extern void StaticGetWaterProbeValues		(uint ID, float[] result);
 
 		[DllImport(SimulImports.renderer_dll)]		private static extern void StaticSetWaterFloat	(string name, int ID, float value);
@@ -400,7 +401,7 @@ namespace simul
 
 		public int GetNumCloud2DKeyframes()
 		{
-			if (SimulVersionMinor == 1)
+			if(SimulVersionMinor == 1)
 			{
 				return StaticRenderGetNumKeyframes(2);
 			}
@@ -2020,8 +2021,8 @@ namespace simul
 			}
 		}
 
-		int _IntegrationScheme=0;
 		[SerializeField]
+		int _IntegrationScheme=0;
 		public int IntegrationScheme
 		{
 			get
