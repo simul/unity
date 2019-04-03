@@ -122,6 +122,12 @@ namespace simul
 				{
 					trueSky.time = EditorGUILayout.FloatField("Time", trueSky.time);
 					trueSky.speed = EditorGUILayout.FloatField("Speed", trueSky.speed);
+					string[] options = new string[]
+						{
+							"Fixed Number", "Fixed Gametime", "Fixed Realtime",
+						};
+					trueSky.InterpolationMode = EditorGUILayout.Popup("Interpolation Mode", trueSky.InterpolationMode, options);
+					trueSky.InstantUpdate = EditorGUILayout.Toggle("Instant Update", trueSky.InstantUpdate);
 					if (trueSky.SimulVersion >= trueSky.MakeSimulVersion(4, 2))
 					{
 						trueSky.HighDetailProportion = EditorGUILayout.Slider("High Detail", trueSky.HighDetailProportion, 0.0F, 1.0F);
@@ -165,11 +171,11 @@ namespace simul
 				{
 					trueSky.AtmosphericsAmortization = EditorGUILayout.IntSlider("Atmospherics Amortization", trueSky.AtmosphericsAmortization, 1, 4);
 					trueSky.GodRaysGrid = EditorGUILayout.Vector3Field("God Rays Grid", trueSky.GodRaysGrid);
-					if (trueSky.SimulVersion > trueSky.MakeSimulVersion(4, 1))
-					{
-						trueSky.CrepuscularRaysStrength = EditorGUILayout.Slider("Crepuscular Rays Strength", trueSky.CrepuscularRaysStrength, 0.0F, 1.0F);
-					}
-				}
+                    if (trueSky.SimulVersion > trueSky.MakeSimulVersion(4, 1))
+                    {
+                        trueSky.CrepuscularRaysStrength = EditorGUILayout.Slider("Crepuscular Rays Strength", trueSky.CrepuscularRaysStrength, 0.0F, 1.0F);
+                    }
+                }
 
 				if (trueSky.SimulVersion >= trueSky.MakeSimulVersion(4, 2))
 				{
