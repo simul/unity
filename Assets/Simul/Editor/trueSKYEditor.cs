@@ -438,6 +438,7 @@ namespace simul
 			Application.SetStackTraceLogType(LogType.Error | LogType.Assert | LogType.Exception | LogType.Warning | LogType.Log, StackTraceLogType.None);
 			string f = CommandLineReader.GetCustomArgument("Filename");
 			f = f.Replace("\"", "");
+			f = f.Replace("\\", "/");
 			string p = CommandLineReader.GetCustomArgument("Platform");
 			UnityEngine.Debug.Log("ExportPackageCmdLine " + f + ", " + p);
 			ExportPackage(f, p);

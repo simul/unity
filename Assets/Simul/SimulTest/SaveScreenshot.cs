@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using System.IO;
 
 public class SaveScreenshot : MonoBehaviour
@@ -21,6 +19,7 @@ public class SaveScreenshot : MonoBehaviour
 					if (parts[0].CompareTo("-wait") == 0)
 						waitCount = System.Int32.Parse(parts[1]);
 				}
+				Debug.developerConsoleVisible = false;
 			}
 			catch (System.Exception)
 			{
@@ -45,7 +44,7 @@ public class SaveScreenshot : MonoBehaviour
             {
                 string fullPath = filename;
 				if (!filename.Contains(":"))
-					fullPath=Application.dataPath + "/../Screenshots/" + filename;
+					fullPath=Application.persistentDataPath + "/" + filename;
 				fullPath = fullPath.Replace("\\", "/");
 				string path = fullPath.Substring(0, fullPath.LastIndexOf('/'));
 				string name = fullPath.Substring(path.Length + 1);
@@ -62,8 +61,13 @@ public class SaveScreenshot : MonoBehaviour
 					bytes = texture2d.EncodeToTGA();
 				else
 					bytes= texture2d.EncodeToJPG(100);
+				UnityEngine.Debug.Log("Saving to "+ fullPath);
                 // For testing purposes, also write to a file in the project folder
-                File.WriteAllBytes(fullPath, bytes);
+				FileStream fileStream = new FileStream(
+					  fullPath, FileMode.Create,
+					  FileAccess.ReadWrite, FileShare.ReadWrite);
+				fileStream.Write(bytes, 0, bytes.Length);
+				fileStream.Close();
 				got_screenshot = true;
 			}
             catch (System.Exception e)
