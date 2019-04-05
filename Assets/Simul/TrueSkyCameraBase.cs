@@ -267,7 +267,7 @@ namespace simul
 				return;
             offset *= 16;
 			float metresPerUnit = trueSKY.GetTrueSky().MetresPerUnit;
-			Matrix4x4 transform = trueSKY.GetTrueSky().transform.worldToLocalMatrix;
+			Matrix4x4 transform = trueSKY.GetTrueSky().transform.worldToLocalMatrix.inverse;
 			m=m*transform;
 			m=m.transpose;
 			Matrix4x4 n=m.inverse;
