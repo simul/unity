@@ -611,7 +611,7 @@ namespace simul
 			return transform;
 		}
 
-#endregion
+		#endregion
 
 		[SerializeField]
 		float _metresPerUnit = 1.0f;
@@ -2572,6 +2572,7 @@ namespace simul
 				StaticSetRenderBool("ShowRainTextures", _showRainTextures);
 				StaticSetRenderBool("SimulationTimeRain", _simulationTimeRain);
 				StaticSetRenderBool("instantupdate", _instantUpdate);
+				StaticSetRenderBool("gridrendering", _IntegrationScheme == 0);
 				StaticSetRenderInt("MaximumCubemapResolution", _CubemapResolution);
 				StaticSetRenderInt("CloudSteps", _CloudSteps);
 				StaticSetRenderFloat("SimpleCloudShadowing", _cloudShadowing);
