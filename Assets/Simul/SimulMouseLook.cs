@@ -98,6 +98,7 @@ public class SimulMouseLook : MonoBehaviour
             {
                 new_speed.x = 1.0F;
             }
+			ApplyTranslation(new_speed);
         }
         else if (Event.current.type == EventType.KeyUp)
         {
@@ -109,16 +110,17 @@ public class SimulMouseLook : MonoBehaviour
             {
                 new_speed.x = 0.0F;
             }
+			ApplyTranslation(new_speed);
         }
     }
 #endif
-	void ApplyTranslation(Vector3 rspeed)
+	void ApplyTranslation(Vector3 speed)
     {
         Vector3 up = transform.up;
         Vector3 right = transform.right;
         Vector3 forward = transform.forward;
-        transform.position-=up*speed.y* translationSpeed;
-        transform.position += right * speed.x* translationSpeed;
+        transform.position -= up * speed.y * translationSpeed;
+        transform.position += right * speed.x * translationSpeed;
         transform.position += forward * speed.z * translationSpeed;
     }
     void ApplyRotation(Vector3 rot_speed)
