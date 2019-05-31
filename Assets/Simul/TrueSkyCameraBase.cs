@@ -270,7 +270,7 @@ namespace simul
 			
 			proj[offset+12] = m.m30;
 			proj[offset+13] = m.m31;
-			proj[offset+14] = m.m32 ;          
+			proj[offset+14] = m.m32;
 			proj[offset+15] = m.m33 * metresPerUnit;
 		}
 		static public void ViewMatrixToTrueSkyFormat(RenderStyle renderStyle,Matrix4x4 m,float[] view,int offset=0,bool swap_yz=true)
@@ -280,7 +280,7 @@ namespace simul
 				return;
             offset *= 16;
 			float metresPerUnit = trueSKY.GetTrueSky().MetresPerUnit;
-			Matrix4x4 transform = trueSKY.GetTrueSky().transform.worldToLocalMatrix;
+			Matrix4x4 transform = trueSKY.GetTrueSky().transform.worldToLocalMatrix.inverse;
 			m=m*transform;
 			m=m.transpose;
 			Matrix4x4 n=m.inverse;
@@ -331,7 +331,7 @@ namespace simul
 				y.m32 = n.m32 * metresPerUnit;
 				y.m33 = n.m33;
 			}
-			
+
 			Matrix4x4 z=y.inverse;
 			view[offset+00] = z.m00;
 			view[offset+01] = z.m01;

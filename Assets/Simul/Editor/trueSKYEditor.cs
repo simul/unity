@@ -122,6 +122,12 @@ namespace simul
 				{
 					trueSky.time = EditorGUILayout.FloatField("Time", trueSky.time);
 					trueSky.speed = EditorGUILayout.FloatField("Speed", trueSky.speed);
+					string[] options = new string[]
+						{
+							"Fixed Number", "Fixed Gametime", "Fixed Realtime",
+						};
+					trueSky.InterpolationMode = EditorGUILayout.Popup("Interpolation Mode", trueSky.InterpolationMode, options);
+					trueSky.InstantUpdate = EditorGUILayout.Toggle("Instant Update", trueSky.InstantUpdate);
 					if (trueSky.SimulVersion >= trueSky.MakeSimulVersion(4, 2))
 					{
 						trueSky.HighDetailProportion = EditorGUILayout.Slider("High Detail", trueSky.HighDetailProportion, 0.0F, 1.0F);
@@ -165,11 +171,11 @@ namespace simul
 				{
 					trueSky.AtmosphericsAmortization = EditorGUILayout.IntSlider("Atmospherics Amortization", trueSky.AtmosphericsAmortization, 1, 4);
 					trueSky.GodRaysGrid = EditorGUILayout.Vector3Field("God Rays Grid", trueSky.GodRaysGrid);
-					if (trueSky.SimulVersion > trueSky.MakeSimulVersion(4, 1))
-					{
-						trueSky.CrepuscularRaysStrength = EditorGUILayout.Slider("Crepuscular Rays Strength", trueSky.CrepuscularRaysStrength, 0.0F, 1.0F);
-					}
-				}
+                    if (trueSky.SimulVersion > trueSky.MakeSimulVersion(4, 1))
+                    {
+                        trueSky.CrepuscularRaysStrength = EditorGUILayout.Slider("Crepuscular Rays Strength", trueSky.CrepuscularRaysStrength, 0.0F, 1.0F);
+                    }
+                }
 
 				if (trueSky.SimulVersion >= trueSky.MakeSimulVersion(4, 2))
 				{
@@ -432,6 +438,7 @@ namespace simul
 			Application.SetStackTraceLogType(LogType.Error | LogType.Assert | LogType.Exception | LogType.Warning | LogType.Log, StackTraceLogType.None);
 			string f = CommandLineReader.GetCustomArgument("Filename");
 			f = f.Replace("\"", "");
+			f = f.Replace("\\", "/");
 			string p = CommandLineReader.GetCustomArgument("Platform");
 			UnityEngine.Debug.Log("ExportPackageCmdLine " + f + ", " + p);
 			ExportPackage(f, p);
@@ -460,25 +467,6 @@ namespace simul
 			{
 				UnityEngine.Debug.Log("Unknown platform:" + platform);
 			}
-		}
-		static void TakeScreenshot(string fileName)
-		{
-			var cam = GameObject.Find("Main Camera").GetComponent<Camera>();
-			var renderTexture = new RenderTexture(Screen.width, Screen.height, 24);
-			cam.targetTexture = renderTexture;
-			cam.Render();
-			cam.targetTexture = null;
-
-			RenderTexture.active = renderTexture;
-			Texture2D screenshot = new Texture2D(Screen.width, Screen.height, TextureFormat.RGB24, false);
-			screenshot.ReadPixels(new Rect(0, 0, Screen.width, Screen.height), 0, 0);
-			screenshot.Apply();
-			RenderTexture.active = null;
-
-			//Encode screenshot to PNG
-			byte[] bytes = screenshot.EncodeToPNG();
-			UnityEngine.Object.Destroy(screenshot);
-			File.WriteAllBytes(fileName, bytes);
 		}
 	}
 }
