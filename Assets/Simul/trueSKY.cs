@@ -71,7 +71,18 @@ namespace simul
         public vec3 colour;
         public int age;
     };
-    class SimulImports
+	[StructLayout(LayoutKind.Explicit)]
+	public struct Variant
+	{
+		[FieldOffset(0)] public float Float;
+		[FieldOffset(0)] public int Int;
+		[FieldOffset(0)] public double Double;
+		[FieldOffset(0)] public long Int64;
+		[FieldOffset(0)] public vec3 Vec3;
+	};
+
+
+	class SimulImports
 	{ 
 		static bool _initialized = false;
 #if !UNITY_EDITOR && UNITY_SWITCH
@@ -219,6 +230,7 @@ namespace simul
 		[DllImport(SimulImports.renderer_dll)]		private static extern void StaticSetRenderInt(string name,int value);
 		[DllImport(SimulImports.renderer_dll)] 		private static extern void StaticSetRenderBool(string name, bool value);
 		[DllImport(SimulImports.renderer_dll)]		private static extern bool StaticGetRenderBool(string name);
+		[DllImport(SimulImports.renderer_dll)]		private static extern void StaticSetRender(string name,int numparams,Variant [] values);
 		[DllImport(SimulImports.renderer_dll)]		private static extern float StaticGetRenderFloatAtPosition(string name,float[] pos);
 
 		// These are for keyframe editing:
@@ -1217,6 +1229,69 @@ namespace simul
 			{
 				_MediumDetailProportion = value;
 				StaticSetRenderFloat("render:mediumdetailproportion", _MediumDetailProportion);
+			}
+		}
+		[SerializeField]
+		float _OriginLatitude=0.0F;
+		/// <summary>
+		/// Latitude of the trueSKY object's origin.
+		/// </summary>
+		public float OriginLatitude
+		{
+			get
+			{
+				return _OriginLatitude;
+			}
+			set
+			{
+				_OriginLatitude = value;
+				Variant [] _Variant =  { new Variant()};
+				_Variant[0].Vec3.x = _OriginLatitude;
+				_Variant[0].Vec3.y = _OriginLongitude;
+				_Variant[0].Vec3.z = _OriginHeading;
+				StaticSetRender("render:originlatlongheadingdeg",1,  _Variant);
+			}
+		}
+		[SerializeField]
+		float _OriginLongitude = 0.0F;
+		/// <summary>
+		/// Longitude of the trueSKY object's origin.
+		/// </summary>
+		public float OriginLongitude
+		{
+			get
+			{
+				return _OriginLongitude;
+			}
+			set
+			{
+				_OriginLongitude = value;
+				Variant[] _Variant = { new Variant() };
+				_Variant[0].Vec3.x = _OriginLatitude;
+				_Variant[0].Vec3.y = _OriginLongitude;
+				_Variant[0].Vec3.z = _OriginHeading;
+				StaticSetRender("render:originlatlongheadingdeg",1, _Variant);
+			}
+		}
+		[SerializeField]
+		float _OriginHeading = 0.0F;
+		/// <summary>
+		/// Longitude of the trueSKY object's origin.
+		/// </summary>
+		public float OriginHeading
+		{
+			get
+			{
+				return _OriginHeading;
+			}
+			set
+			{
+				_OriginHeading = value;
+				Variant[] _Variant = { new Variant() };
+				_Variant[0].Vec3.x = _OriginLatitude;
+				_Variant[0].Vec3.y = _OriginLongitude;
+				_Variant[0].Vec3.z = _OriginHeading;
+				StaticSetRender("render:originlatlongheadingdeg",1, _Variant);
 			}
 		}
 
@@ -2634,6 +2709,11 @@ namespace simul
 				StaticSetRenderFloat("render:extinction", _Extinction);
 				StaticSetRenderFloat("render:mieasymmetry", _MieAsymmetry);
 				StaticSetRenderFloat("render:minimumstarpixelsize", _minimumStarPixelSize);
+				Variant[] _Variant = { new Variant() };
+				_Variant[0].Vec3.x = _OriginLatitude;
+				_Variant[0].Vec3.y = _OriginLongitude;
+				_Variant[0].Vec3.z = _OriginHeading;
+				StaticSetRender("render:originlatlongheadingdeg", 1,_Variant);
 				_rendering_initialized = true;
 			}
 			catch (Exception )

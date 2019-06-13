@@ -91,7 +91,7 @@ public class TrueSkyDirectionalLight : MonoBehaviour
 		}
 		else
 		{
-			Debug.LogError("Valid = "+ res.valid);
+		//	Debug.LogError("Valid = "+ res.valid);
 		}
 		return false;
     }
