@@ -237,7 +237,9 @@ namespace simul
 		private static extern void OpenUI(System.IntPtr OwnerHWND, int[] pVisibleRect, int[] pParentRect, System.IntPtr Env, Style style,string skin);
 		[DllImport(SequenceEditorImports.editor_dll)]
 		private static extern void CloseUI(System.IntPtr OwnerHWND);
-		[DllImport(SequenceEditorImports.editor_dll)]
+        [DllImport(SequenceEditorImports.editor_dll)]
+        private static extern void UpdateUI(System.IntPtr OwnerHWND);
+        [DllImport(SequenceEditorImports.editor_dll)]
 		private static extern void HideUI(System.IntPtr OwnerHWND);
 
 		[DllImport(SequenceEditorImports.editor_dll)]
@@ -456,6 +458,7 @@ namespace simul
 			if (t != null)
 				StaticSetFloat(handle, "time", t.time);
             EditorApplication.playModeStateChanged += CloseDueToPlayModeStateChange;
+            EditorApplication.update += UpdateSequencer;
         }
 		protected static float[] viewmat = new float[16];
 		public static void HideSequencer()
@@ -463,5 +466,10 @@ namespace simul
             EditorApplication.playModeStateChanged -= CloseDueToPlayModeStateChange;
             HideUI(_handle);
 		}
+
+        public static void UpdateSequencer()
+        {
+            UpdateUI(handle);
+        }
 	}
 }
