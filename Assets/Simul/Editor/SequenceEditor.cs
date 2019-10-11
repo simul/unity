@@ -428,7 +428,8 @@ namespace simul
 			show_when_possible = false;
 			// Disable this when not needed:
 			EnableUILogging("trueSKYUnityUI.log");
-			int[] r = { 16, 16, 512, 512 };
+			const int menuBarOffset = 32;
+			int[] r = { 16, 16 + menuBarOffset, 800, 600 };
 			System.IntPtr Env = (System.IntPtr)0;
 			SetOnPropertiesChangedCallback(onPropertiesChangedCallback);
 			SetOnTimeChangedCallback(onTimeChangedCallback);

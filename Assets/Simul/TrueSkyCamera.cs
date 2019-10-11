@@ -200,11 +200,11 @@ namespace simul
 				overlay_buf.name            = "trueSKY overlay";
 				post_translucent_buf        = new CommandBuffer();
 				post_translucent_buf.name   = "trueSKY post translucent";
-				deferred_buf = new CommandBuffer();
-				deferred_buf.name = "trueSKY deferred contexts";
-				
-				blitbuf = new CommandBuffer();
-				blitbuf.name = "trueSKY depth blit";
+				deferred_buf				= new CommandBuffer();
+				deferred_buf.name			= "trueSKY deferred contexts";
+				blitbuf						= new CommandBuffer();
+				blitbuf.name				= "trueSKY depth blit";
+
 				cbuf_view_id                = -1;
 			}
 			if (cbuf_view_id != InternalGetViewId()) 
