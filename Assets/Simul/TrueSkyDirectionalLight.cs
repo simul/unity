@@ -39,61 +39,59 @@ public class TrueSkyDirectionalLight : MonoBehaviour
     bool UpdateLight()
     {
         LightingQueryResult res = mTsInstance.StaticLightingQuery(this.GetInstanceID(), transform.position);
-		if (res.valid == 1)
-		{
-			Vector4 linearColour = new Vector4();
-			linearColour.x = res.sunlight.x;
-			linearColour.y = res.sunlight.y;
-			linearColour.z = res.sunlight.z;
-			linearColour *= SunMultiplier;
+        if(res.valid == 1)
+        {
+            Vector4 linearColour    = new Vector4();
+            linearColour.x          = res.sunlight.x;
+            linearColour.y          = res.sunlight.y;
+            linearColour.z          = res.sunlight.z;
+            linearColour            *= SunMultiplier;
 
-			float m = Mathf.Max(Mathf.Max(linearColour.x, linearColour.y), linearColour.z);
-			float l = Mathf.Max(m, 1.0f);
-			Quaternion lrotation = new Quaternion();
-			if (m > 0.0f)
-			{
-				linearColour /= l;
-				mLightComponent.shadows = LightShadows.Soft;
-				mLightComponent.intensity = l * intensity_scale;
-				// mLightComponent.intensity   = 1.0f;
-				lrotation = mTsInstance.getSunRotation();
-			}
-			else
-			{
-				linearColour.x = res.moonlight.x;
-				linearColour.y = res.moonlight.y;
-				linearColour.z = res.moonlight.z;
-				linearColour *= MoonMultiplier;
+			float m                 = Mathf.Max(Mathf.Max(linearColour.x, linearColour.y), linearColour.z);
+            float l                 = Mathf.Max(m, 1.0f);
+            Quaternion lrotation    = new Quaternion();
+            if (m > 0.0f) 
+            {
+                linearColour                /= l;
+                mLightComponent.shadows     = LightShadows.Soft;
+                mLightComponent.intensity   = l*intensity_scale;
+                // mLightComponent.intensity   = 1.0f;
+                lrotation = mTsInstance.getSunRotation();
+            }
+            else
+            {
+                linearColour.x  = res.moonlight.x;
+                linearColour.y  = res.moonlight.y;
+                linearColour.z  = res.moonlight.z;
+                linearColour    *= MoonMultiplier;
 
-				m = Mathf.Max(Mathf.Max(linearColour.x, linearColour.y), linearColour.z);
-				l = Mathf.Max(m, 1.0f);
-				if (m > 0.0f)
-				{
-					linearColour /= l;
-					mLightComponent.shadows = LightShadows.Soft;
-					mLightComponent.intensity = l * intensity_scale;
-					//mLightComponent.intensity   = 1.0f;
-					lrotation = mTsInstance.getMoonRotation();
-				}
-				else
-				{
-					mLightComponent.shadows = LightShadows.None;
-					mLightComponent.intensity = 0.0f;
-				}
-			}
+                m               = Mathf.Max(Mathf.Max(linearColour.x, linearColour.y), linearColour.z);
+                l               = Mathf.Max(m, 1.0f);
+                if (m > 0.0f)
+                {
+                    linearColour                /= l;
+                    mLightComponent.shadows     = LightShadows.Soft;
+                    mLightComponent.intensity   = l* intensity_scale;
+                    //mLightComponent.intensity   = 1.0f;
+                    lrotation = mTsInstance.getMoonRotation();
+                }
+                else
+                {
+                    mLightComponent.shadows     = LightShadows.None;
+                    mLightComponent.intensity   = 0.0f;
+                }
+            }
 
-			mLightComponent.color = new Color(linearColour.x, linearColour.y, linearColour.z, 1.0f);
+            mLightComponent.color = new Color(linearColour.x, linearColour.y, linearColour.z, 1.0f);
+			mLightComponent.colorTemperature = 5500;
+			mLightComponent.intensity = 1200; //lux
 			if (ApplyRotation)
-			{
-				transform.rotation = lrotation;
-			}
-			return true;
-		}
-		else
-		{
-		//	Debug.LogError("Valid = "+ res.valid);
-		}
-		return false;
+            {
+                transform.rotation = lrotation;
+            }
+            return true;
+        }
+        return false;
     }
 
     void UpdateCookie()

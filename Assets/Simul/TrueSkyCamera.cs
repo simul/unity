@@ -27,7 +27,7 @@ namespace simul
 			return StaticGetOrAddView((System.IntPtr)view_ident);
 		}
 		// We will STORE the activeTexture from the camera and hope it's valid next frame.
-		RenderTexture activeTexture = null;
+		private RenderTexture activeTexture = null;
 		public RenderTexture inscatterRT;
 		public RenderTexture cloudShadowRT;
 		public RenderTexture lossRT;
@@ -110,7 +110,16 @@ namespace simul
             }
 		}
 
-        void OnEnable()
+		private void OnBeginFrameRendering(ScriptableRenderContext scriptableRenderContext, Camera camera)
+		{
+			HDRPPreRender(scriptableRenderContext, camera);
+		}
+		private void OnEndFrameRendering(ScriptableRenderContext scriptableRenderContext, Camera camera)
+		{
+			HDRPPostRender(camera);
+		}
+
+		void OnEnable()
         {
             // Actually create the hardware resources of the render targets
             if (cloudShadowRT)
@@ -121,7 +130,10 @@ namespace simul
                 inscatterRT.Create();
             if(cloudVisibilityRT)
                 cloudVisibilityRT.Create();
-        }
+
+			RenderPipelineManager.beginCameraRendering += OnBeginFrameRendering;
+			RenderPipelineManager.endCameraRendering += OnEndFrameRendering;
+		}
 
         public bool IsPPStak
         {
@@ -168,6 +180,8 @@ namespace simul
 		void OnDisable()
 		{
 			RemoveCommandBuffers();
+			RenderPipelineManager.beginCameraRendering -= OnBeginFrameRendering;
+			RenderPipelineManager.endCameraRendering += OnEndFrameRendering;
 		}
 
 		void RemoveCommandBuffers()
@@ -181,16 +195,15 @@ namespace simul
 		}
 		UnityViewStruct unityViewStruct=new UnityViewStruct();
 		System.IntPtr unityViewStructPtr = Marshal.AllocHGlobal(Marshal.SizeOf(new UnityViewStruct()));
-		void OnPreRender()
+		void HDRPPreRender(ScriptableRenderContext src, Camera cam)
 		{
-			if(!enabled||!gameObject.activeInHierarchy)
+			if (!enabled||!gameObject.activeInHierarchy)
 			{
 				UnityEngine.Debug.Log("Failed to draw");
 				return;
 			}
-			GetComponent<Camera>().depthTextureMode|=DepthTextureMode.Depth;
+			cam.depthTextureMode|=DepthTextureMode.Depth;
 			PreRender();
-			Camera cam = GetComponent<Camera>();
             if (mainCommandBuffer == null) 
 			{
 				RemoveCommandBuffers();
@@ -200,11 +213,10 @@ namespace simul
 				overlay_buf.name            = "trueSKY overlay";
 				post_translucent_buf        = new CommandBuffer();
 				post_translucent_buf.name   = "trueSKY post translucent";
-				deferred_buf				= new CommandBuffer();
-				deferred_buf.name			= "trueSKY deferred contexts";
-				blitbuf						= new CommandBuffer();
-				blitbuf.name				= "trueSKY depth blit";
-
+				deferred_buf                = new CommandBuffer();
+                deferred_buf.name           = "trueSKY deferred contexts";
+				blitbuf                     = new CommandBuffer();
+				blitbuf.name                = "trueSKY depth blit";
 				cbuf_view_id                = -1;
 			}
 			if (cbuf_view_id != InternalGetViewId()) 
@@ -268,12 +280,15 @@ namespace simul
 			post_translucent_buf.IssuePluginEventAndData(UnityGetPostTranslucentFuncWithData(), TRUESKY_EVENT_ID + cbuf_view_id, unityViewStructPtr);
 			overlay_buf.IssuePluginEventAndData(UnityGetOverlayFuncWithData(), TRUESKY_EVENT_ID + cbuf_view_id, unityViewStructPtr);
 
+			src.SetupCameraProperties(cam);
+			src.ExecuteCommandBuffer(mainCommandBuffer);
+			src.ExecuteCommandBuffer(post_translucent_buf);
+			src.ExecuteCommandBuffer(overlay_buf);
 		}
 		int duplicateFrames = 0;
 		int localFrameCount = 0;
-		void OnPostRender()
+		void HDRPPostRender(Camera cam)
 		{
-			Camera cam = GetComponent<Camera>();
 			activeTexture = cam.activeTexture;
 		}
 

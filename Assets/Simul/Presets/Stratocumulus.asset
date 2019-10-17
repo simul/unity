@@ -22,5 +22,4 @@ MonoBehaviour:
     \"0.9036494493484497\"\n\t\t\t\"fractal_wavelength\": \"              20\"\n\t\t\t\"godrayStrength\":
     \"               0\"\n\t\t\t\"indirect_light\": \"0.459999918937683\"\n\t\t\t\"light_asymmetry\":
     \"0.8700000047683716\"\n\t\t\t\"lightning\": \"               0\"\n\t\t\t\"octaves\":
-    \"5\"\n\t\t\t\"persistence\": \"0.949999988079071\"\n\t\t\t\"upperDensity\":
-    \"0.699999988079071\"\n\t}\n\t\t]\n}\n}\n\n"
+    \"5\"\n\t\t\t\"persistence\": \"0.949999988079071\"\n\t\t\t\"upperDensity\": \"0.699999988079071\"\n\t}\n\t\t]\n}\n}\n\n"

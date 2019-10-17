@@ -132,10 +132,6 @@ namespace simul
 					{
 						trueSky.HighDetailProportion = EditorGUILayout.Slider("High Detail", trueSky.HighDetailProportion, 0.0F, 1.0F);
 						trueSky.MediumDetailProportion = EditorGUILayout.Slider("Medium Detail", trueSky.MediumDetailProportion, trueSky.HighDetailProportion, 1.0F);
-
-						trueSky.OriginLatitude = EditorGUILayout.Slider("Latitude", trueSky.OriginLatitude, -90.0F, 90.0F);
-						trueSky.OriginLongitude = EditorGUILayout.Slider("Longitude", trueSky.OriginLongitude, -180.0F, 180.0F);
-						trueSky.OriginHeading = EditorGUILayout.Slider("Longitude", trueSky.OriginHeading, -180.0F, 180.0F);
 					}
 					EditorGUILayout.Space();
 				}
