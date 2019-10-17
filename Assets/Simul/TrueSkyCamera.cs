@@ -280,7 +280,7 @@ namespace simul
 			post_translucent_buf.IssuePluginEventAndData(UnityGetPostTranslucentFuncWithData(), TRUESKY_EVENT_ID + cbuf_view_id, unityViewStructPtr);
 			overlay_buf.IssuePluginEventAndData(UnityGetOverlayFuncWithData(), TRUESKY_EVENT_ID + cbuf_view_id, unityViewStructPtr);
 
-			src.SetupCameraProperties(cam);
+			//src.SetupCameraProperties(cam);
 			src.ExecuteCommandBuffer(mainCommandBuffer);
 			src.ExecuteCommandBuffer(post_translucent_buf);
 			src.ExecuteCommandBuffer(overlay_buf);
