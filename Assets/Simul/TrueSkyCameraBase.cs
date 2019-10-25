@@ -156,8 +156,8 @@ namespace simul
 		}
 		protected static Mutex mut  = new Mutex ();
         public bool flippedView     = true;
-        public float exposure       = 1.0F;
-        public float gamma          = 1.0F;
+        public float exposure       = 0.5F;
+        public float gamma          = 0.5F;
 		static protected Texture2D _dummyTexture;
 		protected RenderTextureHolder depthTexture      = new RenderTextureHolder();
 		protected RenderTextureHolder unityDepthTexture = new RenderTextureHolder();
