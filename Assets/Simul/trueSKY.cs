@@ -277,7 +277,7 @@ namespace simul
 
 
 		[DllImport(SimulImports.renderer_dll)]
-		public static extern System.IntPtr GetRenderingInterface();
+		public static extern System.IntPtr StaticGetRenderingInterface();
 		#endregion
 		#region API
 
