@@ -264,7 +264,7 @@ namespace simul
             local_path = local_path.Replace(".asset", ".sq");
             string filename = Path.GetFullPath(Path.Combine(Path.Combine(Application.dataPath, ".."), local_path));
             StaticSetString(Handle, "filename_dont_load", filename);
-            if(currentSequence.SequenceAsText != null) StaticSetSequence(Handle, currentSequence.SequenceAsText, currentSequence.SequenceAsText.Length + 1);
+			StaticSetSequence(Handle, currentSequence.SequenceAsText, currentSequence.SequenceAsText.Length + 1);
 
             trueSKY trueSKY = GetTrueSKY();
             // Initialize time from the trueSKY object
