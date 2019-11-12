@@ -124,8 +124,10 @@ namespace simul
         delegate void TOnSequenceChangeCallback(int hwnd, string newSequenceState);
         [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         delegate void TOnTimeChangedCallback(int hwnd, float time);
-
-        [DllImport("kernel32", SetLastError = true)]
+		[UnmanagedFunctionPointer(CallingConvention.StdCall)]
+		delegate void TDeferredRenderingCallback();
+		
+		[DllImport("kernel32", SetLastError = true)]
         static extern IntPtr LoadLibrary(string lpFileName);
         [DllImport("kernel32", CharSet = CharSet.Ansi, ExactSpelling = true, SetLastError = true)]
         static extern UIntPtr GetProcAddress(IntPtr hModule, string procName);
@@ -154,8 +156,10 @@ namespace simul
         private static extern void SetOnPropertiesChangedCallback(TOnSequenceChangeCallback CallbackFunc);
         [DllImport(SequencerManagerImports.editor_dll)]
         private static extern void SetOnTimeChangedCallback(TOnTimeChangedCallback CallbackFunc);
+		[DllImport(SequencerManagerImports.editor_dll)]
+		private static extern void SetDeferredRenderCallback(TDeferredRenderingCallback CallbackFunc); 
 
-        static bool LibraryHasExport(string lib, string procName)
+		static bool LibraryHasExport(string lib, string procName)
         {
             IntPtr hModule = LoadLibrary(lib);
             if(hModule != (IntPtr)0)
@@ -253,12 +257,12 @@ namespace simul
 
             OpenUI(Handle, r, r, (System.IntPtr)0, Style.UNITY_STYLE, EditorGUIUtility.isProSkin ? "unity_dark" : "unity");
 
-            /*Disabled while "world view of clouds" is not being drawn to.
+            //Disabled while "world view of clouds" is not being drawn to.
             if(LibraryHasExport("TrueSkyPluginRender_MT.dll", "StaticGetRenderingInterface"))
             {
                 SetRenderingInterface(Handle, simul.trueSKY.StaticGetRenderingInterface());
             }
-            */
+            
 
             // Edit the .sq file that this asset is imported from.
             local_path = local_path.Replace(".asset", ".sq");
@@ -305,7 +309,8 @@ namespace simul
         {
             SetOnPropertiesChangedCallback(OnPropertiesChangedCallback);
             SetOnTimeChangedCallback(OnTimeChangedCallback);
-            EditorApplication.update += UpdateSequencer;
+			SetDeferredRenderCallback(DeferredRenderCallback);
+			EditorApplication.update += UpdateSequencer;
         }
 
         //Delegate function for when the properties change in the sequencer window.
@@ -332,6 +337,15 @@ namespace simul
                     EditorUtility.SetDirty(trueSKY);
                 }
             };
-    }
+		static TDeferredRenderingCallback DeferredRenderCallback =
+			() =>
+			{
+				trueSKY trueSKY = GetTrueSKY();
+				if (trueSKY)
+				{
+					EditorUtility.SetDirty(trueSKY);
+				}
+			}; 
+	}
 }
 #endif //UNITY_EDITOR
