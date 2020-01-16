@@ -2210,8 +2210,164 @@ namespace simul
 					}
 			}
 		}
-		
-		bool _initialized = false;
+
+        [SerializeField]
+        bool _AutomaticRainbowPosition = true;
+
+        public bool AutomaticRainbowPosition
+        {
+            get
+            {
+                return _AutomaticRainbowPosition;
+            }
+            set
+            {
+                if (_AutomaticRainbowPosition != value) try
+                    {
+                        _AutomaticRainbowPosition = value;
+                        StaticSetRenderBool("render:automaticrainbowposition", _AutomaticRainbowPosition);
+                    }
+                    catch (Exception exc)
+                    {
+                        UnityEngine.Debug.Log(exc.ToString());
+                    }
+            }
+        }
+
+        [SerializeField]
+        float _RainbowElevation = 0.0F;
+        public float RainbowElevation
+        {
+            get
+            {
+                return _RainbowElevation;
+            }
+            set
+            {
+                if (_RainbowElevation != value) try
+                    {
+                        _RainbowElevation = value;
+                        StaticSetRenderFloat("render:rainbowelevation", _RainbowElevation);
+                    }
+                    catch (Exception exc)
+                    {
+                        UnityEngine.Debug.Log(exc.ToString());
+                    }
+            }
+        }
+
+        [SerializeField]
+        float _RainbowAzimuth = 0.0F;
+        public float RainbowAzimuth
+        {
+            get
+            {
+                return _RainbowAzimuth;
+            }
+            set
+            {
+                if (_RainbowAzimuth != value) try
+                    {
+                        _RainbowAzimuth = value;
+                        StaticSetRenderFloat("render:rainbowazimuth", _RainbowAzimuth);
+                    }
+                    catch (Exception exc)
+                    {
+                        UnityEngine.Debug.Log(exc.ToString());
+                    }
+            }
+        }
+
+        [SerializeField]
+        float _RainbowIntensity = 1.0F;
+        public float RainbowIntensity
+        {
+            get
+            {
+                return _RainbowIntensity;
+            }
+            set
+            {
+                if (_RainbowIntensity != value) try
+                    {
+                        _RainbowIntensity = value;
+                        StaticSetRenderFloat("render:rainbowintensity", _RainbowIntensity);
+                    }
+                    catch (Exception exc)
+                    {
+                        UnityEngine.Debug.Log(exc.ToString());
+                    }
+            }
+        }
+
+        [SerializeField]
+        float _RainbowDepthPoint = 1.0F;
+        public float RainbowDepthPoint
+        {
+            get
+            {
+                return _RainbowDepthPoint;
+            }
+            set
+            {
+                if (_RainbowDepthPoint != value) try
+                    {
+                        _RainbowDepthPoint = value;
+                        StaticSetRenderFloat("render:rainbowdepthpoint", _RainbowDepthPoint);
+                    }
+                    catch (Exception exc)
+                    {
+                        UnityEngine.Debug.Log(exc.ToString());
+                    }
+            }
+        }
+
+        [SerializeField]
+        bool _AllowOccludedRainbows = false;
+
+        public bool AllowOccludedRainbows
+        {
+            get
+            {
+                return _AllowOccludedRainbows;
+            }
+            set
+            {
+                if (_AllowOccludedRainbows != value) try
+                    {
+                        _AllowOccludedRainbows = value;
+                        StaticSetRenderBool("render:allowoccludedrainbow", _AllowOccludedRainbows);
+                    }
+                    catch (Exception exc)
+                    {
+                        UnityEngine.Debug.Log(exc.ToString());
+                    }
+            }
+        }
+        [SerializeField]
+        bool _AllowLunarRainbows = true;
+
+        public bool AllowLunarRainbows
+        {
+            get
+            {
+                return _AllowLunarRainbows;
+            }
+            set
+            {
+                if (_AllowLunarRainbows != value) try
+                    {
+                        _AllowLunarRainbows = value;
+                        StaticSetRenderBool("render:allowlunarrainbow", _AllowLunarRainbows);
+                    }
+                    catch (Exception exc)
+                    {
+                        UnityEngine.Debug.Log(exc.ToString());
+                    }
+            }
+        }
+
+        bool _initialized = false;
 		bool _rendering_initialized = false;
 		void Update()
 		{

@@ -90,7 +90,9 @@ namespace simul
 		bool interpolation = false;
 		[SerializeField]
 		static bool precipitation = false;
-		public override void OnInspectorGUI()
+        [SerializeField]
+        static bool rainbows = false;
+        public override void OnInspectorGUI()
 		{
 			trueSKY trueSky = (trueSKY)target;
 
@@ -221,7 +223,24 @@ namespace simul
 						EditorGUILayout.Space();
 					}
 
-					celestial = EditorGUILayout.Foldout(celestial,"Celestial");
+                    //Rainbow settings
+                    rainbows = EditorGUILayout.Foldout(rainbows, "Rainbows");
+                    if (rainbows)
+                    {
+                        if (trueSky.SimulVersion >= trueSky.MakeSimulVersion(4, 2))
+                        {
+                            trueSky.AutomaticRainbowPosition = EditorGUILayout.Toggle("Automatic Rainbow Position", trueSky.AutomaticRainbowPosition);
+                            trueSky.RainbowElevation = EditorGUILayout.Slider("Rainbow Elevation", trueSky.RainbowElevation, -90.0F, 0.0F);
+                            trueSky.RainbowAzimuth = EditorGUILayout.Slider("Rainbow Azimuth", trueSky.RainbowAzimuth, 0.0F, 360.0F);
+                            trueSky.RainbowIntensity = EditorGUILayout.Slider("Rainbow Intensity", trueSky.RainbowIntensity, 0.0F, 10.0F);
+                            trueSky.RainbowDepthPoint = EditorGUILayout.Slider("Rainbow Depth Point", trueSky.RainbowDepthPoint, 0.0F, 1.0F);
+                            trueSky.AllowOccludedRainbows = EditorGUILayout.Toggle("Allow Occluded Rainbows", trueSky.AllowOccludedRainbows);
+                            trueSky.AllowLunarRainbows = EditorGUILayout.Toggle("Allow Lunar Rainbows", trueSky.AllowLunarRainbows);
+                        }
+                        EditorGUILayout.Space();
+                    }
+
+                    celestial = EditorGUILayout.Foldout(celestial,"Celestial");
 					if (celestial)
 					{
 						trueSky.MaxSunRadiance = EditorGUILayout.FloatField("Max Sun Radiance", trueSky.MaxSunRadiance);
