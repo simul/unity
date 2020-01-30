@@ -53,47 +53,6 @@ namespace simul
                 currentPath = dllPath2 + Path.PathSeparator + currentPath;
             }
             Environment.SetEnvironmentVariable("PATH", currentPath, EnvironmentVariableTarget.Process);
-            if(!File.Exists(Environment.GetEnvironmentVariable("WINDIR") + @"\system32\msvcr110.dll"))
-            {
-                if(EditorUtility.DisplayDialog("Visual Studio Redistributable", "The trueSKY UI requires the Visual Studio redistributable to be installed.", "Install", "Not now"))
-                {
-                    UnityEngine.Debug.Log("Can't find msvcr110.dll - will install");
-                    // Use ProcessStartInfo class
-                    ProcessStartInfo startInfo = new ProcessStartInfo();
-                    startInfo.CreateNoWindow = false;
-                    startInfo.UseShellExecute = false;
-                    startInfo.WindowStyle = ProcessWindowStyle.Hidden;
-                    startInfo.FileName = dllPath1 + s + "vcredist_x86.exe";
-
-                    try
-                    {
-                        // Start the process with the info we specified.
-                        // Call WaitForExit and then the using statement will close.
-                        using(Process exeProcess = Process.Start(startInfo))
-                        {
-                            exeProcess.WaitForExit();
-                        }
-                    }
-                    catch
-                    {
-                        // Log error.
-                        UnityEngine.Debug.LogError("Error installing vc redist x86");
-                    }
-                    startInfo.FileName = dllPath2 + s + "vcredist_x64.exe";
-                    try
-                    {
-                        using(Process exeProcess = Process.Start(startInfo))
-                        {
-                            exeProcess.WaitForExit();
-                        }
-                    }
-                    catch
-                    {
-                        // Log error.
-                        UnityEngine.Debug.LogError("Error installing vc redist x64");
-                    }
-                }
-            }
             return true;
         }
 #if UNITY_IPHONE || UNITY_XBOX360
