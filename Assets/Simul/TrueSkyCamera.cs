@@ -53,12 +53,14 @@ namespace simul
 		/// </summary>
 		Material depthMaterial = null;
 
-		//Mesh screenQuad = null;
+        //Mesh screenQuad = null;
 
-		/// <summary>
-		/// If true, both XR eyes are expected to be rendered to the same texture.
-		/// </summary>
-		public bool ShareBuffersForVR = true;
+        /// <summary>
+        /// If true, both XR eyes are expected to be rendered to the same texture.
+        /// </summary>
+        public bool StereoRenderingMode_SinglePass = false;
+        public bool StereoRenderingMode_MultiPass = false;
+        public bool ShareBuffersForVR = true;
 		public TrueSkyRainDepthCamera RainDepthCamera = null;
 		/// <summary>
 		/// Generates an apropiate RenderStyle acording with this camera settings
@@ -78,7 +80,16 @@ namespace simul
 			Camera cam = GetComponent<Camera>();
 			if (cam.stereoEnabled)
 			{
-				StereoTargetEyeMask activeEye = cam.stereoTargetEye;
+                if (cam.stereoActiveEye == Camera.MonoOrStereoscopicEye.Left)
+                {
+                    StereoRenderingMode_SinglePass = true;
+                }
+                if (cam.stereoActiveEye == Camera.MonoOrStereoscopicEye.Right)
+                {
+                    StereoRenderingMode_MultiPass = true;
+                }
+
+                StereoTargetEyeMask activeEye = cam.stereoTargetEye;
 				r = r | RenderStyle.VR_STYLE;
 				if (activeEye == StereoTargetEyeMask.Right)
 				{
@@ -325,7 +336,7 @@ namespace simul
                 // If we are doing XR we need to setup the additional viewports
                 if ((renderStyle & RenderStyle.VR_STYLE) == RenderStyle.VR_STYLE)
                 {
-                    if (UnityEngine.XR.XRSettings.stereoRenderingMode == UnityEngine.XR.XRSettings.StereoRenderingMode.SinglePass)
+                    if (StereoRenderingMode_SinglePass)
                     {
                         int fullEyeWidth = UnityEngine.XR.XRSettings.eyeTextureDesc.width;
                         int halfEyeWidth = fullEyeWidth / 2;
@@ -350,8 +361,7 @@ namespace simul
                         depthViewports[2].z = targetViewports[2].w = halfEyeWidth;
                         depthViewports[2].w = targetViewports[2].h = eyeHeight;
                     }
-                    else if (UnityEngine.XR.XRSettings.stereoRenderingMode == UnityEngine.XR.XRSettings.StereoRenderingMode.MultiPass
-                    || UnityEngine.XR.XRSettings.stereoRenderingMode == UnityEngine.XR.XRSettings.StereoRenderingMode.SinglePassInstanced)
+                    if (StereoRenderingMode_MultiPass)
                     {
                         int fullEyeWidth = UnityEngine.XR.XRSettings.eyeTextureDesc.width;
                         int eyeHeight = UnityEngine.XR.XRSettings.eyeTextureDesc.height;
@@ -374,6 +384,7 @@ namespace simul
                         depthViewports[2].y = targetViewports[2].y = 0;
                         depthViewports[2].z = targetViewports[2].w = fullEyeWidth;
                         depthViewports[2].w = targetViewports[2].h = eyeHeight;
+
                     }
                 }
 #endif
