@@ -355,26 +355,25 @@ namespace simul
 				if ((renderStyle & RenderStyle.VR_STYLE) == RenderStyle.VR_STYLE)
 				{
 					int fullEyeWidth = UnityEngine.XR.XRSettings.eyeTextureDesc.width;
-					int halfEyeWidth = fullEyeWidth / 2;
 					int eyeHeight = UnityEngine.XR.XRSettings.eyeTextureDesc.height;
 
 					// This is the viewport that we reset to (default vp):
                     // it must cover all the texture
                     depthViewports[0].x = targetViewports[0].x = 0;
                     depthViewports[0].y = targetViewports[0].y = 0;
-                    depthViewports[0].z = targetViewports[0].w = fullEyeWidth;
+                    depthViewports[0].z = targetViewports[0].w = fullEyeWidth * 2;
                     depthViewports[0].w = targetViewports[0].h = eyeHeight;
 
 					// Left eye viewports
 					depthViewports[1].x = targetViewports[1].x = 0;
 					depthViewports[1].y = targetViewports[1].y = 0;
-					depthViewports[1].z = targetViewports[1].w = halfEyeWidth;
+					depthViewports[1].z = targetViewports[1].w = fullEyeWidth;
 					depthViewports[1].w = targetViewports[1].h = eyeHeight;
 
 					// Right eye viewports
-					depthViewports[2].x = targetViewports[2].x = halfEyeWidth;
+					depthViewports[2].x = targetViewports[2].x = fullEyeWidth;
 					depthViewports[2].y = targetViewports[2].y = 0;
-					depthViewports[2].z = targetViewports[2].w = halfEyeWidth;
+					depthViewports[2].z = targetViewports[2].w = fullEyeWidth;
 					depthViewports[2].w = targetViewports[2].h = eyeHeight;
 				}
 #endif
