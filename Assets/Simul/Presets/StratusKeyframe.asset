@@ -22,7 +22,8 @@ MonoBehaviour:
     \"               1\"\n\t\t\t\"fractal_wavelength\": \"              20\"\n\t\t\t\"godrayStrength\":
     \"               0\"\n\t\t\t\"indirect_light\": \"0.3959999918937683\"\n\t\t\t\"light_asymmetry\":
     \"0.8700000047683716\"\n\t\t\t\"lightning\": \"               0\"\n\t\t\t\"octaves\":
-    \"3\"\n\t\t\t\"offsetx\": \"               0\"\n\t\t\t\"offsety\": \"          604800\"\n\t\t\t\"persistence\":
-    \"0.550000011920929\"\n\t\t\t\"precipitation\": \"               0\"\n\t\t\t\"precipitation_waver\":
-    \"             0.5\"\n\t\t\t\"precipitation_wind_effect\": \"            0.25\"\n\t\t\t\"rain_to_snow\":
-    \"               0\"\n\t\t\t\"upperDensity\": \"0.699999988079071\"\n\t\t}\n\t\t]\n\t}\n}\n"
+    \"3\"\n\t\t\t\"offsetx\": \"               0\"\n\t\t\t\"offsety\": \"         
+    604800\"\n\t\t\t\"persistence\": \"0.550000011920929\"\n\t\t\t\"precipitation\":
+    \"               0\"\n\t\t\t\"precipitation_waver\": \"             0.5\"\n\t\t\t\"precipitation_wind_effect\":
+    \"            0.25\"\n\t\t\t\"rain_to_snow\": \"               0\"\n\t\t\t\"upperDensity\":
+    \"0.699999988079071\"\n\t\t}\n\t\t]\n\t}\n}\n"

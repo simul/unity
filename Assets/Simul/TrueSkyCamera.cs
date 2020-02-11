@@ -112,11 +112,11 @@ namespace simul
 
 		private void OnBeginFrameRendering(ScriptableRenderContext scriptableRenderContext, Camera camera)
 		{
-			HDRPPreRender(scriptableRenderContext, camera);
-		}
+        }
 		private void OnEndFrameRendering(ScriptableRenderContext scriptableRenderContext, Camera camera)
 		{
-			HDRPPostRender(camera);
+			HDRPPreRender(scriptableRenderContext, camera);
+			//HDRPPostRender(scriptableRenderContext, camera);
 		}
 
 		void OnEnable()
@@ -195,9 +195,9 @@ namespace simul
 		}
 		UnityViewStruct unityViewStruct=new UnityViewStruct();
 		System.IntPtr unityViewStructPtr = Marshal.AllocHGlobal(Marshal.SizeOf(new UnityViewStruct()));
-		void HDRPPreRender(ScriptableRenderContext src, Camera cam)
+		public void HDRPPreRender(ScriptableRenderContext src, Camera cam)
 		{
-			if (!enabled||!gameObject.activeInHierarchy)
+            if (!enabled||!gameObject.activeInHierarchy)
 			{
 				UnityEngine.Debug.Log("Failed to draw");
 				return;
@@ -280,14 +280,13 @@ namespace simul
 			post_translucent_buf.IssuePluginEventAndData(UnityGetPostTranslucentFuncWithData(), TRUESKY_EVENT_ID + cbuf_view_id, unityViewStructPtr);
 			overlay_buf.IssuePluginEventAndData(UnityGetOverlayFuncWithData(), TRUESKY_EVENT_ID + cbuf_view_id, unityViewStructPtr);
 
-			//src.SetupCameraProperties(cam);
 			src.ExecuteCommandBuffer(mainCommandBuffer);
 			src.ExecuteCommandBuffer(post_translucent_buf);
 			src.ExecuteCommandBuffer(overlay_buf);
 		}
 		int duplicateFrames = 0;
 		int localFrameCount = 0;
-		void HDRPPostRender(Camera cam)
+		void HDRPPostRender(ScriptableRenderContext src, Camera cam)
 		{
 			activeTexture = cam.activeTexture;
 		}

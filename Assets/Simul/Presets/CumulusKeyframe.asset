@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: CumulusKeyframe
   m_EditorClassIdentifier: 
   SequenceAsText: "{\n\t\"cloudKeyframer\":\n\t{\n\t\t\"keyframes\":\n\t\t[\n\t\t{\n\t\t\t\"ambient_light\":
-    \"               1\"\n\t\t\t\"baseNoiseFactor\": \"0.5\"\n\t\t\t\"churn\": \"
-    \              1\"\n\t\t\t\"cloud_base_km\": \"               2\"\n\t\t\t\"cloud_height_km\":
+    \"               1\"\n\t\t\t\"baseNoiseFactor\": \"0.5\"\n\t\t\t\"churn\": \"              
+    1\"\n\t\t\t\"cloud_base_km\": \"               2\"\n\t\t\t\"cloud_height_km\":
     \"4.0\"\n\t\t\t\"cloud_width_km\": \"50.0\"\n\t\t\t\"cloudiness\": \"0.5\"\n\t\t\t\"diffusivity\":
     \"0.01\"\n\t\t\t\"direct_light\": \"               1\"\n\t\t\t\"distributionBaseLayer\":
     \"0.239999994635582\"\n\t\t\t\"distributionTransition\": \"0.2000000029802322\"\n\t\t\t\"edgeSharpness\":
