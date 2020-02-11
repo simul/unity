@@ -51,7 +51,7 @@ MonoBehaviour:
     \"32\"\n\t\t\"OzoneStrength\": \"0.05000000074505806\"\n\t\t\"Rayleigh\": \"0.007127305958420038,0.01320421323180199,0.02738025225698948\"\n\t\t\"StarBrightness\":
     \"            2000\"\n\t\t\"StartDayNumber\": \"0\"\n\t\t\"SunIrradiance\": \"             
     25,              25,              25\"\n\t\t\"SunRadiusArcMinutes\": \"             
-    16\"\n\t\t\"SunTexture\": \"Sun.png\"\n\t\t\"Time\": \"0.2265816032886505\"\n\t\t\"TimezoneHours\":
+    16\"\n\t\t\"SunTexture\": \"Sun.png\"\n\t\t\"Time\": \"0.5012886524200439\"\n\t\t\"TimezoneHours\":
     \"               0\"\n\t\t\"atmosphereThicknessKm\": \"              64\"\n\t\t\"planetRadiusKm\":
     \"            6378\"\n\t\t\"keyframes\":\n\t\t[\n\t\t{\n\t\t\t\"AutoMie\": \"true\"\n\t\t\t\"FogCeilingKm\":
     \"               1\"\n\t\t\t\"GroundFog\": \"               0\"\n\t\t\t\"Haze\":

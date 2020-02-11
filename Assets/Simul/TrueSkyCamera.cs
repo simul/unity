@@ -116,7 +116,7 @@ namespace simul
 		private void OnEndFrameRendering(ScriptableRenderContext scriptableRenderContext, Camera camera)
 		{
 			HDRPPreRender(scriptableRenderContext, camera);
-			//HDRPPostRender(scriptableRenderContext, camera);
+			HDRPPostRender(scriptableRenderContext, camera);
 		}
 
 		void OnEnable()
@@ -181,7 +181,7 @@ namespace simul
 		{
 			RemoveCommandBuffers();
 			RenderPipelineManager.beginCameraRendering -= OnBeginFrameRendering;
-			RenderPipelineManager.endCameraRendering += OnEndFrameRendering;
+			RenderPipelineManager.endCameraRendering -= OnEndFrameRendering;
 		}
 
 		void RemoveCommandBuffers()
@@ -197,11 +197,15 @@ namespace simul
 		System.IntPtr unityViewStructPtr = Marshal.AllocHGlobal(Marshal.SizeOf(new UnityViewStruct()));
 		public void HDRPPreRender(ScriptableRenderContext src, Camera cam)
 		{
-            if (!enabled||!gameObject.activeInHierarchy)
+            //Don't draw to the scene view. Just should never be removed!
+            if (cam.cameraType == CameraType.SceneView)
+                return;
+
+            /*if (!enabled||!gameObject.activeInHierarchy)
 			{
 				UnityEngine.Debug.Log("Failed to draw");
 				return;
-			}
+			}*/
 			cam.depthTextureMode|=DepthTextureMode.Depth;
 			PreRender();
             if (mainCommandBuffer == null) 
@@ -251,7 +255,8 @@ namespace simul
 				blitbuf.SetRenderTarget((RenderTexture)depthTexture.renderTexture);
 				blitbuf.DrawProcedural(Matrix4x4.identity, depthMaterial, 0, MeshTopology.Triangles, 6);
 				blitbuf.SetRenderTarget(Graphics.activeColorBuffer);
-			}
+                //src.ExecuteCommandBuffer(blitbuf);
+            }
 			if (lastFrameCount == Time.renderedFrameCount)
 			{
 				duplicateFrames++;
@@ -269,11 +274,13 @@ namespace simul
 			PrepareMatrices();
 			unityViewStruct.nativeColourRenderBuffer = (System.IntPtr)0;
 			unityViewStruct.nativeDepthRenderBuffer = (System.IntPtr)0;
-			if (activeTexture!=null)
+
+            //activeTexture = cam.activeTexture;
+            //if (activeTexture!=null)
 			{
-				unityViewStruct.nativeColourRenderBuffer = activeTexture.colorBuffer.GetNativeRenderBufferPtr();
-				if (!editorMode )
-					unityViewStruct.nativeDepthRenderBuffer = activeTexture.depthBuffer.GetNativeRenderBufferPtr();
+                unityViewStruct.nativeColourRenderBuffer = Graphics.activeColorBuffer.GetNativeRenderBufferPtr(); //activeTexture.colorBuffer.GetNativeRenderBufferPtr();
+                //if (!editorMode)
+                    unityViewStruct.nativeDepthRenderBuffer = Graphics.activeDepthBuffer.GetNativeRenderBufferPtr(); //activeTexture.depthBuffer.GetNativeRenderBufferPtr();
 			}
 			Marshal.StructureToPtr(unityViewStruct, unityViewStructPtr, true);
 			mainCommandBuffer.IssuePluginEventAndData(UnityGetRenderEventFuncWithData(),TRUESKY_EVENT_ID + cbuf_view_id, unityViewStructPtr);

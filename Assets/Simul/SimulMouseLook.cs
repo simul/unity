@@ -26,7 +26,7 @@ public class SimulMouseLook : MonoBehaviour
 	public bool workWhenPlaying = true;
 	public float sensitivityX = 0.15F;
 	public float sensitivityY = 0.15F;
-    public float translationSpeed = 1.0F;
+    public float translationSpeed = 10.0F;
     public float TiltTurn=0.0F;
 	public float minimumX = -360F;
 	public float maximumX = 360F;
