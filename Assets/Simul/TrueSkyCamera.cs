@@ -197,7 +197,7 @@ namespace simul
 		System.IntPtr unityViewStructPtr = Marshal.AllocHGlobal(Marshal.SizeOf(new UnityViewStruct()));
 		public void HDRPPreRender(ScriptableRenderContext src, Camera cam)
 		{
-            //Don't draw to the scene view. Just should never be removed!
+            //Don't draw to the scene view. This should never be removed!
             if (cam.cameraType == CameraType.SceneView)
                 return;
 
@@ -255,7 +255,6 @@ namespace simul
 				blitbuf.SetRenderTarget((RenderTexture)depthTexture.renderTexture);
 				blitbuf.DrawProcedural(Matrix4x4.identity, depthMaterial, 0, MeshTopology.Triangles, 6);
 				blitbuf.SetRenderTarget(Graphics.activeColorBuffer);
-                //src.ExecuteCommandBuffer(blitbuf);
             }
 			if (lastFrameCount == Time.renderedFrameCount)
 			{
@@ -275,14 +274,10 @@ namespace simul
 			unityViewStruct.nativeColourRenderBuffer = (System.IntPtr)0;
 			unityViewStruct.nativeDepthRenderBuffer = (System.IntPtr)0;
 
-            //activeTexture = cam.activeTexture;
-            //if (activeTexture!=null)
-			{
-                unityViewStruct.nativeColourRenderBuffer = Graphics.activeColorBuffer.GetNativeRenderBufferPtr(); //activeTexture.colorBuffer.GetNativeRenderBufferPtr();
-                //if (!editorMode)
-                    unityViewStruct.nativeDepthRenderBuffer = Graphics.activeDepthBuffer.GetNativeRenderBufferPtr(); //activeTexture.depthBuffer.GetNativeRenderBufferPtr();
-			}
-			Marshal.StructureToPtr(unityViewStruct, unityViewStructPtr, true);
+            unityViewStruct.nativeColourRenderBuffer = Graphics.activeColorBuffer.GetNativeRenderBufferPtr(); //activeTexture.colorBuffer.GetNativeRenderBufferPtr();
+            unityViewStruct.nativeDepthRenderBuffer = Graphics.activeDepthBuffer.GetNativeRenderBufferPtr(); //activeTexture.depthBuffer.GetNativeRenderBufferPtr();
+
+            Marshal.StructureToPtr(unityViewStruct, unityViewStructPtr, true);
 			mainCommandBuffer.IssuePluginEventAndData(UnityGetRenderEventFuncWithData(),TRUESKY_EVENT_ID + cbuf_view_id, unityViewStructPtr);
 			post_translucent_buf.IssuePluginEventAndData(UnityGetPostTranslucentFuncWithData(), TRUESKY_EVENT_ID + cbuf_view_id, unityViewStructPtr);
 			overlay_buf.IssuePluginEventAndData(UnityGetOverlayFuncWithData(), TRUESKY_EVENT_ID + cbuf_view_id, unityViewStructPtr);
