@@ -50,6 +50,7 @@ namespace simul
         #region imports
         //! An event ID that will hopefully be sufficiently unique to trueSKY - if not, change this.
         protected const int TRUESKY_EVENT_ID = 13476;
+        static public int GetTRUESKY_EVENT_ID() { return TRUESKY_EVENT_ID; }
 		public struct int4
 		{
 			public int x,y,z,w;

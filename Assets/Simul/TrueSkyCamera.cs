@@ -110,14 +110,14 @@ namespace simul
             }
 		}
 
-		private void OnBeginFrameRendering(ScriptableRenderContext scriptableRenderContext, Camera camera)
+		/*private void OnBeginFrameRendering(ScriptableRenderContext scriptableRenderContext, Camera camera)
 		{
         }
 		private void OnEndFrameRendering(ScriptableRenderContext scriptableRenderContext, Camera camera)
 		{
 			HDRPPreRender(scriptableRenderContext, camera);
 			HDRPPostRender(scriptableRenderContext, camera);
-		}
+		}*/
 
 		void OnEnable()
         {
@@ -131,8 +131,8 @@ namespace simul
             if(cloudVisibilityRT)
                 cloudVisibilityRT.Create();
 
-			RenderPipelineManager.beginCameraRendering += OnBeginFrameRendering;
-			RenderPipelineManager.endCameraRendering += OnEndFrameRendering;
+			//RenderPipelineManager.beginCameraRendering += OnBeginFrameRendering;
+			//RenderPipelineManager.endCameraRendering += OnEndFrameRendering;
 		}
 
         public bool IsPPStak
@@ -180,8 +180,8 @@ namespace simul
 		void OnDisable()
 		{
 			RemoveCommandBuffers();
-			RenderPipelineManager.beginCameraRendering -= OnBeginFrameRendering;
-			RenderPipelineManager.endCameraRendering -= OnEndFrameRendering;
+			//RenderPipelineManager.beginCameraRendering -= OnBeginFrameRendering;
+			//RenderPipelineManager.endCameraRendering -= OnEndFrameRendering;
 		}
 
 		void RemoveCommandBuffers()
