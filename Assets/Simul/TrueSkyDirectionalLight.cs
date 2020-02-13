@@ -96,17 +96,17 @@ public class TrueSkyDirectionalLight : MonoBehaviour
 
     void UpdateCookie()
     {
-        Vector3 curShadowCenter = mTsInstance.getCloudShadowCentre();
+		//TODO: Invalid cast to float
+        /*Vector3 curShadowCenter = mTsInstance.getCloudShadowCentre();
         if (curShadowCenter.x >= Mathf.Infinity || curShadowCenter.z >= Mathf.Infinity)
         {
             curShadowCenter = Vector3.zero;
         }
-		//TODO: Invalid cast to float
-        //uint currentKeyframe        = mTsInstance.GetInterpolatedCloudKeyframe(0);
-        float sunHeight = 3000.0f;// (float)mTsInstance.GetKeyframeValue(currentKeyframe, "cloudBase") * 1000;
+        uint currentKeyframe        = mTsInstance.GetInterpolatedCloudKeyframe(0);
+        float sunHeight = (float)mTsInstance.GetKeyframeValue(currentKeyframe, "cloudBase") * 1000;
         float shadowSize            = mTsInstance.getCloudShadowScale();
         //float halfShadowSize        = shadowSize * 0.5f;
         transform.position          = new Vector3(0.0f, sunHeight, 0.0f);
-        mLightComponent.cookieSize  = shadowSize / 4.0f;
+        mLightComponent.cookieSize  = shadowSize / 4.0f;*/
     }
 }
