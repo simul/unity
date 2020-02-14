@@ -404,7 +404,7 @@ namespace simul
 		static void BuildSimulTest(string path, string platform)
 		{
 			BuildPlayerOptions buildPlayerOptions = new BuildPlayerOptions();
-			buildPlayerOptions.scenes = new[] { "Assets/Simul/SimulTest/TestLevel.unity" };
+			buildPlayerOptions.scenes = new[] { "Assets/Simul/SimulTest/TestLevelHDRP.unity" };
 			
 			string fullPath = path;
 			buildPlayerOptions.locationPathName = fullPath+"/SimulTest.exe";
