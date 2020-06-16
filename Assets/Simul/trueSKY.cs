@@ -2619,14 +2619,43 @@ namespace simul
 #if UNITY_PS4
                     StaticPushPath("ShaderBinaryPath", Application.streamingAssetsPath + @"/Simul/shaderbin/ps4");
 #elif UNITY_WSA || UNITY_STANDALONE_WIN
+					if(SystemInfo.graphicsDeviceType==GraphicsDeviceType.Vulkan)
+					{
+						StaticPushPath("ShaderBinaryPath", Application.dataPath + @"/Simul/shaderbin/vulkan");
+						StaticPushPath("ShaderBinaryPath", Application.dataPath + @"/Simul/shaderbin/x86_64/vulkan");
+					}
+					else if(SystemInfo.graphicsDeviceType==GraphicsDeviceType.Direct3D11)
+					{
                     StaticPushPath("ShaderBinaryPath", Application.dataPath + @"/Simul/shaderbin/x86_64");
+						StaticPushPath("ShaderBinaryPath", Application.dataPath + @"/Simul/shaderbin/x86_64/D3D11");
+					}
+					else if(SystemInfo.graphicsDeviceType==GraphicsDeviceType.Direct3D12)
+					{
+						StaticPushPath("ShaderBinaryPath", Application.dataPath + @"/Simul/shaderbin/x86_64");
+						StaticPushPath("ShaderBinaryPath", Application.dataPath + @"/Simul/shaderbin/x86_64/D3D12");
+					}
 #endif
                     StaticPushPath("TexturePath", Application.dataPath + @"/Simul/Media/Textures");
                 }
                 else
                 {
+					if (SystemInfo.graphicsDeviceType == GraphicsDeviceType.Vulkan)
+					{
+						StaticPushPath("ShaderBinaryPath", Application.dataPath + @"/Simul/shaderbin/vulkan");
+						StaticPushPath("ShaderPath", Application.dataPath + @"/Simul/shaderbin/vulkan");
+					}
+					else if (SystemInfo.graphicsDeviceType == GraphicsDeviceType.Direct3D11)
+					{
+						StaticPushPath("ShaderBinaryPath", Application.dataPath + @"/Simul/shaderbin/x86_64");
+						StaticPushPath("ShaderBinaryPath", Application.dataPath + @"/Simul/shaderbin/x86_64/D3D11");
+						StaticPushPath("ShaderPath", Application.dataPath + @"/Simul/shaderbin/x86_64");
+					}
+					else if (SystemInfo.graphicsDeviceType == GraphicsDeviceType.Direct3D12)
+					{
                     StaticPushPath("ShaderBinaryPath", Application.dataPath + @"/Simul/shaderbin/x86_64");
+						StaticPushPath("ShaderBinaryPath", Application.dataPath + @"/Simul/shaderbin/x86_64/D3D12");
                     StaticPushPath("ShaderPath", Application.dataPath + @"/Simul/shaderbin/x86_64");
+					}
                     StaticPushPath("TexturePath", Application.dataPath + @"/Simul/Media/Textures");
                 }
 
