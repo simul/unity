@@ -2500,8 +2500,29 @@ namespace simul
 					}
 			}
 		}
-		
-		bool _initialized = false;
+
+        [SerializeField]
+        bool _UsingIL2CPP = false;
+        public bool UsingIL2CPP
+        {
+            get
+            {
+                return _UsingIL2CPP;
+            }
+            set
+            {
+                if (_UsingIL2CPP != value) try
+                    {
+                        _UsingIL2CPP = value;
+                    }
+                    catch (Exception exc)
+                    {
+                        UnityEngine.Debug.Log(exc.ToString());
+                    }
+            }
+        }
+
+        bool _initialized = false;
 		bool _rendering_initialized = false;
 		void Update()
 		{

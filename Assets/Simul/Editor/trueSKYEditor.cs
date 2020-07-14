@@ -100,7 +100,9 @@ namespace simul
         static bool rainbows = false;
         [SerializeField]
 		static bool water = false;
-		public override void OnInspectorGUI()
+        [SerializeField]
+        static bool buildOptions = false;
+        public override void OnInspectorGUI()
 		{
 			trueSKY trueSky = (trueSKY)target;
 
@@ -323,7 +325,14 @@ namespace simul
 
 					EditorGUILayout.Space();
 				}
-			}
+                buildOptions = EditorGUILayout.Foldout(buildOptions, "Build Options");
+                if (buildOptions)
+                {
+                    trueSky.UsingIL2CPP = EditorGUILayout.Toggle("Use IL2CPP", trueSky.UsingIL2CPP);
+                    EditorGUILayout.Space();
+                }
+
+            }
 			EditorGUILayout.BeginHorizontal();
 			if (trueSKY.advancedMode)
 			{
