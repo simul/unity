@@ -117,8 +117,10 @@ namespace simul
             mainCommandBuffer.ClearRenderTarget(true, true, new Color(0.0F, 0.0F, 0.0F, 1.0F), 1.0F);
 			unityViewStruct.nativeColourRenderBuffer = (System.IntPtr)Graphics.activeColorBuffer.GetNativeRenderBufferPtr();
 			unityViewStruct.nativeDepthRenderBuffer = (System.IntPtr)Graphics.activeDepthBuffer.GetNativeRenderBufferPtr();
-			Marshal.StructureToPtr(unityViewStruct, unityViewStructPtr, true);
-			mainCommandBuffer.IssuePluginEventAndData(UnityGetRenderEventFuncWithData(), TRUESKY_EVENT_ID + cbuf_view_id, unityViewStructPtr);
+
+            bool il2cppScripting = UsingIL2CPP();
+            Marshal.StructureToPtr(unityViewStruct, unityViewStructPtr, !il2cppScripting);
+            mainCommandBuffer.IssuePluginEventAndData(UnityGetRenderEventFuncWithData(), TRUESKY_EVENT_ID + cbuf_view_id, unityViewStructPtr);
 		}
 
         float[] cview = new float[16];

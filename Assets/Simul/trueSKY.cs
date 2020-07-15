@@ -2501,8 +2501,29 @@ namespace simul
 					}
 			}
 		}
-		
-		bool _initialized = false;
+
+        [SerializeField]
+        bool _UsingIL2CPP = false;
+        public bool UsingIL2CPP
+        {
+            get
+            {
+                return _UsingIL2CPP;
+            }
+            set
+            {
+                if (_UsingIL2CPP != value) try
+                    {
+                        _UsingIL2CPP = value;
+                    }
+                    catch (Exception exc)
+                    {
+                        UnityEngine.Debug.Log(exc.ToString());
+                    }
+            }
+        }
+
+        bool _initialized = false;
 		bool _rendering_initialized = false;
 		void Update()
 		{
@@ -2757,8 +2778,12 @@ namespace simul
 #if UNITY_PS4
                     StaticPushPath("ShaderBinaryPath", Application.streamingAssetsPath + @"/Simul/shaderbin/ps4");
 #elif UNITY_WSA || UNITY_STANDALONE_WIN
-					if(SystemInfo.graphicsDeviceType==GraphicsDeviceType.Vulkan)
-						StaticPushPath("ShaderBinaryPath", Application.dataPath + @"/Simul/shaderbin/vulkan");
+                   if (SystemInfo.graphicsDeviceType == GraphicsDeviceType.Direct3D11)
+                        StaticPushPath("ShaderBinaryPath", Application.dataPath + @"/Simul/shaderbin/x86_64/d3d11");
+                    else if(SystemInfo.graphicsDeviceType==GraphicsDeviceType.Direct3D12)
+						StaticPushPath("ShaderBinaryPath", Application.dataPath + @"/Simul/shaderbin/x86_64/d3d12");
+					else if(SystemInfo.graphicsDeviceType==GraphicsDeviceType.Vulkan)
+						StaticPushPath("ShaderBinaryPath", Application.dataPath + @"/Simul/shaderbin/x86_64/vulkan");
 					else
 						StaticPushPath("ShaderBinaryPath", Application.dataPath + @"/Simul/shaderbin/x86_64");
 #endif
@@ -2766,10 +2791,20 @@ namespace simul
                 }
                 else
                 {
-					if (SystemInfo.graphicsDeviceType == GraphicsDeviceType.Vulkan)
+					if (SystemInfo.graphicsDeviceType == GraphicsDeviceType.Direct3D11)
+                    {
+                        StaticPushPath("ShaderBinaryPath", Application.dataPath + @"/Simul/shaderbin/x86_64/d3d11");
+                        StaticPushPath("ShaderPath", Application.dataPath + @"/Simul/shaderbin/x86_64/d3d11");
+                    }
+					else if (SystemInfo.graphicsDeviceType == GraphicsDeviceType.Direct3D12)
+                    {
+                        StaticPushPath("ShaderBinaryPath", Application.dataPath + @"/Simul/shaderbin/x86_64/d3d12");
+                        StaticPushPath("ShaderPath", Application.dataPath + @"/Simul/shaderbin/x86_64/d3d12");
+                    }
+                    else if (SystemInfo.graphicsDeviceType == GraphicsDeviceType.Vulkan)
 					{
-						StaticPushPath("ShaderBinaryPath", Application.dataPath + @"/Simul/shaderbin/vulkan");
-						StaticPushPath("ShaderPath", Application.dataPath + @"/Simul/shaderbin/vulkan");
+						StaticPushPath("ShaderBinaryPath", Application.dataPath + @"/Simul/shaderbin/x86_64/vulkan");
+						StaticPushPath("ShaderPath", Application.dataPath + @"/Simul/shaderbin/x86_64/vulkan");
 					}
 					else
 					{
