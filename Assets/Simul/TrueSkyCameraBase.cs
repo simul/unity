@@ -117,6 +117,11 @@ namespace simul
 			public UnityRenderOptions unityRenderOptions;
 			public System.IntPtr colourTexture;
 		}
+        protected bool UsingIL2CPP()
+        {
+            return simul.trueSKY.GetTrueSky().UsingIL2CPP;
+        }
+
 		protected int view_ident;
         protected int view_id=-1;
 		protected static int last_view_ident = 0;

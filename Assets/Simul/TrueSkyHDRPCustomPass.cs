@@ -100,7 +100,9 @@ namespace simul
 
             //Execute CmdBuffer
             cbuf_view_id = InternalGetViewId();
-            Marshal.StructureToPtr(unityViewStruct, unityViewStructPtr, true);
+
+            bool il2cppScripting = simul.trueSKY.GetTrueSky().UsingIL2CPP;
+            Marshal.StructureToPtr(unityViewStruct, unityViewStructPtr, !il2cppScripting);
 
             if (injectionPoint == CustomPassInjectionPoint.BeforePreRefraction)
                 cmd.IssuePluginEventAndData(UnityGetRenderEventFuncWithData(), GetTRUESKY_EVENT_ID() + cbuf_view_id, unityViewStructPtr);

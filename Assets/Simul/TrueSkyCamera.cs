@@ -277,7 +277,8 @@ namespace simul
             unityViewStruct.nativeColourRenderBuffer = Graphics.activeColorBuffer.GetNativeRenderBufferPtr(); //activeTexture.colorBuffer.GetNativeRenderBufferPtr();
             unityViewStruct.nativeDepthRenderBuffer = Graphics.activeDepthBuffer.GetNativeRenderBufferPtr(); //activeTexture.depthBuffer.GetNativeRenderBufferPtr();
 
-            Marshal.StructureToPtr(unityViewStruct, unityViewStructPtr, true);
+            bool il2cppScripting = UsingIL2CPP();
+            Marshal.StructureToPtr(unityViewStruct, unityViewStructPtr, !il2cppScripting);
 			mainCommandBuffer.IssuePluginEventAndData(UnityGetRenderEventFuncWithData(),TRUESKY_EVENT_ID + cbuf_view_id, unityViewStructPtr);
 			post_translucent_buf.IssuePluginEventAndData(UnityGetPostTranslucentFuncWithData(), TRUESKY_EVENT_ID + cbuf_view_id, unityViewStructPtr);
 			overlay_buf.IssuePluginEventAndData(UnityGetOverlayFuncWithData(), TRUESKY_EVENT_ID + cbuf_view_id, unityViewStructPtr);
