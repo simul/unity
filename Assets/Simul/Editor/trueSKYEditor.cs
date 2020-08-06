@@ -102,6 +102,10 @@ namespace simul
 		static bool water = false;
         [SerializeField]
         static bool buildOptions = false;
+
+        SortedSet<string> highlightConstellations = new SortedSet<string>();
+        static int hConsIndex = -1;
+
         public override void OnInspectorGUI()
 		{
 			trueSKY trueSky = (trueSKY)target;
@@ -254,16 +258,58 @@ namespace simul
                         EditorGUILayout.Space();
                     }
 
-					celestial = EditorGUILayout.Foldout(celestial, "Celestial");
-					if (celestial)
-					{
-						trueSky.MaxSunRadiance = EditorGUILayout.FloatField("Max Sun Radiance", trueSky.MaxSunRadiance);
-						trueSky.AdjustSunRadius = EditorGUILayout.Toggle("Adjust Sun Radius", trueSky.AdjustSunRadius);
-						trueSky.backgroundTexture = (Texture)EditorGUILayout.ObjectField("Cosmic Background", trueSky.backgroundTexture, typeof(Texture), false);
-						trueSky.moonTexture = (Texture)EditorGUILayout.ObjectField("Moon Texture", trueSky.moonTexture, typeof(Texture), false);
-						trueSky.MinimumStarPixelSize = EditorGUILayout.FloatField("Minimum Star Pixel Size", trueSky.MinimumStarPixelSize);
-						EditorGUILayout.Space();
-					}
+                    //Celestial settings
+                    celestial = EditorGUILayout.Foldout(celestial, "Celestial");
+                    if (celestial)
+                    {
+                        trueSky.MaxSunRadiance = EditorGUILayout.FloatField("Max Sun Radiance", trueSky.MaxSunRadiance);
+                        trueSky.AdjustSunRadius = EditorGUILayout.Toggle("Adjust Sun Radius", trueSky.AdjustSunRadius);
+                        trueSky.backgroundTexture = (Texture)EditorGUILayout.ObjectField("Cosmic Background", trueSky.backgroundTexture, typeof(Texture), false);
+                        trueSky.moonTexture = (Texture)EditorGUILayout.ObjectField("Moon Texture", trueSky.moonTexture, typeof(Texture), false);
+                        trueSky.MinimumStarPixelSize = EditorGUILayout.FloatField("Minimum Star Pixel Size", trueSky.MinimumStarPixelSize);
+
+                        string[] constellations = new string[] { "Andromeda","Antlia","Apus","Aquarius","Aquila","Ara","Aries","Auriga",
+                        "Bootes","Caelum","Camelopardalis","Cancer","Canes Venatici","Canis Major","Canis Minor","Capricornus",
+                        "Carina","Cassiopeia","Centaurus","Cepheus","Cetus","Chamaeleon","Circinus","Columba",
+                        "Coma Berenices","Corona Australis","Corona Borealis","Corvus","Crater","Crux","Cygnus","Delphinus",
+                        "Dorado","Draco","Equuleus","Eridanus","Fornax","Gemini","Grus","Hercules","Horologium","Hydra","Hydrus",
+                        "Indus","Lacerta","Leo","Leo Minor","Lepus","Libra","Lupus","Lynx","Lyra","Mensa","Microscopium",
+                        "Monoceros","Musca","Norma","Octans","Ophiuchus","Orion","Pavo","Pegasus","Perseus","Phoenix",
+                        "Pictor","Pisces","Piscis Austrinus","Puppis","Pyxis","Reticulum","Sagitta","Sagittarius","Scorpius",
+                        "Sculptor","Scutum","Serpens","Sextans","Taurus","Telescopium","Triangulum","Triangulum Australe",
+                        "Tucana","Ursa Major","Ursa Minor","Vela","Virgo","Volans","Vulpecula"};
+
+                        EditorGUILayout.Space();
+                        if (GUILayout.Button("Clear Highlight Constellations"))
+                        {
+                            highlightConstellations.Clear();
+                            trueSky.HighlightConstellation = highlightConstellations;
+                        }
+                        string f = EditorGUILayout.TextField("Find Constellation: ", "");
+                        if (f.Length > 0)
+                            hConsIndex = Array.FindIndex(constellations, t => t.Equals(f, StringComparison.InvariantCultureIgnoreCase));
+                        hConsIndex = EditorGUILayout.Popup("List of Constellations:", hConsIndex, constellations);
+                        if (hConsIndex > -1)
+                        { 
+                            if (GUILayout.Button("Add"))
+                            {
+                                highlightConstellations.Add(constellations[hConsIndex]);
+                                trueSky.HighlightConstellation = highlightConstellations;
+                            }
+                            if (highlightConstellations.Contains(constellations[hConsIndex]))
+                            if (GUILayout.Button("Remove"))
+                            {
+                                highlightConstellations.Remove(constellations[hConsIndex]);
+                                trueSky.HighlightConstellation = highlightConstellations;
+                            }
+                        }
+                        EditorGUILayout.Space();
+                        string hcons = "";
+                        foreach (string c in highlightConstellations)
+                            hcons += c + ", ";
+                        EditorGUILayout.LabelField(hcons);
+                        EditorGUILayout.Space();
+                    }
 
 					water = EditorGUILayout.Foldout(water, "Water");
 					if (water)
@@ -274,27 +320,16 @@ namespace simul
 				}
 				// Sound settings
 				debugging = EditorGUILayout.Foldout(debugging, "Debugging");
-				if (debugging)
-				{
-					trueSky.RenderInEditMode = EditorGUILayout.Toggle("Render in Edit Mode", trueSky.RenderInEditMode);
-					string gv = SystemInfo.graphicsDeviceVersion;
-					EditorGUILayout.LabelField("Unity Renderer", gv);
-					if (gv.Contains("Direct3D 11") || gv.Contains("Vulkan")||gv.Contains("Direct3D 12"))
-						EditorGUILayout.LabelField("GOOD", GUILayout.Width(48));
-					else
-						EditorGUILayout.LabelField("Unsupported", GUILayout.Width(48));
-					//	string cons=trueSky.GetRenderString("ConstellationNames");			
-					{
-						string f = EditorGUILayout.TextField("Find Constellation: ", "");
-						if (f.Length > 0)
-							trueSky.SetRenderString("HighlightConstellation", f);
-					}
-					string hcons = trueSky.GetRenderString("HighlightConstellationNames");
-					if (hcons.Length > 0)
-					{
-						EditorGUILayout.TextArea(hcons);
-					}
-					if (trueSKY.advancedMode)
+                if (debugging)
+                {
+                    trueSky.RenderInEditMode = EditorGUILayout.Toggle("Render in Edit Mode", trueSky.RenderInEditMode);
+                    string gv = SystemInfo.graphicsDeviceVersion;
+                    EditorGUILayout.LabelField("Unity Renderer", gv);
+                    if (gv.Contains("Direct3D 11") || gv.Contains("Vulkan") || gv.Contains("Direct3D 12"))
+                        EditorGUILayout.LabelField("GOOD", GUILayout.Width(48));
+                    else
+                        EditorGUILayout.LabelField("Unsupported", GUILayout.Width(48));
+                    if (trueSKY.advancedMode)
 					{
 						if (GUILayout.Button("Recompile Shaders"))
 						{
@@ -302,7 +337,6 @@ namespace simul
 						}
 					}
 					showProfiling = EditorGUILayout.Foldout(showProfiling, "Profiling");
-
 					if (showProfiling)
 					{
 						trueSky.maxGpuProfileLevel = EditorGUILayout.IntSlider("GPU Level", trueSky.maxGpuProfileLevel, 0, 8);

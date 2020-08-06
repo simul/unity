@@ -203,488 +203,507 @@ namespace simul
 #endif
 	}
 
-	[ExecuteInEditMode]
-	public class trueSKY : MonoBehaviour
-	{
-		#region Imports
-		[DllImport(SimulImports.renderer_dll)]      private static extern void GetSimulVersion(IntPtr major, IntPtr minor, IntPtr build);
+    [ExecuteInEditMode]
+    public class trueSKY : MonoBehaviour
+    {
+        #region Imports
+        [DllImport(SimulImports.renderer_dll)] private static extern void GetSimulVersion(IntPtr major, IntPtr minor, IntPtr build);
 
-		[DllImport(SimulImports.renderer_dll)]		private static extern void StaticEnableLogging(string logfile);
-		[DllImport(SimulImports.renderer_dll)]		private static extern int StaticInitInterface();
-		[DllImport(SimulImports.renderer_dll)]		private static extern void StaticPushPath(string name, string path);
-		[DllImport(SimulImports.renderer_dll)]		private static extern int StaticPopPath(string name);
-		[DllImport(SimulImports.renderer_dll)]		private static extern int StaticTick(float deltaTime);
+        [DllImport(SimulImports.renderer_dll)] private static extern void StaticEnableLogging(string logfile);
+        [DllImport(SimulImports.renderer_dll)] private static extern int StaticInitInterface();
+        [DllImport(SimulImports.renderer_dll)] private static extern void StaticPushPath(string name, string path);
+        [DllImport(SimulImports.renderer_dll)] private static extern int StaticPopPath(string name);
+        [DllImport(SimulImports.renderer_dll)] private static extern int StaticTick(float deltaTime);
 
-		// We import StaticSetSequenceTxt(const char *) rather than StaticSetSequence(std::string), as const char * converts from c# string.
-		[DllImport(SimulImports.renderer_dll)]		private static extern int StaticSetSequenceTxt(string SequenceInput);
-		[DllImport(SimulImports.renderer_dll)]		private static extern int StaticSetRenderTexture(string name,System.IntPtr texture);
-		[DllImport(SimulImports.renderer_dll)]		private static extern void StaticSetPointLight(int id,float[] pos,float min_radius,float max_radius,float[] irradiance);
-		[DllImport(SimulImports.renderer_dll)]		private static extern void StaticCloudPointQuery(int id,System.IntPtr pos, System.IntPtr volumeQueryResult);
-		[DllImport(SimulImports.renderer_dll)]		private static extern void StaticCloudLineQuery(int id,System.IntPtr startpos,System.IntPtr endpos, System.IntPtr volumeQueryResult);
-		[DllImport(SimulImports.renderer_dll)]		private static extern void StaticLightingQuery(int id, System.IntPtr pos, System.IntPtr lightingQueryResult);
-		[DllImport(SimulImports.renderer_dll)]		private static extern float StaticGetRenderFloat(string name);
-		[DllImport(SimulImports.renderer_dll)]		private static extern void StaticSetRenderFloat(string name,float value);
-		[DllImport(SimulImports.renderer_dll)]		private static extern bool StaticHasRenderFloat(string name);
-		[DllImport(SimulImports.renderer_dll)]		private static extern bool StaticHasRenderInt(string name);
-		[DllImport(SimulImports.renderer_dll)]		private static extern int StaticGetRenderInt(string name);
-		[DllImport(SimulImports.renderer_dll)]		private static extern void StaticSetRenderInt(string name,int value);
-		[DllImport(SimulImports.renderer_dll)] 		private static extern void StaticSetRenderBool(string name, bool value);
-		[DllImport(SimulImports.renderer_dll)]		private static extern bool StaticGetRenderBool(string name);
-		[DllImport(SimulImports.renderer_dll)]		private static extern void StaticSetRender(string name,int numparams,Variant [] values);
-		[DllImport(SimulImports.renderer_dll)]		private static extern float StaticGetRenderFloatAtPosition(string name,float[] pos);
+        // We import StaticSetSequenceTxt(const char *) rather than StaticSetSequence(std::string), as const char * converts from c# string.
+        [DllImport(SimulImports.renderer_dll)] private static extern int StaticSetSequenceTxt(string SequenceInput);
+        [DllImport(SimulImports.renderer_dll)] private static extern int StaticSetRenderTexture(string name, System.IntPtr texture);
+        [DllImport(SimulImports.renderer_dll)] private static extern void StaticSetPointLight(int id, float[] pos, float min_radius, float max_radius, float[] irradiance);
+        [DllImport(SimulImports.renderer_dll)] private static extern void StaticCloudPointQuery(int id, System.IntPtr pos, System.IntPtr volumeQueryResult);
+        [DllImport(SimulImports.renderer_dll)] private static extern void StaticCloudLineQuery(int id, System.IntPtr startpos, System.IntPtr endpos, System.IntPtr volumeQueryResult);
+        [DllImport(SimulImports.renderer_dll)] private static extern void StaticLightingQuery(int id, System.IntPtr pos, System.IntPtr lightingQueryResult);
+        [DllImport(SimulImports.renderer_dll)] private static extern float StaticGetRenderFloat(string name);
+        [DllImport(SimulImports.renderer_dll)] private static extern void StaticSetRenderFloat(string name, float value);
+        [DllImport(SimulImports.renderer_dll)] private static extern bool StaticHasRenderFloat(string name);
+        [DllImport(SimulImports.renderer_dll)] private static extern bool StaticHasRenderInt(string name);
+        [DllImport(SimulImports.renderer_dll)] private static extern int StaticGetRenderInt(string name);
+        [DllImport(SimulImports.renderer_dll)] private static extern void StaticSetRenderInt(string name, int value);
+        [DllImport(SimulImports.renderer_dll)] private static extern void StaticSetRenderBool(string name, bool value);
+        [DllImport(SimulImports.renderer_dll)] private static extern bool StaticGetRenderBool(string name);
+        [DllImport(SimulImports.renderer_dll)] private static extern void StaticSetRender(string name, int numparams, Variant[] values);
+        [DllImport(SimulImports.renderer_dll)] private static extern float StaticGetRenderFloatAtPosition(string name, float[] pos);
 
-		// These are for keyframe editing:
-		[DllImport(SimulImports.renderer_dll)]		private static extern int	StaticRenderGetNumKeyframes			(int layer);
-		[DllImport(SimulImports.renderer_dll)]		private static extern uint	StaticRenderInsertKeyframe			(int layer,float t );
-		[DllImport(SimulImports.renderer_dll)]		private static extern void	StaticRenderDeleteKeyframe			(uint uid );
-		[DllImport(SimulImports.renderer_dll)]		private static extern uint	StaticRenderGetKeyframeByIndex		(int layer,int index);
-		[DllImport(SimulImports.renderer_dll)]		private static extern uint	GetInterpolatedCloudKeyframeUniqueId(int layer);
-		[DllImport(SimulImports.renderer_dll)]		private static extern uint	GetInterpolatedSkyKeyframeUniqueId();
-
-		// Getting and changing properties of keyframes.
-		[DllImport(SimulImports.renderer_dll)]		private static extern bool StaticRenderKeyframeHasFloat(uint uid,string name);
-		[DllImport(SimulImports.renderer_dll)]		private static extern void	StaticRenderKeyframeSetFloat	(uint uid,string name,float value);
-		[DllImport(SimulImports.renderer_dll)]		private static extern float StaticRenderKeyframeGetFloat	(uint uid,string name);
-		[DllImport(SimulImports.renderer_dll)]		private static extern bool StaticRenderKeyframeHasInt		(uint uid,string name);
-		[DllImport(SimulImports.renderer_dll)]		private static extern void	StaticRenderKeyframeSetInt		(uint uid,string name,int value);
-		[DllImport(SimulImports.renderer_dll)]		private static extern int	StaticRenderKeyframeGetInt		(uint uid,string name);
-		[DllImport(SimulImports.renderer_dll)]		private static extern bool StaticRenderKeyframeHasBool		(uint uid,string name);
-		[DllImport(SimulImports.renderer_dll)]		private static extern void	StaticRenderKeyframeSetBool		(uint uid,string name,bool value);
-		[DllImport(SimulImports.renderer_dll)]		private static extern bool	StaticRenderKeyframeGetBool		(uint uid,string name);
-
-		[DllImport(SimulImports.renderer_dll)]		private static extern bool StaticCreateBoundedWaterObject	(uint ID, float[] dimension, float[] location);
-		[DllImport(SimulImports.renderer_dll)]		private static extern void StaticRemoveBoundedWaterObject	(uint ID);
-
-		[DllImport(SimulImports.renderer_dll)]		private static extern bool StaticAddWaterProbe				(uint ID, float[] location);
-		[DllImport(SimulImports.renderer_dll)]		private static extern void StaticRemoveWaterProbe			(uint ID);
-		[DllImport(SimulImports.renderer_dll)]		private static extern void StaticUpdateWaterProbeValues     (uint ID, float[] location);
-		[DllImport(SimulImports.renderer_dll)]		private static extern void StaticGetWaterProbeValues		(uint ID, float[] result);
-
-		[DllImport(SimulImports.renderer_dll)]		private static extern void StaticSetWaterFloat	(string name, int ID, float value);
-		[DllImport(SimulImports.renderer_dll)]		private static extern void StaticSetWaterInt	(string name, int ID, int value);
-		[DllImport(SimulImports.renderer_dll)]		private static extern void StaticSetWaterBool	(string name, int ID, bool value);
-		[DllImport(SimulImports.renderer_dll)]		private static extern void StaticSetWaterVector	(string name, int ID, float[] value);
-
-		[DllImport(SimulImports.renderer_dll)]		private static extern int StaticGetRenderString(string name, StringBuilder str, int len);
-		[DllImport(SimulImports.renderer_dll)]		private static extern void StaticSetRenderString(string name, string value);
-		[DllImport(SimulImports.renderer_dll)]		public static extern void StaticTriggerAction(string name);
-
-		[DllImport(SimulImports.renderer_dll)]		public static extern int GetNumStorms();
-		[DllImport(SimulImports.renderer_dll)]		public static extern uint GetStormAtTime(float t);
-		[DllImport(SimulImports.renderer_dll)]		public static extern uint GetStormByIndex(int i);
-        [DllImport(SimulImports.renderer_dll)]      public static extern int StaticGetLightningBolts(IntPtr s, int maxnum);
-        [DllImport(SimulImports.renderer_dll)]      public static extern int StaticSpawnLightning2(IntPtr startpos, IntPtr endpos,float magnitude, IntPtr colour);
-
-
-		[DllImport(SimulImports.renderer_dll)]
-		public static extern System.IntPtr StaticGetRenderingInterface();
-		#endregion
-		#region API
-
-		public int SimulVersionMajor = 0;
-		public int SimulVersionMinor = 0;
-		public int SimulVersionBuild = 0;
-
-		public int SimulVersion
-		{
-			get
-			{
-				return MakeSimulVersion(SimulVersionMajor,SimulVersionMinor);
-			}
-		}
-		public int MakeSimulVersion(int major, int minor)
-		{
-			return (major << 8) + minor;
-		}
-		private static trueSKY trueSkySingleton = null;
-
-		public trueSKY()
-		{
-		}
-
-		~trueSKY()
-		{
-			if (this == trueSkySingleton)
-				trueSkySingleton = null;
-		}
-		
-		/// <summary>
-		/// Get the trueSKY component in the scene.
-		/// </summary>
-		/// <returns></returns>
-		public static trueSKY GetTrueSky()
-		{
-			if (trueSkySingleton == null)
-				trueSkySingleton = GameObject.FindObjectOfType<trueSKY>();
-			return trueSkySingleton;
-		}
-		public void SetPointLight(int id,Vector3 pos,float min_radius,float max_radius,Vector3 irradiance)
-		{
-			Vector3 convertedPos = UnityToTrueSkyPosition (pos);   			// convert from Unity format to trueSKY  
-
-			float[] p = { convertedPos.x, convertedPos.y, convertedPos.z };   
-			float[] i = { irradiance.x, irradiance.z, irradiance.y };
-			StaticSetPointLight(id, p, min_radius,max_radius, i);
-		}
-		public LightingQueryResult StaticLightingQuery(int id, Vector3 pos)
-		{
-			Vector3 convertedPos = UnityToTrueSkyPosition(pos);             // convert from Unity format to trueSKY
-
-			LightingQueryResult res = new LightingQueryResult();
-			IntPtr unmanagedPosPtr = Marshal.AllocHGlobal(12);
-			IntPtr unmanagedResultPtr = Marshal.AllocHGlobal(Marshal.SizeOf(typeof(LightingQueryResult)));
-			float[] p = { convertedPos.x, convertedPos.y, convertedPos.z };
-			Marshal.Copy(p, 0, unmanagedPosPtr, 3);
-			StaticLightingQuery(id, unmanagedPosPtr, unmanagedResultPtr);
-			res = (LightingQueryResult)Marshal.PtrToStructure(unmanagedResultPtr, typeof(LightingQueryResult));
-
-			// Call unmanaged code
-			Marshal.FreeHGlobal(unmanagedPosPtr);
-			Marshal.FreeHGlobal(unmanagedResultPtr);
-			return res;
-		}
-		public VolumeQueryResult GetCloudQuery(int id, Vector3 pos)
-		{
-			Vector3 convertedPos = UnityToTrueSkyPosition (pos);  			// convert from Unity format to trueSKY
-
-			VolumeQueryResult res = new VolumeQueryResult();
-			IntPtr unmanagedPosPtr = Marshal.AllocHGlobal(12);
-			IntPtr unmanagedResultPtr = Marshal.AllocHGlobal(Marshal.SizeOf(typeof(VolumeQueryResult)));
-			float[] p = { convertedPos.x, convertedPos.y, convertedPos.z };
-			Marshal.Copy(p, 0, unmanagedPosPtr, 3);
-			StaticCloudPointQuery(id, unmanagedPosPtr, unmanagedResultPtr);
-			res = (VolumeQueryResult)Marshal.PtrToStructure(unmanagedResultPtr, typeof(VolumeQueryResult));
-
-			// Call unmanaged code
-			Marshal.FreeHGlobal(unmanagedPosPtr);
-			Marshal.FreeHGlobal(unmanagedResultPtr);
-			return res;
-		}
-		public LineQueryResult CloudLineQuery(int id, Vector3 startpos, Vector3 endpos)
-		{
-			Vector3 convertedStartPos = UnityToTrueSkyPosition(startpos);
-			Vector3 convertedEndPos = UnityToTrueSkyPosition(endpos);
-
-			LineQueryResult res = new LineQueryResult();
-			IntPtr unmanagedPosPtr1 = Marshal.AllocHGlobal(12);
-			IntPtr unmanagedPosPtr2 = Marshal.AllocHGlobal(12);
-			IntPtr unmanagedResultPtr = Marshal.AllocHGlobal(Marshal.SizeOf(typeof(LineQueryResult)));
-			// swap y and z because Unity
-			float[] p1 = { convertedStartPos.x, convertedStartPos.y, convertedStartPos.z };
-			float[] p2 = { convertedEndPos.x, convertedEndPos.y, convertedEndPos.z };
-			Marshal.Copy(p1, 0, unmanagedPosPtr1, 3);
-			Marshal.Copy(p2, 0, unmanagedPosPtr2, 3);
-			StaticCloudLineQuery(id, unmanagedPosPtr1,unmanagedPosPtr2, unmanagedResultPtr);
-			res = (LineQueryResult)Marshal.PtrToStructure(unmanagedResultPtr, typeof(LineQueryResult));
-			// Call unmanaged code
-			Marshal.FreeHGlobal(unmanagedPosPtr1);
-			Marshal.FreeHGlobal(unmanagedPosPtr2);
-			Marshal.FreeHGlobal(unmanagedResultPtr);
-			return res;
-		}
-		public float GetCloudAtPosition(Vector3 pos)
-		{
-			Vector3 convertedPos = UnityToTrueSkyPosition(pos);
-			float[] x = { convertedPos.x, convertedPos.y, convertedPos.z };
-			float ret = StaticGetRenderFloatAtPosition("Cloud", x);
-			return ret;
-		}
-		public float GetCloudShadowAtPosition(Vector3 pos)
-		{
-			Vector3 convertedPos = UnityToTrueSkyPosition(pos);
-			float[] x = { convertedPos.x, convertedPos.y, convertedPos.z };
-			float ret = StaticGetRenderFloatAtPosition("CloudShadow", x);
-			return ret;
-		}
-		public float GetPrecipitationAtPosition(Vector3 pos)
-		{
-			Vector3 convertedPos = UnityToTrueSkyPosition(pos);
-			float[] x = { convertedPos.x, convertedPos.y, convertedPos.z };
-			float ret = StaticGetRenderFloatAtPosition("Precipitation", x);
-			return ret;
-		}
-		// These are for keyframe editing:
         // These are for keyframe editing:
-		public int GetNumSkyKeyframes()
-		{
-			return StaticRenderGetNumKeyframes(0);
-		}
+        [DllImport(SimulImports.renderer_dll)] private static extern int StaticRenderGetNumKeyframes(int layer);
+        [DllImport(SimulImports.renderer_dll)] private static extern uint StaticRenderInsertKeyframe(int layer, float t);
+        [DllImport(SimulImports.renderer_dll)] private static extern void StaticRenderDeleteKeyframe(uint uid);
+        [DllImport(SimulImports.renderer_dll)] private static extern uint StaticRenderGetKeyframeByIndex(int layer, int index);
+        [DllImport(SimulImports.renderer_dll)] private static extern uint GetInterpolatedCloudKeyframeUniqueId(int layer);
+        [DllImport(SimulImports.renderer_dll)] private static extern uint GetInterpolatedSkyKeyframeUniqueId();
 
-		public int GetNumCloudKeyframes()
-		{
-			return StaticRenderGetNumKeyframes(1);
-		}
+        // Getting and changing properties of keyframes.
+        [DllImport(SimulImports.renderer_dll)] private static extern bool StaticRenderKeyframeHasFloat(uint uid, string name);
+        [DllImport(SimulImports.renderer_dll)] private static extern void StaticRenderKeyframeSetFloat(uint uid, string name, float value);
+        [DllImport(SimulImports.renderer_dll)] private static extern float StaticRenderKeyframeGetFloat(uint uid, string name);
+        [DllImport(SimulImports.renderer_dll)] private static extern bool StaticRenderKeyframeHasInt(uint uid, string name);
+        [DllImport(SimulImports.renderer_dll)] private static extern void StaticRenderKeyframeSetInt(uint uid, string name, int value);
+        [DllImport(SimulImports.renderer_dll)] private static extern int StaticRenderKeyframeGetInt(uint uid, string name);
+        [DllImport(SimulImports.renderer_dll)] private static extern bool StaticRenderKeyframeHasBool(uint uid, string name);
+        [DllImport(SimulImports.renderer_dll)] private static extern void StaticRenderKeyframeSetBool(uint uid, string name, bool value);
+        [DllImport(SimulImports.renderer_dll)] private static extern bool StaticRenderKeyframeGetBool(uint uid, string name);
 
-		public int GetNumCloud2DKeyframes()
-		{
-			if(SimulVersionMinor == 1)
-			{
-				return StaticRenderGetNumKeyframes(2);
-			}
-			return -1;
-		}
+        [DllImport(SimulImports.renderer_dll)] private static extern bool StaticCreateBoundedWaterObject(uint ID, float[] dimension, float[] location);
+        [DllImport(SimulImports.renderer_dll)] private static extern void StaticRemoveBoundedWaterObject(uint ID);
 
-		public uint InsertSkyKeyframe(float t)
-		{
-			return StaticRenderInsertKeyframe(0,t);
-		}
+        [DllImport(SimulImports.renderer_dll)] private static extern bool StaticAddWaterProbe(uint ID, float[] location);
+        [DllImport(SimulImports.renderer_dll)] private static extern void StaticRemoveWaterProbe(uint ID);
+        [DllImport(SimulImports.renderer_dll)] private static extern void StaticUpdateWaterProbeValues(uint ID, float[] location);
+        [DllImport(SimulImports.renderer_dll)] private static extern void StaticGetWaterProbeValues(uint ID, float[] result);
 
-		public uint InsertCloudKeyframe(float t)
-		{
-			return StaticRenderInsertKeyframe(1,t);
-		}
+        [DllImport(SimulImports.renderer_dll)] private static extern void StaticSetWaterFloat(string name, int ID, float value);
+        [DllImport(SimulImports.renderer_dll)] private static extern void StaticSetWaterInt(string name, int ID, int value);
+        [DllImport(SimulImports.renderer_dll)] private static extern void StaticSetWaterBool(string name, int ID, bool value);
+        [DllImport(SimulImports.renderer_dll)] private static extern void StaticSetWaterVector(string name, int ID, float[] value);
 
-		public uint Insert2DCloudKeyframe(float t)
-		{
-			if (SimulVersion < MakeSimulVersion(4, 2))
-			{
-				return StaticRenderInsertKeyframe(2, t);
-			}
-			return 0;
-		}
+        [DllImport(SimulImports.renderer_dll)] private static extern int StaticGetRenderString(string name, StringBuilder str, int len);
+        [DllImport(SimulImports.renderer_dll)] private static extern void StaticSetRenderString(string name, string value);
+        [DllImport(SimulImports.renderer_dll)] public static extern void StaticTriggerAction(string name);
 
-		public void DeleteKeyframe(uint uid)
-		{
-			StaticRenderDeleteKeyframe(uid);
-		}
-		
-		public uint GetSkyKeyframeByIndex(int index)
-		{
-			return StaticRenderGetKeyframeByIndex(0,index);
-		}
+        [DllImport(SimulImports.renderer_dll)] public static extern int GetNumStorms();
+        [DllImport(SimulImports.renderer_dll)] public static extern uint GetStormAtTime(float t);
+        [DllImport(SimulImports.renderer_dll)] public static extern uint GetStormByIndex(int i);
+        [DllImport(SimulImports.renderer_dll)] public static extern int StaticGetLightningBolts(IntPtr s, int maxnum);
+        [DllImport(SimulImports.renderer_dll)] public static extern int StaticSpawnLightning2(IntPtr startpos, IntPtr endpos, float magnitude, IntPtr colour);
 
-		public uint GetCloudKeyframeByIndex(int index)
-		{
-			return StaticRenderGetKeyframeByIndex(1,index);
-		}
 
-		public uint GetCloud2DKeyframeByIndex(int index)
-		{
-			if (SimulVersion < MakeSimulVersion(4, 2))
-			{
-				return StaticRenderGetKeyframeByIndex(2, index);
-			}
-			return 0;
-		}
+        [DllImport(SimulImports.renderer_dll)]
+        public static extern System.IntPtr StaticGetRenderingInterface();
+        #endregion
+        #region API
 
-		public uint GetInterpolatedCloudKeyframe(int layer)
-		{
-			return GetInterpolatedCloudKeyframeUniqueId(layer);
-		}
-		public uint GetInterpolatedSkyKeyframe()
-		{
-			return GetInterpolatedSkyKeyframeUniqueId();
-		}
-		// Getting and changing properties of keyframes.
-		public void SetKeyframeValue(uint uid,string name,object value)
-		{
-			//UnityEngine.Debug.Log("trueSKY.SetKeyframeValue "+uid+" "+name+" "+value);
-			//UnityEngine.Debug.Log("type is "+value.GetType());
-			if(value.GetType()==typeof(double))
-			{
-				//UnityEngine.Debug.Log("it's a double");
-				double d=(double)value;
-				StaticRenderKeyframeSetFloat(uid,name,(float)d);
-			}
-			else if(value.GetType()==typeof(float)||value.GetType()==typeof(double))
-			{
-				//UnityEngine.Debug.Log("it's a float");
-				StaticRenderKeyframeSetFloat(uid,name,(float)value);
-			}
-			else if(value.GetType()==typeof(int))
-			{
-				//UnityEngine.Debug.Log("it's an int");
-				StaticRenderKeyframeSetInt(uid,name,(int)value);
-			}
-			else if(value.GetType()==typeof(bool))
-			{
-				//UnityEngine.Debug.Log("it's a bool");
-				StaticRenderKeyframeSetBool(uid,name,(bool)value);
-			}
-		}
-		public object GetKeyframeValue(uint uid,string name)
-		{
-			if(StaticRenderKeyframeHasFloat(uid,name))
-				return StaticRenderKeyframeGetFloat(uid,name);
-			if(StaticRenderKeyframeHasInt(uid,name))
-				return StaticRenderKeyframeGetInt(uid,name);
-			return 0;
-		}
+        public int SimulVersionMajor = 0;
+        public int SimulVersionMinor = 0;
+        public int SimulVersionBuild = 0;
 
-		public uint GetStormUidByIndex(int index)
-		{
-			return GetStormByIndex(index);
-		}
-		public uint GetStormUidAtTime(float time)
-		{
-			return GetStormAtTime(time);
-		}
-		public float GetStormFloat(uint uid, string name)
-		{
-			return StaticRenderKeyframeGetFloat(uid, name);
-		}
-		public void SetStormFloat(uint uid, string name, float value)
-		{
-			StaticRenderKeyframeSetFloat(uid, name, value);
-		}
-		public int GetStormInt(uint uid, string name)
-		{
-			return StaticRenderKeyframeGetInt(uid, name);
-		}
-		public void SetStormInt(uint uid, string name, int value)
-		{
-			StaticRenderKeyframeSetInt(uid, name, value);
-		}
-		/// <summary>
-		/// Retrieve the active strike. end and start position in metres.
-		/// </summary>
-		public ExportLightningStrike GetCurrentStrike()
-		{
-			IntPtr unmanagedResultPtr = Marshal.AllocHGlobal(Marshal.SizeOf(typeof(ExportLightningStrike)));
-			StaticGetLightningBolts(unmanagedResultPtr, 1);
+        public int SimulVersion
+        {
+            get
+            {
+                return MakeSimulVersion(SimulVersionMajor, SimulVersionMinor);
+            }
+        }
+        public int MakeSimulVersion(int major, int minor)
+        {
+            return (major << 8) + minor;
+        }
+        private static trueSKY trueSkySingleton = null;
 
-			var strike = (ExportLightningStrike)Marshal.PtrToStructure(unmanagedResultPtr, typeof(ExportLightningStrike));
-			strike.pos.x /= MetresPerUnit;
-			strike.pos.y /= MetresPerUnit;
-			strike.pos.z /= MetresPerUnit;
-			strike.endpos.x /= MetresPerUnit;
-			strike.endpos.y /= MetresPerUnit;
-			strike.endpos.z /= MetresPerUnit;
+        public trueSKY()
+        {
+        }
 
-			var c = strike.pos.y;
-			strike.pos.y = strike.pos.z;
-			strike.pos.z = c;
+        ~trueSKY()
+        {
+            if (this == trueSkySingleton)
+                trueSkySingleton = null;
+        }
 
-			c = strike.endpos.y;
-			strike.endpos.y = strike.endpos.z;
-			strike.endpos.z = c;
+        /// <summary>
+        /// Get the trueSKY component in the scene.
+        /// </summary>
+        /// <returns></returns>
+        public static trueSKY GetTrueSky()
+        {
+            if (trueSkySingleton == null)
+                trueSkySingleton = GameObject.FindObjectOfType<trueSKY>();
+            return trueSkySingleton;
+        }
+        public void SetPointLight(int id, Vector3 pos, float min_radius, float max_radius, Vector3 irradiance)
+        {
+            Vector3 convertedPos = UnityToTrueSkyPosition(pos);             // convert from Unity format to trueSKY  
 
-			return strike;
-		}
-		/// <summary>
-		/// Spawns a strike.
-		/// </summary>
-		/// <param name="start"> Staring position of the strike (unity units) </param>
-		/// <param name="end"> End position of the strike (unity units) </param>
-		public void SpawnStrike(Vector3 start, Vector3 end)
-		{
-			start *= MetresPerUnit;
-			end *= MetresPerUnit;
+            float[] p = { convertedPos.x, convertedPos.y, convertedPos.z };
+            float[] i = { irradiance.x, irradiance.z, irradiance.y };
+            StaticSetPointLight(id, p, min_radius, max_radius, i);
+        }
+        public LightingQueryResult StaticLightingQuery(int id, Vector3 pos)
+        {
+            Vector3 convertedPos = UnityToTrueSkyPosition(pos);             // convert from Unity format to trueSKY
 
-			IntPtr unmanagedStart = Marshal.AllocHGlobal(sizeof(float) * 3);
-			IntPtr unmanagedEnd = Marshal.AllocHGlobal(sizeof(float) * 3);
-			IntPtr unmanagedColour = Marshal.AllocHGlobal(sizeof(float) * 3);
-			float[] ns = { start.x, start.z, start.y };
-			float[] ne = { end.x, end.z, end.y };
-			float[] nc = { 1.0f, 1.0f, 1.0f };
-			Marshal.Copy(ns, 0, unmanagedStart, 3);
-			Marshal.Copy(ne, 0, unmanagedEnd, 3);
-			Marshal.Copy(nc, 0, unmanagedColour, 3);
+            LightingQueryResult res = new LightingQueryResult();
+            IntPtr unmanagedPosPtr = Marshal.AllocHGlobal(12);
+            IntPtr unmanagedResultPtr = Marshal.AllocHGlobal(Marshal.SizeOf(typeof(LightingQueryResult)));
+            float[] p = { convertedPos.x, convertedPos.y, convertedPos.z };
+            Marshal.Copy(p, 0, unmanagedPosPtr, 3);
+            StaticLightingQuery(id, unmanagedPosPtr, unmanagedResultPtr);
+            res = (LightingQueryResult)Marshal.PtrToStructure(unmanagedResultPtr, typeof(LightingQueryResult));
 
-			StaticSpawnLightning2(unmanagedStart, unmanagedEnd, 0.0f, unmanagedColour);
+            // Call unmanaged code
+            Marshal.FreeHGlobal(unmanagedPosPtr);
+            Marshal.FreeHGlobal(unmanagedResultPtr);
+            return res;
+        }
+        public VolumeQueryResult GetCloudQuery(int id, Vector3 pos)
+        {
+            Vector3 convertedPos = UnityToTrueSkyPosition(pos);             // convert from Unity format to trueSKY
 
-			Marshal.FreeHGlobal(unmanagedStart);
-			Marshal.FreeHGlobal(unmanagedEnd);
-			Marshal.FreeHGlobal(unmanagedColour);
-		}
+            VolumeQueryResult res = new VolumeQueryResult();
+            IntPtr unmanagedPosPtr = Marshal.AllocHGlobal(12);
+            IntPtr unmanagedResultPtr = Marshal.AllocHGlobal(Marshal.SizeOf(typeof(VolumeQueryResult)));
+            float[] p = { convertedPos.x, convertedPos.y, convertedPos.z };
+            Marshal.Copy(p, 0, unmanagedPosPtr, 3);
+            StaticCloudPointQuery(id, unmanagedPosPtr, unmanagedResultPtr);
+            res = (VolumeQueryResult)Marshal.PtrToStructure(unmanagedResultPtr, typeof(VolumeQueryResult));
 
-		// --- Conversion functions for TrueSky position/direction <=> Unity position/direction ---
-		static public Vector3 TrueSkyToUnityPosition(Vector3 ts_pos)
-		{
-			Matrix4x4 u2t = UnityToTrueSkyMatrix();
-			Matrix4x4 t2u = u2t.inverse;
-			Vector4 u_pos = t2u * (new Vector4(ts_pos.x, ts_pos.z, ts_pos.y, 1.0F));
-			return new Vector3(u_pos.x, u_pos.y, u_pos.z);
-		}
-		static public Vector3 TrueSkyToUnityDirection(Vector3 ts_dir)
-		{
-			Matrix4x4 u2t = UnityToTrueSkyMatrix();
-			Matrix4x4 t2u = u2t.inverse;
-			Vector4 u_dir = t2u * (new Vector4(ts_dir.x, ts_dir.z, ts_dir.y, 0.0F));
-			return new Vector3(u_dir.x, u_dir.y, u_dir.z);
-		}
-		static public Vector3 UnityToTrueSkyPosition(Vector3 upos)
-		{
-			Vector4 u_dir = UnityToTrueSkyMatrix() * (new Vector4(upos.x, upos.y, upos.z,1.0F));
-			return new Vector3(u_dir.x, u_dir.z, u_dir.y);
-		}
-		static public Vector3 UnityToTrueSkyDirection(Vector3 u_dir)
-		{
-			Vector4 ts_dir = UnityToTrueSkyMatrix()*(new Vector4(u_dir.x, u_dir.y, u_dir.z,0));
-			return new Vector3(ts_dir.x, ts_dir.z, ts_dir.y);
-		}
-		static public Matrix4x4 UnityToTrueSkyMatrix()
-		{
-			Matrix4x4 transform = trueSKY.GetTrueSky().transform.worldToLocalMatrix;
-			float metresPerUnit = trueSKY.GetTrueSky().MetresPerUnit;
-			Matrix4x4 scale		=new Matrix4x4();
-			scale.SetTRS(new Vector3(0,0,0),new Quaternion(0,0,0,1.0F),new Vector3(metresPerUnit,metresPerUnit,metresPerUnit));
-			transform=scale*transform;
-			return transform;
-		}
+            // Call unmanaged code
+            Marshal.FreeHGlobal(unmanagedPosPtr);
+            Marshal.FreeHGlobal(unmanagedResultPtr);
+            return res;
+        }
+        public LineQueryResult CloudLineQuery(int id, Vector3 startpos, Vector3 endpos)
+        {
+            Vector3 convertedStartPos = UnityToTrueSkyPosition(startpos);
+            Vector3 convertedEndPos = UnityToTrueSkyPosition(endpos);
 
-		#endregion
+            LineQueryResult res = new LineQueryResult();
+            IntPtr unmanagedPosPtr1 = Marshal.AllocHGlobal(12);
+            IntPtr unmanagedPosPtr2 = Marshal.AllocHGlobal(12);
+            IntPtr unmanagedResultPtr = Marshal.AllocHGlobal(Marshal.SizeOf(typeof(LineQueryResult)));
+            // swap y and z because Unity
+            float[] p1 = { convertedStartPos.x, convertedStartPos.y, convertedStartPos.z };
+            float[] p2 = { convertedEndPos.x, convertedEndPos.y, convertedEndPos.z };
+            Marshal.Copy(p1, 0, unmanagedPosPtr1, 3);
+            Marshal.Copy(p2, 0, unmanagedPosPtr2, 3);
+            StaticCloudLineQuery(id, unmanagedPosPtr1, unmanagedPosPtr2, unmanagedResultPtr);
+            res = (LineQueryResult)Marshal.PtrToStructure(unmanagedResultPtr, typeof(LineQueryResult));
+            // Call unmanaged code
+            Marshal.FreeHGlobal(unmanagedPosPtr1);
+            Marshal.FreeHGlobal(unmanagedPosPtr2);
+            Marshal.FreeHGlobal(unmanagedResultPtr);
+            return res;
+        }
+        public float GetCloudAtPosition(Vector3 pos)
+        {
+            Vector3 convertedPos = UnityToTrueSkyPosition(pos);
+            float[] x = { convertedPos.x, convertedPos.y, convertedPos.z };
+            float ret = StaticGetRenderFloatAtPosition("Cloud", x);
+            return ret;
+        }
+        public float GetCloudShadowAtPosition(Vector3 pos)
+        {
+            Vector3 convertedPos = UnityToTrueSkyPosition(pos);
+            float[] x = { convertedPos.x, convertedPos.y, convertedPos.z };
+            float ret = StaticGetRenderFloatAtPosition("CloudShadow", x);
+            return ret;
+        }
+        public float GetPrecipitationAtPosition(Vector3 pos)
+        {
+            Vector3 convertedPos = UnityToTrueSkyPosition(pos);
+            float[] x = { convertedPos.x, convertedPos.y, convertedPos.z };
+            float ret = StaticGetRenderFloatAtPosition("Precipitation", x);
+            return ret;
+        }
+        // These are for keyframe editing:
+        // These are for keyframe editing:
+        public int GetNumSkyKeyframes()
+        {
+            return StaticRenderGetNumKeyframes(0);
+        }
 
-		[SerializeField]
-		float _metresPerUnit = 1.0f;
-		public float MetresPerUnit
-		{
-			get
-			{
-				return _metresPerUnit;
-			}
-			set
-			{
-				if (_metresPerUnit != value) try
-				{
-					_metresPerUnit = value;
-				}
-				catch (Exception exc)
-				{
-					UnityEngine.Debug.Log(exc.ToString());
-				}
-			}
-		}
+        public int GetNumCloudKeyframes()
+        {
+            return StaticRenderGetNumKeyframes(1);
+        }
 
-		[SerializeField]
-		bool _renderInEditMode = true;
-		public bool RenderInEditMode
-		{
-			get
-			{
-				return _renderInEditMode;
-			}
-			set
-			{
-				if (_renderInEditMode != value) try
-					{
-						_renderInEditMode = value;
-						StaticSetRenderBool("EnableRendering", Application.isPlaying || _renderInEditMode);
-						//RepaintAll();
-					}
-					catch (Exception exc)
-					{
-						UnityEngine.Debug.Log(exc.ToString());
-					}
-			}
-		}
+        public int GetNumCloud2DKeyframes()
+        {
+            if (SimulVersionMinor == 1)
+            {
+                return StaticRenderGetNumKeyframes(2);
+            }
+            return -1;
+        }
 
-		[SerializeField]
-		float _minimumStarPixelSize = 1.0f;
-		public float MinimumStarPixelSize
-		{
-			get
-			{
-				return _minimumStarPixelSize;
-			}
-			set
-			{
-				_minimumStarPixelSize = value;
-				StaticSetRenderFloat("render:minimumstarpixelsize", _minimumStarPixelSize);
-			}
-		}
+        public uint InsertSkyKeyframe(float t)
+        {
+            return StaticRenderInsertKeyframe(0, t);
+        }
 
-		[SerializeField]
+        public uint InsertCloudKeyframe(float t)
+        {
+            return StaticRenderInsertKeyframe(1, t);
+        }
+
+        public uint Insert2DCloudKeyframe(float t)
+        {
+            if (SimulVersion < MakeSimulVersion(4, 2))
+            {
+                return StaticRenderInsertKeyframe(2, t);
+            }
+            return 0;
+        }
+
+        public void DeleteKeyframe(uint uid)
+        {
+            StaticRenderDeleteKeyframe(uid);
+        }
+
+        public uint GetSkyKeyframeByIndex(int index)
+        {
+            return StaticRenderGetKeyframeByIndex(0, index);
+        }
+
+        public uint GetCloudKeyframeByIndex(int index)
+        {
+            return StaticRenderGetKeyframeByIndex(1, index);
+        }
+
+        public uint GetCloud2DKeyframeByIndex(int index)
+        {
+            if (SimulVersion < MakeSimulVersion(4, 2))
+            {
+                return StaticRenderGetKeyframeByIndex(2, index);
+            }
+            return 0;
+        }
+
+        public uint GetInterpolatedCloudKeyframe(int layer)
+        {
+            return GetInterpolatedCloudKeyframeUniqueId(layer);
+        }
+        public uint GetInterpolatedSkyKeyframe()
+        {
+            return GetInterpolatedSkyKeyframeUniqueId();
+        }
+        // Getting and changing properties of keyframes.
+        public void SetKeyframeValue(uint uid, string name, object value)
+        {
+            //UnityEngine.Debug.Log("trueSKY.SetKeyframeValue "+uid+" "+name+" "+value);
+            //UnityEngine.Debug.Log("type is "+value.GetType());
+            if (value.GetType() == typeof(double))
+            {
+                //UnityEngine.Debug.Log("it's a double");
+                double d = (double)value;
+                StaticRenderKeyframeSetFloat(uid, name, (float)d);
+            }
+            else if (value.GetType() == typeof(float) || value.GetType() == typeof(double))
+            {
+                //UnityEngine.Debug.Log("it's a float");
+                StaticRenderKeyframeSetFloat(uid, name, (float)value);
+            }
+            else if (value.GetType() == typeof(int))
+            {
+                //UnityEngine.Debug.Log("it's an int");
+                StaticRenderKeyframeSetInt(uid, name, (int)value);
+            }
+            else if (value.GetType() == typeof(bool))
+            {
+                //UnityEngine.Debug.Log("it's a bool");
+                StaticRenderKeyframeSetBool(uid, name, (bool)value);
+            }
+        }
+        public object GetKeyframeValue(uint uid, string name)
+        {
+            if (StaticRenderKeyframeHasFloat(uid, name))
+                return StaticRenderKeyframeGetFloat(uid, name);
+            if (StaticRenderKeyframeHasInt(uid, name))
+                return StaticRenderKeyframeGetInt(uid, name);
+            return 0;
+        }
+
+        public uint GetStormUidByIndex(int index)
+        {
+            return GetStormByIndex(index);
+        }
+        public uint GetStormUidAtTime(float time)
+        {
+            return GetStormAtTime(time);
+        }
+        public float GetStormFloat(uint uid, string name)
+        {
+            return StaticRenderKeyframeGetFloat(uid, name);
+        }
+        public void SetStormFloat(uint uid, string name, float value)
+        {
+            StaticRenderKeyframeSetFloat(uid, name, value);
+        }
+        public int GetStormInt(uint uid, string name)
+        {
+            return StaticRenderKeyframeGetInt(uid, name);
+        }
+        public void SetStormInt(uint uid, string name, int value)
+        {
+            StaticRenderKeyframeSetInt(uid, name, value);
+        }
+        /// <summary>
+        /// Retrieve the active strike. end and start position in metres.
+        /// </summary>
+        public ExportLightningStrike GetCurrentStrike()
+        {
+            IntPtr unmanagedResultPtr = Marshal.AllocHGlobal(Marshal.SizeOf(typeof(ExportLightningStrike)));
+            StaticGetLightningBolts(unmanagedResultPtr, 1);
+
+            var strike = (ExportLightningStrike)Marshal.PtrToStructure(unmanagedResultPtr, typeof(ExportLightningStrike));
+            strike.pos.x /= MetresPerUnit;
+            strike.pos.y /= MetresPerUnit;
+            strike.pos.z /= MetresPerUnit;
+            strike.endpos.x /= MetresPerUnit;
+            strike.endpos.y /= MetresPerUnit;
+            strike.endpos.z /= MetresPerUnit;
+
+            var c = strike.pos.y;
+            strike.pos.y = strike.pos.z;
+            strike.pos.z = c;
+
+            c = strike.endpos.y;
+            strike.endpos.y = strike.endpos.z;
+            strike.endpos.z = c;
+
+            return strike;
+        }
+        /// <summary>
+        /// Spawns a strike.
+        /// </summary>
+        /// <param name="start"> Staring position of the strike (unity units) </param>
+        /// <param name="end"> End position of the strike (unity units) </param>
+        public void SpawnStrike(Vector3 start, Vector3 end)
+        {
+            start *= MetresPerUnit;
+            end *= MetresPerUnit;
+
+            IntPtr unmanagedStart = Marshal.AllocHGlobal(sizeof(float) * 3);
+            IntPtr unmanagedEnd = Marshal.AllocHGlobal(sizeof(float) * 3);
+            IntPtr unmanagedColour = Marshal.AllocHGlobal(sizeof(float) * 3);
+            float[] ns = { start.x, start.z, start.y };
+            float[] ne = { end.x, end.z, end.y };
+            float[] nc = { 1.0f, 1.0f, 1.0f };
+            Marshal.Copy(ns, 0, unmanagedStart, 3);
+            Marshal.Copy(ne, 0, unmanagedEnd, 3);
+            Marshal.Copy(nc, 0, unmanagedColour, 3);
+
+            StaticSpawnLightning2(unmanagedStart, unmanagedEnd, 0.0f, unmanagedColour);
+
+            Marshal.FreeHGlobal(unmanagedStart);
+            Marshal.FreeHGlobal(unmanagedEnd);
+            Marshal.FreeHGlobal(unmanagedColour);
+        }
+
+        // --- Conversion functions for TrueSky position/direction <=> Unity position/direction ---
+        static public Vector3 TrueSkyToUnityPosition(Vector3 ts_pos)
+        {
+            Matrix4x4 u2t = UnityToTrueSkyMatrix();
+            Matrix4x4 t2u = u2t.inverse;
+            Vector4 u_pos = t2u * (new Vector4(ts_pos.x, ts_pos.z, ts_pos.y, 1.0F));
+            return new Vector3(u_pos.x, u_pos.y, u_pos.z);
+        }
+        static public Vector3 TrueSkyToUnityDirection(Vector3 ts_dir)
+        {
+            Matrix4x4 u2t = UnityToTrueSkyMatrix();
+            Matrix4x4 t2u = u2t.inverse;
+            Vector4 u_dir = t2u * (new Vector4(ts_dir.x, ts_dir.z, ts_dir.y, 0.0F));
+            return new Vector3(u_dir.x, u_dir.y, u_dir.z);
+        }
+        static public Vector3 UnityToTrueSkyPosition(Vector3 upos)
+        {
+            Vector4 u_dir = UnityToTrueSkyMatrix() * (new Vector4(upos.x, upos.y, upos.z, 1.0F));
+            return new Vector3(u_dir.x, u_dir.z, u_dir.y);
+        }
+        static public Vector3 UnityToTrueSkyDirection(Vector3 u_dir)
+        {
+            Vector4 ts_dir = UnityToTrueSkyMatrix() * (new Vector4(u_dir.x, u_dir.y, u_dir.z, 0));
+            return new Vector3(ts_dir.x, ts_dir.z, ts_dir.y);
+        }
+        static public Matrix4x4 UnityToTrueSkyMatrix()
+        {
+            Matrix4x4 transform = trueSKY.GetTrueSky().transform.worldToLocalMatrix;
+            float metresPerUnit = trueSKY.GetTrueSky().MetresPerUnit;
+            Matrix4x4 scale = new Matrix4x4();
+            scale.SetTRS(new Vector3(0, 0, 0), new Quaternion(0, 0, 0, 1.0F), new Vector3(metresPerUnit, metresPerUnit, metresPerUnit));
+            transform = scale * transform;
+            return transform;
+        }
+
+        #endregion
+
+        [SerializeField]
+        float _metresPerUnit = 1.0f;
+        public float MetresPerUnit
+        {
+            get
+            {
+                return _metresPerUnit;
+            }
+            set
+            {
+                if (_metresPerUnit != value) try
+                    {
+                        _metresPerUnit = value;
+                    }
+                    catch (Exception exc)
+                    {
+                        UnityEngine.Debug.Log(exc.ToString());
+                    }
+            }
+        }
+
+        [SerializeField]
+        bool _renderInEditMode = true;
+        public bool RenderInEditMode
+        {
+            get
+            {
+                return _renderInEditMode;
+            }
+            set
+            {
+                if (_renderInEditMode != value) try
+                    {
+                        _renderInEditMode = value;
+                        StaticSetRenderBool("EnableRendering", Application.isPlaying || _renderInEditMode);
+                        //RepaintAll();
+                    }
+                    catch (Exception exc)
+                    {
+                        UnityEngine.Debug.Log(exc.ToString());
+                    }
+            }
+        }
+
+        [SerializeField]
+        float _minimumStarPixelSize = 1.0f;
+        public float MinimumStarPixelSize
+        {
+            get
+            {
+                return _minimumStarPixelSize;
+            }
+            set
+            {
+                _minimumStarPixelSize = value;
+                StaticSetRenderFloat("render:minimumstarpixelsize", _minimumStarPixelSize);
+            }
+        }
+
+        [SerializeField]
+        SortedSet<string> _highlightConstellation;
+        public SortedSet<string> HighlightConstellation
+        {
+            get
+            {
+                return _highlightConstellation;
+            }
+            set
+            {
+                _highlightConstellation = value;
+                StaticTriggerAction("clearhighlightconstellations");
+                foreach (string c in _highlightConstellation)
+                {
+                    StaticSetRenderString("HighlightConstellation", c);
+                }
+            }
+        }
+
+        [SerializeField]
 		bool _renderWater = false;
 		public bool RenderWater
 		{
