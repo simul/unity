@@ -144,6 +144,10 @@ namespace simul
 						trueSky.OriginLatitude = EditorGUILayout.Slider("Latitude", trueSky.OriginLatitude, -90.0F, 90.0F);
 						trueSky.OriginLongitude = EditorGUILayout.Slider("Longitude", trueSky.OriginLongitude, -180.0F, 180.0F);
 						trueSky.OriginHeading = EditorGUILayout.Slider("Heading", trueSky.OriginHeading, -180.0F, 180.0F);
+
+						trueSky.SkylightAllMips = EditorGUILayout.Toggle("Update All Skylight Mips", trueSky.SkylightAllMips);
+						trueSky.SkylightAllFaces = EditorGUILayout.Toggle("Update All Skylight Faces", trueSky.SkylightAllFaces);
+						trueSky.SkylightAmortization = EditorGUILayout.IntSlider("Skylight Amortization", trueSky.SkylightAmortization, 1, 8);
 					}
 					EditorGUILayout.Space();
 				}
@@ -315,6 +319,15 @@ namespace simul
 					if (water)
 					{
 						trueSky.RenderWater = EditorGUILayout.Toggle("Render Water", trueSky.RenderWater);
+						trueSky.WaterFullResolution = EditorGUILayout.Toggle("Full Resolution Water", trueSky.WaterFullResolution);
+						trueSky.EnableReflections = EditorGUILayout.Toggle("Enable Reflections", trueSky.EnableReflections);
+						if (trueSky.EnableReflections)
+						{
+							trueSky.WaterFullResolutionReflections = EditorGUILayout.Toggle("Full Resolution Reflections", trueSky.WaterFullResolutionReflections);
+							trueSky.WaterReflectionSteps = EditorGUILayout.IntSlider("Reflection Steps", trueSky.WaterReflectionSteps, 10, 100);
+							trueSky.WaterReflectionPixelStep = EditorGUILayout.IntSlider("Pixel Steps", trueSky.WaterReflectionPixelStep, 1, 10);
+							trueSky.WaterReflectionDistance = EditorGUILayout.Slider("Reflection Distance", trueSky.WaterReflectionDistance, 1000, 40000);
+						}
 						EditorGUILayout.Space();
 					}
 				}
