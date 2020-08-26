@@ -69,20 +69,8 @@ namespace simul
 					waterObject.BeaufortScale = EditorGUILayout.Slider("Beaufort Scale", waterObject.BeaufortScale, 0.0f, 12.0f);
 					waterObject.WindDirection = EditorGUILayout.Slider("Wind Direction", waterObject.WindDirection, 0.0f, 1.0f);
 					waterObject.WindDependency = EditorGUILayout.Slider("Wind Dependency", waterObject.WindDependency, 0.0f, 1.0f);
-					waterObject.Scattering = EditorGUILayout.Vector3Field("Scattering", waterObject.Scattering);
-					if (waterObject.Scattering.x < 0.0f)
-						waterObject.Scattering = new Vector3 (0.0f, waterObject.Scattering.y, waterObject.Scattering.z);
-					if (waterObject.Scattering.y < 0.0f)
-						waterObject.Scattering = new Vector3(waterObject.Scattering.x, 0.0f, waterObject.Scattering.z);
-					if (waterObject.Scattering.z < 0.0f)
-						waterObject.Scattering = new Vector3(waterObject.Scattering.x, waterObject.Scattering.y, 0.0f);
-					waterObject.Absorption = EditorGUILayout.Vector3Field("Absorption", waterObject.Absorption);
-					if (waterObject.Absorption.x < 0.0f)
-						waterObject.Absorption = new Vector3(0.0f, waterObject.Absorption.y, waterObject.Absorption.z);
-					if (waterObject.Absorption.y < 0.0f)
-						waterObject.Absorption = new Vector3(waterObject.Absorption.x, 0.0f, waterObject.Absorption.z);
-					if (waterObject.Absorption.z < 0.0f)
-						waterObject.Absorption = new Vector3(waterObject.Absorption.x, waterObject.Absorption.y, 0.0f);
+					waterObject.Scattering = EditorGUILayout.ColorField("Scattering", waterObject.Scattering);
+					waterObject.Absorption = EditorGUILayout.ColorField("Absoption", waterObject.Absorption);
 				}
 				EditorGUILayout.EndVertical();
 				EditorGUILayout.Space();

@@ -712,6 +712,118 @@ namespace simul
 		}
 
 		[SerializeField]
+		bool _waterFullResolution = true;
+		public bool WaterFullResolution
+		{
+			get
+			{
+				return _waterFullResolution;
+			}
+			set
+			{
+				if (_waterFullResolution != value) try
+					{
+						_waterFullResolution = value;
+						StaticSetRenderBool("waterfullresolution", Application.isPlaying || _waterFullResolution);
+					}
+					catch (Exception exc)
+					{
+						UnityEngine.Debug.Log(exc.ToString());
+					}
+			}
+		}
+
+		[SerializeField]
+		bool _enableReflections = true;
+		public bool EnableReflections
+		{
+			get
+			{
+				return _enableReflections;
+			}
+			set
+			{
+				if (_enableReflections != value) try
+					{
+						_enableReflections = value;
+						StaticSetRenderBool("enablewaterreflections", Application.isPlaying || _enableReflections);
+					}
+					catch (Exception exc)
+					{
+						UnityEngine.Debug.Log(exc.ToString());
+					}
+			}
+		}
+
+		[SerializeField]
+		bool _waterFullResolutionReflections = true;
+		public bool WaterFullResolutionReflections
+		{
+			get
+			{
+				return _waterFullResolutionReflections;
+			}
+			set
+			{
+				if (_waterFullResolutionReflections != value) try
+					{
+						_waterFullResolutionReflections = value;
+						StaticSetRenderBool("waterfullresolutionreflection", Application.isPlaying || _waterFullResolutionReflections);
+					}
+					catch (Exception exc)
+					{
+						UnityEngine.Debug.Log(exc.ToString());
+					}
+			}
+		}
+
+		[SerializeField]
+		int _waterReflectionSteps = 100;
+		public int WaterReflectionSteps
+		{
+			get
+			{
+				return _waterReflectionSteps;
+			}
+			set
+			{
+				_waterReflectionSteps = value;
+				StaticSetRenderInt("waterReflectionSteps", _waterReflectionSteps);
+			}
+		}
+
+		[SerializeField]
+		int _waterReflectionPixelStep = 2;
+		public int WaterReflectionPixelStep
+		{
+			get
+			{
+				return _waterReflectionPixelStep;
+			}
+			set
+			{
+				_waterReflectionPixelStep = value;
+				StaticSetRenderInt("waterReflectionPixelStep", _waterReflectionPixelStep);
+			}
+		}
+
+		[SerializeField]
+		float _waterReflectionDistance = 20000;
+		public float WaterReflectionDistance
+		{
+			get
+			{
+				return _waterReflectionDistance;
+			}
+			set
+			{
+				_waterReflectionDistance = value;
+				StaticSetRenderFloat("waterReflectionDistance", _waterReflectionDistance);
+			}
+		}
+
+
+		[SerializeField]
 		Vector3 _godRaysGrid = new Vector3(64, 32, 32);
 		public Vector3 GodRaysGrid
 		{
@@ -1297,6 +1409,55 @@ namespace simul
 				_Variant[0].Vec3.y = _OriginLongitude;
 				_Variant[0].Vec3.z = _OriginHeading;
 				StaticSetRender("render:originlatlongheadingdeg",1, _Variant);
+			}
+		}
+
+		/*These three variables are only temporary to provide access to the default skylight 
+		 * created by the plugin that right now is used only for water reflections, a larger 
+		 * update will be required to rewrite camera rpobes for this purpose instead.
+		 */
+		[SerializeField]
+		bool _skylightAllMips = false;
+		public bool SkylightAllMips
+		{
+			get
+			{
+				return _skylightAllMips;
+			}
+			set
+			{
+				_skylightAllMips = value;
+				StaticSetRenderBool("defaultskylightallmips", value);
+			}
+		}
+
+		[SerializeField]
+		bool _skylightAllFaces = false;
+		public bool SkylightAllFaces
+		{
+			get
+			{
+				return _skylightAllFaces;
+			}
+			set
+			{
+				_skylightAllFaces = value;
+				StaticSetRenderBool("defaultskylightallfaces", value);
+			}
+		}
+
+		[SerializeField]
+		int _skylightAmortization = 2;
+		public int SkylightAmortization
+		{
+			get
+			{
+				return _skylightAmortization;
+			}
+			set
+			{
+				_skylightAmortization = value;
+				StaticSetRenderInt("defaultskylightamortization", value);
 			}
 		}
 

@@ -24,11 +24,13 @@ namespace simul
 		[DllImport(SimulImports.renderer_dll)]  private static extern void StaticSetRenderFloat(string name, float value);
 		#endregion
 		#region API
-		[SerializeField]
-		bool _render = false;
+
 		bool boundedWaterObjectCreated = false;
 		bool waterEnabled = false;
 		private trueSKY mTsInstance;
+
+		[SerializeField]
+		bool _render = false;
 		public bool Render
 		{
 			get
@@ -45,7 +47,7 @@ namespace simul
 					{
 						StaticSetRenderBool("EnableBoundlessOcean", _render && _boundlessOcean);
 					}
-					else if (!boundedWaterObjectCreated && _render)
+					else if (_render && !boundedWaterObjectCreated)
 					{
 						float[] location = new float[] {(transform.localPosition.z + mTsInstance.transform.position.x) * mTsInstance.MetresPerUnit,
 													(transform.localPosition.x + mTsInstance.transform.position.z) * mTsInstance.MetresPerUnit,
@@ -174,8 +176,8 @@ namespace simul
 		}
 
 		[SerializeField]
-		Vector3 _scattering = new Vector3(0.17f, 0.2f, 0.234f);
-		public Vector3 Scattering
+		Color _scattering = new Color(1.0f - 0.17f, 1.0f - 0.2f, 1.0f - 0.234f);
+		public Color Scattering
 		{
 			get
 			{
@@ -184,7 +186,7 @@ namespace simul
 			set
 			{
 				_scattering = value;
-				float[] output = new float[] { _scattering.x, _scattering.y, _scattering.z };
+				float[] output = new float[] { 1.0f - _scattering.r, 1.0f - _scattering.g, 1.0f - _scattering.b };
 				if (_boundlessOcean)
 				{
 					StaticSetWaterVector("scattering", -1, output);
@@ -197,8 +199,8 @@ namespace simul
 		}
 
 		[SerializeField]
-		Vector3 _absorption = new Vector3(0.2916f, 0.0474f, 0.0092f);
-		public Vector3 Absorption
+		Color _absorption = new Color(1.0f - 0.2916f, 1.0f - 0.0474f,  1.0f - 0.0092f);
+		public Color Absorption
 		{
 			get
 			{
@@ -207,7 +209,7 @@ namespace simul
 			set
 			{
 				_absorption = value;
-				float[] output = new float[] { _absorption.x, _absorption.y, _absorption.z };
+				float[] output = new float[] { 1.0f - _absorption.r, 1.0f - _absorption.g, 1.0f - _absorption.b };
 				if (_boundlessOcean)
 				{
 					StaticSetWaterVector("absorption", -1, output);
@@ -452,7 +454,7 @@ namespace simul
 					boundlessIdentifier = null;
 					StaticSetRenderBool("EnableBoundlessOcean", false);
 				}
-				StaticRemoveBoundedWaterObject((uint)ID);
+				//StaticRemoveBoundedWaterObject((uint)ID);
 				boundedWaterObjectCreated = false;
 			}
 		}
@@ -550,6 +552,8 @@ namespace simul
 
 				if (!_boundlessOcean)
 				{
+					ID++;
+					IDCount++;
 					boundedWaterObjectCreated = StaticCreateBoundedWaterObject((uint)ID, dimension, location);
 					StaticSetWaterBool("Render", ID, _render);
 					StaticSetWaterVector("location", ID, location);
@@ -588,6 +592,11 @@ namespace simul
 					}
 				}
 			}
+		}
+
+		void OnDisable()
+        {
+			StaticRemoveBoundedWaterObject((uint)ID);
 		}
 	}
 }
