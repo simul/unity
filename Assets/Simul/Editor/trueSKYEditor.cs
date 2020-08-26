@@ -329,6 +329,7 @@ namespace simul
                 if (buildOptions)
                 {
                     trueSky.UsingIL2CPP = EditorGUILayout.Toggle("Use IL2CPP", trueSky.UsingIL2CPP);
+                    EditorGUILayout.LabelField("Default enabled and locked for Xbox Series X (Scarlett) projects building with GameCore - Scarlett.");
                     EditorGUILayout.Space();
                 }
 

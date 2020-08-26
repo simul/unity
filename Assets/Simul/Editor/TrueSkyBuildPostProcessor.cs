@@ -21,6 +21,9 @@ namespace simul
                     return "x86_64";
                 case BuildTarget.WSAPlayer:
                     return "WSA";
+                case BuildTarget.GameCoreScarlett:
+                    return "XboxSeriesX";
+                case BuildTarget.GameCoreXboxOne:  
                 case BuildTarget.XboxOne:
                     return "XboxOne";
                 case BuildTarget.Switch:
@@ -35,7 +38,8 @@ namespace simul
 		{
             // Check supported targets
 			if (target != BuildTarget.StandaloneWindows && target != BuildTarget.StandaloneWindows64 && 
-                target != BuildTarget.PS4               && target != BuildTarget.WSAPlayer          && 
+                target != BuildTarget.PS4               && target != BuildTarget.WSAPlayer           && 
+                target != BuildTarget.GameCoreScarlett  && target != BuildTarget.GameCoreXboxOne     &&
                 target != BuildTarget.Switch)
 			{
 				Debug.LogError("Trying to build for a non-supported platform! (" + target.ToString() + ")");
@@ -63,6 +67,10 @@ namespace simul
                 int lastSep         = fixedPath.LastIndexOf("/");
                 fixedPath           = fixedPath.Remove(lastSep);
                 buildDirectory      = fixedPath + "/StagingArea/Data";
+            }
+            if (target == BuildTarget.GameCoreScarlett)
+            {
+                buildDirectory += s + "Loose" + s + "Data" + s + "Plugins";
             }
 
             Debug.Log("Build directory is: " + buildDirectory);
