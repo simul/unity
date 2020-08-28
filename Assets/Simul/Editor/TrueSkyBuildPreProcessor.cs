@@ -36,6 +36,26 @@ namespace simul
 				DirectoryCopy.Copy(MediaSource, saDir, true, true, false, false);
 				Debug.Log("DirectoryCopy: " + MediaSource + "->" + saDir);
 			}
-		}
+            #if UNITY_GAMECORE
+            if(target == BuildTarget.GameCoreScarlett)
+            {
+                string shaderbinSource = trueSKY.GetShaderbinSourceDir("scarlett");
+                string assetsPath = Environment.CurrentDirectory + s + "Assets";
+                string simulPath = assetsPath + s + "Simul";
+                string mediaPath = simulPath + s + "Media";
+
+                string stagingAreaPath;
+                string fixedPath = pathToBuiltProject;
+                int lastSep = fixedPath.LastIndexOf("/");
+                fixedPath = fixedPath.Remove(lastSep);
+                stagingAreaPath = fixedPath + "/Temp/StagingArea";
+
+                DirectoryCopy.Copy(shaderbinSource, stagingAreaPath, true, true, false, false);
+                Debug.Log("DirectoryCopy: " + shaderbinSource + "->" + stagingAreaPath);
+                DirectoryCopy.Copy(mediaPath, stagingAreaPath, true, true, false, false);
+                Debug.Log("DirectoryCopy: " + mediaPath + "->" + stagingAreaPath);
+            }
+            #endif
+        }
 	}
 }
