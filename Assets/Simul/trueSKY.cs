@@ -193,6 +193,8 @@ namespace simul
 			public const string renderer_dll = @"TrueSkyPluginRender";
 #elif UNITY_XBOXONE
 			public const string renderer_dll = @"TrueSkyPluginRender_MD";
+#elif UNITY_GAMECORE
+			public const string renderer_dll = @"TrueSkyPluginRender_MD";
 #elif UNITY_IPHONE || UNITY_SWITCH
 			public const string renderer_dll = @"__Internal";
 #elif _WIN32
@@ -201,7 +203,7 @@ namespace simul
 			public const string renderer_dll = @"TrueSkyPluginRender_MT";
 #endif
 #endif
-	}
+    }
 
 	[ExecuteInEditMode]
 	public class trueSKY : MonoBehaviour
@@ -211,7 +213,7 @@ namespace simul
 
 		[DllImport(SimulImports.renderer_dll)]		private static extern void StaticEnableLogging(string logfile);
 		[DllImport(SimulImports.renderer_dll)]		private static extern int StaticInitInterface();
-		[DllImport(SimulImports.renderer_dll)]		private static extern void StaticPushPath(string name, string path);
+        [DllImport(SimulImports.renderer_dll)]		private static extern void StaticPushPath(string name, string path);
 		[DllImport(SimulImports.renderer_dll)]		private static extern int StaticPopPath(string name);
 		[DllImport(SimulImports.renderer_dll)]		private static extern int StaticTick(float deltaTime);
 
@@ -501,16 +503,20 @@ namespace simul
 				StaticRenderKeyframeSetBool(uid,name,(bool)value);
 			}
 		}
-		public object GetKeyframeValue(uint uid,string name)
+		public float GetKeyframeValueFloat(uint uid,string name)
 		{
 			if(StaticRenderKeyframeHasFloat(uid,name))
 				return StaticRenderKeyframeGetFloat(uid,name);
-			if(StaticRenderKeyframeHasInt(uid,name))
-				return StaticRenderKeyframeGetInt(uid,name);
 			return 0;
 		}
+        public int GetKeyframeValueInt(uint uid, string name)
+        {
+            if (StaticRenderKeyframeHasInt(uid, name))
+                return StaticRenderKeyframeGetInt(uid, name);
+            return 0;
+        }
 
-		public uint GetStormUidByIndex(int index)
+        public uint GetStormUidByIndex(int index)
 		{
 			return GetStormByIndex(index);
 		}
@@ -2662,6 +2668,21 @@ namespace simul
 			}
 		}
 
+#if UNITY_GAMECORE
+        [SerializeField]
+        bool _UsingIL2CPP = true;
+        public bool UsingIL2CPP
+        {
+            get
+            {
+                return _UsingIL2CPP;
+            }
+            set
+            {
+                _UsingIL2CPP = true;
+            }
+        }
+#else
         [SerializeField]
         bool _UsingIL2CPP = false;
         public bool UsingIL2CPP
@@ -2673,15 +2694,16 @@ namespace simul
             set
             {
                 if (_UsingIL2CPP != value) try
-                    {
-                        _UsingIL2CPP = value;
-                    }
-                    catch (Exception exc)
-                    {
-                        UnityEngine.Debug.Log(exc.ToString());
-                    }
+                {
+                    _UsingIL2CPP = value;
+                }
+                catch (Exception exc)
+                {
+                    UnityEngine.Debug.Log(exc.ToString());
+                }
             }
         }
+#endif
 
         bool _initialized = false;
 		bool _rendering_initialized = false;
