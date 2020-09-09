@@ -70,7 +70,11 @@ namespace simul
 					waterObject.WindDirection = EditorGUILayout.Slider("Wind Direction", waterObject.WindDirection, 0.0f, 1.0f);
 					waterObject.WindDependency = EditorGUILayout.Slider("Wind Dependency", waterObject.WindDependency, 0.0f, 1.0f);
 					waterObject.Scattering = EditorGUILayout.ColorField("Scattering", waterObject.Scattering);
-					waterObject.Absorption = EditorGUILayout.ColorField("Absoption", waterObject.Absorption);
+					waterObject.Absorption = EditorGUILayout.ColorField("Absorption", waterObject.Absorption);
+					if (trueSky.SimulVersion >= trueSky.MakeSimulVersion(4, 3))
+					{
+						waterObject.CustomMesh = (Mesh)EditorGUILayout.ObjectField("Custom Water Surface Mesh", waterObject.CustomMesh, typeof(Mesh), false);
+					}
 				}
 				EditorGUILayout.EndVertical();
 				EditorGUILayout.Space();
@@ -89,7 +93,7 @@ namespace simul
 							waterObject.WaveAmplitude = EditorGUILayout.Slider("Wave Amplitude", waterObject.WaveAmplitude, 0.0f, 2.0f);
 							waterObject.MaxWaveLength = EditorGUILayout.Slider("Max WaveLength", waterObject.MaxWaveLength, 1.01f, 100.0f);
 							waterObject.MinWaveLength = EditorGUILayout.Slider("Min WaveLength", waterObject.MinWaveLength, 0.01f, 1.0f);
-							//waterObject.ChoppyScale = EditorGUILayout.Slider("ChoppyScale", waterObject.ChoppyScale, 0.0f, 4.0f);
+							
 						}
 						if (waterObject.BoundlessOcean)
 						{
@@ -101,6 +105,7 @@ namespace simul
 								//waterObject.FoamChurn = EditorGUILayout.Slider("Foam FoamChurn", waterObject.FoamChurn, 0.0f, 20.0f);
 							}
 						}
+						
 					}
 					EditorGUILayout.Space();
 				}

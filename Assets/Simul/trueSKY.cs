@@ -696,7 +696,7 @@ namespace simul
 				if (_renderWater != value) try
 					{
 						_renderWater = value;
-						StaticSetRenderBool("renderWater", Application.isPlaying || _renderWater);
+						StaticSetRenderBool("renderWater", _renderWater);
 					}
 					catch (Exception exc)
 					{
@@ -718,7 +718,7 @@ namespace simul
 				if (_waterFullResolution != value) try
 					{
 						_waterFullResolution = value;
-						StaticSetRenderBool("waterfullresolution", Application.isPlaying || _waterFullResolution);
+						StaticSetRenderBool("waterfullresolution", _waterFullResolution);
 					}
 					catch (Exception exc)
 					{
@@ -740,7 +740,7 @@ namespace simul
 				if (_enableReflections != value) try
 					{
 						_enableReflections = value;
-						StaticSetRenderBool("enablewaterreflections", Application.isPlaying || _enableReflections);
+						StaticSetRenderBool("enablewaterreflections",  _enableReflections);
 					}
 					catch (Exception exc)
 					{
@@ -762,7 +762,7 @@ namespace simul
 				if (_waterFullResolutionReflections != value) try
 					{
 						_waterFullResolutionReflections = value;
-						StaticSetRenderBool("waterfullresolutionreflection", Application.isPlaying || _waterFullResolutionReflections);
+						StaticSetRenderBool("waterfullresolutionreflection", _waterFullResolutionReflections);
 					}
 					catch (Exception exc)
 					{
