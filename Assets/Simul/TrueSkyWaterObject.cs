@@ -501,11 +501,20 @@ namespace simul
 
 		void updateCustomMesh(bool newMesh)
 		{
-			if ((newMesh || meshUpdated )&& _customMesh != null)
+			if (_customMesh == null) // Mesh doesn't actually exist
+			{
+				meshUpdated = false;
+				return;
+			}
+
+			if (newMesh || meshUpdated )
 			{
 				Vector3[] vertices = _customMesh.vertices;
 				Vector3[] normals = _customMesh.normals;
 				int[] indices = _customMesh.GetIndices(0);
+
+				if (indices.Length <= 0) //Something is wrong with the mesh/invalid mesh, try again next update
+					return;
 
 				float[] tempVertexHolder = new float[vertices.Length * 3];
 				float[] tempNormalsHolder = new float[normals.Length * 3];
