@@ -264,7 +264,7 @@ namespace simul
 			if (activeTexture!=null)
 			{
 				unityViewStruct.nativeColourRenderBuffer = activeTexture.colorBuffer.GetNativeRenderBufferPtr();
-				if (!editorMode )
+				//if (!editorMode )
 					unityViewStruct.nativeDepthRenderBuffer = activeTexture.depthBuffer.GetNativeRenderBufferPtr();
 			}
 
@@ -409,7 +409,7 @@ namespace simul
 					, viewMatrices
 					, projMatrices
 					, overlayProjMatrix
-					, editorMode ? depthTexture.GetNative() : (System.IntPtr)0
+					, depthTexture.GetNative()
 					, depthViewports
 					, targetViewports
 					, renderStyle
@@ -427,7 +427,7 @@ namespace simul
 				unityViewStruct.viewMatrices4x4=viewMatrices;
 				unityViewStruct.projMatrices4x4=projMatrices;
 				unityViewStruct.overlayProjMatrix4x4=overlayProjMatrix;
-				unityViewStruct.depthTexture = editorMode ? depthTexture.GetNative() : (System.IntPtr)0;
+				unityViewStruct.depthTexture = depthTexture.GetNative();
 				unityViewStruct.depthViewports= depthViewports;
 				unityViewStruct.targetViewports=targetViewports;
 				unityViewStruct.renderStyle=renderStyle;
