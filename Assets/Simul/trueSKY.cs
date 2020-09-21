@@ -671,7 +671,26 @@ namespace simul
 			}
 		}
 
-		[SerializeField]
+        [SerializeField]
+        HashSet<string> _highlightConstellation;
+        public HashSet<string> HighlightConstellation
+        {
+            get
+            {
+                return _highlightConstellation;
+            }
+            set
+            {
+                _highlightConstellation = value;
+                StaticTriggerAction("clearhighlightconstellations");
+                foreach (string c in _highlightConstellation)
+                {
+                    StaticSetRenderString("HighlightConstellation", c);
+                }
+            }
+        }
+
+        [SerializeField]
 		bool _renderWater = false;
 		public bool RenderWater
 		{
