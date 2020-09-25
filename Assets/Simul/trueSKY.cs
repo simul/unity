@@ -204,7 +204,6 @@ namespace simul
 	[ExecuteInEditMode]
 	public class trueSKY : MonoBehaviour
 	{
-		
 		#region API
 
 		public int SimulVersionMajor = 0;

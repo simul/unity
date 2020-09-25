@@ -13,8 +13,7 @@ namespace simul
 {
 	[ExecuteInEditMode]
 	public class TrueSkyWaterObject : MonoBehaviour
-	{
-		
+	{ 	
 		#region API
 		[StructLayout(LayoutKind.Sequential, Pack = 1)]
 		struct WaterMeshObjectValues
