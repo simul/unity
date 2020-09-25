@@ -45,12 +45,12 @@ namespace simul
 			public int framenumber;
 			public float exposure;
 			public float gamma;
-			public float[] viewMatrices4x4;
-			public float[] projMatrices4x4;
-			public float[] overlayProjMatrix4x4;
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 48)] public float[] viewMatrices4x4;
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 48)] public float[] projMatrices4x4;
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 16)] public float[] overlayProjMatrix4x4;
 			public System.IntPtr depthTexture;
-			public int4[] depthViewports;
-			public Viewport[] targetViewports;
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 3)] public int4[] depthViewports;
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 3)] public Viewport[] targetViewports;
 			public RenderStyle renderStyle;
 			public UnityRenderOptions unityRenderOptions;
 			public System.IntPtr colourTexture;
@@ -70,7 +70,7 @@ namespace simul
         protected  int4[] depthViewports = new int4[3];
         public TrueSkyCameraBase ()
 		{
-			view_ident = last_view_ident + 1;
+            view_ident = last_view_ident + 1;
 			last_view_ident++;
         }
         ~TrueSkyCameraBase()
@@ -119,7 +119,7 @@ namespace simul
 		protected virtual int InternalGetViewId()
 		{
 			return StaticGetOrAddView((System.IntPtr)view_ident);
-		}
+        }
 		protected virtual int GetRequiredDepthTextureWidth()
         {
             var cam = GetComponent<Camera>();
@@ -191,7 +191,7 @@ namespace simul
 			mat[14]=0f;
 			mat[15]=1f;
 		}
-		protected float[] projMatrix = new float[16];
+		//protected float[] projMatrix = new float[16];
 		protected float[] overlayProjMatrix = new float[16];
 		protected void ProjMatrixToTrueSkyFormat(RenderStyle renderStyle, Matrix4x4 m,float[] proj, int offset = 0)
         {

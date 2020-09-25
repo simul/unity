@@ -64,8 +64,10 @@ namespace simul
 		/// <returns> A RenderStyle used by the plugin </returns>
 		public override RenderStyle GetRenderStyle()
 		{
-#if !UNITY_SWITCH
+#if !UNITY_GAMECORE 
+#if !UNITY_SWITCH 
 			UnityEngine.XR.XRSettings.showDeviceView = true;
+#endif
 #endif
 			RenderStyle r = base.GetRenderStyle();
 			if (trueSKY.GetTrueSky().DepthBlending)
@@ -96,8 +98,10 @@ namespace simul
 			{
 #if UNITY_SWITCH
                 return 0;
+#elif UNITY_GAMECORE
+                return 0;
 #else
-				return UnityEngine.XR.XRSettings.eyeTextureDesc.width;
+                return UnityEngine.XR.XRSettings.eyeTextureDesc.width;
 #endif
             }
             else
@@ -256,7 +260,7 @@ namespace simul
 			if (activeTexture!=null)
 			{
 				unityViewStruct.nativeColourRenderBuffer = activeTexture.colorBuffer.GetNativeRenderBufferPtr();
-				if (!editorMode )
+				//if (!editorMode )
 					unityViewStruct.nativeDepthRenderBuffer = activeTexture.depthBuffer.GetNativeRenderBufferPtr();
 			}
 
@@ -333,9 +337,10 @@ namespace simul
 					targetViewports[i].h        = depthHeight;
 				}
 
+#if !UNITY_GAMECORE
 #if !UNITY_SWITCH
-				// If we are doing XR we need to setup the additional viewports
-				if ((renderStyle & RenderStyle.VR_STYLE) == RenderStyle.VR_STYLE)
+                // If we are doing XR we need to setup the additional viewports
+                if ((renderStyle & RenderStyle.VR_STYLE) == RenderStyle.VR_STYLE)
 				{
                     if (UnityEngine.XR.XRSettings.stereoRenderingMode == UnityEngine.XR.XRSettings.StereoRenderingMode.SinglePass)
                     {
@@ -389,6 +394,7 @@ namespace simul
                     }
 				}
 #endif
+#endif
 				UnityRenderOptions unityRenderOptions = UnityRenderOptions.DEFAULT;
 				if (FlipOverlays)
 					unityRenderOptions = unityRenderOptions | UnityRenderOptions.FLIP_OVERLAYS;
@@ -399,7 +405,7 @@ namespace simul
 					, viewMatrices
 					, projMatrices
 					, overlayProjMatrix
-					, editorMode ? depthTexture.GetNative() : (System.IntPtr)0
+					, depthTexture.GetNative()
 					, depthViewports
 					, targetViewports
 					, renderStyle
@@ -417,7 +423,7 @@ namespace simul
 				unityViewStruct.viewMatrices4x4=viewMatrices;
 				unityViewStruct.projMatrices4x4=projMatrices;
 				unityViewStruct.overlayProjMatrix4x4=overlayProjMatrix;
-				unityViewStruct.depthTexture = editorMode ? depthTexture.GetNative() : (System.IntPtr)0;
+				unityViewStruct.depthTexture = depthTexture.GetNative();
 				unityViewStruct.depthViewports= depthViewports;
 				unityViewStruct.targetViewports=targetViewports;
 				unityViewStruct.renderStyle=renderStyle;

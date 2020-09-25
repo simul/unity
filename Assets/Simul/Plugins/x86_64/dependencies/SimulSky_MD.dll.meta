@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: e7eb95f26f5479747b9a02c94b3021e1
+guid: 912164f951f78e1469e9f9b4f76eea70
 PluginImporter:
   externalObjects: {}
   serializedVersion: 2
@@ -23,18 +23,6 @@ PluginImporter:
       settings:
         CPU: x86_64
         DefaultValueInitialized: true
-  - first:
-      Facebook: Win
-    second:
-      enabled: 0
-      settings:
-        CPU: None
-  - first:
-      Facebook: Win64
-    second:
-      enabled: 1
-      settings:
-        CPU: AnyCPU
   - first:
       Standalone: Linux64
     second:

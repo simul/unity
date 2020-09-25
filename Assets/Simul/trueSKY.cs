@@ -198,11 +198,13 @@ namespace simul
             }
 			_initialized = true;
 		}
-	}
+
+    }
 
 	[ExecuteInEditMode]
 	public class trueSKY : MonoBehaviour
 	{
+		
 		#region API
 
 		public int SimulVersionMajor = 0;
@@ -425,16 +427,20 @@ namespace simul
 				StaticRenderKeyframeSetBool(uid,name,(bool)value);
 			}
 		}
-		public object GetKeyframeValue(uint uid,string name)
+		public float GetKeyframeValueFloat(uint uid,string name)
 		{
 			if(StaticRenderKeyframeHasFloat(uid,name))
 				return StaticRenderKeyframeGetFloat(uid,name);
-			if(StaticRenderKeyframeHasInt(uid,name))
-				return StaticRenderKeyframeGetInt(uid,name);
 			return 0;
 		}
+        public int GetKeyframeValueInt(uint uid, string name)
+        {
+            if (StaticRenderKeyframeHasInt(uid, name))
+                return StaticRenderKeyframeGetInt(uid, name);
+            return 0;
+        }
 
-		public uint GetStormUidByIndex(int index)
+        public uint GetStormUidByIndex(int index)
 		{
 			return GetStormByIndex(index);
 		}
@@ -607,7 +613,26 @@ namespace simul
 			}
 		}
 
-		[SerializeField]
+        [SerializeField]
+        SortedSet<string> _highlightConstellation;
+        public SortedSet<string> HighlightConstellation
+        {
+            get
+            {
+                return _highlightConstellation;
+            }
+            set
+            {
+                _highlightConstellation = value;
+                StaticTriggerAction("clearhighlightconstellations");
+                foreach (string c in _highlightConstellation)
+                {
+                    StaticSetRenderString("HighlightConstellation", c);
+                }
+            }
+        }
+
+        [SerializeField]
 		bool _renderWater = false;
 		public bool RenderWater
 		{
@@ -620,7 +645,7 @@ namespace simul
 				if (_renderWater != value) try
 					{
 						_renderWater = value;
-						StaticSetRenderBool("renderWater", Application.isPlaying || _renderWater);
+						StaticSetRenderBool("renderWater", _renderWater);
 					}
 					catch (Exception exc)
 					{
@@ -642,7 +667,7 @@ namespace simul
 				if (_waterFullResolution != value) try
 					{
 						_waterFullResolution = value;
-						StaticSetRenderBool("waterfullresolution", Application.isPlaying || _waterFullResolution);
+						StaticSetRenderBool("waterfullresolution", _waterFullResolution);
 					}
 					catch (Exception exc)
 					{
@@ -664,7 +689,7 @@ namespace simul
 				if (_enableReflections != value) try
 					{
 						_enableReflections = value;
-						StaticSetRenderBool("enablewaterreflections", Application.isPlaying || _enableReflections);
+						StaticSetRenderBool("enablewaterreflections",  _enableReflections);
 					}
 					catch (Exception exc)
 					{
@@ -686,7 +711,7 @@ namespace simul
 				if (_waterFullResolutionReflections != value) try
 					{
 						_waterFullResolutionReflections = value;
-						StaticSetRenderBool("waterfullresolutionreflection", Application.isPlaying || _waterFullResolutionReflections);
+						StaticSetRenderBool("waterfullresolutionreflection", _waterFullResolutionReflections);
 					}
 					catch (Exception exc)
 					{
@@ -2586,6 +2611,21 @@ namespace simul
 			}
 		}
 
+#if UNITY_GAMECORE
+        [SerializeField]
+        bool _UsingIL2CPP = true;
+        public bool UsingIL2CPP
+        {
+            get
+            {
+                return _UsingIL2CPP;
+            }
+            set
+            {
+                _UsingIL2CPP = true;
+            }
+        }
+#else
         [SerializeField]
         bool _UsingIL2CPP = false;
         public bool UsingIL2CPP
@@ -2597,15 +2637,16 @@ namespace simul
             set
             {
                 if (_UsingIL2CPP != value) try
-                    {
-                        _UsingIL2CPP = value;
-                    }
-                    catch (Exception exc)
-                    {
-                        UnityEngine.Debug.Log(exc.ToString());
-                    }
+                {
+                    _UsingIL2CPP = value;
+                }
+                catch (Exception exc)
+                {
+                    UnityEngine.Debug.Log(exc.ToString());
+                }
             }
         }
+#endif
 
         bool _initialized = false;
 		bool _rendering_initialized = false;
