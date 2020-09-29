@@ -6,6 +6,8 @@ using System.Runtime.InteropServices;
 using UnityEngine.Rendering;
 using System.Collections.Generic;
 
+using static simul.TrueSkyPluginRenderFunctionImporter;
+
 namespace simul
 {
     [ExecuteInEditMode]

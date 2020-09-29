@@ -5,17 +5,14 @@ using System.Runtime.InteropServices;
 using UnityEngine.Rendering;
 using System.Collections.Generic;
 
+using static simul.TrueSkyPluginRenderFunctionImporter;
+
 namespace simul
 {
 	[ExecuteInEditMode]
 	public class TrueSkyCamera : TrueSkyCameraBase
 	{
-		[DllImport(SimulImports.renderer_dll)]
-		protected static extern System.IntPtr UnityGetOverlayFunc();
-		[DllImport(SimulImports.renderer_dll)]
-		protected static extern System.IntPtr UnityGetPostTranslucentFunc();
-		[DllImport(SimulImports.renderer_dll)]
-		protected static extern System.IntPtr UnityGetPostTranslucentFuncWithData(); 
+		//int lastFrameCount =-1;
 
 		protected float[] cubemapTransformMatrix = new float[16];
 		protected float[] rainDepthMatrix = new float[16];

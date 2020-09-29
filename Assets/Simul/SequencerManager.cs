@@ -6,6 +6,8 @@ using System.Runtime.InteropServices;
 using UnityEditor;
 using UnityEngine;
 
+using static simul.TrueSkyUIFunctionImporter;
+
 namespace simul
 {
 
@@ -96,22 +98,14 @@ namespace simul
             }
             return true;
         }
-#if UNITY_IPHONE || UNITY_XBOX360
-	// On iOS and Xbox 360 plugins are statically linked into
-	// the executable, so we have to use __Internal as the
-	// library name.
-	public const string editor_dll ="__Internal";
-#else
-        public const string editor_dll = "TrueSkyUI_MD";
-#endif
+
     }
 
     [InitializeOnLoad]
     //Class for managing the sequencer; i.e. requesting show/hide, hooking up delegates, etc.
     public class SequencerManager
     {
-#region imports
-        enum Style
+        public enum Style
         {
             DEFAULT_STYLE = 0,
             UNREAL_STYLE = 1,
@@ -120,40 +114,11 @@ namespace simul
             VISION_STYLE = 8
         };
 
-        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
-        delegate void TOnSequenceChangeCallback(int hwnd, string newSequenceState);
-        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
-        delegate void TOnTimeChangedCallback(int hwnd, float time);
-
+        #region GetHandle
         [DllImport("kernel32", SetLastError = true)]
-        static extern IntPtr LoadLibrary(string lpFileName);
+        private static extern IntPtr LoadLibrary(string lpFileName);
         [DllImport("kernel32", CharSet = CharSet.Ansi, ExactSpelling = true, SetLastError = true)]
-        static extern UIntPtr GetProcAddress(IntPtr hModule, string procName);
-
-        [DllImport(SequencerManagerImports.editor_dll)]
-        private static extern void OpenUI(System.IntPtr OwnerHWND, int[] pVisibleRect, int[] pParentRect, System.IntPtr Env, Style style, string skin);
-        [DllImport(SequencerManagerImports.editor_dll)]
-        private static extern void CloseUI(System.IntPtr OwnerHWND);
-        [DllImport(SequencerManagerImports.editor_dll)]
-        private static extern void UpdateUI();
-        [DllImport(SequencerManagerImports.editor_dll)]
-        private static extern void HideUI(System.IntPtr OwnerHWND);
-        [DllImport(SequencerManagerImports.editor_dll)]
-        private static extern void EnableUILogging(string logfile);
-
-        [DllImport(SequencerManagerImports.editor_dll)]
-        private static extern int SetRenderingInterface(System.IntPtr OwnerHWND, System.IntPtr RenderingInterface);
-        [DllImport(SequencerManagerImports.editor_dll)]
-        private static extern void StaticSetString(System.IntPtr OwnerHWND, string name, string value);
-        [DllImport(SequencerManagerImports.editor_dll)]
-        private static extern void StaticSetSequence(System.IntPtr OwnerHWND, string SequenceAsText, int length_hint);
-        [DllImport(SequencerManagerImports.editor_dll)]
-        private static extern void StaticSetFloat(System.IntPtr OwnerHWND, string name, float value);
-
-        [DllImport(SequencerManagerImports.editor_dll)]
-        private static extern void SetOnPropertiesChangedCallback(TOnSequenceChangeCallback CallbackFunc);
-        [DllImport(SequencerManagerImports.editor_dll)]
-        private static extern void SetOnTimeChangedCallback(TOnTimeChangedCallback CallbackFunc);
+        private static extern UIntPtr GetProcAddress(IntPtr hModule, string procName);
 
         static bool LibraryHasExport(string lib, string procName)
         {
@@ -165,9 +130,7 @@ namespace simul
             }
             return false;
         }
-#endregion
 
-#region GetHandle
         [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
         private static extern bool EnumWindows(EnumWindowsProc callback, IntPtr extraData);
 
@@ -217,7 +180,7 @@ namespace simul
             }
             private set { }
         }
-#endregion
+        #endregion
 
         //Sequence currently being edited.
         static Sequence currentSequence = null;
@@ -256,7 +219,7 @@ namespace simul
             /*Disabled while "world view of clouds" is not being drawn to.
             if(LibraryHasExport("TrueSkyPluginRender_MT.dll", "StaticGetRenderingInterface"))
             {
-                SetRenderingInterface(Handle, simul.trueSKY.StaticGetRenderingInterface());
+                SetRenderingInterface(Handle, TrueSkyPluginRenderFunctionImporter.StaticGetRenderingInterface());
             }
             */
 
