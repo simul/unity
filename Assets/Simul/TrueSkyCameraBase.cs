@@ -4,6 +4,8 @@ using System.Threading;
 using System.Runtime.InteropServices;
 using UnityEngine.Rendering;
 
+using static simul.TrueSkyPluginRenderFunctionImporter;
+
 namespace simul
 {
 	[ExecuteInEditMode]
@@ -11,93 +13,32 @@ namespace simul
 	{
 		public class RenderTextureHolder
 		{
-			public RenderTexture renderTexture=null;
+			public RenderTexture renderTexture = null;
 			public System.IntPtr GetNative()
 			{
-				if(cachedRenderTexture!=renderTexture)
+				if (cachedRenderTexture != renderTexture)
 				{
-					_nativeTexturePtr=(System.IntPtr)0;
+					_nativeTexturePtr = (System.IntPtr)0;
 				}
-				if(_nativeTexturePtr==(System.IntPtr)0&&renderTexture!=null)
+				if (_nativeTexturePtr == (System.IntPtr)0 && renderTexture != null)
 				{
 					_nativeTexturePtr = renderTexture.GetNativeTexturePtr();
 				}
 				return _nativeTexturePtr;
 			}
 
-			protected Texture cachedRenderTexture=null;
-			protected System.IntPtr _nativeTexturePtr=(System.IntPtr)0;
-			protected System.IntPtr _nativeDepthTexturePtr = (System.IntPtr)0; 
+			protected Texture cachedRenderTexture = null;
+			protected System.IntPtr _nativeTexturePtr = (System.IntPtr)0;
+			protected System.IntPtr _nativeDepthTexturePtr = (System.IntPtr)0;
 		};
-		public enum RenderStyle
+
+		//! An event ID that will hopefully be sufficiently unique to trueSKY - if not, change this.
+		protected const int TRUESKY_EVENT_ID = 13476;
+		public static int GetTRUESKY_EVENT_ID()
 		{
-			 DEFAULT_STYLE          = 0
-			, UNITY_STYLE           = 2
-			, UNITY_STYLE_DEFERRED  = 6
-			, CUBEMAP_STYLE         = 16
-			, VR_STYLE              = 32
-			, VR_STYLE_ALTERNATE_EYE= 64
-			, POST_TRANSLUCENT      = 128
-			, VR_STYLE_SIDE_BY_SIDE = 256
-			, DEPTH_BLENDING        = 512
-		};
-        public enum UnityRenderOptions
-        {
-            DEFAULT         = 0
-            ,FLIP_OVERLAYS  = 1      //! Compensate for Unity's texture flipping
-            ,NO_SEPARATION  = 2      //! Faster
-        }; 
-        #region imports
-        //! An event ID that will hopefully be sufficiently unique to trueSKY - if not, change this.
-        protected const int TRUESKY_EVENT_ID = 13476;
-        static public int GetTRUESKY_EVENT_ID() { return TRUESKY_EVENT_ID; }
-		public struct int4
-		{
-			public int x,y,z,w;
-		};
-		public struct Viewport
-		{
-			public int x,y,w,h;
-		};
-        [DllImport(SimulImports.renderer_dll)]
-        protected static extern void UnitySetRenderFrameValues(int view_id
-            , float[] viewMatrices4x4 // up to 3x16 floats
-            , float[] projMatrices4x4 // up to 3x16 floats
-            , float[] overlayProjMatrix4x4
-            , System.IntPtr fullResDepthTexture2D
-            , int4 [] depthViewports
-            , Viewport[] targetViewports
-            , RenderStyle renderStyle
-            , float exposure
-            , float gamma
-            , int framenumber
-            , UnityRenderOptions unityRenderOptions
-            , System.IntPtr colourTexture);
-        [DllImport(SimulImports.renderer_dll)]
-		protected static extern void StaticSetRenderTexture(string name, System.IntPtr texturePtr);
-		[DllImport(SimulImports.renderer_dll)]
-		protected static extern void StaticSetMatrix4x4(string name, float[] matrix4x4);
-		[DllImport(SimulImports.renderer_dll)]
-		protected static extern void StaticSetRenderFloat(string name, float value); 
-		[DllImport(SimulImports.renderer_dll)]
-		protected static extern void UnityRenderEvent (int eventID);
-		[DllImport(SimulImports.renderer_dll)]
-        protected static extern int StaticGetOrAddView(System.IntPtr ident);
-        [DllImport(SimulImports.renderer_dll)]
-        protected static extern int StaticRemoveView(int view_id);
-		[DllImport(SimulImports.renderer_dll)]
-		protected static extern int StaticOnDeviceChanged (System.IntPtr device);
-		[DllImport(SimulImports.renderer_dll)]
-        protected static extern System.IntPtr UnityGetRenderEventFunc();
-		[DllImport(SimulImports.renderer_dll)]
-		protected static extern System.IntPtr UnityGetRenderEventFuncWithData();
-		[DllImport(SimulImports.renderer_dll)]
-		protected static extern System.IntPtr UnityGetOverlayFuncWithData(); 
-		[DllImport(SimulImports.renderer_dll)]
-        protected static extern System.IntPtr UnityGetStoreStateFunc();
-		[DllImport(SimulImports.renderer_dll)]
-		protected static extern System.IntPtr UnityGetExecuteDeferredFunc(); 
-		#endregion
+			return TRUESKY_EVENT_ID;
+		}
+
 		[StructLayout(LayoutKind.Sequential)]
 		public struct UnityViewStruct
 		{
@@ -107,22 +48,23 @@ namespace simul
 			public int framenumber;
 			public float exposure;
 			public float gamma;
-			public float[] viewMatrices4x4;
-			public float[] projMatrices4x4;
-			public float[] overlayProjMatrix4x4;
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 48)] public float[] viewMatrices4x4;
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 48)] public float[] projMatrices4x4;
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 16)] public float[] overlayProjMatrix4x4;
 			public System.IntPtr depthTexture;
-			public int4[] depthViewports;
-			public Viewport[] targetViewports;
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 3)] public int4[] depthViewports;
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 3)] public Viewport[] targetViewports;
 			public RenderStyle renderStyle;
 			public UnityRenderOptions unityRenderOptions;
 			public System.IntPtr colourTexture;
 		}
+
         protected bool UsingIL2CPP()
         {
             return simul.trueSKY.GetTrueSky().UsingIL2CPP;
         }
 
-		protected int view_ident;
+        protected int view_ident;
         protected int view_id=-1;
 		protected static int last_view_ident = 0;
 
@@ -131,7 +73,7 @@ namespace simul
         protected  int4[] depthViewports = new int4[3];
         public TrueSkyCameraBase ()
 		{
-			view_ident = last_view_ident + 1;
+            view_ident = last_view_ident + 1;
 			last_view_ident++;
         }
         ~TrueSkyCameraBase()
@@ -180,7 +122,7 @@ namespace simul
 		protected virtual int InternalGetViewId()
 		{
 			return StaticGetOrAddView((System.IntPtr)view_ident);
-		}
+        }
 		protected virtual int GetRequiredDepthTextureWidth()
         {
             var cam = GetComponent<Camera>();
@@ -252,7 +194,7 @@ namespace simul
 			mat[14]=0f;
 			mat[15]=1f;
 		}
-		protected float[] projMatrix = new float[16];
+		//protected float[] projMatrix = new float[16];
 		protected float[] overlayProjMatrix = new float[16];
 		protected void ProjMatrixToTrueSkyFormat(RenderStyle renderStyle, Matrix4x4 m,float[] proj, int offset = 0)
         {

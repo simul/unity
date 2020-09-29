@@ -5,18 +5,14 @@ using System.Runtime.InteropServices;
 using UnityEngine.Rendering;
 using System.Collections.Generic;
 
+using static simul.TrueSkyPluginRenderFunctionImporter;
+
 namespace simul
 {
 	[ExecuteInEditMode]
 	public class TrueSkyCamera : TrueSkyCameraBase
 	{
 		int lastFrameCount =-1;
-		[DllImport(SimulImports.renderer_dll)]
-		protected static extern System.IntPtr UnityGetOverlayFunc();
-		[DllImport(SimulImports.renderer_dll)]
-		protected static extern System.IntPtr UnityGetPostTranslucentFunc();
-		[DllImport(SimulImports.renderer_dll)]
-		protected static extern System.IntPtr UnityGetPostTranslucentFuncWithData(); 
 
 		protected float[] cubemapTransformMatrix = new float[16];
 		protected float[] rainDepthMatrix = new float[16];
@@ -110,16 +106,7 @@ namespace simul
             }
 		}
 
-		/*private void OnBeginFrameRendering(ScriptableRenderContext scriptableRenderContext, Camera camera)
-		{
-        }
-		private void OnEndFrameRendering(ScriptableRenderContext scriptableRenderContext, Camera camera)
-		{
-			HDRPPreRender(scriptableRenderContext, camera);
-			HDRPPostRender(scriptableRenderContext, camera);
-		}*/
-
-		void OnEnable()
+        void OnEnable()
         {
             // Actually create the hardware resources of the render targets
             if (cloudShadowRT)
@@ -130,10 +117,7 @@ namespace simul
                 inscatterRT.Create();
             if(cloudVisibilityRT)
                 cloudVisibilityRT.Create();
-
-			//RenderPipelineManager.beginCameraRendering += OnBeginFrameRendering;
-			//RenderPipelineManager.endCameraRendering += OnEndFrameRendering;
-		}
+        }
 
         public bool IsPPStak
         {
@@ -180,8 +164,6 @@ namespace simul
 		void OnDisable()
 		{
 			RemoveCommandBuffers();
-			//RenderPipelineManager.beginCameraRendering -= OnBeginFrameRendering;
-			//RenderPipelineManager.endCameraRendering -= OnEndFrameRendering;
 		}
 
 		void RemoveCommandBuffers()
@@ -195,19 +177,16 @@ namespace simul
 		}
 		UnityViewStruct unityViewStruct=new UnityViewStruct();
 		System.IntPtr unityViewStructPtr = Marshal.AllocHGlobal(Marshal.SizeOf(new UnityViewStruct()));
-		public void HDRPPreRender(ScriptableRenderContext src, Camera cam)
+		void OnPreRender()
 		{
-            //Don't draw to the scene view. This should never be removed!
-            if (cam.cameraType == CameraType.SceneView)
-                return;
-
-            /*if (!enabled||!gameObject.activeInHierarchy)
+			if(!enabled||!gameObject.activeInHierarchy)
 			{
 				UnityEngine.Debug.Log("Failed to draw");
 				return;
-			}*/
-			cam.depthTextureMode|=DepthTextureMode.Depth;
+			}
+			GetComponent<Camera>().depthTextureMode|=DepthTextureMode.Depth;
 			PreRender();
+			Camera cam = GetComponent<Camera>();
             if (mainCommandBuffer == null) 
 			{
 				RemoveCommandBuffers();
@@ -217,10 +196,11 @@ namespace simul
 				overlay_buf.name            = "trueSKY overlay";
 				post_translucent_buf        = new CommandBuffer();
 				post_translucent_buf.name   = "trueSKY post translucent";
-				deferred_buf                = new CommandBuffer();
-                deferred_buf.name           = "trueSKY deferred contexts";
-				blitbuf                     = new CommandBuffer();
-				blitbuf.name                = "trueSKY depth blit";
+				deferred_buf				= new CommandBuffer();
+				deferred_buf.name			= "trueSKY deferred contexts";
+				blitbuf						= new CommandBuffer();
+				blitbuf.name				= "trueSKY depth blit";
+
 				cbuf_view_id                = -1;
 			}
 			if (cbuf_view_id != InternalGetViewId()) 
@@ -255,7 +235,7 @@ namespace simul
 				blitbuf.SetRenderTarget((RenderTexture)depthTexture.renderTexture);
 				blitbuf.DrawProcedural(Matrix4x4.identity, depthMaterial, 0, MeshTopology.Triangles, 6);
 				blitbuf.SetRenderTarget(Graphics.activeColorBuffer);
-            }
+			}
 			if (lastFrameCount == Time.renderedFrameCount)
 			{
 				duplicateFrames++;
@@ -273,24 +253,25 @@ namespace simul
 			PrepareMatrices();
 			unityViewStruct.nativeColourRenderBuffer = (System.IntPtr)0;
 			unityViewStruct.nativeDepthRenderBuffer = (System.IntPtr)0;
-
-            unityViewStruct.nativeColourRenderBuffer = Graphics.activeColorBuffer.GetNativeRenderBufferPtr(); //activeTexture.colorBuffer.GetNativeRenderBufferPtr();
-            unityViewStruct.nativeDepthRenderBuffer = Graphics.activeDepthBuffer.GetNativeRenderBufferPtr(); //activeTexture.depthBuffer.GetNativeRenderBufferPtr();
+			if (activeTexture!=null)
+			{
+				unityViewStruct.nativeColourRenderBuffer = activeTexture.colorBuffer.GetNativeRenderBufferPtr();
+				//if (!editorMode )
+					unityViewStruct.nativeDepthRenderBuffer = activeTexture.depthBuffer.GetNativeRenderBufferPtr();
+			}
 
             bool il2cppScripting = UsingIL2CPP();
-            Marshal.StructureToPtr(unityViewStruct, unityViewStructPtr, !il2cppScripting);
+			Marshal.StructureToPtr(unityViewStruct, unityViewStructPtr, !il2cppScripting);
 			mainCommandBuffer.IssuePluginEventAndData(UnityGetRenderEventFuncWithData(),TRUESKY_EVENT_ID + cbuf_view_id, unityViewStructPtr);
 			post_translucent_buf.IssuePluginEventAndData(UnityGetPostTranslucentFuncWithData(), TRUESKY_EVENT_ID + cbuf_view_id, unityViewStructPtr);
 			overlay_buf.IssuePluginEventAndData(UnityGetOverlayFuncWithData(), TRUESKY_EVENT_ID + cbuf_view_id, unityViewStructPtr);
 
-			src.ExecuteCommandBuffer(mainCommandBuffer);
-			src.ExecuteCommandBuffer(post_translucent_buf);
-			src.ExecuteCommandBuffer(overlay_buf);
 		}
 		int duplicateFrames = 0;
 		int localFrameCount = 0;
-		void HDRPPostRender(ScriptableRenderContext src, Camera cam)
+		void OnPostRender()
 		{
+			Camera cam = GetComponent<Camera>();
 			activeTexture = cam.activeTexture;
 		}
 

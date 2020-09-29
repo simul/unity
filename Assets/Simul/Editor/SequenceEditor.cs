@@ -7,6 +7,8 @@ using System.Text;
 using UnityEditor;
 using UnityEngine;
 
+using static simul.TrueSkyUIFunctionImporter;
+
 namespace simul
 {
     public class ClipboardHelper
@@ -122,27 +124,12 @@ namespace simul
             }
             return true;
         }
-#if UNITY_IPHONE || UNITY_XBOX360
-	// On iOS and Xbox 360 plugins are statically linked into
-	// the executable, so we have to use __Internal as the
-	// library name.
-	public const string editor_dll ="__Internal";
-#else
-        public const string editor_dll = "TrueSkyUI_MD";
-#endif
     }
 
     [CustomEditor(typeof(Sequence))]
     public class SequenceEditor : Editor
     {
         public static Sequence sequence = null;
-
-        #region Imports
-        [DllImport(SequenceEditorImports.editor_dll)]
-        private static extern int StaticGetString(System.IntPtr OwnerHWND, string name, StringBuilder str, int len);
-        [DllImport(SequenceEditorImports.editor_dll)]
-        private static extern void StaticSetSequence(System.IntPtr OwnerHWND, string SequenceAsText, int length_hint);
-        #endregion
 
         static bool show = false;
         static bool copy = false;

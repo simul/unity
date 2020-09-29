@@ -2,60 +2,15 @@
 using UnityEngine.Rendering.HighDefinition;
 using UnityEngine.Rendering;
 using UnityEngine.Experimental.Rendering;
-
 using System.Runtime.InteropServices;
 
+using static simul.TrueSkyPluginRenderFunctionImporter;
 using static simul.TrueSkyCameraBase;
 
 namespace simul
 {
     class TrueSkyHDRPCustomPass : CustomPass
     {
-        [DllImport(SimulImports.renderer_dll)]
-        protected static extern System.IntPtr UnityGetOverlayFunc();
-        [DllImport(SimulImports.renderer_dll)]
-        protected static extern System.IntPtr UnityGetPostTranslucentFunc();
-        [DllImport(SimulImports.renderer_dll)]
-        protected static extern System.IntPtr UnityGetPostTranslucentFuncWithData();
-        [DllImport(SimulImports.renderer_dll)]
-        protected static extern void StaticSetRenderTexture(string name, System.IntPtr texturePtr);
-        [DllImport(SimulImports.renderer_dll)]
-        protected static extern void StaticSetMatrix4x4(string name, float[] matrix4x4);
-        [DllImport(SimulImports.renderer_dll)]
-        protected static extern void StaticSetRenderFloat(string name, float value);
-        [DllImport(SimulImports.renderer_dll)]
-        protected static extern void UnityRenderEvent(int eventID);
-        [DllImport(SimulImports.renderer_dll)]
-        protected static extern int StaticGetOrAddView(System.IntPtr ident);
-        [DllImport(SimulImports.renderer_dll)]
-        protected static extern int StaticRemoveView(int view_id);
-        [DllImport(SimulImports.renderer_dll)]
-        protected static extern int StaticOnDeviceChanged(System.IntPtr device);
-        [DllImport(SimulImports.renderer_dll)]
-        protected static extern System.IntPtr UnityGetRenderEventFunc();
-        [DllImport(SimulImports.renderer_dll)]
-        protected static extern System.IntPtr UnityGetRenderEventFuncWithData();
-        [DllImport(SimulImports.renderer_dll)]
-        protected static extern System.IntPtr UnityGetOverlayFuncWithData();
-        [DllImport(SimulImports.renderer_dll)]
-        protected static extern System.IntPtr UnityGetStoreStateFunc();
-        [DllImport(SimulImports.renderer_dll)]
-        protected static extern System.IntPtr UnityGetExecuteDeferredFunc();
-        [DllImport(SimulImports.renderer_dll)]
-        protected static extern void UnitySetRenderFrameValues(int view_id
-            ,float[] viewMatrices4x4 // up to 3x16 floats
-            ,float[] projMatrices4x4 // up to 3x16 floats
-            ,float[] overlayProjMatrix4x4
-            ,System.IntPtr fullResDepthTexture2D
-            ,int4[] depthViewports
-            ,Viewport[] targetViewports
-            ,RenderStyle renderStyle
-            ,float exposure
-            ,float gamma
-            ,int framenumber
-            ,UnityRenderOptions unityRenderOptions
-            ,System.IntPtr colourTexture);
-
         UnityViewStruct unityViewStruct;
         System.IntPtr unityViewStructPtr;
 
