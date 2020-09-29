@@ -32,6 +32,15 @@ namespace simul
 		public delegate void TGenericDataCallback(int hwnd, Int64 size, IntPtr data);
 		public delegate string FAlloc(int size);
 
+		public enum Style
+		{
+			DEFAULT_STYLE = 0,
+			UNREAL_STYLE = 1,
+			UNITY_STYLE = 2,
+			UNITY_STYLE_DEFERRED = 6,
+			VISION_STYLE = 8
+		};
+
 		//-----------------------------
 		//-----DllImport Functions-----
 		//-----------------------------
@@ -39,7 +48,7 @@ namespace simul
 		[DllImport(editor_dll)] public static extern void EnableUILogging(string logfile);
 		[DllImport(editor_dll)] public static extern void SetHighDPIAware(bool value);
 		[DllImport(editor_dll)] public static extern int SetRenderingInterface(IntPtr OwnerHWND, IntPtr RenderingInterface);
-		[DllImport(editor_dll)] public static extern void OpenUI(IntPtr OwnerHWND, int[] pVisibleRect, int[] pParentRect, IntPtr Env, SequencerManager.Style style, string skin);
+		[DllImport(editor_dll)] public static extern void OpenUI(IntPtr OwnerHWND, int[] pVisibleRect, int[] pParentRect, IntPtr Env, Style style, string skin);
 		[DllImport(editor_dll)] public static extern void CloseUI(IntPtr OwnerHWND);
 		[DllImport(editor_dll)] public static extern void UpdateUI();
 		[DllImport(editor_dll)] public static extern void HideUI(IntPtr OwnerHWND);
