@@ -38,7 +38,7 @@ public class TrueSkyDirectionalLight : MonoBehaviour
     float intensity_scale = 0.1F;
     bool UpdateLight()
     {
-        LightingQueryResult res = mTsInstance.StaticLightingQuery(this.GetInstanceID(), transform.position);
+        LightingQueryResult res = mTsInstance.LightingQuery(this.GetInstanceID(), transform.position);
 		if (res.valid == 1)
 		{
 			Vector4 linearColour = new Vector4();
