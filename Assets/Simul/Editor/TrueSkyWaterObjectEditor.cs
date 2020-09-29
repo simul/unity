@@ -10,7 +10,7 @@ namespace simul
 	[CustomEditor(typeof(TrueSkyWaterObject))]
 	public class TrueSkyWaterObjectEditor : Editor
 	{
-		[MenuItem("GameObject/Create Other/Create trueSKY Water Object", false, 200000)]
+		[MenuItem("GameObject/Create trueSKY Water Object", false, 150000)]
 		public static void CreateWaterObject()
 		{
 			trueSKY trueSky = trueSKY.GetTrueSky();

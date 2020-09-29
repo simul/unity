@@ -231,7 +231,7 @@ namespace simul
 
             trueSKY trueSKY = GetTrueSKY();
             // Initialize time from the trueSKY object
-            if(trueSKY) StaticSetFloat(Handle, "time", trueSKY.time);
+            if(trueSKY) StaticSetFloat(Handle, "time", trueSKY.TrueSKYTime);
         }
 
         public static void CloseSequencer()
@@ -282,7 +282,6 @@ namespace simul
                 if(trueSKY) trueSKY.Reload();
 
                 EditorUtility.SetDirty(currentSequence);
-                AssetDatabase.SaveAssets();
             };
 
         //Delegate function for when the time is changed in the sequencer window.
