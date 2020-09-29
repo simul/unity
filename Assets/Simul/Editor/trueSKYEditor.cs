@@ -294,18 +294,18 @@ namespace simul
                             hConsIndex = Array.FindIndex(constellations, t => t.Equals(f, StringComparison.InvariantCultureIgnoreCase));
                         hConsIndex = EditorGUILayout.Popup("List of Constellations:", hConsIndex, constellations);
                         if (hConsIndex > -1)
-                        { 
+                        {
                             if (GUILayout.Button("Add"))
                             {
                                 highlightConstellations.Add(constellations[hConsIndex]);
                                 trueSky.HighlightConstellation = highlightConstellations;
                             }
                             if (highlightConstellations.Contains(constellations[hConsIndex]))
-                            if (GUILayout.Button("Remove"))
-                            {
-                                highlightConstellations.Remove(constellations[hConsIndex]);
-                                trueSky.HighlightConstellation = highlightConstellations;
-                            }
+                                if (GUILayout.Button("Remove"))
+                                {
+                                    highlightConstellations.Remove(constellations[hConsIndex]);
+                                    trueSky.HighlightConstellation = highlightConstellations;
+                                }
                         }
                         EditorGUILayout.Space();
                         string hcons = "";
@@ -315,7 +315,7 @@ namespace simul
                         EditorGUILayout.Space();
                     }
 
-					water = EditorGUILayout.Foldout(water, "Water");
+                    water = EditorGUILayout.Foldout(water, "Water");
 					if (water)
 					{
 						trueSky.RenderWater = EditorGUILayout.Toggle("Render Water", trueSky.RenderWater);

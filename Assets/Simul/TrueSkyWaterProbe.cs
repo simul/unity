@@ -7,17 +7,12 @@ using System.Text;
 using UnityEngine.Rendering;
 using UnityEngine.Experimental.Rendering;
 
+using static simul.TrueSkyPluginRenderFunctionImporter;
+
 namespace simul
 {
 	public class TrueSkyWaterProbe : MonoBehaviour
 	{
-		#region imports
-		[DllImport(SimulImports.renderer_dll)]	private static extern bool StaticAddWaterProbe(uint ID, float[] location);
-		[DllImport(SimulImports.renderer_dll)]	private static extern void StaticRemoveWaterProbe(uint ID);
-		[DllImport(SimulImports.renderer_dll)]	private static extern void StaticUpdateWaterProbePosition(uint ID, float[] location);
-		[DllImport(SimulImports.renderer_dll)]	private static extern void StaticGetWaterProbeValues(uint ID, float[] result);
-		#endregion
-
 		[SerializeField]
 		float _radius = 4.0f;
 		public float Radius
@@ -103,7 +98,7 @@ namespace simul
 				if (!waterProbeCreated)
 					waterProbeCreated = StaticAddWaterProbe(ID, location);
 
-				StaticUpdateWaterProbePosition(ID, location);
+				StaticUpdateWaterProbeValues(ID, location);
 			}
 		}
 

@@ -7,25 +7,13 @@ using System.Text;
 using UnityEngine.Rendering;
 using UnityEngine.Experimental.Rendering;
 
+using static simul.TrueSkyPluginRenderFunctionImporter;
+
 namespace simul
 {
 	[ExecuteInEditMode]
 	public class TrueSkyWaterObject : MonoBehaviour
-	{
-		#region imports
-		[DllImport(SimulImports.renderer_dll)]  private static extern void GetSimulVersion(IntPtr major, IntPtr minor, IntPtr build);
-		[DllImport(SimulImports.renderer_dll)]  private static extern bool StaticCreateBoundedWaterObject(uint ID, float[] dimension, float[] location);
-		[DllImport(SimulImports.renderer_dll)]  private static extern bool StaticCreateCustomWaterMesh(int ID, IntPtr newMesh, float[] vertices, float[] normals, uint[] indices);
-		[DllImport(SimulImports.renderer_dll)]  private static extern bool StaticUpdateCustomWaterMesh(int ID, IntPtr newMesh);
-		[DllImport(SimulImports.renderer_dll)]  private static extern void StaticRemoveCustomWaterMesh(int ID);
-		[DllImport(SimulImports.renderer_dll)]  private static extern void StaticRemoveBoundedWaterObject(uint ID);
-		[DllImport(SimulImports.renderer_dll)]  private static extern void StaticSetWaterFloat(string name, int ID, float value);
-		[DllImport(SimulImports.renderer_dll)]  private static extern void StaticSetWaterInt(string name, int ID, int value);
-		[DllImport(SimulImports.renderer_dll)]  private static extern void StaticSetWaterBool(string name, int ID, bool value);
-		[DllImport(SimulImports.renderer_dll)]  private static extern void StaticSetWaterVector(string name, int ID, float[] value);
-		[DllImport(SimulImports.renderer_dll)]  private static extern void StaticSetRenderBool(string name, bool value);
-		[DllImport(SimulImports.renderer_dll)]  private static extern void StaticSetRenderFloat(string name, float value);
-		#endregion
+	{ 	
 		#region API
 		[StructLayout(LayoutKind.Sequential, Pack = 1)]
 		struct WaterMeshObjectValues
