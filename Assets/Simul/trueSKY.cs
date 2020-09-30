@@ -203,31 +203,158 @@ namespace simul
 		AnotherMoon = 0x1
 	};
 
-	public struct FMoon
+	public struct Orbit
 	{
-		
-		//private FMoon()
-		//{
-		//	usePresets = true;
-		//	MoonPreset = MoonPresets.TheMoon;
-		//	Name = "Moon";
-		//	MoonTexture = null;
-		//	Colour = new Color(0.136f, 0.136f, 0.136f, 0.0f);
-		//	//StaticMesh = nullptr;
-		//	//		MeshMaterial = nullptr;
-		//	LongitudeOfAscendingNode = 125.1228;
-		//	LongitudeOfAscendingNodeRate = -0.0529538083;
-		//	Inclination = 5.1454;
-		//	ArgumentOfPericentre = 318.0634;
-		//	ArgumentOfPericentreRate = 0.1643573223;
-		//	MeanDistance = 60.2666;
-		//	Eccentricity = 0.054900;
-		//	MeanAnomaly = 115.3654;
-		//	MeanAnomalyRate = 13.0649929509;
-		//	RadiusArcMinutes = 16.0;
-		//	Albedo = 0.136f;
-		//	Render = true;
-		//}
+		public double LongitudeOfAscendingNode;
+		public double LongitudeOfAscendingNodeRate;
+		public double Inclination;
+		public double ArgumentOfPericentre;
+		public double ArgumentOfPericentreRate;
+		public double MeanDistance;
+		public double Eccentricity;
+		public double MeanAnomaly;
+		public double MeanAnomalyRate;
+	};
+
+	public struct ExternalTexture
+	{
+		static int static_version = 3;
+		public int version;
+		public IntPtr texturePtr;
+		public int width;
+		public int height;
+		public int depth;
+		public int pixelFormat;
+		public uint numSamples;
+		public uint resourceState;
+	};
+
+	public struct ExternalMoon
+	{
+		static int static_version = 4; //adding Colour and albedo
+		int version;
+		public Orbit orbit;
+		public float radiusArcMinutes;
+		public string name;
+		public bool illuminated;
+		public ExternalTexture texture;
+		public bool render;
+		public vec3 direction;
+		public vec4 orientation;
+		public vec3 colour;
+		public float albedo;
+	};
+	
+
+	public struct ExternalRenderValues //these values should be values that dont change at runtime, unless explicitly called
+	{
+
+		public static int static_version = 5; //Automatic Sun Positioning
+		public int version;
+
+		public float HighDetailProportion;         //!< For cloud volume update rate.
+		public float MediumDetailProportion;           //!< For medium cloud volume update rate.
+
+		public int RenderSky;                      //!< Disable sky rendering, used primarily for when you only want water.
+
+		public int MaximumCubemapResolution;       //!< Resolution to draw full-detail cloud buffers
+
+		public int ShadowTextureSize;
+
+		public uint Godrays_x;                     //Need converting to uint3
+		public uint Godrays_y;
+		public uint Godrays_z;
+
+		public float PrecipitationRadiusMetres;
+
+		public int EdgeNoiseTextureSize;
+		public int WorleyTextureSize;
+
+		public float RenderGridXKm;                    //!< Minimum grid width for raytracing.
+		public float RenderGridZKm;                    //!< Minimum grid height for raytracing.
+
+		public int DefaultNumSlices;
+		public int DefaultAmortization;
+
+		public float CloudThresholdDistanceKm;
+		public float CloudDepthTemporalAlpha;
+		public float DepthSamplingPixelRange;
+
+		public int MaximumStarMagnitude;           //!< Largest magnitude of star to draw. Larger magnitudes are dimmer.
+
+		public int integrationScheme;
+		public int MaxFramesBetweenViewUpdates;
+		public int AtmosphericsAmortization;
+		public float RainNearThreshold;
+		public bool AutomaticSunPos; //needs removing
+	};
+
+	public struct ExternalDynamicValues
+	{
+		public static int static_version = 1;
+		public int version;
+
+		public float time;
+
+		public float WindSpeedMS_X;
+		public float WindSpeedMS_Y;
+		public float WindSpeedMS_Z;
+
+		public float MaxCloudDistanceKm;
+
+		public float EdgeNoisePersistence;
+		public int EdgeNoiseFrequency;
+		public float EdgeNoiseWavelengthKm;
+		public float CellNoiseWavelengthKm;
+		public float MaxFractalAmplitudeKm;
+
+		public float DirectLight;                  //!< The amount of direct light to be used for rendering.
+		public float IndirectLight;                    //!< The amount of indirect or secondary light to be used for rendering.
+		public float AmbientLight;                 //!< The amount of ambient light to be used for rendering.
+		public float Extinction;                       //!< The amount of light scattered per metre - larger values produce darker clouds, default 0.05.
+		public float MieAsymmetry;                 //!< Mie scattering eccentricity.
+
+		public float MinimumStarPixelSize;         //!< Smallest pixel width to use drawing stars.
+		public float StarBrightness;                   //!< Brightness multiplier for stars.
+		public float CosmicBackgroundBrightness;       //!< Brightness multiplier for cosmic background.
+
+		public float CloudShadowRangeKm;
+		public float CloudShadowStrength;
+
+		public int MaxPrecipitationParticles;
+		public float RainFallSpeedMS;
+		public float RainDropSizeMm;
+		public float SnowFallSpeedMS;
+		public float SnowFlakeSizeMm;
+		public float PrecipitationWindEffect;
+		public float PrecipitationWaver;
+		public float PrecipitationWaverTimescaleS;
+		public float PrecipitationThresholdKm;
+
+		public bool AutomaticRainbowPosition;
+		public float RainbowElevation;
+		public float RainbowAzimuth;
+		public float RainbowIntensity;
+		public float RainbowDepthPoint;
+		public bool AllowOccludedRainbow;
+		public bool AllowLunarRainbow;
+
+		public float CrepuscularRayStrength;
+
+		public float OriginLatitude;
+		public float OriginLongitude;
+		public float OriginHeading;
+
+		public float MaxSunRadiance;
+		public bool AdjustSunRadius;
+
+		vec3 CloudTint;
+
+	};
+
+	public class FMoon
+	{
+	
 		public void SetOrbit(double LA, double LAR, double I, double AOP, double AOPR, double MD, double ECC, double MA, double MAR)
 		{
 			LongitudeOfAscendingNode = LA;
@@ -240,16 +367,45 @@ namespace simul
 			MeanAnomaly = MA;
 			MeanAnomalyRate = MAR;
 		}
-	
-	public String Name
+		public Orbit GetOrbit()
 		{
-			get; set;
+			Orbit orb = new Orbit();
+			orb.ArgumentOfPericentre = ArgumentOfPericentre;
+			orb.ArgumentOfPericentreRate = ArgumentOfPericentreRate;
+			orb.Eccentricity = Eccentricity;
+			orb.Inclination = Inclination;
+			orb.LongitudeOfAscendingNode = LongitudeOfAscendingNode;
+			orb.LongitudeOfAscendingNodeRate = LongitudeOfAscendingNodeRate;
+			orb.MeanAnomaly = MeanAnomaly;
+			orb.MeanAnomalyRate = MeanAnomalyRate;
+			orb.MeanDistance = MeanDistance;
+			return orb;
 		}
+
+		public FMoon()
+		{
+			Name = "Moon ";// + index.ToString();
+			Render = false;
+			MoonTexture = null;
+			Colour = new Color(0.136f, 0.136f, 0.136f);
+			usePresets = true;
+			MoonPreset = MoonPresets.TheMoon;
+			Albedo = 0.136;
+			RadiusArcMinutes = 16.0;
+			LongitudeOfAscendingNode = 125.1228;
+			LongitudeOfAscendingNodeRate = -0.0529538083;
+			Inclination = 5.1454;
+			ArgumentOfPericentre = 318.0634;
+			ArgumentOfPericentreRate = 0.1643573223;
+			MeanDistance = 60.2666;
+			Eccentricity = 0.054900;
+			MeanAnomaly = 115.3654;
+			MeanAnomalyRate = 13.0649929509;
+		}
+		public String Name = "Moon";
+		
 		/** Texture to render, optional.*/
-	public Texture MoonTexture
-		{
-			get; set;
-		}
+		public Texture MoonTexture;
 		///** Optional 3D mesh to draw.*/
 		//UPROPERTY(EditAnywhere,BlueprintReadWrite,Category="Visual")
 		//UStaticMesh *StaticMesh;
@@ -258,87 +414,45 @@ namespace simul
 		//UPROPERTY(EditAnywhere,BlueprintReadWrite,Category="Visual")
 		//UMaterialInterface *MeshMaterial;
 		/** Colour from the moon - change from default to apply the effect .*/
-		public Color Colour
-		{
-			get; set;
-		}
+		public Color Colour;// = new Color(0.136f, 0.136f, 0.136f);
 		/** Should preset values be used, enabling will reset current values*/
 
-		public bool usePresets
-		{
-			get; set;
-		}
+		public bool usePresets = true;
 		/** Select a preset (New Moons coming soon)*/
-		public MoonPresets MoonPreset
-		{
-			get; set;
-		}
+		public MoonPresets MoonPreset = MoonPresets.TheMoon;
 		/** The proportion of light that is reflected by the moon.*/
-		public double Albedo
-		{
-			get; set;
-		}
+		public double Albedo = 0.136;
 		/** Rotation/Swivel of the orbit around the Earth */
-		public double LongitudeOfAscendingNode
-		{
-			get; set;
-		}
+		public double LongitudeOfAscendingNode;
 		/** Rate of change of the Longitude of Acsending Node*/
-		public double LongitudeOfAscendingNodeRate
-		{
-			get; set;
-		}
+		public double LongitudeOfAscendingNodeRate;
 		/** The tilt of the orbit.*/
-		public double Inclination
-		{
-			get; set;
-		}
+		public double Inclination;
 		/** Angle from the body's ascending node to its periapsis*/
-		public double ArgumentOfPericentre
-		{
-		get; set;
-		}
+		public double ArgumentOfPericentre;
+
 		/** Rate of change of the Argument of Pericentre*/
-		public double ArgumentOfPericentreRate
-		{
-			get; set;
-		}
-		/** Mean distance from Earth. Expressed in Earth's Equitorial Radii*/
-		public double MeanDistance
-		{
-			get; set;
-		}
+		public double ArgumentOfPericentreRate;
+		
+	/** Mean distance from Earth. Expressed in Earth's Equitorial Radii*/
+		public double MeanDistance;
 		/**Shape of orbit (0=circle, 0-1=ellipse, 1=parabola)*/
-		public double Eccentricity
-		{
-			get; set;
-		}
+		public double Eccentricity;
 		/** The fraction of an elliptical orbit's period that has elapsed since the orbiting body passed periapsis*/
-		public double MeanAnomaly
-		{
-			get; set;
-		}
+		public double MeanAnomaly;
 		/** Rate of Anomaly Change.*/
-		public double MeanAnomalyRate
-		{
-			get; set;
-		}
+		public double MeanAnomalyRate;
 		/** Radius of the Moon. Will affect lighting as more light is reflected*/
-		public double RadiusArcMinutes
-		{
-			get; set;
-		}
+		public double RadiusArcMinutes;
 
 		// For tracking
 		//UStaticMeshComponent *CurrentMeshComponent=nullptr;
 		//FVector Direction;
 		//FQuat Orientation;
-		public bool Render
-		{
-			get; set;
-		}
+		public bool Render;
 	};
 
+	
 	[ExecuteInEditMode]
 	public class trueSKY : MonoBehaviour
 	{
@@ -472,14 +586,14 @@ namespace simul
             return StaticRenderGetNumKeyframes(0);
         }
 
-		public int GetNumCloudKeyframes()
+		public int GetNumCloudKeyframes(int layer = 1)
 		{
-			return StaticRenderGetNumKeyframes(1);
+			return StaticRenderGetNumKeyframes(layer);
 		}
 
 		public int GetNumCloud2DKeyframes()
 		{
-			if (SimulVersionMinor == 1)
+			if (SimulVersion < MakeSimulVersion(4, 2))
 			{
 				return StaticRenderGetNumKeyframes(2);
 			}
@@ -687,18 +801,28 @@ namespace simul
 
 		#endregion
 		[SerializeField]
-		public FMoon[] _moons = new FMoon[10];
-		
-		public FMoon GetMoonByIndex(int index)
-		{
-			if (index < 0 || index > _moons.Length)
-			{
-				UnityEngine.Debug.Log("Error");
-			}
+		public List<FMoon> _moons = new List<FMoon>();
 
-			return _moons[index];
+		public void AddNewMoon()
+		{
+			FMoon _temp;
+			_temp = new FMoon();
+			_moons.Add(_temp);
 		}
 
+		public static void InitExternalTexture(ref ExternalTexture ext, Texture tex)
+		{
+			if (tex != null)
+			{
+				ext.texturePtr = tex.GetNativeTexturePtr();
+				ext.width = tex.width;
+				ext.height = tex.height;
+				ext.depth = 0;
+				ext.pixelFormat = 0;
+				ext.numSamples = 0;
+				ext.resourceState = 0;
+			}
+		}
 
 		[SerializeField]
 		float _metresPerUnit = 1.0f;
@@ -3035,111 +3159,6 @@ namespace simul
 			}
 		}
 
-		public struct ExternalRenderValues //these values should be values that dont change at runtime, unless explicitly called
-		{
-
-			public static int static_version = 5; //Automatic Sun Positioning
-			public int version;
-
-			public float HighDetailProportion;         //!< For cloud volume update rate.
-			public float MediumDetailProportion;           //!< For medium cloud volume update rate.
-
-			public int RenderSky;                      //!< Disable sky rendering, used primarily for when you only want water.
-
-			public int MaximumCubemapResolution;       //!< Resolution to draw full-detail cloud buffers
-
-			public int ShadowTextureSize;
-
-			public uint Godrays_x;                     //Need converting to uint3
-			public uint Godrays_y;
-			public uint Godrays_z;
-
-			public float PrecipitationRadiusMetres;
-
-			public int EdgeNoiseTextureSize;
-			public int WorleyTextureSize;
-
-			public float RenderGridXKm;                    //!< Minimum grid width for raytracing.
-			public float RenderGridZKm;                    //!< Minimum grid height for raytracing.
-
-			public int DefaultNumSlices;
-			public int DefaultAmortization;
-
-			public float CloudThresholdDistanceKm;
-			public float CloudDepthTemporalAlpha;
-			public float DepthSamplingPixelRange;
-
-			public int MaximumStarMagnitude;           //!< Largest magnitude of star to draw. Larger magnitudes are dimmer.
-
-			public int integrationScheme;
-			public int MaxFramesBetweenViewUpdates;
-			public int AtmosphericsAmortization;
-			public float RainNearThreshold;
-			public bool AutomaticSunPos; //needs removing
-		};
-
-		public struct ExternalDynamicValues
-		{
-			public static int static_version = 1;
-			public int version;
-
-			public float time;
-
-			public float WindSpeedMS_X;
-			public float WindSpeedMS_Y;
-			public float WindSpeedMS_Z;
-
-			public float MaxCloudDistanceKm;
-
-			public float EdgeNoisePersistence;
-			public int EdgeNoiseFrequency;
-			public float EdgeNoiseWavelengthKm;
-			public float CellNoiseWavelengthKm;
-			public float MaxFractalAmplitudeKm;
-
-			public float DirectLight;                  //!< The amount of direct light to be used for rendering.
-			public float IndirectLight;                    //!< The amount of indirect or secondary light to be used for rendering.
-			public float AmbientLight;                 //!< The amount of ambient light to be used for rendering.
-			public float Extinction;                       //!< The amount of light scattered per metre - larger values produce darker clouds, default 0.05.
-			public float MieAsymmetry;                 //!< Mie scattering eccentricity.
-
-			public float MinimumStarPixelSize;         //!< Smallest pixel width to use drawing stars.
-			public float StarBrightness;                   //!< Brightness multiplier for stars.
-			public float CosmicBackgroundBrightness;       //!< Brightness multiplier for cosmic background.
-
-			public float CloudShadowRangeKm;
-			public float CloudShadowStrength;
-
-			public int MaxPrecipitationParticles;
-			public float RainFallSpeedMS;
-			public float RainDropSizeMm;
-			public float SnowFallSpeedMS;
-			public float SnowFlakeSizeMm;
-			public float PrecipitationWindEffect;
-			public float PrecipitationWaver;
-			public float PrecipitationWaverTimescaleS;
-			public float PrecipitationThresholdKm;
-
-			public bool AutomaticRainbowPosition;
-			public float RainbowElevation;
-			public float RainbowAzimuth;
-			public float RainbowIntensity;
-			public float RainbowDepthPoint;
-			public bool AllowOccludedRainbow;
-			public bool AllowLunarRainbow;
-
-			public float CrepuscularRayStrength;
-
-			public float OriginLatitude;
-			public float OriginLongitude;
-			public float OriginHeading;
-
-			public float MaxSunRadiance;
-			public bool AdjustSunRadius;
-
-			vec3 CloudTint;
-
-		};
 
 	//	public ExternalRenderValues ERV;
 
@@ -3151,12 +3170,15 @@ namespace simul
 		System.IntPtr EDVptr = Marshal.AllocHGlobal(Marshal.SizeOf(new ExternalDynamicValues()));
 
 
+
 		public bool updateERV = false;
 
-		public void UpdateExternalRenderV()
+		public void UpdateExternalRender()
 		{
 			ERV.RenderSky = Convert.ToInt32(_renderSky);
 			ERV.integrationScheme = _IntegrationScheme;
+			ERV.RenderGridXKm = _RenderGridXKm;
+			ERV.RenderGridZKm = _RenderGridZKm;
 			ERV.MaximumCubemapResolution = _CubemapResolution;
 			ERV.DefaultNumSlices = _CloudSteps;
 			ERV.DepthSamplingPixelRange = _depthSamplingPixelRange;
@@ -3176,7 +3198,7 @@ namespace simul
 			ERV.ShadowTextureSize = _shadowTextureRes;
 			ERV.RainNearThreshold = _PrecipitationThresholdKm;
 			ERV.MaximumStarMagnitude = _maximumStarMagniute;
-			ERV.AutomaticSunPos = true;
+			ERV.AutomaticSunPos = true;//needs to go but must adjust struct first
 
 			Marshal.StructureToPtr(ERV, ERVptr, true);
 			StaticSetExternalRenderValues(ERVptr);
@@ -3229,7 +3251,7 @@ namespace simul
 			Marshal.StructureToPtr(EDV, EDVptr, true);
 			StaticSetExternalDynamicValues(EDVptr);
 		}
-
+		bool updateMoons = true;
 		bool _initialized = false;
 		bool _rendering_initialized = false;
 		void Update()
@@ -3240,7 +3262,7 @@ namespace simul
 					Init();
 				if (Application.isPlaying)
 				{
-					_trueSKYTime += Time.deltaTime * (_timeProgressionScale / (24.0F * 60.0F * 60.0F));
+					_trueSKYTime += Time.deltaTime * (_timeProgressionScale / (24.0F * 60.0F * 60.0F * _timeUnits));
 				}
 
 				UpdateTime();
@@ -3248,13 +3270,42 @@ namespace simul
 				StaticSetRenderFloat("RealTime", Time.time);
 				if (updateERV)
 				{
-					UpdateExternalRenderV();
+					UpdateExternalRender();
 					updateERV = false;
 				}
+
 				UpdateExternalDynamic();
+
+
+				if (updateMoons)
+				{
+					foreach(var moon in _moons)
+					{
+						
+						if (moon.Render)
+						{
+							ExternalMoon Moon = new ExternalMoon();
+
+							Moon.orbit = moon.GetOrbit();
+							Moon.name = moon.Name;
+							Moon.radiusArcMinutes = (float)moon.RadiusArcMinutes;
+							Moon.render = true;
+							ExternalTexture tex = new ExternalTexture();
+							InitExternalTexture(ref tex, moon.MoonTexture);
+							Moon.colour.x = moon.Colour.r;
+							Moon.colour.y = moon.Colour.g;
+							Moon.colour.z = moon.Colour.b;
+							Moon.albedo = (float)moon.Albedo;					
+							System.IntPtr Moonptr = Marshal.AllocHGlobal(Marshal.SizeOf(new ExternalMoon()));
+							//Marshal.StructureToPtr(Moon, Moonptr, false); TODO
+							///StaticSetMoon(_moons.IndexOf(moon), Moonptr);
+						}
+						else
+							StaticSetMoon(_moons.IndexOf(moon), (System.IntPtr)null);
+					}
+					updateMoons = false;
+				}
 				StaticTick(0.0f);
-
-
 			}
 			catch (Exception exc)
 			{
@@ -3468,7 +3519,7 @@ namespace simul
 			{
 				if (_initialized)
 					return;
-				float savedTime = _trueSKYTime;
+				float savedTime = _trueSKYTime; 
 				_initialized = true;
 
 #if TRUESKY_LOGGING
@@ -3548,7 +3599,7 @@ namespace simul
 #if TRUESKY_LOGGING
 				Debug.Log("Now time is " + time);
 #endif
-
+				InitRendering();
 				//	StaticSetRenderBool("RenderSky", _renderSky);
 				StaticSetRenderBool("RenderWater", _renderWater);
 				StaticSetRenderBool("ReverseDepth", false);
@@ -3570,11 +3621,11 @@ namespace simul
 				StaticSetRenderInt("maxGpuProfileLevel", _maxGpuProfileLevel);
 
 			//	StaticSetRenderFloat("minimumstarpixelsize", _minimumStarPixelSize);
-				StaticSetRenderFloat("render:crepuscularraysstrength", _crepuscularRaysStrength);
+				//StaticSetRenderFloat("render:crepuscularraysstrength", _crepuscularRaysStrength);
 				//StaticSetRenderFloat("depthsamplingpixelrange", _depthSamplingPixelRange);
 				StaticSetRenderFloat("maxsunradiance", _maxSunRadiance);
 
-				SetNightTextures();
+				SetNightTextures();		
 
 #if UNITY_EDITOR
 				StaticSetRenderBool("ShowCelestialDisplay",_showCelestials);
@@ -3596,36 +3647,10 @@ namespace simul
 				return;
 			try
 			{
-				StaticSetRenderFloat("render:EdgeNoisePersistence", _edgeNoisePersistence);
-				StaticSetRenderFloat("render:EdgeNoiseWavelengthKm", _edgeNoiseWavelengthKm);
-				StaticSetRenderFloat("render:highdetailproportion", _HighDetailProportion);
-				StaticSetRenderFloat("render:mediumdetailproportion", _MediumDetailProportion);
-				StaticSetRenderFloat("render:precipitationradiusmetres", _PrecipitationRadiusMetres);
-				StaticSetRenderFloat("render:rainfallspeedms", _RainFallSpeedMS);
-				StaticSetRenderFloat("render:snowfallspeedms", _SnowFallSpeedMS);
-				StaticSetRenderFloat("render:raindropsizemm", _RainDropSizeMm);
-				StaticSetRenderFloat("render:snowflakesizemm", _SnowFlakeSizeMm);
-				StaticSetRenderFloat("render:precipitationwindeffect", _PrecipitationWindEffect);
-				StaticSetRenderFloat("render:precipitationwaver", _PrecipitationWaver);
-				StaticSetRenderFloat("render:precipitationwavertimescales", _PrecipitationWaverTimescaleS);
-				StaticSetRenderFloat("render:precipitationthresholdkm", _PrecipitationThresholdKm);
-				StaticSetRenderFloat("render:CloudThresholdDistanceKm", _cloudThresholdDistanceKm);
-				StaticSetRenderFloat("render:maxclouddistancekm", _MaxCloudDistanceKm);
-				StaticSetRenderFloat("render:rendergridxkm", _RenderGridXKm);
-				StaticSetRenderFloat("render:rendergridzkm", _RenderGridZKm);
-				StaticSetRenderFloat("render:maxfractalamplitudekm", _MaxFractalAmplitudeKm);
-				StaticSetRenderFloat("render:cellnoisewavelengthkm", _CellNoiseWavelengthKm);
-				StaticSetRenderFloat("render:directlight", _DirectLight);
-				StaticSetRenderFloat("render:indirectlight", _IndirectLight);
-				StaticSetRenderFloat("render:ambientlight", _AmbientLight);
-				StaticSetRenderFloat("render:extinction", _Extinction);
-				StaticSetRenderFloat("render:mieasymmetry", _MieAsymmetry);
-				StaticSetRenderFloat("render:minimumstarpixelsize", _minimumStarPixelSize);
-				Variant[] _Variant = { new Variant() };
-				_Variant[0].Vec3.x = _OriginLatitude;
-				_Variant[0].Vec3.y = _OriginLongitude;
-				_Variant[0].Vec3.z = _OriginHeading;
-				StaticSetRender("render:originlatlongheadingdeg", 1,_Variant);
+
+				UpdateExternalDynamic();
+				UpdateExternalRender();
+				AddNewMoon();
 				_rendering_initialized = true;
 			}
 			catch (Exception )

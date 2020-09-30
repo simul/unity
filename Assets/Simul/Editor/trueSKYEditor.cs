@@ -115,20 +115,20 @@ namespace simul
 
 		[SerializeField]
 		static bool interpolation = false;
-		[SerializeField]
-		static bool Shadows = false;
+		//[SerializeField]
+		//static bool Shadows = false; Partially on camera, need  a material funtion for Unity's Shadows
 		[SerializeField]
 		static bool precipitation = false;
-		[SerializeField]
-		static bool storms = false;
+		//[SerializeField]
+		//static bool storms = false; Needs audio
 		[SerializeField]
 		static bool rainbows = false;
 		[SerializeField]
 		static bool water = false;
 		[SerializeField]
 		static bool debugging = false;
-		[SerializeField]
-		static bool Textures = false;
+		//[SerializeField]
+		//static bool Textures = false; On the Camera
 		[SerializeField]
         static bool buildOptions = false;
 
@@ -406,28 +406,32 @@ namespace simul
 					moons = EditorGUILayout.Foldout(moons, "Moons", innerFoldoutStyle);
 					if (moons)
 					{
-						
-						for (int i = 0; i < 10; ++i)
+						if (GUILayout.Button("Add Moon"))
 						{
-							trueSky._moons[i].Render = EditorGUILayout.Toggle("Add Moon", trueSky.GetMoonByIndex(i).Render);
+							trueSky.AddNewMoon();
+						}
 
-							if (trueSky._moons[i].Render)
+						foreach (var moon in trueSky._moons)
+						{
+							moon.Render = EditorGUILayout.Toggle("Render",moon.Render);
+
+							if (moon.Render)
 							{
-								moonSettings = EditorGUILayout.Foldout(moonSettings, "Moon " + i.ToString(), innerFoldoutStyle);
+								moonSettings = EditorGUILayout.Foldout(moonSettings, "Moon", innerFoldoutStyle);
 								if (moonSettings)
 								{
-									trueSky._moons[i].Name = EditorGUILayout.TextField("Name", trueSky._moons[i].Name);
-									trueSky._moons[i].usePresets = EditorGUILayout.Toggle("Use Presets", trueSky._moons[i].usePresets);
+									moon.Name = EditorGUILayout.TextField("Name", moon.Name);
+									moon.usePresets = EditorGUILayout.Toggle("Use Presets", moon.usePresets);
 
-									if (trueSky._moons[i].usePresets)
+									if (moon.usePresets)
 									{
-									
-										trueSky._moons[i].MoonPreset = (MoonPresets)EditorGUILayout.EnumPopup("Presets", trueSky._moons[i].MoonPreset);
 
-										switch (trueSky._moons[i].MoonPreset)
+										moon.MoonPreset = (MoonPresets)EditorGUILayout.EnumPopup("Presets", moon.MoonPreset);
+
+										switch (moon.MoonPreset)
 										{
 											case MoonPresets.TheMoon:
-												trueSky._moons[i].SetOrbit(125.1228
+												moon.SetOrbit(125.1228
 																		, -0.0529538083
 																		, 5.1454
 																		, 318.0634
@@ -436,11 +440,11 @@ namespace simul
 																		, 0.054900
 																		, 115.3654
 																		, 13.0649929509);
-												trueSky._moons[i].RadiusArcMinutes = 16.0f;
-												trueSky._moons[i].Albedo = 0.136f;
+												moon.RadiusArcMinutes = 16.0f;
+												moon.Albedo = 0.136f;
 												break;
 											case MoonPresets.AnotherMoon:
-												trueSky._moons[i].SetOrbit(60.1228
+												moon.SetOrbit(60.1228
 																	, -0.0529538083
 																	, 5.1454
 																	, 318.0634
@@ -449,8 +453,8 @@ namespace simul
 																	, 0.054900
 																	, 100.3654
 																	, 13.0649929509);
-												trueSky._moons[i].RadiusArcMinutes = 20.0f;
-												trueSky._moons[i].Albedo = 0.3f;
+												moon.RadiusArcMinutes = 20.0f;
+												moon.Albedo = 0.3f;
 												break;
 											default:
 												break;
@@ -459,29 +463,26 @@ namespace simul
 									}
 									else
 									{
-										trueSky._moons[i].Colour = EditorGUILayout.ColorField("Colour", trueSky._moons[i].Colour);
-										trueSky._moons[i].MoonTexture = (Texture)EditorGUILayout.ObjectField("Moon Texture", trueSky._moons[i].MoonTexture, typeof(Texture), false);
-
-										trueSky._moons[i].Albedo = EditorGUILayout.DoubleField("Albedo", trueSky._moons[i].Albedo);
-
-										trueSky._moons[i].ArgumentOfPericentre = EditorGUILayout.DoubleField("Argument Of Pericentre", trueSky._moons[i].ArgumentOfPericentre);
-										trueSky._moons[i].ArgumentOfPericentreRate = EditorGUILayout.DoubleField("Argument Of Pericentre Rate", trueSky._moons[i].ArgumentOfPericentreRate);
-										trueSky._moons[i].Eccentricity = EditorGUILayout.DoubleField("Eccentricity", trueSky._moons[i].Eccentricity);
-										trueSky._moons[i].Inclination = EditorGUILayout.DoubleField("Inclination", trueSky._moons[i].Inclination);
-										trueSky._moons[i].LongitudeOfAscendingNode = EditorGUILayout.DoubleField("Longitude Of Ascending Node", trueSky._moons[i].LongitudeOfAscendingNode);
-										trueSky._moons[i].LongitudeOfAscendingNodeRate = EditorGUILayout.DoubleField("Longitude Of Ascending Node Rate", trueSky._moons[i].LongitudeOfAscendingNodeRate);
-										trueSky._moons[i].MeanAnomaly = EditorGUILayout.DoubleField("Mean Anomaly", trueSky._moons[i].MeanAnomaly);
-										trueSky._moons[i].MeanAnomalyRate = EditorGUILayout.DoubleField("Mean Anomaly Rate", trueSky._moons[i].MeanAnomalyRate);
-										trueSky._moons[i].MeanDistance = EditorGUILayout.DoubleField("Mean Distance", trueSky._moons[i].MeanDistance);
-										trueSky._moons[i].RadiusArcMinutes = EditorGUILayout.DoubleField("RadiusArcMinutes", trueSky._moons[i].RadiusArcMinutes);
-
+										moon.Colour = EditorGUILayout.ColorField("Colour", moon.Colour);
+										moon.MoonTexture = (Texture)EditorGUILayout.ObjectField("Moon Texture", moon.MoonTexture, typeof(Texture), false);
+										moon.Albedo = EditorGUILayout.DoubleField("Albedo", moon.Albedo);
+										moon.ArgumentOfPericentre = EditorGUILayout.DoubleField("Argument Of Pericentre", moon.ArgumentOfPericentre);
+										moon.ArgumentOfPericentreRate = EditorGUILayout.DoubleField("Argument Of Pericentre Rate", moon.ArgumentOfPericentreRate);
+										moon.Eccentricity = EditorGUILayout.DoubleField("Eccentricity", moon.Eccentricity);
+										moon.Inclination = EditorGUILayout.DoubleField("Inclination", moon.Inclination);
+										moon.LongitudeOfAscendingNode = EditorGUILayout.DoubleField("Longitude Of Ascending Node", moon.LongitudeOfAscendingNode);
+										moon.LongitudeOfAscendingNodeRate = EditorGUILayout.DoubleField("Longitude Of Ascending Node Rate", moon.LongitudeOfAscendingNodeRate);
+										moon.MeanAnomaly = EditorGUILayout.DoubleField("Mean Anomaly", moon.MeanAnomaly);
+										moon.MeanAnomalyRate = EditorGUILayout.DoubleField("Mean Anomaly Rate", moon.MeanAnomalyRate);
+										moon.MeanDistance = EditorGUILayout.DoubleField("Mean Distance", moon.MeanDistance);
+										moon.RadiusArcMinutes = EditorGUILayout.DoubleField("RadiusArcMinutes", moon.RadiusArcMinutes);
 									}
 								}
 
-							}		
+							}			
 							
 						}
-						
+					
 					}
 				}
 				EditorGUILayout.Space();
