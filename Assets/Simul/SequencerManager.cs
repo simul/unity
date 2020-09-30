@@ -64,15 +64,6 @@ namespace simul
     //Class for managing the sequencer; i.e. requesting show/hide, hooking up delegates, etc.
     public class SequencerManager
     {
-        public enum Style
-        {
-            DEFAULT_STYLE = 0,
-            UNREAL_STYLE = 1,
-            UNITY_STYLE = 2,
-            UNITY_STYLE_DEFERRED = 6,
-            VISION_STYLE = 8
-        };
-
         #region GetHandle
         [DllImport("kernel32", SetLastError = true)]
         private static extern IntPtr LoadLibrary(string lpFileName);
