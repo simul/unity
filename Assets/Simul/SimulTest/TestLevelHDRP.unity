@@ -201,7 +201,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Profile: {fileID: 11400000, guid: a123fc0ac58cb774e8592c925f167e7c, type: 2}
   m_StaticLightingSkyUniqueID: 1
-  m_SkySettings: {fileID: 994379376}
+  m_SkySettings: {fileID: 640506463}
   m_SkySettingsFromProfile: {fileID: -1658960478407648048, guid: a123fc0ac58cb774e8592c925f167e7c,
     type: 2}
 --- !u!4 &313761475
@@ -266,7 +266,7 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &994379376
+--- !u!114 &640506463
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -878,7 +878,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7a68c43fe1f2a47cfa234b5eeaa98012, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Version: 9
+  m_Version: 10
   m_ObsoleteShadowResolutionTier: 2
   m_ObsoleteUseShadowQualitySettings: 1
   m_ObsoleteCustomShadowResolution: 1024
@@ -924,6 +924,8 @@ MonoBehaviour:
   m_FilterSizeTraced: 16
   m_SunLightConeAngle: 0.5
   m_LightShadowRadius: 0.5
+  m_SemiTransparentShadow: 0
+  m_ColorShadow: 1
   m_EvsmExponent: 15
   m_EvsmLightLeakBias: 0
   m_EvsmVarianceBias: 0.00001
@@ -972,6 +974,8 @@ MonoBehaviour:
   useVolumetric: 1
   featuresFoldout: 1
   showAdditionalSettings: 0
+  m_AreaLightEmissiveMeshShadowCastingMode: 0
+  m_AreaLightEmissiveMeshMotionVectorGenerationMode: 0
 --- !u!1 &2053481779
 GameObject:
   m_ObjectHideFlags: 0
@@ -1096,6 +1100,7 @@ MonoBehaviour:
   _AmbientLight: 1
   _Extinction: 4
   _MieAsymmetry: 0.87
+  _UsingIL2CPP: 0
 --- !u!4 &2053481782
 Transform:
   m_ObjectHideFlags: 0
@@ -1132,7 +1137,7 @@ MonoBehaviour:
     00000000:
       type: {class: TrueSkyHDRPCustomPass, ns: simul, asm: Assembly-CSharp}
       data:
-        name: trueSKY-After PostProcess
+        m_Name: trueSKY-After PostProcess
         enabled: 1
         targetColorBuffer: 0
         targetDepthBuffer: 0
@@ -1166,7 +1171,7 @@ MonoBehaviour:
     00000000:
       type: {class: TrueSkyHDRPCustomPass, ns: simul, asm: Assembly-CSharp}
       data:
-        name: trueSKY-Before PostProcess
+        m_Name: trueSKY-Before PostProcess
         enabled: 1
         targetColorBuffer: 0
         targetDepthBuffer: 0
@@ -1200,7 +1205,7 @@ MonoBehaviour:
     00000000:
       type: {class: TrueSkyHDRPCustomPass, ns: simul, asm: Assembly-CSharp}
       data:
-        name: trueSKY-Before Pre Refraction
+        m_Name: trueSKY-Before Pre Refraction
         enabled: 1
         targetColorBuffer: 0
         targetDepthBuffer: 0
