@@ -240,7 +240,7 @@ namespace simul
 		public ExternalTexture texture;
 		public bool render;
 		public vec3 direction;
-		public vec4 orientation;
+		public Quaternion orientation;
 		public vec3 colour;
 		public float albedo;
 	};
@@ -835,13 +835,13 @@ namespace simul
 			set
 			{
 				if (_metresPerUnit != value) try
-					{
-						_metresPerUnit = value;
-					}
-					catch (Exception exc)
-					{
-						UnityEngine.Debug.Log(exc.ToString());
-					}
+				{
+					_metresPerUnit = value;
+				}
+				catch (Exception exc)
+				{
+					UnityEngine.Debug.Log(exc.ToString());
+				}
 			}
 		}
 
@@ -3277,7 +3277,7 @@ namespace simul
 				UpdateExternalDynamic();
 
 
-				if (updateMoons)
+				//if (updateMoons)
 				{
 					foreach(var moon in _moons)
 					{
@@ -3297,11 +3297,11 @@ namespace simul
 							Moon.colour.z = moon.Colour.b;
 							Moon.albedo = (float)moon.Albedo;					
 							System.IntPtr Moonptr = Marshal.AllocHGlobal(Marshal.SizeOf(new ExternalMoon()));
-							//Marshal.StructureToPtr(Moon, Moonptr, false); TODO
-							///StaticSetMoon(_moons.IndexOf(moon), Moonptr);
+							Marshal.StructureToPtr(Moon, Moonptr, false); // TODO
+							StaticSetMoon(_moons.IndexOf(moon) + 1, Moonptr);
 						}
 						else
-							StaticSetMoon(_moons.IndexOf(moon), (System.IntPtr)null);
+							StaticSetMoon(_moons.IndexOf(moon) + 1, (System.IntPtr)null);
 					}
 					updateMoons = false;
 				}
