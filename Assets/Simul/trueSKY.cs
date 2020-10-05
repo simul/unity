@@ -249,7 +249,7 @@ namespace simul
 	public struct ExternalRenderValues //these values should be values that dont change at runtime, unless explicitly called
 	{
 
-		public static int static_version = 5; //Automatic Sun Positioning
+		public static int static_version = 6; //Window Grid
 		public int version;
 
 		public float HighDetailProportion;         //!< For cloud volume update rate.
@@ -273,6 +273,12 @@ namespace simul
 		public float RenderGridXKm;                    //!< Minimum grid width for raytracing.
 		public float RenderGridZKm;                    //!< Minimum grid height for raytracing.
 
+		public int WindowGridWidth;
+		public int WindowGridHeight;
+
+		public int WindowWidthKm;
+		public int WindowHeightKm;
+
 		public int DefaultNumSlices;
 		public int DefaultAmortization;
 
@@ -282,11 +288,12 @@ namespace simul
 
 		public int MaximumStarMagnitude;           //!< Largest magnitude of star to draw. Larger magnitudes are dimmer.
 
-		public int integrationScheme;
+		public int IntegrationScheme;
+		public int LightingMode;
+
 		public int MaxFramesBetweenViewUpdates;
 		public int AtmosphericsAmortization;
 		public float RainNearThreshold;
-		public bool AutomaticSunPos; //needs removing
 	};
 
 	public struct ExternalDynamicValues
@@ -1469,7 +1476,7 @@ namespace simul
 		}
 
 		[SerializeField]
-		float _trueSKYTime;
+		float _trueSKYTime = 12;
 		/// <summary>
 		/// Time in the sequence, set from some external script, e.g. the sequence editor, or modified per-frame by the speed value.
 		/// </summary>
@@ -1506,7 +1513,7 @@ namespace simul
 			}
 		}
 		[SerializeField]
-		float _timeProgressionScale = 10.0F;
+		float _timeProgressionScale = 0.0F;
 		/// <summary>
 		/// Rate of time in the sequence.
 		/// </summary>
@@ -1524,7 +1531,7 @@ namespace simul
 		}
 
 		[SerializeField]
-		float _timeUnits = 1;
+		float _timeUnits = 24;
 		/// <summary>
 		/// Rate of time in the sequence.
 		/// </summary>
@@ -2160,7 +2167,6 @@ namespace simul
 				if (_SnowFallSpeedMS != value) try
 					{
 						_SnowFallSpeedMS = value;
-						StaticSetRenderFloat("render:snowfallspeedms", _SnowFallSpeedMS);
 					}
 					catch (Exception exc)
 					{
@@ -2182,7 +2188,6 @@ namespace simul
 				if (_RainDropSizeMm != value) try
 					{
 						_RainDropSizeMm = value;
-						StaticSetRenderFloat("render:raindropsizemm", _RainDropSizeMm);
 					}
 					catch (Exception exc)
 					{
@@ -2204,7 +2209,6 @@ namespace simul
 				if (_SnowFlakeSizeMm != value) try
 					{
 						_SnowFlakeSizeMm = value;
-						StaticSetRenderFloat("render:snowflakesizemm", _SnowFlakeSizeMm);
 					}
 					catch (Exception exc)
 					{
@@ -2226,7 +2230,6 @@ namespace simul
 				if (_PrecipitationWindEffect != value) try
 					{
 						_PrecipitationWindEffect = value;
-						StaticSetRenderFloat("render:precipitationwindeffect", _PrecipitationWindEffect);
 					}
 					catch (Exception exc)
 					{
@@ -2248,7 +2251,6 @@ namespace simul
 				if (_PrecipitationWaver != value) try
 					{
 						_PrecipitationWaver = value;
-						StaticSetRenderFloat("render:precipitationwaver", _PrecipitationWaver);
 					}
 					catch (Exception exc)
 					{
@@ -2270,7 +2272,6 @@ namespace simul
 				if (_PrecipitationWaverTimescaleS != value) try
 					{
 						_PrecipitationWaverTimescaleS = value;
-						StaticSetRenderFloat("render:precipitationwavertimescales", _PrecipitationWaverTimescaleS);
 					}
 					catch (Exception exc)
 					{
@@ -2315,7 +2316,6 @@ namespace simul
 				if (_AutomaticRainbowPosition != value) try
 					{
 						_AutomaticRainbowPosition = value;
-						StaticSetRenderBool("render:automaticrainbowposition", _AutomaticRainbowPosition);
 					}
 					catch (Exception exc)
 					{
@@ -2337,7 +2337,6 @@ namespace simul
 				if (_RainbowElevation != value) try
 					{
 						_RainbowElevation = value;
-						StaticSetRenderFloat("render:rainbowelevation", _RainbowElevation);
 					}
 					catch (Exception exc)
 					{
@@ -2359,7 +2358,6 @@ namespace simul
 				if (_RainbowAzimuth != value) try
 					{
 						_RainbowAzimuth = value;
-						StaticSetRenderFloat("render:rainbowazimuth", _RainbowAzimuth);
 					}
 					catch (Exception exc)
 					{
@@ -2381,7 +2379,6 @@ namespace simul
 				if (_RainbowIntensity != value) try
 					{
 						_RainbowIntensity = value;
-						StaticSetRenderFloat("render:rainbowintensity", _RainbowIntensity);
 					}
 					catch (Exception exc)
 					{
@@ -2403,7 +2400,6 @@ namespace simul
 				if (_RainbowDepthPoint != value) try
 					{
 						_RainbowDepthPoint = value;
-						StaticSetRenderFloat("render:rainbowdepthpoint", _RainbowDepthPoint);
 					}
 					catch (Exception exc)
 					{
@@ -2426,7 +2422,6 @@ namespace simul
 				if (_AllowOccludedRainbows != value) try
 					{
 						_AllowOccludedRainbows = value;
-						StaticSetRenderBool("render:allowoccludedrainbow", _AllowOccludedRainbows);
 					}
 					catch (Exception exc)
 					{
@@ -2448,7 +2443,7 @@ namespace simul
 				if (_AllowLunarRainbows != value) try
 					{
 						_AllowLunarRainbows = value;
-						StaticSetRenderBool("render:allowlunarrainbow", _AllowLunarRainbows);
+						
 					}
 					catch (Exception exc)
 					{
@@ -2518,7 +2513,7 @@ namespace simul
 				if (_cloudThresholdDistanceKm != value) try
 					{
 						_cloudThresholdDistanceKm = value;
-						StaticSetRenderFloat("render:CloudThresholdDistanceKm", _cloudThresholdDistanceKm);
+						updateERV = true;
 					}
 					catch (Exception exc)
 					{
@@ -2892,6 +2887,27 @@ namespace simul
 					}
 			}
 		}
+		[SerializeField]
+		int _LightingMode = 0;
+		public int LightingMode
+		{
+			get
+			{
+				return _LightingMode;
+			}
+			set
+			{
+				if (_LightingMode != value) try
+					{
+						_LightingMode = value;
+						updateERV = true;
+					}
+					catch (Exception exc)
+					{
+						UnityEngine.Debug.Log(exc.ToString());
+					}
+			}
+		}
 
 		[SerializeField]
 		float _MaxCloudDistanceKm = 0;
@@ -2950,6 +2966,7 @@ namespace simul
 				if (_RenderGridZKm != value) try
 					{
 						_RenderGridZKm = value;
+						updateERV = true;
 						//StaticSetRenderFloat("render:rendergridzkm", _RenderGridZKm);
 					}
 					catch (Exception exc)
@@ -2958,6 +2975,99 @@ namespace simul
 					}
 			}
 		}
+		[SerializeField]
+		int _windowGridWidth = 512;
+		public int WindowGridWidth
+		{
+			get
+			{
+				return _windowGridWidth;
+			}
+			set
+			{
+				if (_windowGridWidth != value) try
+					{
+						_windowGridWidth = value;
+						updateERV = true;
+						//StaticSetRenderFloat("render:rendergridzkm", _RenderGridZKm);
+					}
+					catch (Exception exc)
+					{
+						UnityEngine.Debug.Log(exc.ToString());
+					}
+			}
+		}
+
+		[SerializeField]
+		int _windowGridHeight = 32;
+		public int WindowGridHeight
+		{
+			get
+			{
+				return _windowGridHeight;
+			}
+			set
+			{
+				if (_windowGridHeight != value) try
+					{
+						_windowGridHeight = value;
+						updateERV = true;
+						//StaticSetRenderFloat("render:rendergridzkm", _RenderGridZKm);
+					}
+					catch (Exception exc)
+					{
+						UnityEngine.Debug.Log(exc.ToString());
+					}
+			}
+		}
+		[SerializeField]
+		int _windowHeightKm = 200;
+		public int WindowHeightKm
+		{
+			get
+			{
+				return _windowHeightKm;
+			}
+			set
+			{
+				if (_windowHeightKm != value) try
+					{
+						_windowHeightKm = value;
+						updateERV = true;
+						//StaticSetRenderFloat("render:rendergridzkm", _RenderGridZKm);
+					}
+					catch (Exception exc)
+					{
+						UnityEngine.Debug.Log(exc.ToString());
+					}
+			}
+		}
+
+
+		[SerializeField]
+		int _windowWidthKm = 5;
+		public int WindowWidthKm
+		{
+			get
+			{
+				return _windowWidthKm;
+			}
+			set
+			{
+				if (_windowWidthKm != value) try
+					{
+						_windowWidthKm = value;
+						updateERV = true;
+						//StaticSetRenderFloat("render:rendergridzkm", _RenderGridZKm);
+					}
+					catch (Exception exc)
+					{
+						UnityEngine.Debug.Log(exc.ToString());
+					}
+			}
+		}
+
+
 
 		[SerializeField]
 		float _MaxFractalAmplitudeKm = 3.0F;
@@ -3159,10 +3269,6 @@ namespace simul
 			}
 		}
 
-
-	//	public ExternalRenderValues ERV;
-
-
 		ExternalRenderValues ERV = new ExternalRenderValues();
 		System.IntPtr ERVptr = Marshal.AllocHGlobal(Marshal.SizeOf(new ExternalRenderValues()));
 
@@ -3175,33 +3281,63 @@ namespace simul
 
 		public void UpdateExternalRender()
 		{
-			ERV.RenderSky = Convert.ToInt32(_renderSky);
-			ERV.integrationScheme = _IntegrationScheme;
-			ERV.RenderGridXKm = _RenderGridXKm;
-			ERV.RenderGridZKm = _RenderGridZKm;
-			ERV.MaximumCubemapResolution = _CubemapResolution;
-			ERV.DefaultNumSlices = _CloudSteps;
-			ERV.DepthSamplingPixelRange = _depthSamplingPixelRange;
-			ERV.EdgeNoiseTextureSize = _edgeNoiseTextureSize;
-			ERV.Godrays_x = (uint)_godRaysGrid.x;
-			ERV.Godrays_y = (uint)_godRaysGrid.y;
-			ERV.Godrays_z = (uint)_godRaysGrid.z;
-			ERV.HighDetailProportion = _HighDetailProportion;
-			ERV.MediumDetailProportion = _MediumDetailProportion;
-			ERV.WorleyTextureSize = _worleyTextureSize;
-			ERV.AtmosphericsAmortization = _atmosphericsAmortization;
-			ERV.CloudDepthTemporalAlpha = _depthTemporalAlpha;
-			ERV.CloudThresholdDistanceKm = _cloudThresholdDistanceKm;
-			ERV.DefaultAmortization = _amortization;
-			ERV.MaxFramesBetweenViewUpdates = 100;
-			ERV.PrecipitationRadiusMetres = _PrecipitationRadiusMetres;
-			ERV.ShadowTextureSize = _shadowTextureRes;
-			ERV.RainNearThreshold = _PrecipitationThresholdKm;
-			ERV.MaximumStarMagnitude = _maximumStarMagniute;
-			ERV.AutomaticSunPos = true;//needs to go but must adjust struct first
 
-			Marshal.StructureToPtr(ERV, ERVptr, true);
-			StaticSetExternalRenderValues(ERVptr);
+			if (SimulVersion >= MakeSimulVersion(4, 2))
+			{
+				ERV.RenderSky = Convert.ToInt32(_renderSky);
+				ERV.IntegrationScheme = _IntegrationScheme;
+				ERV.LightingMode = _LightingMode;
+				ERV.RenderGridXKm = _RenderGridXKm;
+				ERV.RenderGridZKm = _RenderGridZKm;
+				ERV.WindowGridWidth = _windowGridWidth;
+				ERV.WindowGridHeight = _windowGridHeight;
+				ERV.WindowWidthKm = _windowWidthKm;
+				ERV.WindowHeightKm = _windowHeightKm;
+				ERV.MaximumCubemapResolution = _CubemapResolution;
+				ERV.DefaultNumSlices = _CloudSteps;
+				ERV.DepthSamplingPixelRange = _depthSamplingPixelRange;
+				ERV.EdgeNoiseTextureSize = _edgeNoiseTextureSize;
+				ERV.Godrays_x = (uint)_godRaysGrid.x;
+				ERV.Godrays_y = (uint)_godRaysGrid.y;
+				ERV.Godrays_z = (uint)_godRaysGrid.z;
+				ERV.HighDetailProportion = _HighDetailProportion;
+				ERV.MediumDetailProportion = _MediumDetailProportion;
+				ERV.WorleyTextureSize = _worleyTextureSize;
+				ERV.AtmosphericsAmortization = _atmosphericsAmortization;
+				ERV.CloudDepthTemporalAlpha = _depthTemporalAlpha;
+				ERV.CloudThresholdDistanceKm = _cloudThresholdDistanceKm;
+				ERV.DefaultAmortization = _amortization;
+				ERV.MaxFramesBetweenViewUpdates = 100;
+				ERV.PrecipitationRadiusMetres = _PrecipitationRadiusMetres;
+				ERV.ShadowTextureSize = _shadowTextureRes;
+				ERV.RainNearThreshold = _PrecipitationThresholdKm;
+				ERV.MaximumStarMagnitude = _maximumStarMagniute;
+
+				Marshal.StructureToPtr(ERV, ERVptr, true);
+				StaticSetExternalRenderValues(ERVptr);
+			}
+			else
+			{
+				StaticSetRenderBool("RenderSky", true);
+				StaticSetRenderFloat("render:rendergridxkm", _RenderGridXKm);
+				StaticSetRenderFloat("render:rendergridzkm", _RenderGridZKm);
+				StaticSetRenderInt("MaximumCubemapResolution", _CubemapResolution);
+				StaticSetRenderBool("gridrendering", _IntegrationScheme == 0);
+				StaticSetRenderInt("CloudSteps", _CloudSteps);
+				StaticSetRenderFloat("depthsamplingpixelrange", _depthSamplingPixelRange);
+				StaticSetRenderInt("render:edgenoisetexturesize", _edgeNoiseTextureSize);
+				StaticSetRenderInt("godraysgrid.x", (int)_godRaysGrid.x);
+				StaticSetRenderInt("godraysgrid.y", (int)_godRaysGrid.y);
+				StaticSetRenderInt("godraysgrid.z", (int)_godRaysGrid.z);
+				StaticSetRenderFloat("render:highdetailproportion", _HighDetailProportion);
+				StaticSetRenderFloat("render:mediumdetailproportion", _MediumDetailProportion);
+				StaticSetRenderInt("render:CellNoiseTextureSize", _worleyTextureSize);
+				StaticSetRenderInt("render:AtmosphericsAmortization", _atmosphericsAmortization);
+				StaticSetRenderInt("render:Amortization", _amortization);
+				StaticSetRenderFloat("render:precipitationradiusmetres", _PrecipitationRadiusMetres);
+				StaticSetRenderFloat("render:maxclouddistancekm", _MaxCloudDistanceKm);
+				StaticSetRenderFloat("render:precipitationthresholdkm", _PrecipitationThresholdKm);
+			}
 		}
 
 		public void UpdateExternalDynamic()
