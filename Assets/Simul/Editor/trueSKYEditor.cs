@@ -141,7 +141,11 @@ namespace simul
 			{
 				"Grid", "Fixed", "Variable Grid",
 			};
-
+		string[] LightingModes = new string[]
+			{
+				"Standard", "Incremental",
+			};
+		
 		string[] interpolationOptions = new string[]
 			{
 				"Fixed Number", "Fixed Gametime", "Fixed Realtime",
@@ -236,6 +240,10 @@ namespace simul
 							trueSky.RenderGridXKm = EditorGUILayout.Slider("Render Grid X (km)", trueSky.RenderGridXKm, 0.01F, 10.0F);
 							trueSky.RenderGridZKm = EditorGUILayout.Slider("Render Grid Z (km)", trueSky.RenderGridZKm, 0.01F, 10.0F);
 						}
+						trueSky.WindowGridWidth = EditorGUILayout.IntSlider("Window Grid Width", trueSky.WindowGridWidth, 64, 1024);
+						trueSky.WindowGridHeight = EditorGUILayout.IntSlider("Window Grid Height", trueSky.WindowGridHeight, 8, 64);
+						trueSky.WindowWidthKm = EditorGUILayout.IntSlider("Window Width (Km)", trueSky.WindowWidthKm, 200, 800);
+						trueSky.WindowHeightKm = EditorGUILayout.IntSlider("Window Height (Km)", trueSky.WindowHeightKm, 5, 20);
 
 						trueSky.CloudSteps = EditorGUILayout.IntSlider("Cloud Steps", trueSky.CloudSteps, 60, 500);
 						trueSky.Amortization = EditorGUILayout.IntSlider("Amortization", trueSky.Amortization, 1, 4);
@@ -266,6 +274,8 @@ namespace simul
 
 					if (cloudLighting)
 					{
+						trueSky.LightingMode = EditorGUILayout.Popup("Lighting Mode", trueSky.LightingMode, LightingModes);
+
 						trueSky.DirectLight = EditorGUILayout.Slider("Direct Light", trueSky.DirectLight, 0.0F, 4.0F);
 						trueSky.IndirectLight = EditorGUILayout.Slider("Indirect Light", trueSky.IndirectLight, 0.0F, 4.0F);
 						trueSky.AmbientLight = EditorGUILayout.Slider("Ambient Light", trueSky.AmbientLight, 0.0F, 4.0F);
