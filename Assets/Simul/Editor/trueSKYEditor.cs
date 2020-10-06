@@ -577,7 +577,7 @@ namespace simul
 						{ 
 							aurorae.AuroraElectronFreeTime = EditorGUILayout.Slider("Aurora Electron Free Time", aurorae.AuroraElectronFreeTime, 1.0F, 10.0F);
 							aurorae.AuroraElectronVolumeDensity = EditorGUILayout.Slider("Aurora Electron Volume Density", aurorae.AuroraElectronVolumeDensity, 1.0F, 1000000.0F);
-							aurorae.AuroralLayersIntensity = EditorGUILayout.Slider("Auroral Layers Intensity", aurorae.AuroraElectronVolumeDensity, 0.0F, 10.0F);
+							aurorae.AuroralLayersIntensity = EditorGUILayout.Slider("Auroral Layers Intensity", aurorae.AuroralLayersIntensity, 0.0F, 10.0F);
 						}
 
 						//Auroral Layers settings
