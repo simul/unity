@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using UnityEngine.Experimental.Rendering;
 
 using static simul.TrueSkyPluginRenderFunctionImporter;
+using System.Linq;
 
 namespace simul
 {
@@ -244,7 +245,38 @@ namespace simul
 		public vec3 colour;
 		public float albedo;
 	};
-	
+
+	public struct AuroralLayer
+	{
+		public float Base;
+		public float Top;
+		public float EmittedWavelength;
+		public float Strength;
+
+		public AuroralLayer(float _Base, float _Top, float _EmittedWavelength, float _Strength)
+		{
+			Base = _Base;
+			Top = _Top;
+			EmittedWavelength = _EmittedWavelength;
+			Strength = _Strength;
+		}
+
+		public bool Valid()
+        {
+			return Base != 0.0f && Top != 0.0f && EmittedWavelength != 0.0f && Strength != 0.0f;
+		}
+
+		public vec4 ToVec4()
+        {
+			vec4 result;
+			result.x = Base;
+			result.y = Top;
+			result.z = EmittedWavelength;
+			result.w = Strength;
+
+			return result;
+        }
+	};
 
 	public struct ExternalRenderValues //these values should be values that dont change at runtime, unless explicitly called
 	{
@@ -296,6 +328,7 @@ namespace simul
 		public float RainNearThreshold;
 	};
 
+	[StructLayout(LayoutKind.Sequential, Pack = 1)]
 	public struct ExternalDynamicValues
 	{
 		public static int static_version = 1;
@@ -355,8 +388,45 @@ namespace simul
 		public float MaxSunRadiance;
 		public bool AdjustSunRadius;
 
-		vec3 CloudTint;
+		public float CloudTintR;
+		public float CloudTintG;
+		public float CloudTintB;
 
+		//Aurorae
+		public float GeomagneticNorthPoleLatitude;
+		public float GeomagneticNorthPoleLongitude;
+		public float HighestLatitude;
+		public float LowestLatitude;
+		public float MaxBand;
+		public float MinBand;
+		public bool ShowAuroralOvalInCloudWindow;
+		public float AuroraElectronFreeTime;
+		public float AuroraElectronVolumeDensity;
+		public float AuroralLayersIntensity;
+		public vec4[] AuroraLayers;
+		public UInt64 AuroraLayerCount;
+		public float Start_Dawn1;
+		public float End_Dawn1;
+		public float Radius_Dawn1;
+		public float OriginLatitude_Dawn1;
+		public float OriginLongitude_Dawn1;
+		public float Start_Dusk1;
+		public float End_Dusk1;
+		public float Radius_Dusk1;
+		public float OriginLatitude_Dusk1;
+		public float OriginLongitude_Dusk1;
+		public float Start_Dawn2;
+		public float End_Dawn2;
+		public float Radius_Dawn2;
+		public float OriginLatitude_Dawn2;
+		public float OriginLongitude_Dawn2;
+		public float Start_Dusk2;
+		public float End_Dusk2;
+		public float Radius_Dusk2;
+		public float OriginLatitude_Dusk2;
+		public float OriginLongitude_Dusk2;
+		public int AuroraIntensityMapSize;
+		public int AuroraTraceLength;
 	};
 
 	public class FMoon
@@ -458,6 +528,151 @@ namespace simul
 		//FQuat Orientation;
 		public bool Render;
 	};
+
+	public class Aurorae
+    {
+		//Auroral Oval
+		public float GeomagneticNorthPoleLatitude;
+		public float GeomagneticNorthPoleLongitude;
+		public float HighestLatitude;
+		public float LowestLatitude;
+		public float MaxBand;
+		public float MinBand;
+		public bool ShowAuroralOvalInCloudWindow;
+
+		//Auroral Layers
+		public List<AuroralLayer> AuroralLayers;
+		public AuroralLayer EditAuroralLayer;
+		public int EditAuroralLayerIndex;
+
+		//Aurora Intensity
+		public float AuroraElectronFreeTime;
+		public float AuroraElectronVolumeDensity;
+		public float AuroralLayersIntensity;
+
+		//FAC
+		public float Start_Dawn1;
+		public float End_Dawn1;
+		public float Radius_Dawn1;
+		public float OriginLatitude_Dawn1;
+		public float OriginLongitude_Dawn1;
+
+		public float Start_Dusk1;
+		public float End_Dusk1;
+		public float Radius_Dusk1;
+		public float OriginLatitude_Dusk1;
+		public float OriginLongitude_Dusk1;
+
+		public float Start_Dawn2;
+		public float End_Dawn2;
+		public float Radius_Dawn2;
+		public float OriginLatitude_Dawn2;
+		public float OriginLongitude_Dawn2;
+
+		public float Start_Dusk2;
+		public float End_Dusk2;
+		public float Radius_Dusk2;
+		public float OriginLatitude_Dusk2;
+		public float OriginLongitude_Dusk2;
+
+		//Other
+		public int AuroraIntensityMapSize;
+		public int AuroraTraceLength;
+
+		public Aurorae()
+		{
+			GeomagneticNorthPoleLatitude = 80.65f;
+			GeomagneticNorthPoleLongitude = -72.68f;
+			HighestLatitude = 80.0f;
+			LowestLatitude = 60.0f;
+			MaxBand = 10.0f;
+			MinBand = 3.0f;
+			ShowAuroralOvalInCloudWindow = false;
+			AuroraElectronFreeTime = 1.0f;
+			AuroraElectronVolumeDensity = 1.0f;
+			AuroralLayersIntensity = 1.0f;
+			AuroralLayers = new List<AuroralLayer>();
+			EditAuroralLayer = new AuroralLayer(0.0f, 0.0f, 0.0f, 0.0f);
+			EditAuroralLayerIndex = -1;
+			Start_Dawn1 = 180.0f;
+			End_Dawn1 = -30.0f;
+			Radius_Dawn1 = 19.0f;
+			OriginLatitude_Dawn1 = 90.0f;
+			OriginLongitude_Dawn1 = 0.0f;
+			Start_Dusk1 = 0.0f;
+			End_Dusk1 = -180.0f;
+			Radius_Dusk1 = 20.0f;
+			OriginLatitude_Dusk1 = 90.0f;
+			OriginLongitude_Dusk1 = 0.0f;
+			Start_Dawn2 = 150.0f;
+			End_Dawn2 = 0.0f;
+			Radius_Dawn2 = 21.0f;
+			OriginLatitude_Dawn2 = 90.0f;
+			OriginLongitude_Dawn2 = 0.0f;
+			Start_Dusk2 = 30.0f;
+			End_Dusk2 = -150.0f;
+			Radius_Dusk2 = 22.0f;
+			OriginLatitude_Dusk2 = 90.0f;
+			OriginLongitude_Dusk2 = 0.0f;
+			AuroraIntensityMapSize = 512;
+			AuroraTraceLength = 100;
+
+			SetDefaultAuroralLayers();
+		}
+
+		public vec4[] GetAuroralLayerVec4Array()
+		{
+			vec4[] al_vec4_array = new vec4[GetAuroralLayerCount()];
+			int index = 0;
+			foreach(AuroralLayer al in AuroralLayers)
+            {
+				al_vec4_array[index] = al.ToVec4();
+				index++;
+			}
+            return al_vec4_array;
+		}
+
+		public int GetAuroralLayerCount()
+        {
+			return AuroralLayers.Count;
+		} 
+
+		public void SetDefaultAuroralLayers()
+        {
+			AuroralLayers.Clear();
+			AuroralLayers.Add(new AuroralLayer(85.0f, 105.0f, 427.8f, 30.0f));
+			AuroralLayers.Add(new AuroralLayer(85.0f, 105.0f, 670.0f, 18.0f));
+			AuroralLayers.Add(new AuroralLayer(85.0f, 105.0f, 391.4f, 6.0f));
+			AuroralLayers.Add(new AuroralLayer(100.0f, 210.0f, 557.7f, 100.0f));
+			AuroralLayers.Add(new AuroralLayer(100.0f, 210.0f, 471.0f, 6.0f));
+			AuroralLayers.Add(new AuroralLayer(200.0f, 250.0f, 630.0f, 30.0f));
+			EditAuroralLayerIndex = 5;
+		}
+
+		public void SetDefaultFieldAlignedCurrents()
+		{
+			Start_Dawn1 = 180.0f;
+			End_Dawn1 = -30.0f;
+			Radius_Dawn1 = 19.0f;
+			OriginLatitude_Dawn1 = 90.0f;
+			OriginLongitude_Dawn1 = 0.0f;
+			Start_Dusk1 = 0.0f;
+			End_Dusk1 = -180.0f;
+			Radius_Dusk1 = 20.0f;
+			OriginLatitude_Dusk1 = 90.0f;
+			OriginLongitude_Dusk1 = 0.0f;
+			Start_Dawn2 = 150.0f;
+			End_Dawn2 = 0.0f;
+			Radius_Dawn2 = 21.0f;
+			OriginLatitude_Dawn2 = 90.0f;
+			OriginLongitude_Dawn2 = 0.0f;
+			Start_Dusk2 = 30.0f;
+			End_Dusk2 = -150.0f;
+			Radius_Dusk2 = 22.0f;
+			OriginLatitude_Dusk2 = 90.0f;
+			OriginLongitude_Dusk2 = 0.0f;
+		}
+	}
 
 	
 	[ExecuteInEditMode]
@@ -830,6 +1045,9 @@ namespace simul
 				ext.resourceState = 0;
 			}
 		}
+
+		[SerializeField]
+		public Aurorae aurorae = new Aurorae();
 
 		[SerializeField]
 		float _metresPerUnit = 1.0f;
@@ -1931,6 +2149,8 @@ namespace simul
 		[SerializeField]
 		static public bool _showRainTextures = false;
 		[SerializeField]
+		static public bool _showAuroraeTextures = false;
+		[SerializeField]
 		static public bool _showWaterTextures = false;
 		[SerializeField]
 		bool _simulationTimeRain = false;
@@ -2636,6 +2856,27 @@ namespace simul
 					}
 			}
 		}
+
+		static public bool ShowAuroraeTextures
+		{
+			get
+			{
+				return _showAuroraeTextures;
+			}
+			set
+			{
+				if (_showAuroraeTextures != value) try
+					{
+						_showAuroraeTextures = value;
+						StaticSetRenderBool("ShowAuroraeTextures", _showAuroraeTextures);
+					}
+					catch (Exception exc)
+					{
+						UnityEngine.Debug.Log(exc.ToString());
+					}
+			}
+		}
+
 		static public bool ShowWaterTextures
 		{
 			get
@@ -3383,6 +3624,41 @@ namespace simul
 			EDV.WindSpeedMS_X = _WindSpeed.x;
 			EDV.WindSpeedMS_Y = _WindSpeed.y;
 			EDV.WindSpeedMS_Z = _WindSpeed.z;
+
+			EDV.GeomagneticNorthPoleLatitude = aurorae.GeomagneticNorthPoleLatitude;
+			EDV.GeomagneticNorthPoleLongitude = aurorae.GeomagneticNorthPoleLongitude;
+			EDV.HighestLatitude = aurorae.HighestLatitude;
+			EDV.LowestLatitude = aurorae.LowestLatitude;
+			EDV.MaxBand = aurorae.MaxBand;
+			EDV.MinBand = aurorae.MinBand;
+			EDV.ShowAuroralOvalInCloudWindow = aurorae.ShowAuroralOvalInCloudWindow;
+			EDV.AuroraElectronFreeTime = aurorae.AuroraElectronFreeTime * 1e-12f;
+			EDV.AuroraElectronVolumeDensity = aurorae.AuroraElectronVolumeDensity * 1e13f;
+			EDV.AuroralLayersIntensity = aurorae.AuroralLayersIntensity;
+			EDV.AuroraLayers = aurorae.GetAuroralLayerVec4Array();
+			EDV.AuroraLayerCount = (UInt64)aurorae.GetAuroralLayerCount();
+			EDV.Start_Dawn1 = aurorae.Start_Dawn1;
+			EDV.End_Dawn1 = aurorae.End_Dawn1;
+			EDV.Radius_Dawn1 = aurorae.Radius_Dawn1;
+			EDV.OriginLatitude_Dawn1 = aurorae.OriginLatitude_Dawn1;
+			EDV.OriginLongitude_Dawn1 = aurorae.OriginLongitude_Dawn1;
+			EDV.Start_Dusk1 = aurorae.Start_Dusk1;
+			EDV.End_Dusk1 = aurorae.End_Dusk1;
+			EDV.Radius_Dusk1 = aurorae.Radius_Dusk1;
+			EDV.OriginLatitude_Dusk1 = aurorae.OriginLatitude_Dusk1;
+			EDV.OriginLongitude_Dusk1 = aurorae.OriginLongitude_Dusk1;
+			EDV.Start_Dawn2 = aurorae.Start_Dawn2;
+			EDV.End_Dawn2 = aurorae.End_Dawn2;
+			EDV.Radius_Dawn2 = aurorae.Radius_Dawn2;
+			EDV.OriginLatitude_Dawn2 = aurorae.OriginLatitude_Dawn2;
+			EDV.OriginLongitude_Dawn2 = aurorae.OriginLongitude_Dawn2;
+			EDV.Start_Dusk2 = aurorae.Start_Dusk2;
+			EDV.End_Dusk2 = aurorae.End_Dusk2;
+			EDV.Radius_Dusk2 = aurorae.Radius_Dusk2;
+			EDV.OriginLatitude_Dusk2 = aurorae.OriginLatitude_Dusk2;
+			EDV.OriginLongitude_Dusk2 = aurorae.OriginLongitude_Dusk2;
+			EDV.AuroraIntensityMapSize = aurorae.AuroraIntensityMapSize;
+			EDV.AuroraTraceLength = aurorae.AuroraTraceLength;
 
 			Marshal.StructureToPtr(EDV, EDVptr, true);
 			StaticSetExternalDynamicValues(EDVptr);
