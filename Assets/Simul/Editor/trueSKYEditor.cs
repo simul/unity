@@ -116,8 +116,8 @@ namespace simul
 			[SerializeField]
 			static bool cloudLighting = false;
 
-		[SerializeField]
-		static bool lighting = false;
+		/*[SerializeField]
+		static bool lighting = false;*/
 			
 
 		[SerializeField]

@@ -219,7 +219,7 @@ namespace simul
 
 	public struct ExternalTexture
 	{
-		static int static_version = 3;
+		public static int static_version = 3;
 		public int version;
 		public IntPtr texturePtr;
 		public int width;
@@ -232,8 +232,8 @@ namespace simul
 
 	public struct ExternalMoon
 	{
-		static int static_version = 4; //adding Colour and albedo
-		int version;
+		public static int static_version = 4; //adding Colour and albedo
+		public int version;
 		public Orbit orbit;
 		public float radiusArcMinutes;
 		public string name;
@@ -326,12 +326,13 @@ namespace simul
 		public int MaxFramesBetweenViewUpdates;
 		public int AtmosphericsAmortization;
 		public float RainNearThreshold;
+		public bool AutomaticSunPosition;
 	};
 
 	[StructLayout(LayoutKind.Sequential, Pack = 1)]
 	public struct ExternalDynamicValues
 	{
-		public static int static_version = 1;
+		public static int static_version = 2;
 		public int version;
 
 		public float time;
@@ -3510,13 +3511,39 @@ namespace simul
 			}
 		}
 
+		//Returns true sizes do not match.
+		private bool CheckSizeOfExternalRenderValues()
+        {
+			string str= "sizeof:ExternalRenderValues";
+			int dllSize = StaticGetRenderInt(str);
+			int thisSize = Marshal.SizeOf(typeof(ExternalRenderValues));
+			bool wrong = (dllSize != thisSize) ? true : false;
+			if (wrong)
+			{
+				UnityEngine.Debug.LogError("Struct sizes do not match for " + str + ". DLL size is " + dllSize.ToString() + ", EXE size is " + thisSize.ToString() + ". Please check your trueSKY version and/or update the trueSKY DLLs.");
+			}
+			return wrong;
+		}
+
+		//Returns true sizes do not match.
+		private bool CheckSizeOfExternalDynamicValues()
+		{
+			string str = "sizeof:ExternalDynamicValues";
+			int dllSize = StaticGetRenderInt(str);
+			int thisSize = Marshal.SizeOf(typeof(ExternalDynamicValues));
+			bool wrong = (dllSize != thisSize) ? true : false;
+			if (wrong)
+			{
+				UnityEngine.Debug.LogError("Struct sizes do not match for " + str + ". DLL size is " + dllSize.ToString() + ", EXE size is " + thisSize.ToString() + ". Please check your trueSKY version and/or update the trueSKY DLLs.");
+			}
+			return wrong;
+		}
+
 		ExternalRenderValues ERV = new ExternalRenderValues();
 		System.IntPtr ERVptr = Marshal.AllocHGlobal(Marshal.SizeOf(new ExternalRenderValues()));
 
 		ExternalDynamicValues EDV = new ExternalDynamicValues();
 		System.IntPtr EDVptr = Marshal.AllocHGlobal(Marshal.SizeOf(new ExternalDynamicValues()));
-
-
 
 		public bool updateERV = false;
 
@@ -3525,6 +3552,10 @@ namespace simul
 
 			if (SimulVersion >= MakeSimulVersion(4, 2))
 			{
+				if (CheckSizeOfExternalRenderValues())
+					return;
+
+				ERV.version = ExternalRenderValues.static_version;
 				ERV.RenderSky = Convert.ToInt32(_renderSky);
 				ERV.IntegrationScheme = _IntegrationScheme;
 				ERV.LightingMode = _LightingMode;
@@ -3583,6 +3614,10 @@ namespace simul
 
 		public void UpdateExternalDynamic()
 		{
+			if (CheckSizeOfExternalDynamicValues())
+				return;
+
+			EDV.version = ExternalDynamicValues.static_version;
 			EDV.AdjustSunRadius = _adjustSunRadius;
 			EDV.AllowLunarRainbow = _AllowLunarRainbows;
 			EDV.AllowOccludedRainbow = _AllowOccludedRainbows;
@@ -3697,12 +3732,13 @@ namespace simul
 						if (moon.Render)
 						{
 							ExternalMoon Moon = new ExternalMoon();
-
+							Moon.version = ExternalMoon.static_version;
 							Moon.orbit = moon.GetOrbit();
 							Moon.name = moon.Name;
 							Moon.radiusArcMinutes = (float)moon.RadiusArcMinutes;
 							Moon.render = true;
 							ExternalTexture tex = new ExternalTexture();
+							tex.version = ExternalTexture.static_version;
 							InitExternalTexture(ref tex, moon.MoonTexture);
 							Moon.colour.x = moon.Colour.r;
 							Moon.colour.y = moon.Colour.g;
