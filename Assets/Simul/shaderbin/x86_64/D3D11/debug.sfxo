@@ -1,0 +1,779 @@
+SFX:DirectX 11
+constant_buffer DebugConstants 7
+texture FastClearTarget 2d read_write 0 single
+texture FastClearTarget2DArray 2d read_write 1 array
+texture FastClearTarget2DArrayU8 2d read_write 2 array
+texture FastClearTarget3D 3d read_write 3 single
+texture FastClearTarget3DU8 3d read_write 4 single
+texture cubeTexture cubemap read_only 3 single
+texture cubeTextureArray cubemap read_only 4 array
+texture imageTexture 2d read_only 0 single
+texture imageTextureArray 2d read_only 1 array
+texture imageTextureMS 2dms read_only 2 single
+texture imageTextureUint 2d read_only 5 single
+texture textureQueryResults 2d read_write 5 single
+texture volumeTexture 3d read_only 6 single
+SamplerState clampSamplerState 9,LINEAR,CLAMP,CLAMP,CLAMP,
+SamplerState cubeSamplerState 4,LINEAR,MIRROR,MIRROR,MIRROR,
+SamplerState samplerStateNearest 11,POINT,CLAMP,CLAMP,CLAMP,
+SamplerState wmcSamplerState 2,LINEAR,WRAP,MIRROR,CLAMP,
+SamplerState wrapSamplerState 6,LINEAR,WRAP,WRAP,WRAP,
+RasterizerState RenderBackfaceCull (false,CULL_BACK,0,0,false,FILL_SOLID,true,false,false,0)
+RasterizerState RenderFrontfaceCull (false,CULL_FRONT,0,0,false,FILL_SOLID,true,false,false,0)
+RasterizerState RenderNoCull (false,CULL_NONE,0,0,false,FILL_SOLID,true,false,false,0)
+RasterizerState wireframeRasterizer (true,CULL_NONE,0,0,false,FILL_WIREFRAME,true,false,false,0)
+BlendState AddBlend false,(true,true),1,1,1,1,4,5,()
+BlendState AlphaBlend false,(true,true),1,1,4,5,4,5,()
+BlendState AlphaBlendNoAlphaWrite false,(true),1,1,4,5,4,5,(7)
+BlendState DontBlend false,(false,false),1,1,4,5,4,5,()
+BlendState DontWriteColour false,(false),1,1,4,5,4,5,(0)
+BlendState NoBlendNoAlphaWrite false,(false),1,1,1,0,4,5,(7)
+BlendState NoBlendSetAlpha false,(false),1,1,1,0,0,0,(15)
+DepthStencilState DisableDepth false,0,4
+DepthStencilState TestForwardDepth true,0,4
+DepthStencilState TestReverseDepth true,0,7
+DepthStencilState WriteDepth true,1,0
+group 
+{
+	technique clear
+	{
+		pass p0
+		{
+			rasterizer: RenderNoCull
+			depthstencil: DisableDepth 0
+			blend: DontBlend (0,0,0,0) 4294967295
+			layout:
+			{
+			}
+			vertex: debug_VS_SimpleFullscreen_vv.cso(VS_SimpleFullscreen) inline:(0x16d308,0x498c), t:(), u:(), b:(), z:(), c:(), s:()
+			pixel: debug_PS_Clear.cso(PS_Clear) inline:(0x4dfe8,0x4d10), t:(), u:(), b:(), z:(), c:(7), s:()
+		}
+	}
+	technique clear_both
+	{
+		pass p0
+		{
+			rasterizer: RenderNoCull
+			depthstencil: WriteDepth 0
+			blend: DontBlend (0,0,0,0) 4294967295
+			layout:
+			{
+			}
+			vertex: debug_VS_DepthWrite_vv.cso(VS_DepthWrite) inline:(0xcbd90,0x4e98), t:(), u:(), b:(), z:(), c:(7), s:()
+			pixel: debug_PS_Clear.cso(PS_Clear) inline:(0x4dfe8,0x4d10), t:(), u:(), b:(), z:(), c:(7), s:()
+		}
+	}
+	technique clear_colour
+	{
+		pass p0
+		{
+			rasterizer: RenderNoCull
+			depthstencil: DisableDepth 0
+			blend: DontBlend (0,0,0,0) 4294967295
+			layout:
+			{
+			}
+			vertex: debug_VS_SimpleFullscreen_vv.cso(VS_SimpleFullscreen) inline:(0x16d308,0x498c), t:(), u:(), b:(), z:(), c:(), s:()
+			pixel: debug_PS_Clear.cso(PS_Clear) inline:(0x4dfe8,0x4d10), t:(), u:(), b:(), z:(), c:(7), s:()
+		}
+	}
+	technique clear_depth
+	{
+		pass p0
+		{
+			rasterizer: RenderNoCull
+			depthstencil: DisableDepth 0
+			blend: DontWriteColour (0,0,0,0) 4294967295
+			layout:
+			{
+			}
+			vertex: debug_VS_SimpleFullscreen_vv.cso(VS_SimpleFullscreen) inline:(0x16d308,0x498c), t:(), u:(), b:(), z:(), c:(), s:()
+			pixel: debug_PS_Clear.cso(PS_Clear) inline:(0x4dfe8,0x4d10), t:(), u:(), b:(), z:(), c:(7), s:()
+		}
+	}
+	technique compacted_texture
+	{
+		pass blend
+		{
+			rasterizer: RenderNoCull
+			depthstencil: DisableDepth 0
+			blend: AlphaBlendNoAlphaWrite (0,0,0,0) 4294967295
+			layout:
+			{
+			}
+			vertex: debug_VS_Quad_vv.cso(VS_Quad) inline:(0x162668,0x5650), t:(), u:(), b:(), z:(), c:(7), s:()
+			pixel: debug_PS_CompactedTexture.cso(PS_CompactedTexture) inline:(0x52cf8,0x65a0), t:(5), u:(), b:(), z:(), c:(), s:()
+		}
+		pass noblend
+		{
+			rasterizer: RenderNoCull
+			depthstencil: DisableDepth 0
+			blend: NoBlendNoAlphaWrite (0,0,0,0) 4294967295
+			layout:
+			{
+			}
+			vertex: debug_VS_Quad_vv.cso(VS_Quad) inline:(0x162668,0x5650), t:(), u:(), b:(), z:(), c:(7), s:()
+			pixel: debug_PS_CompactedTexture.cso(PS_CompactedTexture) inline:(0x52cf8,0x65a0), t:(5), u:(), b:(), z:(), c:(), s:()
+		}
+	}
+	technique compute_clear
+	{
+		pass p0
+		{
+			compute: debug_CS_Clear_c.cso(CS_Clear) inline:(0x13680,0x4d7c), t:(), u:(0), b:(), z:(), c:(7), s:()
+		}
+	}
+	technique compute_clear_2d_array
+	{
+		pass p0
+		{
+			compute: debug_CS_Clear2DArray_c.cso(CS_Clear2DArray) inline:(0x0,0x4da4), t:(), u:(1), b:(), z:(), c:(7), s:()
+		}
+	}
+	technique compute_clear_2d_array_u8
+	{
+		pass p0
+		{
+			compute: debug_CS_Clear2DArray_U8_c.cso(CS_Clear2DArray_U8) inline:(0x4da4,0x4da4), t:(), u:(2), b:(), z:(), c:(7), s:()
+		}
+	}
+	technique compute_clear_3d
+	{
+		pass p0
+		{
+			compute: debug_CS_Clear3D_c.cso(CS_Clear3D) inline:(0x9b48,0x4d9c), t:(), u:(3), b:(), z:(), c:(7), s:()
+		}
+	}
+	technique compute_clear_3d_u8
+	{
+		pass p0
+		{
+			compute: debug_CS_Clear3D_U8_c.cso(CS_Clear3D_U8) inline:(0xe8e4,0x4d9c), t:(), u:(4), b:(), z:(), c:(7), s:()
+		}
+	}
+	technique copy_2d
+	{
+		pass add
+		{
+			rasterizer: RenderNoCull
+			depthstencil: DisableDepth 0
+			blend: AddBlend (0,0,0,0) 4294967295
+			layout:
+			{
+			}
+			vertex: debug_VS_SimpleFullscreen_vv.cso(VS_SimpleFullscreen) inline:(0x16d308,0x498c), t:(), u:(), b:(), z:(), c:(), s:()
+			pixel: debug_PS_Copy2D.cso(PS_Copy2D) inline:(0x59298,0x40b4), t:(0), u:(), b:(), z:(), c:(), s:(9)
+		}
+		pass offset
+		{
+			rasterizer: RenderNoCull
+			depthstencil: DisableDepth 0
+			blend: DontBlend (0,0,0,0) 4294967295
+			layout:
+			{
+			}
+			vertex: debug_VS_SimpleFullscreen_vv.cso(VS_SimpleFullscreen) inline:(0x16d308,0x498c), t:(), u:(), b:(), z:(), c:(), s:()
+			pixel: debug_PS_Copy2DOffset.cso(PS_Copy2DOffset) inline:(0x5d34c,0x4e10), t:(0), u:(), b:(), z:(), c:(7), s:(9)
+		}
+		pass replace
+		{
+			rasterizer: RenderNoCull
+			depthstencil: DisableDepth 0
+			blend: DontBlend (0,0,0,0) 4294967295
+			layout:
+			{
+			}
+			vertex: debug_VS_SimpleFullscreen_vv.cso(VS_SimpleFullscreen) inline:(0x16d308,0x498c), t:(), u:(), b:(), z:(), c:(), s:()
+			pixel: debug_PS_Copy2D.cso(PS_Copy2D) inline:(0x59298,0x40b4), t:(0), u:(), b:(), z:(), c:(), s:(9)
+		}
+		pass wrap
+		{
+			rasterizer: RenderNoCull
+			depthstencil: DisableDepth 0
+			blend: DontBlend (0,0,0,0) 4294967295
+			layout:
+			{
+			}
+			vertex: debug_VS_SimpleFullscreen_vv.cso(VS_SimpleFullscreen) inline:(0x16d308,0x498c), t:(), u:(), b:(), z:(), c:(), s:()
+			pixel: debug_PS_Copy2DWrap.cso(PS_Copy2DWrap) inline:(0x6215c,0x40b4), t:(0), u:(), b:(), z:(), c:(), s:(6)
+		}
+	}
+	technique draw_circle_on_sphere
+	{
+		pass fill
+		{
+			rasterizer: RenderNoCull
+			depthstencil: DisableDepth 0
+			blend: AlphaBlend (0,0,0,0) 4294967295
+			layout:
+			{
+			}
+			vertex: debug_VS_DrawFilledCircleOnSphere_vv.cso(VS_DrawFilledCircleOnSphere) inline:(0xf6c10,0x626c), t:(), u:(), b:(), z:(), c:(7), s:()
+			pixel: debug_DebugPS.cso(DebugPS) inline:(0x154a78,0x4018), t:(), u:(), b:(), z:(), c:(), s:()
+		}
+		pass outline
+		{
+			rasterizer: RenderNoCull
+			depthstencil: DisableDepth 0
+			blend: AddBlend (0,0,0,0) 4294967295
+			layout:
+			{
+			}
+			vertex: debug_VS_DrawCircleOnSphere_vv.cso(VS_DrawCircleOnSphere) inline:(0xd5ac0,0x6208), t:(), u:(), b:(), z:(), c:(7), s:()
+			pixel: debug_DebugPS.cso(DebugPS) inline:(0x154a78,0x4018), t:(), u:(), b:(), z:(), c:(), s:()
+		}
+	}
+	technique draw_cubemap
+	{
+		pass blend
+		{
+			rasterizer: RenderFrontfaceCull
+			depthstencil: DisableDepth 0
+			blend: AlphaBlendNoAlphaWrite (0,0,0,0) 4294967295
+			layout:
+			{
+				float3 position;
+			}
+			vertex: debug_VS_DrawCubemap_vv.cso(VS_DrawCubemap) inline:(0xe1ed0,0x4df8), t:(), u:(), b:(), z:(), c:(7), s:()
+			pixel: debug_PS_DrawCubemap.cso(PS_DrawCubemap) inline:(0x66210,0x4e60), t:(3), u:(), b:(), z:(), c:(7), s:(4)
+		}
+		pass noblend
+		{
+			rasterizer: RenderFrontfaceCull
+			depthstencil: DisableDepth 0
+			blend: NoBlendNoAlphaWrite (0,0,0,0) 4294967295
+			layout:
+			{
+				float3 position;
+			}
+			vertex: debug_VS_DrawCubemap_vv.cso(VS_DrawCubemap) inline:(0xe1ed0,0x4df8), t:(), u:(), b:(), z:(), c:(7), s:()
+			pixel: debug_PS_DrawCubemap.cso(PS_DrawCubemap) inline:(0x66210,0x4e60), t:(3), u:(), b:(), z:(), c:(7), s:(4)
+		}
+	}
+	technique draw_cubemap_sphere
+	{
+		pass noblend
+		{
+			rasterizer: RenderBackfaceCull
+			depthstencil: DisableDepth 0
+			blend: NoBlendNoAlphaWrite (0,0,0,0) 4294967295
+			layout:
+			{
+			}
+			vertex: debug_VS_DrawCubemapSphere_vv.cso(VS_DrawCubemapSphere) inline:(0xebac0,0x58a8), t:(), u:(), b:(), z:(), c:(7), s:()
+			pixel: debug_PS_DrawCubemap.cso(PS_DrawCubemap) inline:(0x66210,0x4e60), t:(3), u:(), b:(), z:(), c:(7), s:(4)
+		}
+	}
+	technique draw_lat_long_sphere
+	{
+		pass noblend
+		{
+			rasterizer: RenderBackfaceCull
+			depthstencil: DisableDepth 0
+			blend: AlphaBlend (0,0,0,0) 4294967295
+			layout:
+			{
+			}
+			vertex: debug_VS_DrawLatLongSphere_vv.cso(VS_DrawLatLongSphere) inline:(0x10f5d0,0x6580), t:(), u:(), b:(), z:(), c:(7), s:()
+			pixel: debug_DebugPS.cso(DebugPS) inline:(0x154a78,0x4018), t:(), u:(), b:(), z:(), c:(), s:()
+		}
+	}
+	technique draw_quad_on_sphere
+	{
+		pass fill
+		{
+			rasterizer: RenderNoCull
+			depthstencil: DisableDepth 0
+			blend: AlphaBlend (0,0,0,0) 4294967295
+			layout:
+			{
+			}
+			vertex: debug_VS_DrawFilledQuadOnSphere_vv.cso(VS_DrawFilledQuadOnSphere) inline:(0x1030e8,0x6274), t:(), u:(), b:(), z:(), c:(7), s:()
+			pixel: debug_DebugPS.cso(DebugPS) inline:(0x154a78,0x4018), t:(), u:(), b:(), z:(), c:(), s:()
+		}
+		pass outline
+		{
+			rasterizer: RenderNoCull
+			depthstencil: DisableDepth 0
+			blend: AddBlend (0,0,0,0) 4294967295
+			layout:
+			{
+			}
+			vertex: debug_VS_DrawQuadOnSphere_vv.cso(VS_DrawQuadOnSphere) inline:(0x11c0d0,0x6c94), t:(), u:(), b:(), z:(), c:(7), s:()
+			pixel: debug_DebugPS.cso(DebugPS) inline:(0x154a78,0x4018), t:(), u:(), b:(), z:(), c:(), s:()
+		}
+	}
+	technique draw_sphere
+	{
+		pass p0
+		{
+			rasterizer: RenderBackfaceCull
+			depthstencil: DisableDepth 0
+			blend: DontBlend (0,0,0,0) 4294967295
+			layout:
+			{
+			}
+			vertex: debug_VS_DrawCubemapSphere_vv.cso(VS_DrawCubemapSphere) inline:(0xebac0,0x58a8), t:(), u:(), b:(), z:(), c:(7), s:()
+			pixel: debug_PS_DrawSphere.cso(PS_DrawSphere) inline:(0x6b070,0x402c), t:(), u:(), b:(), z:(), c:(), s:()
+		}
+	}
+	technique draw_texture_on_sphere
+	{
+		pass p0
+		{
+			rasterizer: RenderNoCull
+			depthstencil: DisableDepth 0
+			blend: DontBlend (0,0,0,0) 4294967295
+			layout:
+			{
+			}
+			vertex: debug_VS_DrawTextureOnSphere_vv.cso(VS_DrawTextureOnSphere) inline:(0x1299f8,0x6a98), t:(), u:(), b:(), z:(), c:(7), s:()
+			pixel: debug_PS_DrawTextureOnSphere.cso(PS_DrawTextureOnSphere) inline:(0x6f09c,0x4e18), t:(0), u:(), b:(), z:(), c:(7), s:(11)
+		}
+	}
+	technique lat_long_to_cubemap
+	{
+		pass p0
+		{
+			compute: debug_CS_LatLongToCubemap_c.cso(CS_LatLongToCubemap) inline:(0x183fc,0x5c28), t:(0), u:(1), b:(), z:(), c:(), s:(2)
+		}
+	}
+	technique lines_2d
+	{
+		pass p0
+		{
+			rasterizer: wireframeRasterizer
+			depthstencil: DisableDepth 0
+			blend: AlphaBlend (0,0,0,0) 4294967295
+			layout:
+			{
+				float3 position;
+				float4 colour;
+			}
+			vertex: debug_Debug2dVS_vv.cso(Debug2dVS) inline:(0x2cb28,0x4da0), t:(), u:(), b:(), z:(), c:(7), s:()
+			pixel: debug_DebugPS.cso(DebugPS) inline:(0x154a78,0x4018), t:(), u:(), b:(), z:(), c:(), s:()
+		}
+	}
+	technique radial
+	{
+		pass blend
+		{
+			rasterizer: RenderNoCull
+			depthstencil: DisableDepth 0
+			blend: AlphaBlendNoAlphaWrite (0,0,0,0) 4294967295
+			layout:
+			{
+			}
+			vertex: debug_VS_Quad_vv.cso(VS_Quad) inline:(0x162668,0x5650), t:(), u:(), b:(), z:(), c:(7), s:()
+			pixel: debug_PS_ShowTextureRadial.cso(PS_ShowTextureRadial) inline:(0xb8610,0x4ca8), t:(0), u:(), b:(), z:(), c:(), s:(11)
+		}
+		pass noblend
+		{
+			rasterizer: RenderNoCull
+			depthstencil: DisableDepth 0
+			blend: NoBlendSetAlpha (0,0,0,0) 4294967295
+			layout:
+			{
+			}
+			vertex: debug_VS_Quad_vv.cso(VS_Quad) inline:(0x162668,0x5650), t:(), u:(), b:(), z:(), c:(7), s:()
+			pixel: debug_PS_ShowTextureRadial.cso(PS_ShowTextureRadial) inline:(0xb8610,0x4ca8), t:(0), u:(), b:(), z:(), c:(), s:(11)
+		}
+	}
+	technique show_cubemap
+	{
+		pass blend
+		{
+			rasterizer: RenderNoCull
+			depthstencil: DisableDepth 0
+			blend: AlphaBlend (0,0,0,0) 4294967295
+			layout:
+			{
+			}
+			vertex: debug_VS_Quad_vv.cso(VS_Quad) inline:(0x162668,0x5650), t:(), u:(), b:(), z:(), c:(7), s:()
+			pixel: debug_PS_ShowCubemap.cso(PS_ShowCubemap) inline:(0x798d0,0x59f4), t:(3), u:(), b:(), z:(), c:(7), s:(4)
+		}
+		pass noblend
+		{
+			rasterizer: RenderNoCull
+			depthstencil: DisableDepth 0
+			blend: NoBlendSetAlpha (0,0,0,0) 4294967295
+			layout:
+			{
+			}
+			vertex: debug_VS_Quad_vv.cso(VS_Quad) inline:(0x162668,0x5650), t:(), u:(), b:(), z:(), c:(7), s:()
+			pixel: debug_PS_ShowCubemap.cso(PS_ShowCubemap) inline:(0x798d0,0x59f4), t:(3), u:(), b:(), z:(), c:(7), s:(4)
+		}
+	}
+	technique show_cubemap_array
+	{
+		pass blend
+		{
+			rasterizer: RenderNoCull
+			depthstencil: DisableDepth 0
+			blend: AlphaBlend (0,0,0,0) 4294967295
+			layout:
+			{
+			}
+			vertex: debug_VS_Quad_vv.cso(VS_Quad) inline:(0x162668,0x5650), t:(), u:(), b:(), z:(), c:(7), s:()
+			pixel: debug_PS_ShowCubemapArray.cso(PS_ShowCubemapArray) inline:(0x73eb4,0x5a1c), t:(4), u:(), b:(), z:(), c:(7), s:(4)
+		}
+		pass noblend
+		{
+			rasterizer: RenderNoCull
+			depthstencil: DisableDepth 0
+			blend: NoBlendSetAlpha (0,0,0,0) 4294967295
+			layout:
+			{
+			}
+			vertex: debug_VS_Quad_vv.cso(VS_Quad) inline:(0x162668,0x5650), t:(), u:(), b:(), z:(), c:(7), s:()
+			pixel: debug_PS_ShowCubemapArray.cso(PS_ShowCubemapArray) inline:(0x73eb4,0x5a1c), t:(4), u:(), b:(), z:(), c:(7), s:(4)
+		}
+	}
+	technique show_depth
+	{
+		pass forward_depth
+		{
+			rasterizer: RenderNoCull
+			depthstencil: DisableDepth 0
+			blend: NoBlendNoAlphaWrite (0,0,0,0) 4294967295
+			layout:
+			{
+			}
+			vertex: debug_VS_Quad_vv.cso(VS_Quad) inline:(0x162668,0x5650), t:(), u:(), b:(), z:(), c:(7), s:()
+			pixel: debug_PS_ShowDepth_Forward.cso(PS_ShowDepth_Forward) inline:(0x9b914,0x7114), t:(0), u:(), b:(), z:(), c:(7), s:(11)
+		}
+		pass reverse_depth
+		{
+			rasterizer: RenderNoCull
+			depthstencil: DisableDepth 0
+			blend: NoBlendNoAlphaWrite (0,0,0,0) 4294967295
+			layout:
+			{
+			}
+			vertex: debug_VS_Quad_vv.cso(VS_Quad) inline:(0x162668,0x5650), t:(), u:(), b:(), z:(), c:(7), s:()
+			pixel: debug_PS_ShowDepth_Reverse.cso(PS_ShowDepth_Reverse) inline:(0xa2a28,0x7118), t:(0), u:(), b:(), z:(), c:(7), s:(11)
+		}
+	}
+	technique show_depth_cube
+	{
+		pass forward_depth
+		{
+			rasterizer: RenderNoCull
+			depthstencil: DisableDepth 0
+			blend: NoBlendNoAlphaWrite (0,0,0,0) 4294967295
+			layout:
+			{
+			}
+			vertex: debug_VS_Quad_vv.cso(VS_Quad) inline:(0x162668,0x5650), t:(), u:(), b:(), z:(), c:(7), s:()
+			pixel: debug_PS_ShowDepthCube_Forward.cso(PS_ShowDepthCube_Forward) inline:(0x7f2c4,0x7180), t:(3), u:(), b:(), z:(), c:(7), s:(4)
+		}
+		pass reverse_depth
+		{
+			rasterizer: RenderNoCull
+			depthstencil: DisableDepth 0
+			blend: NoBlendNoAlphaWrite (0,0,0,0) 4294967295
+			layout:
+			{
+			}
+			vertex: debug_VS_Quad_vv.cso(VS_Quad) inline:(0x162668,0x5650), t:(), u:(), b:(), z:(), c:(7), s:()
+			pixel: debug_PS_ShowDepthCube_Reverse.cso(PS_ShowDepthCube_Reverse) inline:(0x86444,0x721c), t:(3), u:(), b:(), z:(), c:(7), s:(4)
+		}
+	}
+	technique show_depth_ms
+	{
+		pass forward_depth
+		{
+			rasterizer: RenderNoCull
+			depthstencil: DisableDepth 0
+			blend: NoBlendNoAlphaWrite (0,0,0,0) 4294967295
+			layout:
+			{
+			}
+			vertex: debug_VS_Quad_vv.cso(VS_Quad) inline:(0x162668,0x5650), t:(), u:(), b:(), z:(), c:(7), s:()
+			pixel: debug_PS_ShowDepthMS_Forward.cso(PS_ShowDepthMS_Forward) inline:(0x8d660,0x7158), t:(2), u:(), b:(), z:(), c:(7), s:()
+		}
+		pass reverse_depth
+		{
+			rasterizer: RenderNoCull
+			depthstencil: DisableDepth 0
+			blend: NoBlendNoAlphaWrite (0,0,0,0) 4294967295
+			layout:
+			{
+			}
+			vertex: debug_VS_Quad_vv.cso(VS_Quad) inline:(0x162668,0x5650), t:(), u:(), b:(), z:(), c:(7), s:()
+			pixel: debug_PS_ShowDepthMS_Reverse.cso(PS_ShowDepthMS_Reverse) inline:(0x947b8,0x715c), t:(2), u:(), b:(), z:(), c:(7), s:()
+		}
+	}
+	technique show_texture
+	{
+		pass blend
+		{
+			rasterizer: RenderNoCull
+			depthstencil: DisableDepth 0
+			blend: AlphaBlendNoAlphaWrite (0,0,0,0) 4294967295
+			layout:
+			{
+			}
+			vertex: debug_VS_Quad_vv.cso(VS_Quad) inline:(0x162668,0x5650), t:(), u:(), b:(), z:(), c:(7), s:()
+			pixel: debug_PS_ShowTexture.cso(PS_ShowTexture) inline:(0xae9a8,0x4e48), t:(0), u:(), b:(), z:(), c:(7), s:(11)
+		}
+		pass noblend
+		{
+			rasterizer: RenderNoCull
+			depthstencil: DisableDepth 0
+			blend: NoBlendNoAlphaWrite (0,0,0,0) 4294967295
+			layout:
+			{
+			}
+			vertex: debug_VS_Quad_vv.cso(VS_Quad) inline:(0x162668,0x5650), t:(), u:(), b:(), z:(), c:(7), s:()
+			pixel: debug_PS_ShowTexture.cso(PS_ShowTexture) inline:(0xae9a8,0x4e48), t:(0), u:(), b:(), z:(), c:(7), s:(11)
+		}
+	}
+	technique show_texture_array
+	{
+		pass blend
+		{
+			rasterizer: RenderNoCull
+			depthstencil: DisableDepth 0
+			blend: AlphaBlendNoAlphaWrite (0,0,0,0) 4294967295
+			layout:
+			{
+			}
+			vertex: debug_VS_Quad_vv.cso(VS_Quad) inline:(0x162668,0x5650), t:(), u:(), b:(), z:(), c:(7), s:()
+			pixel: debug_PS_ShowTextureArray.cso(PS_ShowTextureArray) inline:(0xa9b40,0x4e68), t:(1), u:(), b:(), z:(), c:(7), s:(11)
+		}
+		pass noblend
+		{
+			rasterizer: RenderNoCull
+			depthstencil: DisableDepth 0
+			blend: NoBlendNoAlphaWrite (0,0,0,0) 4294967295
+			layout:
+			{
+			}
+			vertex: debug_VS_Quad_vv.cso(VS_Quad) inline:(0x162668,0x5650), t:(), u:(), b:(), z:(), c:(7), s:()
+			pixel: debug_PS_ShowTextureArray.cso(PS_ShowTextureArray) inline:(0xa9b40,0x4e68), t:(1), u:(), b:(), z:(), c:(7), s:(11)
+		}
+	}
+	technique show_volume
+	{
+		pass blend
+		{
+			rasterizer: RenderNoCull
+			depthstencil: DisableDepth 0
+			blend: AlphaBlend (0,0,0,0) 4294967295
+			layout:
+			{
+			}
+			vertex: debug_VS_Quad_vv.cso(VS_Quad) inline:(0x162668,0x5650), t:(), u:(), b:(), z:(), c:(7), s:()
+			pixel: debug_PS_ShowVolume.cso(PS_ShowVolume) inline:(0xbd2b8,0x4fc0), t:(6), u:(), b:(), z:(), c:(7), s:(6)
+		}
+		pass noblend
+		{
+			rasterizer: RenderNoCull
+			depthstencil: DisableDepth 0
+			blend: NoBlendNoAlphaWrite (0,0,0,0) 4294967295
+			layout:
+			{
+			}
+			vertex: debug_VS_Quad_vv.cso(VS_Quad) inline:(0x162668,0x5650), t:(), u:(), b:(), z:(), c:(7), s:()
+			pixel: debug_PS_ShowVolume.cso(PS_ShowVolume) inline:(0xbd2b8,0x4fc0), t:(6), u:(), b:(), z:(), c:(7), s:(6)
+		}
+	}
+	technique texel_query
+	{
+		pass p0
+		{
+			compute: debug_CS_TexelQuery_c.cso(CS_TexelQuery) inline:(0x1e024,0x4e0c), t:(0), u:(), b:(), z:(5), c:(7), s:()
+		}
+	}
+	technique textured
+	{
+		pass blend
+		{
+			rasterizer: RenderNoCull
+			depthstencil: DisableDepth 0
+			blend: AlphaBlendNoAlphaWrite (0,0,0,0) 4294967295
+			layout:
+			{
+			}
+			vertex: debug_VS_Quad_vv.cso(VS_Quad) inline:(0x162668,0x5650), t:(), u:(), b:(), z:(), c:(7), s:()
+			pixel: debug_PS_ShowTexture.cso(PS_ShowTexture) inline:(0xae9a8,0x4e48), t:(0), u:(), b:(), z:(), c:(7), s:(11)
+		}
+		pass noblend
+		{
+			rasterizer: RenderNoCull
+			depthstencil: DisableDepth 0
+			blend: NoBlendSetAlpha (0,0,0,0) 4294967295
+			layout:
+			{
+			}
+			vertex: debug_VS_Quad_vv.cso(VS_Quad) inline:(0x162668,0x5650), t:(), u:(), b:(), z:(), c:(7), s:()
+			pixel: debug_PS_ShowTexture.cso(PS_ShowTexture) inline:(0xae9a8,0x4e48), t:(0), u:(), b:(), z:(), c:(7), s:(11)
+		}
+	}
+	technique texturedMS
+	{
+		pass noblend
+		{
+			rasterizer: RenderNoCull
+			depthstencil: DisableDepth 0
+			blend: NoBlendNoAlphaWrite (0,0,0,0) 4294967295
+			layout:
+			{
+			}
+			vertex: debug_VS_Quad_vv.cso(VS_Quad) inline:(0x162668,0x5650), t:(), u:(), b:(), z:(), c:(7), s:()
+			pixel: debug_PS_ShowTextureMS.cso(PS_ShowTextureMS) inline:(0xb37f0,0x4e20), t:(2), u:(), b:(), z:(), c:(7), s:()
+		}
+	}
+	technique trace_volume
+	{
+		pass blend
+		{
+			rasterizer: RenderNoCull
+			depthstencil: DisableDepth 0
+			blend: AlphaBlend (0,0,0,0) 4294967295
+			layout:
+			{
+			}
+			vertex: debug_VS_Quad_vv.cso(VS_Quad) inline:(0x162668,0x5650), t:(), u:(), b:(), z:(), c:(7), s:()
+			pixel: debug_PS_TraceVolume.cso(PS_TraceVolume) inline:(0xc2278,0x4e08), t:(6), u:(), b:(), z:(), c:(7), s:(6)
+		}
+		pass noblend
+		{
+			rasterizer: RenderNoCull
+			depthstencil: DisableDepth 0
+			blend: NoBlendNoAlphaWrite (0,0,0,0) 4294967295
+			layout:
+			{
+			}
+			vertex: debug_VS_Quad_vv.cso(VS_Quad) inline:(0x162668,0x5650), t:(), u:(), b:(), z:(), c:(7), s:()
+			pixel: debug_PS_TraceVolume.cso(PS_TraceVolume) inline:(0xc2278,0x4e08), t:(6), u:(), b:(), z:(), c:(7), s:(6)
+		}
+	}
+	technique untextured
+	{
+		pass blend
+		{
+			rasterizer: RenderNoCull
+			depthstencil: DisableDepth 0
+			blend: AlphaBlendNoAlphaWrite (0,0,0,0) 4294967295
+			layout:
+			{
+			}
+			vertex: debug_VS_Quad_vv.cso(VS_Quad) inline:(0x162668,0x5650), t:(), u:(), b:(), z:(), c:(7), s:()
+			pixel: debug_PS_Untextured.cso(PS_Untextured) inline:(0xc7080,0x4d10), t:(), u:(), b:(), z:(), c:(7), s:()
+		}
+		pass noblend
+		{
+			rasterizer: RenderNoCull
+			depthstencil: DisableDepth 0
+			blend: NoBlendNoAlphaWrite (0,0,0,0) 4294967295
+			layout:
+			{
+			}
+			vertex: debug_VS_Quad_vv.cso(VS_Quad) inline:(0x162668,0x5650), t:(), u:(), b:(), z:(), c:(7), s:()
+			pixel: debug_PS_Untextured.cso(PS_Untextured) inline:(0xc7080,0x4d10), t:(), u:(), b:(), z:(), c:(7), s:()
+		}
+	}
+	technique vec3_input_signature
+	{
+		pass p0
+		{
+			rasterizer: RenderNoCull
+			depthstencil: DisableDepth 0
+			blend: DontBlend (0,0,0,0) 4294967295
+			layout:
+			{
+				float3 position;
+			}
+			vertex: debug_Vec3InputSignatureVS_vv.cso(Vec3InputSignatureVS) inline:(0x14aee0,0x4dcc), t:(), u:(), b:(), z:(), c:(7), s:()
+			pixel: debug_DebugPS.cso(DebugPS) inline:(0x154a78,0x4018), t:(), u:(), b:(), z:(), c:(), s:()
+		}
+	}
+}
+group circle
+{
+	technique filled
+	{
+		pass p0
+		{
+			rasterizer: RenderNoCull
+			depthstencil: DisableDepth 0
+			blend: AlphaBlend (0,0,0,0) 4294967295
+			layout:
+			{
+			}
+			vertex: debug_FilledCircleVS_vv.cso(FilledCircleVS) inline:(0x44258,0x4ec8), t:(), u:(), b:(), z:(), c:(7), s:()
+			pixel: debug_DebugPS.cso(DebugPS) inline:(0x154a78,0x4018), t:(), u:(), b:(), z:(), c:(), s:()
+		}
+	}
+	technique outline
+	{
+		pass p0
+		{
+			rasterizer: wireframeRasterizer
+			depthstencil: DisableDepth 0
+			blend: AlphaBlend (0,0,0,0) 4294967295
+			layout:
+			{
+			}
+			vertex: debug_CircleVS_vv.cso(CircleVS) inline:(0x22e30,0x4e7c), t:(), u:(), b:(), z:(), c:(7), s:()
+			pixel: debug_DebugPS.cso(DebugPS) inline:(0x154a78,0x4018), t:(), u:(), b:(), z:(), c:(), s:()
+		}
+	}
+}
+group lines_3d
+{
+	technique lines_3d
+	{
+		pass lines3d
+		{
+			rasterizer: wireframeRasterizer
+			depthstencil: DisableDepth 0
+			blend: AlphaBlend (0,0,0,0) 4294967295
+			layout:
+			{
+				float3 position;
+				float4 colour;
+			}
+			vertex: debug_DebugVS_vv.cso(DebugVS) inline:(0x158a90,0x4dec), t:(), u:(), b:(), z:(), c:(7), s:()
+			pixel: debug_DebugPS.cso(DebugPS) inline:(0x154a78,0x4018), t:(), u:(), b:(), z:(), c:(), s:()
+		}
+	}
+}
+group lines_3d_depth
+{
+	technique depth_forward
+	{
+		pass lines3d
+		{
+			rasterizer: wireframeRasterizer
+			depthstencil: TestForwardDepth 0
+			blend: AlphaBlend (0,0,0,0) 4294967295
+			layout:
+			{
+				float3 position;
+				float4 colour;
+			}
+			vertex: debug_DebugVS_vv.cso(DebugVS) inline:(0x158a90,0x4dec), t:(), u:(), b:(), z:(), c:(7), s:()
+			pixel: debug_DebugPS.cso(DebugPS) inline:(0x154a78,0x4018), t:(), u:(), b:(), z:(), c:(), s:()
+		}
+	}
+	technique depth_reverse
+	{
+		pass lines3d
+		{
+			rasterizer: wireframeRasterizer
+			depthstencil: TestReverseDepth 0
+			blend: AlphaBlend (0,0,0,0) 4294967295
+			layout:
+			{
+				float3 position;
+				float4 colour;
+			}
+			vertex: debug_DebugVS_vv.cso(DebugVS) inline:(0x158a90,0x4dec), t:(), u:(), b:(), z:(), c:(7), s:()
+			pixel: debug_DebugPS.cso(DebugPS) inline:(0x154a78,0x4018), t:(), u:(), b:(), z:(), c:(), s:()
+		}
+	}
+}
+ 
