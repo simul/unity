@@ -1,0 +1,545 @@
+SFX:DirectX 12
+constant_buffer DebugConstants 7
+constant_buffer EarthShadowConstants 9
+constant_buffer SkyConstants 10
+texture backgroundTexture 2d read_only 0 single
+texture depthTexture 2d read_only 4 single
+texture depthTextureMS 2dms read_only 5 single
+texture fadeTexture1 3d read_only 7 single
+texture fadeTexture2 3d read_only 8 single
+texture flareTexture 2d read_only 6 single
+texture globalBrightnessRW 2d read_write 1 single
+texture inscTexture 2d read_only 2 single
+texture lightTable2DTexture 2d read_only 10 single
+texture lightingQueryInputs 2d read_only 14 single
+texture lightingQueryResults 2d read_write 2 single
+texture lossTexture 2d read_only 3 single
+texture skyBrightnessSB1 2d read_only 12 single
+texture skyBrightnessSB2 2d read_only 13 single
+texture sourceTexture 3d read_only 9 single
+texture starsSB 2d read_only 11 single
+texture targetTexture 2d read_write 0 single
+SamplerState clampSamplerState 9,LINEAR,CLAMP,CLAMP,CLAMP,
+SamplerState cmcSamplerState 5,LINEAR,CLAMP,MIRROR,CLAMP,
+SamplerState flareSamplerState 2,LINEAR,CLAMP,CLAMP,WRAP,
+SamplerState samplerStateNearest 11,POINT,CLAMP,CLAMP,CLAMP,
+SamplerState wrapSamplerState 6,LINEAR,WRAP,WRAP,WRAP,
+RasterizerState RenderNoCull (false,CULL_NONE,0,0,false,FILL_SOLID,true,false,false,0)
+BlendState AddBlend false,(true,true),1,1,1,1,4,5,()
+BlendState AddBlendDontWriteAlpha false,(true,true),1,1,1,1,4,5,(7,7)
+BlendState AlphaBlendDontWriteAlpha false,(true),1,1,4,5,4,5,(7)
+BlendState BlendWithoutWrite false,(true,true),1,1,1,1,4,5,(0,0)
+BlendState DontBlend false,(false,false),1,1,4,5,4,5,()
+BlendState NoBlendNoAlphaWrite false,(false),1,1,1,0,4,5,(7)
+DepthStencilState DisableDepth false,0,4
+group 
+{
+	technique background_latlongsphere
+	{
+		pass forward_depth
+		{
+			rasterizer: RenderNoCull
+			depthstencil: DisableDepth 0
+			blend: DontBlend (0,0,0,0) 4294967295
+			layout:
+			{
+			}
+			vertex: sky_VS_SimpleFullscreen_vv.cso(VS_SimpleFullscreen) inline:(0x9fd53,0x20c5), t:(), u:(), b:(), z:(), c:(), s:()
+			pixel: sky_PS_Background_ForwardDepth.cso(PS_Background_ForwardDepth) inline:(0x8440,0x46f7), t:(0,4), u:(), b:(), z:(), c:(10), s:(6,9)
+		}
+		pass forward_depth_msaa
+		{
+			rasterizer: RenderNoCull
+			depthstencil: DisableDepth 0
+			blend: DontBlend (0,0,0,0) 4294967295
+			layout:
+			{
+			}
+			vertex: sky_VS_SimpleFullscreen_vv.cso(VS_SimpleFullscreen) inline:(0x9fd53,0x20c5), t:(), u:(), b:(), z:(), c:(), s:()
+			pixel: sky_PS_Background_ForwardDepth_MSAA.cso(PS_Background_ForwardDepth_MSAA) inline:(0xcb37,0x4c13), t:(0,5), u:(), b:(), z:(), c:(10), s:(6)
+		}
+		pass reverse_depth
+		{
+			rasterizer: RenderNoCull
+			depthstencil: DisableDepth 0
+			blend: DontBlend (0,0,0,0) 4294967295
+			layout:
+			{
+			}
+			vertex: sky_VS_SimpleFullscreen_vv.cso(VS_SimpleFullscreen) inline:(0x9fd53,0x20c5), t:(), u:(), b:(), z:(), c:(), s:()
+			pixel: sky_PS_Background_ReverseDepth.cso(PS_Background_ReverseDepth) inline:(0x1174a,0x46f7), t:(0,4), u:(), b:(), z:(), c:(10), s:(6,9)
+		}
+		pass reverse_depth_msaa
+		{
+			rasterizer: RenderNoCull
+			depthstencil: DisableDepth 0
+			blend: DontBlend (0,0,0,0) 4294967295
+			layout:
+			{
+			}
+			vertex: sky_VS_SimpleFullscreen_vv.cso(VS_SimpleFullscreen) inline:(0x9fd53,0x20c5), t:(), u:(), b:(), z:(), c:(), s:()
+			pixel: sky_PS_Background_ReverseDepth_MSAA.cso(PS_Background_ReverseDepth_MSAA) inline:(0x15e41,0x4c13), t:(0,5), u:(), b:(), z:(), c:(10), s:(6)
+		}
+	}
+	technique colour_technique
+	{
+		pass p0
+		{
+			rasterizer: RenderNoCull
+			depthstencil: DisableDepth 0
+			blend: DontBlend (0,0,0,0) 4294967295
+			layout:
+			{
+			}
+			vertex: sky_VS_ShowFade_vv.cso(VS_ShowFade) inline:(0xb5a17,0x2c05), t:(), u:(), b:(), z:(), c:(7), s:()
+			pixel: sky_PS_Colour.cso(PS_Colour) inline:(0x1aa54,0x277b), t:(), u:(), b:(), z:(), c:(10), s:()
+		}
+	}
+	technique fade_3d_to_2d
+	{
+		pass p0
+		{
+			rasterizer: RenderNoCull
+			depthstencil: DisableDepth 0
+			blend: DontBlend (0,0,0,0) 4294967295
+			layout:
+			{
+			}
+			vertex: sky_VS_Fade3DTo2D_vv.cso(VS_Fade3DTo2D) inline:(0xb1d15,0x1e81), t:(), u:(), b:(), z:(), c:(), s:()
+			pixel: sky_PS_Fade3DTo2D.cso(PS_Fade3DTo2D) inline:(0x1d1cf,0x338f), t:(7,8), u:(), b:(), z:(), c:(10), s:(5)
+		}
+	}
+	technique flare
+	{
+		pass p0
+		{
+			rasterizer: RenderNoCull
+			depthstencil: DisableDepth 0
+			blend: AddBlendDontWriteAlpha (0,0,0,0) 4294967295
+			layout:
+			{
+			}
+			vertex: sky_VS_Sun_vv.cso(VS_Sun) inline:(0xc25a5,0x355a), t:(), u:(), b:(), z:(), c:(10), s:()
+			pixel: sky_PS_Flare.cso(PS_Flare) inline:(0x2055e,0x3128), t:(6), u:(), b:(), z:(), c:(10), s:(2)
+		}
+	}
+	technique interp_light_table
+	{
+		pass p0
+		{
+			compute: sky_CS_InterpLightTable_c.cso(CS_InterpLightTable) inline:(0x0,0x417c), t:(9), u:(0), b:(12,13), z:(1), c:(10), s:(11)
+		}
+	}
+	technique lighting_queries
+	{
+		pass p0
+		{
+			compute: sky_CS_LightingQueries_c.cso(CS_LightingQueries) inline:(0x417c,0x42c4), t:(10), u:(), b:(14), z:(2), c:(10), s:(9)
+		}
+	}
+	technique planet
+	{
+		pass depth_test
+		{
+			rasterizer: RenderNoCull
+			blend: AlphaBlendDontWriteAlpha (0,0,0,0) 4294967295
+			layout:
+			{
+			}
+			vertex: sky_VS_Sun_vv.cso(VS_Sun) inline:(0xc25a5,0x355a), t:(), u:(), b:(), z:(), c:(10), s:()
+			pixel: sky_PS_Planet.cso(PS_Planet) inline:(0x23686,0x4514), t:(6), u:(), b:(), z:(), c:(10), s:(9)
+		}
+		pass forward_depth
+		{
+			rasterizer: RenderNoCull
+			depthstencil: DisableDepth 0
+			blend: AlphaBlendDontWriteAlpha (0,0,0,0) 4294967295
+			layout:
+			{
+			}
+			vertex: sky_VS_Sun_vv.cso(VS_Sun) inline:(0xc25a5,0x355a), t:(), u:(), b:(), z:(), c:(10), s:()
+			pixel: sky_PS_Planet_ForwardDepth.cso(PS_Planet_ForwardDepth) inline:(0x40442,0x5300), t:(4,6), u:(), b:(), z:(), c:(10), s:(9)
+		}
+		pass reverse_depth
+		{
+			rasterizer: RenderNoCull
+			depthstencil: DisableDepth 0
+			blend: AlphaBlendDontWriteAlpha (0,0,0,0) 4294967295
+			layout:
+			{
+			}
+			vertex: sky_VS_Sun_vv.cso(VS_Sun) inline:(0xc25a5,0x355a), t:(), u:(), b:(), z:(), c:(10), s:()
+			pixel: sky_PS_Planet_ReverseDepth.cso(PS_Planet_ReverseDepth) inline:(0x4b0a2,0x5304), t:(4,6), u:(), b:(), z:(), c:(10), s:(9)
+		}
+	}
+	technique planet_msaa
+	{
+		pass depth_test
+		{
+			rasterizer: RenderNoCull
+			blend: AlphaBlendDontWriteAlpha (0,0,0,0) 4294967295
+			layout:
+			{
+			}
+			vertex: sky_VS_Sun_vv.cso(VS_Sun) inline:(0xc25a5,0x355a), t:(), u:(), b:(), z:(), c:(10), s:()
+			pixel: sky_PS_Planet.cso(PS_Planet) inline:(0x23686,0x4514), t:(6), u:(), b:(), z:(), c:(10), s:(9)
+		}
+		pass forward_depth
+		{
+			rasterizer: RenderNoCull
+			depthstencil: DisableDepth 0
+			blend: AlphaBlendDontWriteAlpha (0,0,0,0) 4294967295
+			layout:
+			{
+			}
+			vertex: sky_VS_Sun_vv.cso(VS_Sun) inline:(0xc25a5,0x355a), t:(), u:(), b:(), z:(), c:(10), s:()
+			pixel: sky_PS_Planet_ForwardDepth_MSAA.cso(PS_Planet_ForwardDepth_MSAA) inline:(0x45742,0x5960), t:(5,6), u:(), b:(), z:(), c:(10), s:(9)
+		}
+		pass reverse_depth
+		{
+			rasterizer: RenderNoCull
+			depthstencil: DisableDepth 0
+			blend: AlphaBlendDontWriteAlpha (0,0,0,0) 4294967295
+			layout:
+			{
+			}
+			vertex: sky_VS_Sun_vv.cso(VS_Sun) inline:(0xc25a5,0x355a), t:(), u:(), b:(), z:(), c:(10), s:()
+			pixel: sky_PS_Planet_ReverseDepth_MSAA.cso(PS_Planet_ReverseDepth_MSAA) inline:(0x503a6,0x595c), t:(5,6), u:(), b:(), z:(), c:(10), s:(9)
+		}
+	}
+	technique planet_untextured
+	{
+		pass depth_test
+		{
+			rasterizer: RenderNoCull
+			blend: AlphaBlendDontWriteAlpha (0,0,0,0) 4294967295
+			layout:
+			{
+			}
+			vertex: sky_VS_Sun_vv.cso(VS_Sun) inline:(0xc25a5,0x355a), t:(), u:(), b:(), z:(), c:(10), s:()
+			pixel: sky_PS_PlanetUntextured.cso(PS_PlanetUntextured) inline:(0x27b9a,0x3ee0), t:(), u:(), b:(), z:(), c:(10), s:()
+		}
+		pass forward_depth
+		{
+			rasterizer: RenderNoCull
+			depthstencil: DisableDepth 0
+			blend: AlphaBlendDontWriteAlpha (0,0,0,0) 4294967295
+			layout:
+			{
+			}
+			vertex: sky_VS_Sun_vv.cso(VS_Sun) inline:(0xc25a5,0x355a), t:(), u:(), b:(), z:(), c:(10), s:()
+			pixel: sky_PS_PlanetUntextured_ForwardDepth.cso(PS_PlanetUntextured_ForwardDepth) inline:(0x2ba7a,0x50bc), t:(4), u:(), b:(), z:(), c:(10), s:(9)
+		}
+		pass reverse_depth
+		{
+			rasterizer: RenderNoCull
+			depthstencil: DisableDepth 0
+			blend: AlphaBlendDontWriteAlpha (0,0,0,0) 4294967295
+			layout:
+			{
+			}
+			vertex: sky_VS_Sun_vv.cso(VS_Sun) inline:(0xc25a5,0x355a), t:(), u:(), b:(), z:(), c:(10), s:()
+			pixel: sky_PS_PlanetUntextured_ReverseDepth.cso(PS_PlanetUntextured_ReverseDepth) inline:(0x35f5e,0x50bc), t:(4), u:(), b:(), z:(), c:(10), s:(9)
+		}
+	}
+	technique planet_untextured_msaa
+	{
+		pass depth_test
+		{
+			rasterizer: RenderNoCull
+			blend: AlphaBlendDontWriteAlpha (0,0,0,0) 4294967295
+			layout:
+			{
+			}
+			vertex: sky_VS_Sun_vv.cso(VS_Sun) inline:(0xc25a5,0x355a), t:(), u:(), b:(), z:(), c:(10), s:()
+			pixel: sky_PS_PlanetUntextured.cso(PS_PlanetUntextured) inline:(0x27b9a,0x3ee0), t:(), u:(), b:(), z:(), c:(10), s:()
+		}
+		pass forward_depth
+		{
+			rasterizer: RenderNoCull
+			depthstencil: DisableDepth 0
+			blend: AlphaBlendDontWriteAlpha (0,0,0,0) 4294967295
+			layout:
+			{
+			}
+			vertex: sky_VS_Sun_vv.cso(VS_Sun) inline:(0xc25a5,0x355a), t:(), u:(), b:(), z:(), c:(10), s:()
+			pixel: sky_PS_PlanetUntextured_ForwardDepth_MSAA.cso(PS_PlanetUntextured_ForwardDepth_MSAA) inline:(0x30b36,0x5428), t:(5), u:(), b:(), z:(), c:(10), s:()
+		}
+		pass reverse_depth
+		{
+			rasterizer: RenderNoCull
+			depthstencil: DisableDepth 0
+			blend: AlphaBlendDontWriteAlpha (0,0,0,0) 4294967295
+			layout:
+			{
+			}
+			vertex: sky_VS_Sun_vv.cso(VS_Sun) inline:(0xc25a5,0x355a), t:(), u:(), b:(), z:(), c:(10), s:()
+			pixel: sky_PS_PlanetUntextured_ReverseDepth_MSAA.cso(PS_PlanetUntextured_ReverseDepth_MSAA) inline:(0x3b01a,0x5428), t:(5), u:(), b:(), z:(), c:(10), s:()
+		}
+	}
+	technique show_2d
+	{
+		pass p0
+		{
+			rasterizer: RenderNoCull
+			depthstencil: DisableDepth 0
+			blend: DontBlend (0,0,0,0) 4294967295
+			layout:
+			{
+			}
+			vertex: sky_VS_ShowFade_vv.cso(VS_ShowFade) inline:(0xb5a17,0x2c05), t:(), u:(), b:(), z:(), c:(7), s:()
+			pixel: sky_PS_Show2D.cso(PS_Show2D) inline:(0x55d02,0x219b), t:(2), u:(), b:(), z:(), c:(), s:(9)
+		}
+	}
+	technique show_2d_light_table
+	{
+		pass p0
+		{
+			rasterizer: RenderNoCull
+			depthstencil: DisableDepth 0
+			blend: DontBlend (0,0,0,0) 4294967295
+			layout:
+			{
+			}
+			vertex: sky_VS_ShowFade_vv.cso(VS_ShowFade) inline:(0xb5a17,0x2c05), t:(), u:(), b:(), z:(), c:(7), s:()
+			pixel: sky_PS_Show2DLightTable.cso(PS_Show2DLightTable) inline:(0x57e9d,0x2287), t:(10), u:(), b:(), z:(), c:(), s:(11)
+		}
+	}
+	technique show_cross_section
+	{
+		pass p0
+		{
+			rasterizer: RenderNoCull
+			depthstencil: DisableDepth 0
+			blend: NoBlendNoAlphaWrite (0,0,0,0) 4294967295
+			layout:
+			{
+			}
+			vertex: sky_VS_ShowFade_vv.cso(VS_ShowFade) inline:(0xb5a17,0x2c05), t:(), u:(), b:(), z:(), c:(7), s:()
+			pixel: sky_PS_ShowFadeCrossSection.cso(PS_ShowFadeCrossSection) inline:(0x5d103,0x3363), t:(7,8), u:(), b:(), z:(), c:(10), s:(5)
+		}
+	}
+	technique show_fade_table
+	{
+		pass p0
+		{
+			rasterizer: RenderNoCull
+			depthstencil: DisableDepth 0
+			blend: DontBlend (0,0,0,0) 4294967295
+			layout:
+			{
+			}
+			vertex: sky_VS_ShowFade_vv.cso(VS_ShowFade) inline:(0xb5a17,0x2c05), t:(), u:(), b:(), z:(), c:(7), s:()
+			pixel: sky_PS_ShowFadeTable.cso(PS_ShowFadeTable) inline:(0x60466,0x2f57), t:(2), u:(), b:(), z:(), c:(10), s:(9)
+		}
+	}
+	technique show_fade_texture
+	{
+		pass p0
+		{
+			rasterizer: RenderNoCull
+			depthstencil: DisableDepth 0
+			blend: DontBlend (0,0,0,0) 4294967295
+			layout:
+			{
+			}
+			vertex: sky_VS_ShowFade_vv.cso(VS_ShowFade) inline:(0xb5a17,0x2c05), t:(), u:(), b:(), z:(), c:(7), s:()
+			pixel: sky_PS_ShowFadeTexture.cso(PS_ShowFadeTexture) inline:(0x633bd,0x2f87), t:(7), u:(), b:(), z:(), c:(10), s:(5)
+		}
+	}
+	technique show_illumination_buffer
+	{
+		pass p0
+		{
+			rasterizer: RenderNoCull
+			depthstencil: DisableDepth 0
+			blend: DontBlend (0,0,0,0) 4294967295
+			layout:
+			{
+			}
+			vertex: sky_VS_ShowFade_vv.cso(VS_ShowFade) inline:(0xb5a17,0x2c05), t:(), u:(), b:(), z:(), c:(7), s:()
+			pixel: sky_PS_ShowIlluminationBuffer.cso(PS_ShowIlluminationBuffer) inline:(0x66344,0x2b5f), t:(2), u:(), b:(), z:(), c:(), s:(11)
+		}
+	}
+	technique show_light_table
+	{
+		pass p0
+		{
+			rasterizer: RenderNoCull
+			depthstencil: DisableDepth 0
+			blend: DontBlend (0,0,0,0) 4294967295
+			layout:
+			{
+			}
+			vertex: sky_VS_ShowFade_vv.cso(VS_ShowFade) inline:(0xb5a17,0x2c05), t:(), u:(), b:(), z:(), c:(7), s:()
+			pixel: sky_PS_Show3DLightTable.cso(PS_Show3DLightTable) inline:(0x5a124,0x2fdf), t:(7), u:(), b:(), z:(), c:(10), s:(11)
+		}
+	}
+	technique stars
+	{
+		pass depth_test
+		{
+			rasterizer: RenderNoCull
+			blend: AddBlendDontWriteAlpha (0,0,0,0) 4294967295
+			layout:
+			{
+			}
+			vertex: sky_VS_Stars_vv.cso(VS_Stars) inline:(0xbb221,0x39c2), t:(), u:(), b:(11), z:(), c:(10), s:()
+			pixel: sky_PS_Stars.cso(PS_Stars) inline:(0x68ea3,0x29e8), t:(), u:(), b:(), z:(), c:(10), s:()
+		}
+		pass forward_depth
+		{
+			rasterizer: RenderNoCull
+			depthstencil: DisableDepth 0
+			blend: AddBlendDontWriteAlpha (0,0,0,0) 4294967295
+			layout:
+			{
+			}
+			vertex: sky_VS_Stars_vv.cso(VS_Stars) inline:(0xbb221,0x39c2), t:(), u:(), b:(11), z:(), c:(10), s:()
+			pixel: sky_PS_Stars_ForwardDepth.cso(PS_Stars_ForwardDepth) inline:(0x6b88b,0x4064), t:(4), u:(), b:(), z:(), c:(10), s:(9)
+		}
+		pass reverse_depth
+		{
+			rasterizer: RenderNoCull
+			depthstencil: DisableDepth 0
+			blend: AddBlendDontWriteAlpha (0,0,0,0) 4294967295
+			layout:
+			{
+			}
+			vertex: sky_VS_Stars_vv.cso(VS_Stars) inline:(0xbb221,0x39c2), t:(), u:(), b:(11), z:(), c:(10), s:()
+			pixel: sky_PS_Stars_ReverseDepth.cso(PS_Stars_ReverseDepth) inline:(0x73c23,0x4064), t:(4), u:(), b:(), z:(), c:(10), s:(9)
+		}
+	}
+	technique stars_msaa
+	{
+		pass depth_test
+		{
+			rasterizer: RenderNoCull
+			blend: AddBlendDontWriteAlpha (0,0,0,0) 4294967295
+			layout:
+			{
+			}
+			vertex: sky_VS_Stars_vv.cso(VS_Stars) inline:(0xbb221,0x39c2), t:(), u:(), b:(11), z:(), c:(10), s:()
+			pixel: sky_PS_Stars.cso(PS_Stars) inline:(0x68ea3,0x29e8), t:(), u:(), b:(), z:(), c:(10), s:()
+		}
+		pass forward_depth
+		{
+			rasterizer: RenderNoCull
+			depthstencil: DisableDepth 0
+			blend: AddBlendDontWriteAlpha (0,0,0,0) 4294967295
+			layout:
+			{
+			}
+			vertex: sky_VS_Stars_vv.cso(VS_Stars) inline:(0xbb221,0x39c2), t:(), u:(), b:(11), z:(), c:(10), s:()
+			pixel: sky_PS_Stars_ForwardDepth_MSAA.cso(PS_Stars_ForwardDepth_MSAA) inline:(0x6f8ef,0x4334), t:(5), u:(), b:(), z:(), c:(10), s:()
+		}
+		pass reverse_depth
+		{
+			rasterizer: RenderNoCull
+			depthstencil: DisableDepth 0
+			blend: AddBlendDontWriteAlpha (0,0,0,0) 4294967295
+			layout:
+			{
+			}
+			vertex: sky_VS_Stars_vv.cso(VS_Stars) inline:(0xbb221,0x39c2), t:(), u:(), b:(11), z:(), c:(10), s:()
+			pixel: sky_PS_Stars_ReverseDepth_MSAA.cso(PS_Stars_ReverseDepth_MSAA) inline:(0x77c87,0x4330), t:(5), u:(), b:(), z:(), c:(10), s:()
+		}
+	}
+	technique sun
+	{
+		pass depth_test
+		{
+			rasterizer: RenderNoCull
+			blend: AddBlendDontWriteAlpha (0,0,0,0) 4294967295
+			layout:
+			{
+			}
+			vertex: sky_VS_Sun_vv.cso(VS_Sun) inline:(0xc25a5,0x355a), t:(), u:(), b:(), z:(), c:(10), s:()
+			pixel: sky_PS_Sun.cso(PS_Sun) inline:(0x7bfb7,0x38c4), t:(3), u:(), b:(), z:(), c:(10), s:(9)
+		}
+		pass forward_depth
+		{
+			rasterizer: RenderNoCull
+			depthstencil: DisableDepth 0
+			blend: AddBlend (0,0,0,0) 4294967295
+			layout:
+			{
+			}
+			vertex: sky_VS_Sun_vv.cso(VS_Sun) inline:(0xc25a5,0x355a), t:(), u:(), b:(), z:(), c:(10), s:()
+			pixel: sky_PS_Sun_ForwardDepth.cso(PS_Sun_ForwardDepth) inline:(0x842df,0x465c), t:(3,4), u:(), b:(), z:(), c:(10), s:(9)
+		}
+		pass reverse_depth
+		{
+			rasterizer: RenderNoCull
+			depthstencil: DisableDepth 0
+			blend: AddBlend (0,0,0,0) 4294967295
+			layout:
+			{
+			}
+			vertex: sky_VS_Sun_vv.cso(VS_Sun) inline:(0xc25a5,0x355a), t:(), u:(), b:(), z:(), c:(10), s:()
+			pixel: sky_PS_Sun_ReverseDepth.cso(PS_Sun_ReverseDepth) inline:(0x8d593,0x465c), t:(3,4), u:(), b:(), z:(), c:(10), s:(9)
+		}
+	}
+	technique sun_gaussian
+	{
+		pass depth_test
+		{
+			rasterizer: RenderNoCull
+			blend: AddBlendDontWriteAlpha (0,0,0,0) 4294967295
+			layout:
+			{
+			}
+			vertex: sky_VS_Sun_vv.cso(VS_Sun) inline:(0xc25a5,0x355a), t:(), u:(), b:(), z:(), c:(10), s:()
+			pixel: sky_PS_SunGaussian.cso(PS_SunGaussian) inline:(0x7f87b,0x2cb0), t:(), u:(), b:(), z:(), c:(10), s:()
+		}
+	}
+	technique sun_msaa
+	{
+		pass depth_test
+		{
+			rasterizer: RenderNoCull
+			blend: AddBlendDontWriteAlpha (0,0,0,0) 4294967295
+			layout:
+			{
+			}
+			vertex: sky_VS_Sun_vv.cso(VS_Sun) inline:(0xc25a5,0x355a), t:(), u:(), b:(), z:(), c:(10), s:()
+			pixel: sky_PS_Sun.cso(PS_Sun) inline:(0x7bfb7,0x38c4), t:(3), u:(), b:(), z:(), c:(10), s:(9)
+		}
+		pass forward_depth
+		{
+			rasterizer: RenderNoCull
+			depthstencil: DisableDepth 0
+			blend: AddBlendDontWriteAlpha (0,0,0,0) 4294967295
+			layout:
+			{
+			}
+			vertex: sky_VS_Sun_vv.cso(VS_Sun) inline:(0xc25a5,0x355a), t:(), u:(), b:(), z:(), c:(10), s:()
+			pixel: sky_PS_Sun_ForwardDepth_MSAA.cso(PS_Sun_ForwardDepth_MSAA) inline:(0x8893b,0x4c58), t:(3,5), u:(), b:(), z:(), c:(10), s:(9)
+		}
+		pass reverse_depth
+		{
+			rasterizer: RenderNoCull
+			depthstencil: DisableDepth 0
+			blend: AddBlendDontWriteAlpha (0,0,0,0) 4294967295
+			layout:
+			{
+			}
+			vertex: sky_VS_Sun_vv.cso(VS_Sun) inline:(0xc25a5,0x355a), t:(), u:(), b:(), z:(), c:(10), s:()
+			pixel: sky_PS_Sun_ReverseDepth_MSAA.cso(PS_Sun_ReverseDepth_MSAA) inline:(0x91bef,0x4c58), t:(3,5), u:(), b:(), z:(), c:(10), s:(9)
+		}
+	}
+	technique sun_query
+	{
+		pass depth_test
+		{
+			rasterizer: RenderNoCull
+			blend: BlendWithoutWrite (0,0,0,0) 4294967295
+			layout:
+			{
+			}
+			vertex: sky_VS_Sun_vv.cso(VS_Sun) inline:(0xc25a5,0x355a), t:(), u:(), b:(), z:(), c:(10), s:()
+			pixel: sky_PS_SunQuery.cso(PS_SunQuery) inline:(0x8252b,0x1db4), t:(), u:(), b:(), z:(), c:(), s:()
+		}
+	}
+}
+ 

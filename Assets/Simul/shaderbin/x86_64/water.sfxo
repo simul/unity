@@ -1,0 +1,647 @@
+SFX:PS4
+constant_buffer DebugConstants 7
+constant_buffer cbChangePerCall 2
+constant_buffer cbContourBuffer 6
+constant_buffer cbFlowRayBuffer 7
+constant_buffer cbMeshObjectBuffers 5
+constant_buffer cbProfileBuffers 4
+constant_buffer cbShading 1
+constant_buffer cbWaterProbe 3
+texture g_BuoyancyObjectOutputs 2d read_write 1 single
+texture g_BuoyancyObjectPos 2d read_only 0 single
+texture g_BuoyancyObjectVisualOutputs 2d read_only 1 single
+texture g_FlowRayBuffer 2d read_only 0 single
+texture g_GroupSpeeds 2d read_write 3 single
+texture g_InputAmplitude 3d read_only 2 single
+texture g_OutputAmplitude 3d read_write 4 single
+texture g_OutputFlowRayBuffer 2d read_write 6 single
+texture g_ProbeOutputs 2d read_write 7 single
+texture g_ProbePos 2d read_only 0 single
+texture g_ProbeVelocity 2d read_only 1 single
+texture g_ProfileBuffers 2d read_only 12 array
+texture g_RightFlowRayBuffer 2d read_write 5 single
+texture g_WaveSpectrum 2d read_only 0 single
+texture g_contourMap 2d read_only 0 single
+texture g_maskFrontfaceTexture 2d read_only 0 single
+texture g_maskTexture 2d read_only 11 single
+texture g_shoreDepthTexture 2d read_only 10 single
+texture g_texColour 2d read_only 7 single
+texture g_texDepth 2d read_only 8 single
+texture g_texDepthMS 2dms read_only 9 single
+texture g_texReflectCube cubemap read_only 6 single
+texture g_waterAbsorption 2d read_only 1 single
+texture g_waterDepth 2d read_only 0 single
+texture g_waterNormals 2d read_only 3 single
+texture g_waterReflectColour 2d read_only 5 single
+texture g_waterRefractColour 2d read_only 4 single
+texture g_waterScattering 2d read_only 2 single
+texture showTexture 2d read_only 0 single
+SamplerState clampSamplerState 9,LINEAR,CLAMP,CLAMP,CLAMP,
+SamplerState cubeSamplerState 4,LINEAR,MIRROR,MIRROR,MIRROR,
+SamplerState g_samplerAmpGrid 7,LINEAR,WRAP,WRAP,WRAP,
+SamplerState g_samplerPerlin 3,LINEAR,WRAP,WRAP,WRAP,
+SamplerState g_samplerProfileBuffer 8,LINEAR,WRAP,CLAMP,CLAMP,
+SamplerState samplerStateNearest 11,POINT,CLAMP,CLAMP,CLAMP,
+SamplerState wrapSamplerState 6,LINEAR,WRAP,WRAP,WRAP,
+SamplerState wwcSamplerState 7,LINEAR,WRAP,WRAP,CLAMP,
+RenderTargetFormatState WaterTargetFormats (8,3,3,3,8,0,0,0)
+RasterizerState RenderFrontfaceCull (false,CULL_FRONT,0,0,false,FILL_SOLID,true,false,false,0)
+RasterizerState RenderNoCull (false,CULL_NONE,0,0,false,FILL_SOLID,true,false,false,0)
+RasterizerState wireframeRasterizer (true,CULL_NONE,0,0,false,FILL_WIREFRAME,true,false,false,0)
+BlendState AddBlend false,(true,true),1,1,1,1,4,5,()
+BlendState DontBlend false,(false,false),1,1,4,5,4,5,()
+BlendState NoBlend false,(false),1,1,4,5,4,5,()
+BlendState WaterNoBlend false,(false,false,false,false,false),1,1,4,5,4,5,(15,15,15,15,15)
+DepthStencilState DisableDepth false,0,4
+DepthStencilState ReverseDepth true,1,7
+DepthStencilState TestReverseDepth true,0,7
+group 
+{
+	technique copy_stencil
+	{
+		pass copy
+		{
+			rasterizer: RenderNoCull
+			depthstencil: DisableDepth 0
+			blend: NoBlend (0,0,0,0) 4294967295
+			layout:
+			{
+			}
+			vertex: water_VS_SimpleFullscreen_vv.sb(VS_SimpleFullscreen) inline:(0x524d0,0x1c4), t:(), u:(), b:(), z:(), c:(), s:()
+			pixel(float16abgr): water_PS_CopyDepthStencil_float16abgr_p.sb(PS_CopyDepthStencil) inline:(0xde60,0x1ac), t:(8), u:(), b:(), z:(), c:(), s:(9)
+			pixel(unorm16abgr): water_PS_CopyDepthStencil_unorm16abgr_p.sb(PS_CopyDepthStencil) inline:(0xe00c,0x1ac), t:(8), u:(), b:(), z:(), c:(), s:(9)
+			pixel(snorm16abgr): water_PS_CopyDepthStencil_snorm16abgr_p.sb(PS_CopyDepthStencil) inline:(0xe1b8,0x1ac), t:(8), u:(), b:(), z:(), c:(), s:(9)
+			pixel(float32abgr): water_PS_CopyDepthStencil_float32abgr_p.sb(PS_CopyDepthStencil) inline:(0xdcbc,0x1a4), t:(8), u:(), b:(), z:(), c:(), s:(9)
+		}
+		pass copy_msaa
+		{
+			rasterizer: RenderNoCull
+			depthstencil: DisableDepth 0
+			blend: NoBlend (0,0,0,0) 4294967295
+			layout:
+			{
+			}
+			vertex: water_VS_SimpleFullscreen_vv.sb(VS_SimpleFullscreen) inline:(0x524d0,0x1c4), t:(), u:(), b:(), z:(), c:(), s:()
+			pixel(float16abgr): water_PS_CopyDepthStencilMSAA_float16abgr_p.sb(PS_CopyDepthStencilMSAA) inline:(0xe510,0x1b4), t:(9), u:(), b:(), z:(), c:(), s:()
+			pixel(unorm16abgr): water_PS_CopyDepthStencilMSAA_unorm16abgr_p.sb(PS_CopyDepthStencilMSAA) inline:(0xe6c4,0x1b4), t:(9), u:(), b:(), z:(), c:(), s:()
+			pixel(snorm16abgr): water_PS_CopyDepthStencilMSAA_snorm16abgr_p.sb(PS_CopyDepthStencilMSAA) inline:(0xe878,0x1b4), t:(9), u:(), b:(), z:(), c:(), s:()
+			pixel(float32abgr): water_PS_CopyDepthStencilMSAA_float32abgr_p.sb(PS_CopyDepthStencilMSAA) inline:(0xe364,0x1ac), t:(9), u:(), b:(), z:(), c:(), s:()
+		}
+	}
+	technique generate_contour_map
+	{
+		pass p0
+		{
+			rasterizer: RenderNoCull
+			depthstencil: DisableDepth 0
+			blend: NoBlend (0,0,0,0) 4294967295
+			layout:
+			{
+			}
+			vertex: water_VS_SimpleFullscreen_vv.sb(VS_SimpleFullscreen) inline:(0x524d0,0x1c4), t:(), u:(), b:(), z:(), c:(), s:()
+			pixel(float16abgr): water_PS_GenerateContourMap_float16abgr_p.sb(PS_GenerateContourMap) inline:(0xed70,0x354), t:(10), u:(), b:(), z:(), c:(6), s:(9)
+			pixel(unorm16abgr): water_PS_GenerateContourMap_unorm16abgr_p.sb(PS_GenerateContourMap) inline:(0xf0c4,0x354), t:(10), u:(), b:(), z:(), c:(6), s:(9)
+			pixel(snorm16abgr): water_PS_GenerateContourMap_snorm16abgr_p.sb(PS_GenerateContourMap) inline:(0xf418,0x354), t:(10), u:(), b:(), z:(), c:(6), s:(9)
+			pixel(float32abgr): water_PS_GenerateContourMap_float32abgr_p.sb(PS_GenerateContourMap) inline:(0xea2c,0x344), t:(10), u:(), b:(), z:(), c:(6), s:(9)
+		}
+	}
+	technique point_buoyancy_object
+	{
+		pass p0
+		{
+			rasterizer: wireframeRasterizer
+			depthstencil: TestReverseDepth 0
+			blend: AddBlend (0,0,0,0) 4294967295
+			layout:
+			{
+			}
+			vertex: water_VS_BuoyancyObjectPoint_vv.sb(VS_BuoyancyObjectPoint) inline:(0x4b56c,0xc48), t:(), u:(), b:(0,1), z:(), c:(2,5), s:()
+			pixel(float16abgr): water_PS_Wireframe_float16abgr_p.sb(PS_Wireframe) inline:(0x36288,0x144), t:(), u:(), b:(), z:(), c:(), s:()
+			pixel(unorm16abgr): water_PS_Wireframe_unorm16abgr_p.sb(PS_Wireframe) inline:(0x363cc,0x144), t:(), u:(), b:(), z:(), c:(), s:()
+			pixel(snorm16abgr): water_PS_Wireframe_snorm16abgr_p.sb(PS_Wireframe) inline:(0x36510,0x144), t:(), u:(), b:(), z:(), c:(), s:()
+			pixel(float32abgr): water_PS_Wireframe_float32abgr_p.sb(PS_Wireframe) inline:(0x3614c,0x13c), t:(), u:(), b:(), z:(), c:(), s:()
+		}
+	}
+	technique precompute_group_speeds
+	{
+		pass p0
+		{
+			compute: water_CS_PrecomputeGroupSpeeds_c.sb(CS_PrecomputeGroupSpeeds) inline:(0x0,0x448), t:(), u:(), b:(0), z:(3), c:(4), s:()
+		}
+	}
+	technique precompute_profile_buffer
+	{
+		pass p0
+		{
+			rasterizer: RenderNoCull
+			depthstencil: DisableDepth 0
+			blend: DontBlend (0,0,0,0) 4294967295
+			layout:
+			{
+			}
+			vertex: water_VS_SimpleFullscreen_vv.sb(VS_SimpleFullscreen) inline:(0x524d0,0x1c4), t:(), u:(), b:(), z:(), c:(), s:()
+			pixel(float16abgr): water_PS_PrecomputeProfileBuffer_float16abgr_p.sb(PS_PrecomputeProfileBuffer) inline:(0x17368,0x53c), t:(), u:(), b:(), z:(), c:(4), s:()
+			pixel(unorm16abgr): water_PS_PrecomputeProfileBuffer_unorm16abgr_p.sb(PS_PrecomputeProfileBuffer) inline:(0x178a4,0x53c), t:(), u:(), b:(), z:(), c:(4), s:()
+			pixel(snorm16abgr): water_PS_PrecomputeProfileBuffer_snorm16abgr_p.sb(PS_PrecomputeProfileBuffer) inline:(0x17de0,0x53c), t:(), u:(), b:(), z:(), c:(4), s:()
+			pixel(float32abgr): water_PS_PrecomputeProfileBuffer_float32abgr_p.sb(PS_PrecomputeProfileBuffer) inline:(0x16e34,0x534), t:(), u:(), b:(), z:(), c:(4), s:()
+		}
+	}
+	technique render_bounded_depth
+	{
+		pass no_refraction
+		{
+			rasterizer: RenderNoCull
+			targetformat: WaterTargetFormats
+			depthstencil: ReverseDepth 0
+			blend: WaterNoBlend (0,0,0,0) 4294967295
+			layout:
+			{
+			}
+			vertex: water_VS_BoundedWaterSurf_vv.sb(VS_BoundedWaterSurf) inline:(0x36654,0x1410), t:(12), u:(), b:(), z:(), c:(1,2), s:(8)
+			pixel(WaterTargetFormats): water_PS_BoundedWaterSurfDepth_WaterTargetFormats_p.sb(PS_BoundedWaterSurfDepth) inline:(0x3f64,0x1714), t:(2,7,8,11,12), u:(), b:(), z:(), c:(1,2), s:(6,8,9)
+		}
+		pass no_refraction_custom_surface
+		{
+			rasterizer: RenderNoCull
+			targetformat: WaterTargetFormats
+			depthstencil: ReverseDepth 0
+			blend: WaterNoBlend (0,0,0,0) 4294967295
+			layout:
+			{
+				float3 position;
+			}
+			vertex: water_VS_BoundedWaterSurfCustom_vv.sb(VS_BoundedWaterSurfCustom) inline:(0x38ee0,0x146c), t:(12), u:(), b:(), z:(), c:(1,2,5), s:(8)
+			pixel(WaterTargetFormats): water_PS_BoundedWaterSurfDepth_WaterTargetFormats_p.sb(PS_BoundedWaterSurfDepth) inline:(0x3f64,0x1714), t:(2,7,8,11,12), u:(), b:(), z:(), c:(1,2), s:(6,8,9)
+		}
+		pass refraction
+		{
+			rasterizer: RenderNoCull
+			targetformat: WaterTargetFormats
+			depthstencil: ReverseDepth 0
+			blend: WaterNoBlend (0,0,0,0) 4294967295
+			layout:
+			{
+			}
+			vertex: water_VS_BoundedWaterSurf_vv.sb(VS_BoundedWaterSurf) inline:(0x36654,0x1410), t:(12), u:(), b:(), z:(), c:(1,2), s:(8)
+			pixel(WaterTargetFormats): water_PS_BoundedWaterSurfDepthRefraction_WaterTargetFormats_p.sb(PS_BoundedWaterSurfDepthRefraction) inline:(0x5678,0x1c28), t:(2,7,8,11,12), u:(), b:(), z:(), c:(1,2), s:(6,8,9)
+		}
+		pass refraction_custom_surface
+		{
+			rasterizer: RenderNoCull
+			targetformat: WaterTargetFormats
+			depthstencil: ReverseDepth 0
+			blend: WaterNoBlend (0,0,0,0) 4294967295
+			layout:
+			{
+				float3 position;
+			}
+			vertex: water_VS_BoundedWaterSurfCustom_vv.sb(VS_BoundedWaterSurfCustom) inline:(0x38ee0,0x146c), t:(12), u:(), b:(), z:(), c:(1,2,5), s:(8)
+			pixel(WaterTargetFormats): water_PS_BoundedWaterSurfDepthRefraction_WaterTargetFormats_p.sb(PS_BoundedWaterSurfDepthRefraction) inline:(0x5678,0x1c28), t:(2,7,8,11,12), u:(), b:(), z:(), c:(1,2), s:(6,8,9)
+		}
+		pass refraction_no_backface
+		{
+			rasterizer: RenderNoCull
+			targetformat: WaterTargetFormats
+			depthstencil: ReverseDepth 0
+			blend: WaterNoBlend (0,0,0,0) 4294967295
+			layout:
+			{
+			}
+			vertex: water_VS_BoundedWaterSurf_vv.sb(VS_BoundedWaterSurf) inline:(0x36654,0x1410), t:(12), u:(), b:(), z:(), c:(1,2), s:(8)
+			pixel(WaterTargetFormats): water_PS_BoundedWaterSurfDepthRefraction_WaterTargetFormats_p.sb(PS_BoundedWaterSurfDepthRefraction) inline:(0x5678,0x1c28), t:(2,7,8,11,12), u:(), b:(), z:(), c:(1,2), s:(6,8,9)
+		}
+		pass refraction_no_backface_custom_surface
+		{
+			rasterizer: RenderNoCull
+			targetformat: WaterTargetFormats
+			depthstencil: ReverseDepth 0
+			blend: WaterNoBlend (0,0,0,0) 4294967295
+			layout:
+			{
+				float3 position;
+			}
+			vertex: water_VS_BoundedWaterSurfCustom_vv.sb(VS_BoundedWaterSurfCustom) inline:(0x38ee0,0x146c), t:(12), u:(), b:(), z:(), c:(1,2,5), s:(8)
+			pixel(WaterTargetFormats): water_PS_BoundedWaterSurfDepthRefraction_WaterTargetFormats_p.sb(PS_BoundedWaterSurfDepthRefraction) inline:(0x5678,0x1c28), t:(2,7,8,11,12), u:(), b:(), z:(), c:(1,2), s:(6,8,9)
+		}
+	}
+	technique render_boundless_depth
+	{
+		pass no_refraction
+		{
+			rasterizer: RenderNoCull
+			targetformat: WaterTargetFormats
+			depthstencil: ReverseDepth 0
+			blend: WaterNoBlend (0,0,0,0) 4294967295
+			layout:
+			{
+			}
+			vertex: water_VS_BoundlessWaterSurfNoShore_vv.sb(VS_BoundlessWaterSurfNoShore) inline:(0x3b824,0x1d9c), t:(2,10,12), u:(), b:(), z:(), c:(1,2), s:(6,8,9)
+			pixel(WaterTargetFormats): water_PS_BoundlessWaterSurfDepth_WaterTargetFormats_p.sb(PS_BoundlessWaterSurfDepth) inline:(0x72a0,0x1740), t:(2,7,8,11,12), u:(), b:(), z:(), c:(1,2), s:(6,8,9)
+		}
+		pass refraction
+		{
+			rasterizer: RenderNoCull
+			targetformat: WaterTargetFormats
+			depthstencil: ReverseDepth 0
+			blend: WaterNoBlend (0,0,0,0) 4294967295
+			layout:
+			{
+			}
+			vertex: water_VS_BoundlessWaterSurfNoShore_vv.sb(VS_BoundlessWaterSurfNoShore) inline:(0x3b824,0x1d9c), t:(2,10,12), u:(), b:(), z:(), c:(1,2), s:(6,8,9)
+			pixel(WaterTargetFormats): water_PS_BoundlessWaterSurfDepthRefraction_WaterTargetFormats_p.sb(PS_BoundlessWaterSurfDepthRefraction) inline:(0x89e0,0x1c50), t:(2,7,8,11,12), u:(), b:(), z:(), c:(1,2), s:(6,8,9)
+		}
+		pass refraction_no_backface
+		{
+			rasterizer: RenderNoCull
+			targetformat: WaterTargetFormats
+			depthstencil: ReverseDepth 0
+			blend: WaterNoBlend (0,0,0,0) 4294967295
+			layout:
+			{
+			}
+			vertex: water_VS_BoundlessWaterSurfNoShore_vv.sb(VS_BoundlessWaterSurfNoShore) inline:(0x3b824,0x1d9c), t:(2,10,12), u:(), b:(), z:(), c:(1,2), s:(6,8,9)
+			pixel(WaterTargetFormats): water_PS_BoundlessWaterSurfDepthRefraction_WaterTargetFormats_p.sb(PS_BoundlessWaterSurfDepthRefraction) inline:(0x89e0,0x1c50), t:(2,7,8,11,12), u:(), b:(), z:(), c:(1,2), s:(6,8,9)
+		}
+	}
+	technique render_boundless_depth_shore
+	{
+		pass no_refraction
+		{
+			rasterizer: RenderNoCull
+			targetformat: WaterTargetFormats
+			depthstencil: ReverseDepth 0
+			blend: WaterNoBlend (0,0,0,0) 4294967295
+			layout:
+			{
+			}
+			vertex: water_VS_BoundlessWaterSurfShore_vv.sb(VS_BoundlessWaterSurfShore) inline:(0x4338c,0x1f40), t:(2,10,12), u:(), b:(), z:(), c:(1,2), s:(6,8,9)
+			pixel(WaterTargetFormats): water_PS_BoundlessWaterSurfDepth_WaterTargetFormats_p.sb(PS_BoundlessWaterSurfDepth) inline:(0x72a0,0x1740), t:(2,7,8,11,12), u:(), b:(), z:(), c:(1,2), s:(6,8,9)
+		}
+		pass refraction
+		{
+			rasterizer: RenderNoCull
+			targetformat: WaterTargetFormats
+			depthstencil: ReverseDepth 0
+			blend: WaterNoBlend (0,0,0,0) 4294967295
+			layout:
+			{
+			}
+			vertex: water_VS_BoundlessWaterSurfShore_vv.sb(VS_BoundlessWaterSurfShore) inline:(0x4338c,0x1f40), t:(2,10,12), u:(), b:(), z:(), c:(1,2), s:(6,8,9)
+			pixel(WaterTargetFormats): water_PS_BoundlessWaterSurfDepthRefraction_WaterTargetFormats_p.sb(PS_BoundlessWaterSurfDepthRefraction) inline:(0x89e0,0x1c50), t:(2,7,8,11,12), u:(), b:(), z:(), c:(1,2), s:(6,8,9)
+		}
+		pass refraction_no_backface
+		{
+			rasterizer: RenderNoCull
+			targetformat: WaterTargetFormats
+			depthstencil: ReverseDepth 0
+			blend: WaterNoBlend (0,0,0,0) 4294967295
+			layout:
+			{
+			}
+			vertex: water_VS_BoundlessWaterSurfShore_vv.sb(VS_BoundlessWaterSurfShore) inline:(0x4338c,0x1f40), t:(2,10,12), u:(), b:(), z:(), c:(1,2), s:(6,8,9)
+			pixel(WaterTargetFormats): water_PS_BoundlessWaterSurfDepthRefraction_WaterTargetFormats_p.sb(PS_BoundlessWaterSurfDepthRefraction) inline:(0x89e0,0x1c50), t:(2,7,8,11,12), u:(), b:(), z:(), c:(1,2), s:(6,8,9)
+		}
+	}
+	technique render_boundless_depth_shore_wavegrid
+	{
+		pass no_refraction
+		{
+			rasterizer: RenderNoCull
+			targetformat: WaterTargetFormats
+			depthstencil: ReverseDepth 0
+			blend: WaterNoBlend (0,0,0,0) 4294967295
+			layout:
+			{
+			}
+			vertex: water_VS_BoundlessWaterSurfShoreWaveGrid_vv.sb(VS_BoundlessWaterSurfShoreWaveGrid) inline:(0x47278,0x2144), t:(2,10,12), u:(), b:(), z:(), c:(1,2), s:(6,8,9)
+			pixel(WaterTargetFormats): water_PS_BoundlessWaterSurfDepthWaveGrid_WaterTargetFormats_p.sb(PS_BoundlessWaterSurfDepthWaveGrid) inline:(0xc3f4,0x18c8), t:(2,7,8,11,12), u:(), b:(), z:(), c:(1,2), s:(6,8,9)
+		}
+		pass refraction
+		{
+			rasterizer: RenderNoCull
+			targetformat: WaterTargetFormats
+			depthstencil: ReverseDepth 0
+			blend: WaterNoBlend (0,0,0,0) 4294967295
+			layout:
+			{
+			}
+			vertex: water_VS_BoundlessWaterSurfShoreWaveGrid_vv.sb(VS_BoundlessWaterSurfShoreWaveGrid) inline:(0x47278,0x2144), t:(2,10,12), u:(), b:(), z:(), c:(1,2), s:(6,8,9)
+			pixel(WaterTargetFormats): water_PS_BoundlessWaterSurfDepthRefractionWaveGrid_WaterTargetFormats_p.sb(PS_BoundlessWaterSurfDepthRefractionWaveGrid) inline:(0xa630,0x1dc4), t:(2,7,8,11,12), u:(), b:(), z:(), c:(1,2), s:(6,8,9)
+		}
+		pass refraction_no_backface
+		{
+			rasterizer: RenderNoCull
+			targetformat: WaterTargetFormats
+			depthstencil: ReverseDepth 0
+			blend: WaterNoBlend (0,0,0,0) 4294967295
+			layout:
+			{
+			}
+			vertex: water_VS_BoundlessWaterSurfShoreWaveGrid_vv.sb(VS_BoundlessWaterSurfShoreWaveGrid) inline:(0x47278,0x2144), t:(2,10,12), u:(), b:(), z:(), c:(1,2), s:(6,8,9)
+			pixel(WaterTargetFormats): water_PS_BoundlessWaterSurfDepthRefractionWaveGrid_WaterTargetFormats_p.sb(PS_BoundlessWaterSurfDepthRefractionWaveGrid) inline:(0xa630,0x1dc4), t:(2,7,8,11,12), u:(), b:(), z:(), c:(1,2), s:(6,8,9)
+		}
+	}
+	technique render_boundless_depth_wavegrid
+	{
+		pass no_refraction
+		{
+			rasterizer: RenderNoCull
+			targetformat: WaterTargetFormats
+			depthstencil: ReverseDepth 0
+			blend: WaterNoBlend (0,0,0,0) 4294967295
+			layout:
+			{
+			}
+			vertex: water_VS_BoundlessWaterSurfNoShoreWaveGrid_vv.sb(VS_BoundlessWaterSurfNoShoreWaveGrid) inline:(0x3f3d0,0x1fa8), t:(2,10,12), u:(), b:(), z:(), c:(1,2), s:(6,8,9)
+			pixel(WaterTargetFormats): water_PS_BoundlessWaterSurfDepthWaveGrid_WaterTargetFormats_p.sb(PS_BoundlessWaterSurfDepthWaveGrid) inline:(0xc3f4,0x18c8), t:(2,7,8,11,12), u:(), b:(), z:(), c:(1,2), s:(6,8,9)
+		}
+		pass refraction
+		{
+			rasterizer: RenderNoCull
+			targetformat: WaterTargetFormats
+			depthstencil: ReverseDepth 0
+			blend: WaterNoBlend (0,0,0,0) 4294967295
+			layout:
+			{
+			}
+			vertex: water_VS_BoundlessWaterSurfNoShoreWaveGrid_vv.sb(VS_BoundlessWaterSurfNoShoreWaveGrid) inline:(0x3f3d0,0x1fa8), t:(2,10,12), u:(), b:(), z:(), c:(1,2), s:(6,8,9)
+			pixel(WaterTargetFormats): water_PS_BoundlessWaterSurfDepthRefractionWaveGrid_WaterTargetFormats_p.sb(PS_BoundlessWaterSurfDepthRefractionWaveGrid) inline:(0xa630,0x1dc4), t:(2,7,8,11,12), u:(), b:(), z:(), c:(1,2), s:(6,8,9)
+		}
+		pass refraction_no_backface
+		{
+			rasterizer: RenderNoCull
+			targetformat: WaterTargetFormats
+			depthstencil: ReverseDepth 0
+			blend: WaterNoBlend (0,0,0,0) 4294967295
+			layout:
+			{
+			}
+			vertex: water_VS_BoundlessWaterSurfNoShoreWaveGrid_vv.sb(VS_BoundlessWaterSurfNoShoreWaveGrid) inline:(0x3f3d0,0x1fa8), t:(2,10,12), u:(), b:(), z:(), c:(1,2), s:(6,8,9)
+			pixel(WaterTargetFormats): water_PS_BoundlessWaterSurfDepthRefractionWaveGrid_WaterTargetFormats_p.sb(PS_BoundlessWaterSurfDepthRefractionWaveGrid) inline:(0xa630,0x1dc4), t:(2,7,8,11,12), u:(), b:(), z:(), c:(1,2), s:(6,8,9)
+		}
+	}
+	technique show_texture
+	{
+		pass p0
+		{
+			rasterizer: RenderNoCull
+			depthstencil: DisableDepth 0
+			blend: DontBlend (0,0,0,0) 4294967295
+			layout:
+			{
+			}
+			vertex: water_VS_ShowTexture_vv.sb(VS_ShowTexture) inline:(0x519e8,0x55c), t:(), u:(), b:(), z:(), c:(7), s:()
+			pixel(float16abgr): water_PS_ShowTexture_float16abgr_p.sb(PS_ShowTexture) inline:(0x184cc,0x1b8), t:(0), u:(), b:(), z:(), c:(), s:(7)
+			pixel(unorm16abgr): water_PS_ShowTexture_unorm16abgr_p.sb(PS_ShowTexture) inline:(0x18684,0x1b8), t:(0), u:(), b:(), z:(), c:(), s:(7)
+			pixel(snorm16abgr): water_PS_ShowTexture_snorm16abgr_p.sb(PS_ShowTexture) inline:(0x1883c,0x1b8), t:(0), u:(), b:(), z:(), c:(), s:(7)
+			pixel(float32abgr): water_PS_ShowTexture_float32abgr_p.sb(PS_ShowTexture) inline:(0x1831c,0x1b0), t:(0), u:(), b:(), z:(), c:(), s:(7)
+		}
+	}
+	technique trace_flow_rays
+	{
+		pass base
+		{
+			compute: water_CS_TraceFlowRaysBase_c.sb(CS_TraceFlowRaysBase) inline:(0x448,0x514), t:(0), u:(5,6), b:(), z:(), c:(7), s:(7,9)
+		}
+		pass sub
+		{
+			compute: water_CS_TraceFlowRaysSub_c.sb(CS_TraceFlowRaysSub) inline:(0x95c,0x878), t:(0), u:(5,6), b:(), z:(), c:(7), s:(7,9)
+		}
+	}
+	technique update_amplitude_grid
+	{
+		pass p0
+		{
+			compute: water_CS_UpdateAmplitudeGrid_c.sb(CS_UpdateAmplitudeGrid) inline:(0x11d4,0x5e0), t:(2), u:(4), b:(), z:(3), c:(4), s:(7)
+		}
+	}
+	technique update_amplitude_grid_probes
+	{
+		pass p0
+		{
+			compute: water_CS_UpdateAmplitudeGridProbeEffect_c.sb(CS_UpdateAmplitudeGridProbeEffect) inline:(0x17b4,0x123c), t:(), u:(4), b:(0,1), z:(), c:(3,4,7), s:()
+		}
+	}
+	technique update_buoyancy_objects
+	{
+		pass p0
+		{
+			compute: water_CS_UpdateBuoyancyDepthValues_c.sb(CS_UpdateBuoyancyDepthValues) inline:(0x29f0,0xcb4), t:(2,12), u:(), b:(0), z:(1), c:(3,5), s:(6,8)
+		}
+	}
+	technique update_probes
+	{
+		pass boundless
+		{
+			compute: water_CS_UpdateProbeValuesBoundless_c.sb(CS_UpdateProbeValuesBoundless) inline:(0x36a4,0x8c0), t:(2,12), u:(), b:(0), z:(7), c:(3), s:(6,8)
+		}
+	}
+	technique water_final_pass
+	{
+		pass no_reflection
+		{
+			rasterizer: RenderNoCull
+			depthstencil: DisableDepth 0
+			blend: NoBlend (0,0,0,0) 4294967295
+			layout:
+			{
+			}
+			vertex: water_VS_SimpleFullscreen_vv.sb(VS_SimpleFullscreen) inline:(0x524d0,0x1c4), t:(), u:(), b:(), z:(), c:(), s:()
+			pixel(float16abgr): water_PS_WaterSurfFinalNoReflection_float16abgr_p.sb(PS_WaterSurfFinalNoReflection) inline:(0x2c3dc,0x15a0), t:(0,1,2,3,4,5,6), u:(), b:(), z:(), c:(1,2), s:(3,4,9)
+			pixel(unorm16abgr): water_PS_WaterSurfFinalNoReflection_unorm16abgr_p.sb(PS_WaterSurfFinalNoReflection) inline:(0x2d97c,0x15a0), t:(0,1,2,3,4,5,6), u:(), b:(), z:(), c:(1,2), s:(3,4,9)
+			pixel(snorm16abgr): water_PS_WaterSurfFinalNoReflection_snorm16abgr_p.sb(PS_WaterSurfFinalNoReflection) inline:(0x2ef1c,0x15a0), t:(0,1,2,3,4,5,6), u:(), b:(), z:(), c:(1,2), s:(3,4,9)
+			pixel(float32abgr): water_PS_WaterSurfFinalNoReflection_float32abgr_p.sb(PS_WaterSurfFinalNoReflection) inline:(0x2ae44,0x1598), t:(0,1,2,3,4,5,6), u:(), b:(), z:(), c:(1,2), s:(3,4,9)
+		}
+		pass reflection
+		{
+			rasterizer: RenderNoCull
+			depthstencil: DisableDepth 0
+			blend: NoBlend (0,0,0,0) 4294967295
+			layout:
+			{
+			}
+			vertex: water_VS_SimpleFullscreen_vv.sb(VS_SimpleFullscreen) inline:(0x524d0,0x1c4), t:(), u:(), b:(), z:(), c:(), s:()
+			pixel(float16abgr): water_PS_WaterSurfFinalReflection_float16abgr_p.sb(PS_WaterSurfFinalReflection) inline:(0x31bd4,0x1728), t:(0,1,2,3,4,5,6), u:(), b:(), z:(), c:(1,2), s:(3,4,9)
+			pixel(unorm16abgr): water_PS_WaterSurfFinalReflection_unorm16abgr_p.sb(PS_WaterSurfFinalReflection) inline:(0x332fc,0x1728), t:(0,1,2,3,4,5,6), u:(), b:(), z:(), c:(1,2), s:(3,4,9)
+			pixel(snorm16abgr): water_PS_WaterSurfFinalReflection_snorm16abgr_p.sb(PS_WaterSurfFinalReflection) inline:(0x34a24,0x1728), t:(0,1,2,3,4,5,6), u:(), b:(), z:(), c:(1,2), s:(3,4,9)
+			pixel(float32abgr): water_PS_WaterSurfFinalReflection_float32abgr_p.sb(PS_WaterSurfFinalReflection) inline:(0x304bc,0x1718), t:(0,1,2,3,4,5,6), u:(), b:(), z:(), c:(1,2), s:(3,4,9)
+		}
+	}
+	technique water_reflection_pass
+	{
+		pass p100
+		{
+			rasterizer: RenderNoCull
+			depthstencil: DisableDepth 0
+			blend: NoBlend (0,0,0,0) 4294967295
+			layout:
+			{
+			}
+			vertex: water_VS_SimpleFullscreen_vv.sb(VS_SimpleFullscreen) inline:(0x524d0,0x1c4), t:(), u:(), b:(), z:(), c:(), s:()
+			pixel(float16abgr): water_PS_WaterSSR100_float16abgr_p.sb(PS_WaterSSR100) inline:(0x19c34,0x1248), t:(0,3,7,8), u:(), b:(), z:(), c:(1,2), s:(3,9)
+			pixel(unorm16abgr): water_PS_WaterSSR100_unorm16abgr_p.sb(PS_WaterSSR100) inline:(0x1ae7c,0x1248), t:(0,3,7,8), u:(), b:(), z:(), c:(1,2), s:(3,9)
+			pixel(snorm16abgr): water_PS_WaterSSR100_snorm16abgr_p.sb(PS_WaterSSR100) inline:(0x1c0c4,0x1248), t:(0,3,7,8), u:(), b:(), z:(), c:(1,2), s:(3,9)
+			pixel(float32abgr): water_PS_WaterSSR100_float32abgr_p.sb(PS_WaterSSR100) inline:(0x189f4,0x1240), t:(0,3,7,8), u:(), b:(), z:(), c:(1,2), s:(3,9)
+		}
+		pass p25
+		{
+			rasterizer: RenderNoCull
+			depthstencil: DisableDepth 0
+			blend: NoBlend (0,0,0,0) 4294967295
+			layout:
+			{
+			}
+			vertex: water_VS_SimpleFullscreen_vv.sb(VS_SimpleFullscreen) inline:(0x524d0,0x1c4), t:(), u:(), b:(), z:(), c:(), s:()
+			pixel(float16abgr): water_PS_WaterSSR25_float16abgr_p.sb(PS_WaterSSR25) inline:(0x1e544,0x1248), t:(0,3,7,8), u:(), b:(), z:(), c:(1,2), s:(3,9)
+			pixel(unorm16abgr): water_PS_WaterSSR25_unorm16abgr_p.sb(PS_WaterSSR25) inline:(0x1f78c,0x1248), t:(0,3,7,8), u:(), b:(), z:(), c:(1,2), s:(3,9)
+			pixel(snorm16abgr): water_PS_WaterSSR25_snorm16abgr_p.sb(PS_WaterSSR25) inline:(0x209d4,0x1248), t:(0,3,7,8), u:(), b:(), z:(), c:(1,2), s:(3,9)
+			pixel(float32abgr): water_PS_WaterSSR25_float32abgr_p.sb(PS_WaterSSR25) inline:(0x1d30c,0x1238), t:(0,3,7,8), u:(), b:(), z:(), c:(1,2), s:(3,9)
+		}
+		pass p50
+		{
+			rasterizer: RenderNoCull
+			depthstencil: DisableDepth 0
+			blend: NoBlend (0,0,0,0) 4294967295
+			layout:
+			{
+			}
+			vertex: water_VS_SimpleFullscreen_vv.sb(VS_SimpleFullscreen) inline:(0x524d0,0x1c4), t:(), u:(), b:(), z:(), c:(), s:()
+			pixel(float16abgr): water_PS_WaterSSR50_float16abgr_p.sb(PS_WaterSSR50) inline:(0x22e54,0x1248), t:(0,3,7,8), u:(), b:(), z:(), c:(1,2), s:(3,9)
+			pixel(unorm16abgr): water_PS_WaterSSR50_unorm16abgr_p.sb(PS_WaterSSR50) inline:(0x2409c,0x1248), t:(0,3,7,8), u:(), b:(), z:(), c:(1,2), s:(3,9)
+			pixel(snorm16abgr): water_PS_WaterSSR50_snorm16abgr_p.sb(PS_WaterSSR50) inline:(0x252e4,0x1248), t:(0,3,7,8), u:(), b:(), z:(), c:(1,2), s:(3,9)
+			pixel(float32abgr): water_PS_WaterSSR50_float32abgr_p.sb(PS_WaterSSR50) inline:(0x21c1c,0x1238), t:(0,3,7,8), u:(), b:(), z:(), c:(1,2), s:(3,9)
+		}
+		pass p75
+		{
+			rasterizer: RenderNoCull
+			depthstencil: DisableDepth 0
+			blend: NoBlend (0,0,0,0) 4294967295
+			layout:
+			{
+			}
+			vertex: water_VS_SimpleFullscreen_vv.sb(VS_SimpleFullscreen) inline:(0x524d0,0x1c4), t:(), u:(), b:(), z:(), c:(), s:()
+			pixel(float16abgr): water_PS_WaterSSR75_float16abgr_p.sb(PS_WaterSSR75) inline:(0x2776c,0x1248), t:(0,3,7,8), u:(), b:(), z:(), c:(1,2), s:(3,9)
+			pixel(unorm16abgr): water_PS_WaterSSR75_unorm16abgr_p.sb(PS_WaterSSR75) inline:(0x289b4,0x1248), t:(0,3,7,8), u:(), b:(), z:(), c:(1,2), s:(3,9)
+			pixel(snorm16abgr): water_PS_WaterSSR75_snorm16abgr_p.sb(PS_WaterSSR75) inline:(0x29bfc,0x1248), t:(0,3,7,8), u:(), b:(), z:(), c:(1,2), s:(3,9)
+			pixel(float32abgr): water_PS_WaterSSR75_float32abgr_p.sb(PS_WaterSSR75) inline:(0x2652c,0x1240), t:(0,3,7,8), u:(), b:(), z:(), c:(1,2), s:(3,9)
+		}
+	}
+	technique wireframe_bounded
+	{
+		pass p0
+		{
+			rasterizer: wireframeRasterizer
+			depthstencil: TestReverseDepth 0
+			blend: AddBlend (0,0,0,0) 4294967295
+			layout:
+			{
+			}
+			vertex: water_VS_BoundedWaterSurf_vv.sb(VS_BoundedWaterSurf) inline:(0x36654,0x1410), t:(12), u:(), b:(), z:(), c:(1,2), s:(8)
+			pixel(float16abgr): water_PS_Wireframe_float16abgr_p.sb(PS_Wireframe) inline:(0x36288,0x144), t:(), u:(), b:(), z:(), c:(), s:()
+			pixel(unorm16abgr): water_PS_Wireframe_unorm16abgr_p.sb(PS_Wireframe) inline:(0x363cc,0x144), t:(), u:(), b:(), z:(), c:(), s:()
+			pixel(snorm16abgr): water_PS_Wireframe_snorm16abgr_p.sb(PS_Wireframe) inline:(0x36510,0x144), t:(), u:(), b:(), z:(), c:(), s:()
+			pixel(float32abgr): water_PS_Wireframe_float32abgr_p.sb(PS_Wireframe) inline:(0x3614c,0x13c), t:(), u:(), b:(), z:(), c:(), s:()
+		}
+	}
+	technique wireframe_debug_object
+	{
+		pass p0
+		{
+			rasterizer: wireframeRasterizer
+			depthstencil: DisableDepth 0
+			blend: AddBlend (0,0,0,0) 4294967295
+			layout:
+			{
+				float3 position;
+			}
+			vertex: water_VS_DebugObject_vv.sb(VS_DebugObject) inline:(0x4ce7c,0xb98), t:(), u:(), b:(), z:(), c:(2,5), s:()
+			pixel(float16abgr): water_PS_Wireframe_float16abgr_p.sb(PS_Wireframe) inline:(0x36288,0x144), t:(), u:(), b:(), z:(), c:(), s:()
+			pixel(unorm16abgr): water_PS_Wireframe_unorm16abgr_p.sb(PS_Wireframe) inline:(0x363cc,0x144), t:(), u:(), b:(), z:(), c:(), s:()
+			pixel(snorm16abgr): water_PS_Wireframe_snorm16abgr_p.sb(PS_Wireframe) inline:(0x36510,0x144), t:(), u:(), b:(), z:(), c:(), s:()
+			pixel(float32abgr): water_PS_Wireframe_float32abgr_p.sb(PS_Wireframe) inline:(0x3614c,0x13c), t:(), u:(), b:(), z:(), c:(), s:()
+		}
+	}
+	technique wireframe_flow_rays
+	{
+		pass p0
+		{
+			rasterizer: wireframeRasterizer
+			depthstencil: TestReverseDepth 0
+			blend: AddBlend (0,0,0,0) 4294967295
+			layout:
+			{
+			}
+			vertex: water_VS_FlowRaysWireframe_vv.sb(VS_FlowRaysWireframe) inline:(0x4e608,0xde8), t:(0), u:(), b:(), z:(), c:(1,2), s:(11)
+			pixel(float16abgr): water_PS_Wireframe_float16abgr_p.sb(PS_Wireframe) inline:(0x36288,0x144), t:(), u:(), b:(), z:(), c:(), s:()
+			pixel(unorm16abgr): water_PS_Wireframe_unorm16abgr_p.sb(PS_Wireframe) inline:(0x363cc,0x144), t:(), u:(), b:(), z:(), c:(), s:()
+			pixel(snorm16abgr): water_PS_Wireframe_snorm16abgr_p.sb(PS_Wireframe) inline:(0x36510,0x144), t:(), u:(), b:(), z:(), c:(), s:()
+			pixel(float32abgr): water_PS_Wireframe_float32abgr_p.sb(PS_Wireframe) inline:(0x3614c,0x13c), t:(), u:(), b:(), z:(), c:(), s:()
+		}
+	}
+	technique wireframe_ocean
+	{
+		pass p0
+		{
+			rasterizer: wireframeRasterizer
+			depthstencil: TestReverseDepth 0
+			blend: AddBlend (0,0,0,0) 4294967295
+			layout:
+			{
+			}
+			vertex: water_VS_BoundlessWaterSurfShore_vv.sb(VS_BoundlessWaterSurfShore) inline:(0x4338c,0x1f40), t:(2,10,12), u:(), b:(), z:(), c:(1,2), s:(6,8,9)
+			pixel(float16abgr): water_PS_Wireframe_float16abgr_p.sb(PS_Wireframe) inline:(0x36288,0x144), t:(), u:(), b:(), z:(), c:(), s:()
+			pixel(unorm16abgr): water_PS_Wireframe_unorm16abgr_p.sb(PS_Wireframe) inline:(0x363cc,0x144), t:(), u:(), b:(), z:(), c:(), s:()
+			pixel(snorm16abgr): water_PS_Wireframe_snorm16abgr_p.sb(PS_Wireframe) inline:(0x36510,0x144), t:(), u:(), b:(), z:(), c:(), s:()
+			pixel(float32abgr): water_PS_Wireframe_float32abgr_p.sb(PS_Wireframe) inline:(0x3614c,0x13c), t:(), u:(), b:(), z:(), c:(), s:()
+		}
+	}
+	technique write_mask
+	{
+		pass backface
+		{
+			rasterizer: RenderFrontfaceCull
+			depthstencil: DisableDepth 0
+			blend: NoBlend (0,0,0,0) 4294967295
+			layout:
+			{
+				float3 position;
+			}
+			vertex: water_VS_MaskObject_vv.sb(VS_MaskObject) inline:(0x5024c,0xb98), t:(), u:(), b:(), z:(), c:(2,5), s:()
+			pixel(float16abgr): water_PS_MaskObjectBackface_float16abgr_p.sb(PS_MaskObjectBackface) inline:(0x102f4,0xb88), t:(0), u:(), b:(), z:(), c:(2,5), s:(9)
+			pixel(unorm16abgr): water_PS_MaskObjectBackface_unorm16abgr_p.sb(PS_MaskObjectBackface) inline:(0x10e7c,0xb88), t:(0), u:(), b:(), z:(), c:(2,5), s:(9)
+			pixel(snorm16abgr): water_PS_MaskObjectBackface_snorm16abgr_p.sb(PS_MaskObjectBackface) inline:(0x11a04,0xb88), t:(0), u:(), b:(), z:(), c:(2,5), s:(9)
+			pixel(float32abgr): water_PS_MaskObjectBackface_float32abgr_p.sb(PS_MaskObjectBackface) inline:(0xf76c,0xb88), t:(0), u:(), b:(), z:(), c:(2,5), s:(9)
+		}
+		pass frontface
+		{
+			rasterizer: RenderNoCull
+			depthstencil: ReverseDepth 0
+			blend: NoBlend (0,0,0,0) 4294967295
+			layout:
+			{
+				float3 position;
+			}
+			vertex: water_VS_MaskObject_vv.sb(VS_MaskObject) inline:(0x5024c,0xb98), t:(), u:(), b:(), z:(), c:(2,5), s:()
+			pixel(float16abgr): water_PS_MaskObjectFrontface_float16abgr_p.sb(PS_MaskObjectFrontface) inline:(0x13134,0xbb0), t:(11), u:(), b:(), z:(), c:(2,5), s:(9)
+			pixel(unorm16abgr): water_PS_MaskObjectFrontface_unorm16abgr_p.sb(PS_MaskObjectFrontface) inline:(0x13ce4,0xbb0), t:(11), u:(), b:(), z:(), c:(2,5), s:(9)
+			pixel(snorm16abgr): water_PS_MaskObjectFrontface_snorm16abgr_p.sb(PS_MaskObjectFrontface) inline:(0x14894,0xbb0), t:(11), u:(), b:(), z:(), c:(2,5), s:(9)
+			pixel(float32abgr): water_PS_MaskObjectFrontface_float32abgr_p.sb(PS_MaskObjectFrontface) inline:(0x1258c,0xba8), t:(11), u:(), b:(), z:(), c:(2,5), s:(9)
+		}
+		pass plane
+		{
+			rasterizer: RenderNoCull
+			depthstencil: ReverseDepth 0
+			blend: NoBlend (0,0,0,0) 4294967295
+			layout:
+			{
+				float3 position;
+			}
+			vertex: water_VS_MaskObject_vv.sb(VS_MaskObject) inline:(0x5024c,0xb98), t:(), u:(), b:(), z:(), c:(2,5), s:()
+			pixel(float16abgr): water_PS_MaskObjectPlane_float16abgr_p.sb(PS_MaskObjectPlane) inline:(0x15ac0,0x67c), t:(0), u:(), b:(), z:(), c:(2), s:(9)
+			pixel(unorm16abgr): water_PS_MaskObjectPlane_unorm16abgr_p.sb(PS_MaskObjectPlane) inline:(0x1613c,0x67c), t:(0), u:(), b:(), z:(), c:(2), s:(9)
+			pixel(snorm16abgr): water_PS_MaskObjectPlane_snorm16abgr_p.sb(PS_MaskObjectPlane) inline:(0x167b8,0x67c), t:(0), u:(), b:(), z:(), c:(2), s:(9)
+			pixel(float32abgr): water_PS_MaskObjectPlane_float32abgr_p.sb(PS_MaskObjectPlane) inline:(0x15444,0x67c), t:(0), u:(), b:(), z:(), c:(2), s:(9)
+		}
+	}
+}
+ 
