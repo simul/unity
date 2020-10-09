@@ -43,7 +43,7 @@ RenderSettings:
 --- !u!157 &3
 LightmapSettings:
   m_ObjectHideFlags: 0
-  serializedVersion: 11
+  serializedVersion: 12
   m_GIWorkflowMode: 1
   m_GISettings:
     serializedVersion: 2
@@ -94,10 +94,12 @@ LightmapSettings:
     m_PVRFilteringAtrousPositionSigmaDirect: 0.5
     m_PVRFilteringAtrousPositionSigmaIndirect: 2
     m_PVRFilteringAtrousPositionSigmaAO: 1
-    m_ShowResolutionOverlay: 1
     m_ExportTrainingData: 0
+    m_TrainingDataDestination: TrainingData
+    m_LightProbeSampleCountMultiplier: 4
   m_LightingDataAsset: {fileID: 0}
-  m_UseShadowmask: 1
+  m_LightingSettings: {fileID: 4890085278179872738, guid: 3adcdb9d7f939b442ba284e3d6371ea1,
+    type: 2}
 --- !u!196 &4
 NavMeshSettings:
   serializedVersion: 2
@@ -117,6 +119,8 @@ NavMeshSettings:
     manualTileSize: 0
     tileSize: 256
     accuratePlacement: 0
+    maxJobWorkers: 0
+    preserveTilesOutsideBounds: 0
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
@@ -214,7 +218,6 @@ MonoBehaviour:
   m_GameObject: {fileID: 81481144}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_GeneratorAsset: {fileID: 0}
   m_Script: {fileID: 11500000, guid: 5965457e5bb97d748a35da6a145d349b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
@@ -238,7 +241,6 @@ MonoBehaviour:
   m_GameObject: {fileID: 81481144}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_GeneratorAsset: {fileID: 0}
   m_Script: {fileID: 11500000, guid: 0ba940701a780594aa921fbbd73be44d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
@@ -278,8 +280,9 @@ Light:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 662832557}
   m_Enabled: 1
-  serializedVersion: 9
+  serializedVersion: 10
   m_Type: 1
+  m_Shape: 0
   m_Color: {r: 1, g: 0.95686275, b: 0.8392157, a: 1}
   m_Intensity: 1
   m_Range: 10
@@ -294,6 +297,24 @@ Light:
     m_Bias: 0.05
     m_NormalBias: 0.4
     m_NearPlane: 0.2
+    m_CullingMatrixOverride:
+      e00: 1
+      e01: 0
+      e02: 0
+      e03: 0
+      e10: 0
+      e11: 1
+      e12: 0
+      e13: 0
+      e20: 0
+      e21: 0
+      e22: 1
+      e23: 0
+      e30: 0
+      e31: 0
+      e32: 0
+      e33: 1
+    m_UseCullingMatrixOverride: 0
   m_Cookie: {fileID: 0}
   m_DrawHalo: 0
   m_Flare: {fileID: 0}
@@ -301,12 +322,15 @@ Light:
   m_CullingMask:
     serializedVersion: 2
     m_Bits: 4294967295
+  m_RenderingLayerMask: 1
   m_Lightmapping: 4
   m_LightShadowCasterMode: 0
   m_AreaSize: {x: 1, y: 1}
   m_BounceIntensity: 1
   m_ColorTemperature: 6570
   m_UseColorTemperature: 0
+  m_BoundingSphereOverride: {x: 0, y: 0, z: 0, w: 0}
+  m_UseBoundingSphereOverride: 0
   m_ShadowRadius: 0
   m_ShadowAngle: 0
 --- !u!4 &662832559
@@ -351,17 +375,24 @@ MonoBehaviour:
   m_GameObject: {fileID: 1043853397}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_GeneratorAsset: {fileID: 0}
   m_Script: {fileID: 11500000, guid: 6c9584c35c660674d8e03faa566289dc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   SimulVersionMajor: 4
-  SimulVersionMinor: 2
+  SimulVersionMinor: 3
   SimulVersionBuild: 0
   _metresPerUnit: 1
   _renderInEditMode: 1
-  _minimumStarPixelSize: 1
+  _starBrightness: 1
+  _backgroundBrightness: 0.1
+  _maximumStarMagniute: 2
   _renderWater: 0
+  _waterFullResolution: 1
+  _enableReflections: 1
+  _waterFullResolutionReflections: 1
+  _waterReflectionSteps: 100
+  _waterReflectionPixelStep: 2
+  _waterReflectionDistance: 20000
   _godRaysGrid: {x: 64, y: 32, z: 32}
   _crepuscularRaysStrength: 1
   _depthSamplingPixelRange: 1.5
@@ -374,10 +405,22 @@ MonoBehaviour:
   _edgeNoiseWavelengthKm: 2.5
   _worleyTextureSize: 64
   _worleyWavelengthKm: 8.7
-  _time: 0.4
-  _speed: 10
+  _trueSKYTime: 12
+  _timeProgressionScale: 0
+  _timeUnits: 24
+  _loop: 0
+  _loopStart: 11
+  _loopEnd: 13
+  _interpolationMode: 0
+  _instantUpdate: 1
   _HighDetailProportion: 0.2
   _MediumDetailProportion: 0.4
+  _OriginLatitude: 0
+  _OriginLongitude: 0
+  _OriginHeading: 0
+  _skylightAllMips: 0
+  _skylightAllFaces: 0
+  _skylightAmortization: 2
   _cloudShadowing: 0.5
   _cloudShadowSharpness: 0.05
   _cloudThresholdDistanceKm: 1
@@ -386,14 +429,54 @@ MonoBehaviour:
   _changedAmortInEd: 0
   _amortization: 2
   _atmosphericsAmortization: 2
+  _depthTemporalAlpha: 0.1
   _depthBlending: 1
+  _cloudTint: {r: 1, g: 1, b: 1, a: 1}
+  _PrecipitationRadiusMetres: 6
+  _RainFallSpeedMS: 6
+  _SnowFallSpeedMS: 0.5
+  _RainDropSizeMm: 2.5
+  _SnowFlakeSizeMm: 5
+  _PrecipitationWindEffect: 0.25
+  _PrecipitationWaver: 0.7
+  _PrecipitationWaverTimescaleS: 4
+  _PrecipitationThresholdKm: 0.2
+  _AutomaticRainbowPosition: 1
+  _RainbowElevation: 0
+  _RainbowAzimuth: 0
+  _RainbowIntensity: 1
+  _RainbowDepthPoint: 1
+  _AllowOccludedRainbows: 0
+  _AllowLunarRainbows: 1
   _maxCpuProfileLevel: 4
   _maxGpuProfileLevel: 4
   _backgroundTexture: {fileID: 0}
   _moonTexture: {fileID: 0}
   _sequence: {fileID: 11400000, guid: 94df2340afdc9db4b946068fe347e52c, type: 2}
+  _Visible: 1
+  _renderSky: 1
   _CloudSteps: 200
   _CubemapResolution: 256
+  _WindSpeed: {x: 0, y: 0, z: 0}
+  _IntegrationScheme: 0
+  _LightingMode: 0
+  _MaxCloudDistanceKm: 0
+  _RenderGridXKm: 0.4
+  _RenderGridZKm: 0.4
+  _windowGridWidth: 512
+  _windowGridHeight: 32
+  _windowHeightKm: 200
+  _windowWidthKm: 5
+  _MaxFractalAmplitudeKm: 3
+  _CellNoiseWavelengthKm: 8.7
+  _DirectLight: 1
+  _IndirectLight: 1
+  _AmbientLight: 1
+  _Extinction: 4
+  _MieAsymmetry: 0.87
+  _shadowTextureRes: 256
+  _UsingIL2CPP: 0
+  updateERV: 0
 --- !u!4 &1043853399
 Transform:
   m_ObjectHideFlags: 0
@@ -417,7 +500,6 @@ MonoBehaviour:
   m_GameObject: {fileID: 1043853397}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_GeneratorAsset: {fileID: 0}
   m_Script: {fileID: 11500000, guid: 73661cd764129404b8091f5b746e6901, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
@@ -437,7 +519,6 @@ MonoBehaviour:
   m_GameObject: {fileID: 1043853397}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_GeneratorAsset: {fileID: 0}
   m_Script: {fileID: 11500000, guid: 8dbddb96453fdcd4e96a7553dfce195c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
