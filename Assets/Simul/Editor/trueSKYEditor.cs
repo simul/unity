@@ -696,7 +696,7 @@ namespace simul
 							aurorae.AuroraTraceLength = EditorGUILayout.IntSlider("Aurora Trace Length", aurorae.AuroraTraceLength, 0, 1000);
 						}
 
-						trueSky.updateERV = true;
+						//trueSky.updateERV = true; This causes ERV to be called every frame
 					}
 					else
 					{

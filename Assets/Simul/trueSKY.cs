@@ -1104,8 +1104,11 @@ namespace simul
 			}
 			set
 			{
-				_starBrightness = value;
-				StaticSetRenderFloat("render:StarBrightness", _starBrightness); //Need Fix
+				if (_starBrightness != value)
+				{
+					_starBrightness = value;
+					StaticSetRenderFloat("render:StarBrightness", _starBrightness); //Need Fix
+				}
 			}
 		}
 
@@ -1119,8 +1122,11 @@ namespace simul
 			}
 			set
 			{
-				_backgroundBrightness = value;
-				StaticSetRenderFloat("render:BackgroundBrightness", _backgroundBrightness);
+				if (_backgroundBrightness != value)
+				{
+					_backgroundBrightness = value;
+					StaticSetRenderFloat("render:BackgroundBrightness", _backgroundBrightness);
+				}
 			}
 		}
 
@@ -1134,8 +1140,11 @@ namespace simul
 			}
 			set
 			{
-				_maximumStarMagniute = value;
-				updateERV = true;
+				if (_maximumStarMagniute != value)
+				{
+					_maximumStarMagniute = value;
+					updateERV = true;
+				}
 				//StaticSetRenderFloat("render:MaximumStarMagniute", _maximumStarMagniute); //Need Fix
 			}
 		}
@@ -1149,8 +1158,11 @@ namespace simul
 			}
 			set
 			{
-				_minimumStarPixelSize = value;
-				StaticSetRenderFloat("render:minimumstarpixelsize", _minimumStarPixelSize);
+				if (_minimumStarPixelSize != value)
+				{
+					_minimumStarPixelSize = value;
+					StaticSetRenderFloat("render:minimumstarpixelsize", _minimumStarPixelSize);
+				}
 			}
 		}
 
@@ -1167,11 +1179,14 @@ namespace simul
 			}
 			set
 			{
-				_highlightConstellation = value;
-				StaticTriggerAction("clearhighlightconstellations");
-				foreach (string c in _highlightConstellation)
+				if (_highlightConstellation != value)
 				{
-					StaticSetRenderString("HighlightConstellation", c);
+					_highlightConstellation = value;
+					StaticTriggerAction("clearhighlightconstellations");
+					foreach (string c in _highlightConstellation)
+					{
+						StaticSetRenderString("HighlightConstellation", c);
+					}
 				}
 			}
 		}
@@ -1274,8 +1289,11 @@ namespace simul
 			}
 			set
 			{
-				_waterReflectionSteps = value;
-				StaticSetRenderInt("waterReflectionSteps", _waterReflectionSteps);
+				if (_waterReflectionSteps != value)
+				{
+					_waterReflectionSteps = value;
+					StaticSetRenderInt("waterReflectionSteps", _waterReflectionSteps);
+				}
 			}
 		}
 
@@ -1289,8 +1307,11 @@ namespace simul
 			}
 			set
 			{
-				_waterReflectionPixelStep = value;
-				StaticSetRenderInt("waterReflectionPixelStep", _waterReflectionPixelStep);
+				if (_waterReflectionPixelStep != value)
+				{
+					_waterReflectionPixelStep = value;
+					StaticSetRenderInt("waterReflectionPixelStep", _waterReflectionPixelStep);
+				}
 			}
 		}
 
@@ -1304,8 +1325,11 @@ namespace simul
 			}
 			set
 			{
-				_waterReflectionDistance = value;
-				StaticSetRenderFloat("waterReflectionDistance", _waterReflectionDistance);
+				if (_waterReflectionDistance != value)
+				{
+					_waterReflectionDistance = value;
+					StaticSetRenderFloat("waterReflectionDistance", _waterReflectionDistance);
+				}
 			}
 		}
 
@@ -1320,13 +1344,16 @@ namespace simul
 			}
 			set
 			{
-				_godRaysGrid = value;
+				if (_godRaysGrid != value)
+				{
+					_godRaysGrid = value;
 
-				// To be safe, clamp to [8,64]
-				_godRaysGrid.x = Mathf.Clamp((int)_godRaysGrid.x, 8, 64);
-				_godRaysGrid.y = Mathf.Clamp((int)_godRaysGrid.y, 8, 64);
-				_godRaysGrid.z = Mathf.Clamp((int)_godRaysGrid.z, 8, 64);
-				updateERV = true;
+					// To be safe, clamp to [8,64]
+					_godRaysGrid.x = Mathf.Clamp((int)_godRaysGrid.x, 8, 64);
+					_godRaysGrid.y = Mathf.Clamp((int)_godRaysGrid.y, 8, 64);
+					_godRaysGrid.z = Mathf.Clamp((int)_godRaysGrid.z, 8, 64);
+					updateERV = true;
+				}
 			
 			}
 		}
@@ -1341,8 +1368,11 @@ namespace simul
 			}
 			set
 			{
-				_crepuscularRaysStrength = value;
-				StaticSetRenderFloat("render:crepuscularraysstrength", _crepuscularRaysStrength);
+				if (_crepuscularRaysStrength != value)
+				{
+					_crepuscularRaysStrength = value;
+					//StaticSetRenderFloat("render:crepuscularraysstrength", _crepuscularRaysStrength);
+				}
 			}
 		}
 
@@ -1357,8 +1387,11 @@ namespace simul
 			}
 			set
 			{
-				_depthSamplingPixelRange = value;
-				updateERV = true;
+				if (_depthSamplingPixelRange != value)
+				{
+					_depthSamplingPixelRange = value;
+					updateERV = true;
+				}
 			}
 		}
 
@@ -1372,8 +1405,11 @@ namespace simul
 			}
 			set
 			{
-				_maxSunRadiance = Mathf.Max(value, 0.0f);
-				StaticSetRenderFloat("maxsunradiance", _maxSunRadiance);
+				if (_maxSunRadiance != value)
+				{
+					_maxSunRadiance = Mathf.Max(value, 0.0f);
+					StaticSetRenderFloat("maxsunradiance", _maxSunRadiance);
+				}
 			}
 		}
 		bool _adjustSunRadius = false;
@@ -1385,8 +1421,11 @@ namespace simul
 			}
 			set
 			{
-				_adjustSunRadius = value;
-				StaticSetRenderBool("adjustsunradius", _adjustSunRadius);
+				if (_adjustSunRadius != value)
+				{
+					_adjustSunRadius = value;
+					StaticSetRenderBool("adjustsunradius", _adjustSunRadius);
+				}
 			}
 		}
 
@@ -1400,8 +1439,11 @@ namespace simul
 			}
 			set
 			{
-				_edgeNoiseFrequency = value;
-				StaticSetRenderInt("edgenoisefrequency", _edgeNoiseFrequency);
+				if (_edgeNoiseFrequency != value)
+				{
+					_edgeNoiseFrequency = value;
+					StaticSetRenderInt("edgenoisefrequency", _edgeNoiseFrequency);
+				}
 			}
 		}
 
@@ -1415,8 +1457,11 @@ namespace simul
 			}
 			set
 			{
-				_edgeNoiseOctaves = value;
-				StaticSetRenderInt("edgenoiseoctaves", _edgeNoiseOctaves);
+				if (_edgeNoiseOctaves != value)
+				{
+					_edgeNoiseOctaves = value;
+					StaticSetRenderInt("edgenoiseoctaves", _edgeNoiseOctaves);
+				}
 			}
 		}
 
@@ -1430,8 +1475,11 @@ namespace simul
 			}
 			set
 			{
-				_edgeNoiseTextureSize = value;
-				updateERV = true;
+				if (_edgeNoiseTextureSize != value)
+				{
+					_edgeNoiseTextureSize = value;
+					updateERV = true;
+				}
 			}
 		}
 
@@ -1446,8 +1494,11 @@ namespace simul
 			}
 			set
 			{
-				_CellNoiseTextureSize = value;
-				StaticSetRenderInt("render:cellnoisetexturesize", _CellNoiseTextureSize);
+				if (_CellNoiseTextureSize != value)
+				{
+					_CellNoiseTextureSize = value;
+					StaticSetRenderInt("render:cellnoisetexturesize", _CellNoiseTextureSize);
+				}
 			}
 		}
 
@@ -1461,8 +1512,11 @@ namespace simul
 			}
 			set
 			{
-				_edgeNoisePersistence = value;
-				//StaticSetRenderFloat("render:EdgeNoisePersistence", _edgeNoisePersistence);
+				if (_edgeNoisePersistence != value)
+				{
+					_edgeNoisePersistence = value;
+					//StaticSetRenderFloat("render:EdgeNoisePersistence", _edgeNoisePersistence);
+				}
 			}
 		}
 
@@ -1477,8 +1531,11 @@ namespace simul
 			}
 			set
 			{
-				_edgeNoiseWavelengthKm = value;
-				//StaticSetRenderFloat("render:EdgeNoiseWavelengthKm", _edgeNoiseWavelengthKm);
+				if (_edgeNoiseWavelengthKm != value)
+				{
+					_edgeNoiseWavelengthKm = value;
+					//StaticSetRenderFloat("render:EdgeNoiseWavelengthKm", _edgeNoiseWavelengthKm);
+				}
 			}
 		}
 
@@ -1493,8 +1550,11 @@ namespace simul
 			}
 			set
 			{
-				_worleyTextureSize = value;
-				updateERV = true;
+				if (_worleyTextureSize != value)
+				{
+					_worleyTextureSize = value;
+					updateERV = true;
+				}
 			}
 		}
 
@@ -1509,8 +1569,11 @@ namespace simul
 			}
 			set
 			{
-				_worleyWavelengthKm = value;
-				StaticSetRenderFloat("WorleyWavelengthKm", _worleyWavelengthKm);
+				if (_worleyWavelengthKm != value)
+				{
+					_worleyWavelengthKm = value;
+					StaticSetRenderFloat("WorleyWavelengthKm", _worleyWavelengthKm);
+				}
 			}
 		}
 
@@ -1745,7 +1808,10 @@ namespace simul
 			}
 			set
 			{
-				_timeProgressionScale = value;
+				if (_timeProgressionScale != value)
+				{
+					_timeProgressionScale = value;
+				}
 			}
 		}
 
@@ -1763,8 +1829,11 @@ namespace simul
 			}
 			set
 			{
-				Mathf.Clamp(_timeUnits, 0.1f, 86400);
-				_timeUnits = value;
+				if (_timeUnits != value)
+				{
+					Mathf.Clamp(_timeUnits, 0.1f, 86400);
+					_timeUnits = value;
+				}
 			}
 		}
 		[SerializeField]
@@ -1777,7 +1846,10 @@ namespace simul
 			}
 			set
 			{
-				_loop = value;
+				if (_loop != value)
+				{
+					_loop = value;
+				}
 			}
 		}
 
@@ -1792,7 +1864,10 @@ namespace simul
 			}
 			set
 			{
-				_loopStart = value;
+				if (_loopStart != value)
+				{
+					_loopStart = value;
+				}
 			}
 		}
 
@@ -1806,7 +1881,10 @@ namespace simul
 			}
 			set
 			{
-				_loopEnd = value;
+				if (_loopEnd != value)
+				{
+					_loopEnd = value;
+				}
 			}
 		}
 
@@ -1877,8 +1955,11 @@ namespace simul
 			}
 			set
 			{
-				_HighDetailProportion = value;
-				updateERV = true;
+				if (_HighDetailProportion != value)
+				{
+					_HighDetailProportion = value;
+					updateERV = true;
+				}
 			}
 		}
 
@@ -1896,8 +1977,11 @@ namespace simul
 			}
 			set
 			{
-				_MediumDetailProportion = value;
-				updateERV = true;
+				if (_MediumDetailProportion != value)
+				{
+					_MediumDetailProportion = value;
+					updateERV = true;
+				}
 			}
 		}
 		[SerializeField]
@@ -1913,12 +1997,15 @@ namespace simul
 			}
 			set
 			{
-				_OriginLatitude = value;
-				Variant[] _Variant = { new Variant() };
-				_Variant[0].Vec3.x = _OriginLatitude;
-				_Variant[0].Vec3.y = _OriginLongitude;
-				_Variant[0].Vec3.z = _OriginHeading;
-				StaticSetRender("render:originlatlongheadingdeg", 1, _Variant);
+				if (_OriginLatitude != value)
+				{
+					_OriginLatitude = value;
+					Variant[] _Variant = { new Variant() };
+					_Variant[0].Vec3.x = _OriginLatitude;
+					_Variant[0].Vec3.y = _OriginLongitude;
+					_Variant[0].Vec3.z = _OriginHeading;
+					StaticSetRender("render:originlatlongheadingdeg", 1, _Variant);
+				}
 			}
 		}
 		[SerializeField]
@@ -1934,12 +2021,15 @@ namespace simul
 			}
 			set
 			{
-				_OriginLongitude = value;
-				Variant[] _Variant = { new Variant() };
-				_Variant[0].Vec3.x = _OriginLatitude;
-				_Variant[0].Vec3.y = _OriginLongitude;
-				_Variant[0].Vec3.z = _OriginHeading;
-				StaticSetRender("render:originlatlongheadingdeg", 1, _Variant);
+				if (_OriginLongitude != value)
+				{
+					_OriginLongitude = value;
+					Variant[] _Variant = { new Variant() };
+					_Variant[0].Vec3.x = _OriginLatitude;
+					_Variant[0].Vec3.y = _OriginLongitude;
+					_Variant[0].Vec3.z = _OriginHeading;
+					StaticSetRender("render:originlatlongheadingdeg", 1, _Variant);
+				}
 			}
 		}
 		[SerializeField]
@@ -1955,12 +2045,15 @@ namespace simul
 			}
 			set
 			{
-				_OriginHeading = value;
-				Variant[] _Variant = { new Variant() };
-				_Variant[0].Vec3.x = _OriginLatitude;
-				_Variant[0].Vec3.y = _OriginLongitude;
-				_Variant[0].Vec3.z = _OriginHeading;
-				StaticSetRender("render:originlatlongheadingdeg", 1, _Variant);
+				if (_OriginHeading != value)
+				{
+					_OriginHeading = value;
+					Variant[] _Variant = { new Variant() };
+					_Variant[0].Vec3.x = _OriginLatitude;
+					_Variant[0].Vec3.y = _OriginLongitude;
+					_Variant[0].Vec3.z = _OriginHeading;
+					StaticSetRender("render:originlatlongheadingdeg", 1, _Variant);
+				}
 			}
 		}
 
@@ -1978,8 +2071,11 @@ namespace simul
 			}
 			set
 			{
-				_skylightAllMips = value;
-				StaticSetRenderBool("defaultskylightallmips", value);
+				if (_skylightAllMips != value)
+				{
+					_skylightAllMips = value;
+					StaticSetRenderBool("defaultskylightallmips", value);
+				}
 			}
 		}
 
@@ -1993,8 +2089,11 @@ namespace simul
 			}
 			set
 			{
-				_skylightAllFaces = value;
-				StaticSetRenderBool("defaultskylightallfaces", value);
+				if (_skylightAllFaces != value) 
+					{
+						_skylightAllFaces = value;
+						StaticSetRenderBool("defaultskylightallfaces", value);
+					}
 			}
 		}
 
@@ -2008,8 +2107,11 @@ namespace simul
 			}
 			set
 			{
-				_skylightAmortization = value;
-				StaticSetRenderInt("defaultskylightamortization", value);
+				if (_skylightAmortization != value)
+					{
+						_skylightAmortization = value;
+						StaticSetRenderInt("defaultskylightamortization", value);
+					}
 			}
 		}
 
