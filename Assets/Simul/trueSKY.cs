@@ -110,7 +110,7 @@ namespace simul
 	};
 
 	class SimulImports
-	{ 
+	{
 		static bool _initialized = false;
 #if !UNITY_EDITOR && UNITY_SWITCH
         static bool _staticInitialized = false;
@@ -831,6 +831,8 @@ namespace simul
 				StaticSetRenderFloat("maxsunradiance", _maxSunRadiance);
 			}
 		}
+
+		[SerializeField]
 		bool _adjustSunRadius = false;
 		public bool AdjustSunRadius
 		{
@@ -892,17 +894,17 @@ namespace simul
 
 		// 4.2 only
 		[SerializeField]
-		int _CellNoiseTextureSize = 64;
+		int _cellNoiseTextureSize = 64;
 		public int CellNoiseTextureSize
 		{
 			get
 			{
-				return _CellNoiseTextureSize;
+				return _cellNoiseTextureSize;
 			}
 			set
 			{
-				_CellNoiseTextureSize = value;
-				StaticSetRenderInt("render:cellnoisetexturesize", _CellNoiseTextureSize);
+				_cellNoiseTextureSize = value;
+				StaticSetRenderInt("render:cellnoisetexturesize", _cellNoiseTextureSize);
 			}
 		}
 
