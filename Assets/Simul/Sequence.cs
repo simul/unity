@@ -7,7 +7,7 @@ namespace simul
 	{
 		Sequence()
 		{
-            SequenceAsText = "";
+           SequenceAsText = "";
 		}
 		~Sequence()
 		{

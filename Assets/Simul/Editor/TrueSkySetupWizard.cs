@@ -64,11 +64,6 @@ namespace simul
 				}
 			}
 		}
-		[MenuItem("GameObject/Create Other/Initialize trueSKY in Scene", false, 100000)]
-		public static void InitTrueSkySequence1()
-		{
-			InitTrueSkySequence();
-		}
 
 		[MenuItem("GameObject/Initialize trueSKY in Scene", false, 100000)]
 		public static void InitTrueSkySequence()
@@ -435,7 +430,7 @@ namespace simul
 
 			// Now the sequence must be assigned to the trueSKY object.
 			trueSky.sequence    = sequence;
-			trueSky.time        = 0.5F;
+			trueSky.TrueSKYTime = 12.0F;
 		}
 
 		void FindTrueSky()

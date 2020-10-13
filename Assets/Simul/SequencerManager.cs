@@ -139,9 +139,9 @@ namespace simul
         {
             //When we change into play mode the scripts get reloaded, so we need to reload and relink everything.
             SequencerManagerImports.CopyDependencyDllsToProjectDir();
-            //This needs to be delayed so Unity has time to load in the DLLs.
-            EditorApplication.delayCall += LinkDelegates;
-        }
+			//This needs to be delayed so Unity has time to load in the DLLs.
+			EditorApplication.delayCall += LinkDelegates;
+		}
 
         public static void OpenSequencer()
         {
@@ -179,10 +179,22 @@ namespace simul
             StaticSetString(Handle, "filename_dont_load", filename);
 			StaticSetSequence(Handle, currentSequence.SequenceAsText, currentSequence.SequenceAsText.Length + 1);
 
-            trueSKY trueSKY = GetTrueSKY();
-            // Initialize time from the trueSKY object
-            if(trueSKY) StaticSetFloat(Handle, "time", trueSKY.time);
-        }
+			trueSKY trueSKY = GetTrueSKY();
+			// Initialize time from the trueSKY object
+
+			if (trueSKY) StaticSetFloat(Handle, "time", trueSKY.TrueSKYTime);
+
+			EditorApplication.playModeStateChanged += CloseDueToPlayModeStateChange;
+			EditorApplication.update += UpdateSequencer;
+		}
+
+
+		static void CloseDueToPlayModeStateChange(PlayModeStateChange state)
+		{
+			if (_handle != (System.IntPtr)0)
+				CloseUI(_handle);
+			_handle = (System.IntPtr)0;
+		}
 
         public static void CloseSequencer()
         {
@@ -210,7 +222,8 @@ namespace simul
                 trueSKY trueSKY = (trueSKY)t;
                 if (trueSKY.sequence == currentSequence) return trueSKY;
             }
-            return null;
+			UnityEngine.Debug.LogError("Active trueSky not found with Current Sequence");
+			return null;
         }
 
         //Link Simul back-end code with unity events/functions.
