@@ -278,6 +278,7 @@ namespace simul
         }
 	};
 
+	[StructLayout(LayoutKind.Sequential, Pack = 1)]
 	public struct ExternalRenderValues //these values should be values that dont change at runtime, unless explicitly called
 	{
 
@@ -3367,7 +3368,7 @@ namespace simul
 
 
 		[SerializeField]
-		int _windowWidthKm = 200;
+		int _windowWidthKm = 400;
 		public int WindowWidthKm
 		{
 			get
@@ -3390,7 +3391,7 @@ namespace simul
 		}
 
 		[SerializeField]
-		int _windowHeightKm = 5;
+		int _windowHeightKm = 10;
 		public int WindowHeightKm
 		{
 			get

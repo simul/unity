@@ -590,7 +590,7 @@ namespace simul
 							aurorae.EditAuroralLayer.EmittedWavelength = EditorGUILayout.FloatField("Emitted Wavelength (in nm)", aurorae.EditAuroralLayer.EmittedWavelength);
 							aurorae.EditAuroralLayer.Strength = EditorGUILayout.FloatField("Strength (in kR)", aurorae.EditAuroralLayer.Strength);
 
-							if (GUILayout.Button("Set Set Default Auroral Layers"))
+							if (GUILayout.Button("Set Default Auroral Layers"))
 							{
 								aurorae.SetDefaultAuroralLayers();
 							}
