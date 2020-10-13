@@ -281,7 +281,7 @@ namespace simul
 	public struct ExternalRenderValues //these values should be values that dont change at runtime, unless explicitly called
 	{
 
-		public static int static_version = 6; //Window Grid
+		public static int static_version = 6; //Lighting Mode + Window Grid
 		public int version;
 
 		public float HighDetailProportion;         //!< For cloud volume update rate.
@@ -3254,7 +3254,7 @@ namespace simul
 		}
 
 		[SerializeField]
-		float _MaxCloudDistanceKm = 0;
+		float _MaxCloudDistanceKm = 300.0f;
 		public float MaxCloudDistanceKm
 		{
 			get
@@ -3288,7 +3288,7 @@ namespace simul
 				if (_RenderGridXKm != value) try
 					{
 						_RenderGridXKm = value; //or we set to ERV in here
-												//StaticSetRenderFloat("render:rendergridxkm", _RenderGridXKm);
+						updateERV = true;       //StaticSetRenderFloat("render:rendergridxkm", _RenderGridXKm);
 					}
 					catch (Exception exc)
 					{
@@ -3364,8 +3364,33 @@ namespace simul
 					}
 			}
 		}
+
+
 		[SerializeField]
-		int _windowHeightKm = 200;
+		int _windowWidthKm = 200;
+		public int WindowWidthKm
+		{
+			get
+			{
+				return _windowWidthKm;
+			}
+			set
+			{
+				if (_windowWidthKm != value) try
+					{
+						_windowWidthKm = value;
+						updateERV = true;
+						//StaticSetRenderFloat("render:rendergridzkm", _RenderGridZKm);
+					}
+					catch (Exception exc)
+					{
+						UnityEngine.Debug.Log(exc.ToString());
+					}
+			}
+		}
+
+		[SerializeField]
+		int _windowHeightKm = 5;
 		public int WindowHeightKm
 		{
 			get
@@ -3387,29 +3412,6 @@ namespace simul
 			}
 		}
 
-
-		[SerializeField]
-		int _windowWidthKm = 5;
-		public int WindowWidthKm
-		{
-			get
-			{
-				return _windowWidthKm;
-			}
-			set
-			{
-				if (_windowWidthKm != value) try
-					{
-						_windowWidthKm = value;
-						updateERV = true;
-						//StaticSetRenderFloat("render:rendergridzkm", _RenderGridZKm);
-					}
-					catch (Exception exc)
-					{
-						UnityEngine.Debug.Log(exc.ToString());
-					}
-			}
-		}
 
 
 
@@ -3647,7 +3649,7 @@ namespace simul
 		ExternalDynamicValues EDV = new ExternalDynamicValues();
 		System.IntPtr EDVptr = Marshal.AllocHGlobal(Marshal.SizeOf(new ExternalDynamicValues()));
 
-		public bool updateERV = false;
+		public bool updateERV = true;
 
 		public void UpdateExternalRender()
 		{

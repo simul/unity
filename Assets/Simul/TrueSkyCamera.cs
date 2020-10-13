@@ -64,8 +64,10 @@ namespace simul
 		/// <returns> A RenderStyle used by the plugin </returns>
 		public override RenderStyle GetRenderStyle()
 		{
-#if !UNITY_SWITCH
+#if !UNITY_GAMECORE 
+#if !UNITY_SWITCH 
 			UnityEngine.XR.XRSettings.showDeviceView = true;
+#endif
 #endif
 			RenderStyle r = base.GetRenderStyle();
 			if (trueSKY.GetTrueSky().DepthBlending)
@@ -96,8 +98,10 @@ namespace simul
 			{
 #if UNITY_SWITCH
                 return 0;
+#elif UNITY_GAMECORE
+                return 0;
 #else
-				return UnityEngine.XR.XRSettings.eyeTextureDesc.width;
+                return UnityEngine.XR.XRSettings.eyeTextureDesc.width;
 #endif
             }
             else
@@ -333,9 +337,10 @@ namespace simul
 					targetViewports[i].h        = depthHeight;
 				}
 
+#if !UNITY_GAMECORE
 #if !UNITY_SWITCH
-				// If we are doing XR we need to setup the additional viewports
-				if ((renderStyle & RenderStyle.VR_STYLE) == RenderStyle.VR_STYLE)
+                // If we are doing XR we need to setup the additional viewports
+                if ((renderStyle & RenderStyle.VR_STYLE) == RenderStyle.VR_STYLE)
 				{
                     if (UnityEngine.XR.XRSettings.stereoRenderingMode == UnityEngine.XR.XRSettings.StereoRenderingMode.SinglePass)
                     {
@@ -388,6 +393,7 @@ namespace simul
                         depthViewports[2].w = targetViewports[2].h = eyeHeight;
                     }
 				}
+#endif
 #endif
 				UnityRenderOptions unityRenderOptions = UnityRenderOptions.DEFAULT;
 				if (FlipOverlays)

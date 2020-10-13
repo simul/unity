@@ -430,7 +430,7 @@ namespace simul
 
 			// Now the sequence must be assigned to the trueSKY object.
 			trueSky.sequence    = sequence;
-			trueSky.TrueSKYTime = 0.5F;
+			trueSky.TrueSKYTime = 12.0F;
 		}
 
 		void FindTrueSky()

@@ -254,7 +254,7 @@ namespace simul
 					trueSky.RenderSky = EditorGUILayout.Toggle("Render Sky", trueSky.RenderSky);
 					trueSky.RenderInEditMode = EditorGUILayout.Toggle("Active In Editor", trueSky.RenderInEditMode);
 				}
-				
+
 				// Time settings
 				EditorGUILayout.Space();
 				timeField = EditorGUILayout.Foldout(timeField, "Time", outerFoldoutStyle);
@@ -277,7 +277,7 @@ namespace simul
 					EditorGUILayout.Space();
 					render = EditorGUILayout.Foldout(render, "Render", innerFoldoutStyle);
 					if (render)
-					{			
+					{
 						trueSky.CubemapResolution = EditorGUILayout.IntSlider("Cubemap Resolution", trueSky.CubemapResolution, 16, 2048);
 						trueSky.WindSpeed = EditorGUILayout.Vector3Field("Wind Speed", trueSky.WindSpeed);
 						trueSky.MaxCloudDistanceKm = EditorGUILayout.Slider("Max Cloud Distance (km)", trueSky.MaxCloudDistanceKm, 100.0F, 1000.0F);
@@ -297,13 +297,13 @@ namespace simul
 						trueSky.Amortization = EditorGUILayout.IntSlider("Amortization", trueSky.Amortization, 1, 4);
 						trueSky.CloudThresholdDistanceKm = EditorGUILayout.Slider("Threshold Distance (km)", trueSky.CloudThresholdDistanceKm, 0.0F, 10.0F);
 						trueSky.DepthSamplingPixelRange = EditorGUILayout.Slider("Depth Sampling Range", trueSky.DepthSamplingPixelRange, 0.0f, 4.0f);
-						trueSky.DepthTemporalAlpha = EditorGUILayout.Slider("Depth Temporal Alpha", trueSky.DepthTemporalAlpha, 0.01f,1.0f);
+						trueSky.DepthTemporalAlpha = EditorGUILayout.Slider("Depth Temporal Alpha", trueSky.DepthTemporalAlpha, 0.01f, 1.0f);
 						trueSky.DepthBlending = EditorGUILayout.Toggle("Depth Blending", trueSky.DepthBlending);
 					}
 
 					// Noise settings
 					EditorGUILayout.Space();
-					noise = EditorGUILayout.Foldout(noise, "Noise", innerFoldoutStyle);			
+					noise = EditorGUILayout.Foldout(noise, "Noise", innerFoldoutStyle);
 					if (noise)
 					{
 						//EditorGUILayout.LabelField("Edge Noise", EditorStyles.boldLabel);
@@ -381,20 +381,20 @@ namespace simul
 				// Rainbow settings
 				EditorGUILayout.Space();
 				rainbows = EditorGUILayout.Foldout(rainbows, "Rainbows", outerFoldoutStyle);
-                if (rainbows)
-                {
-                    if (trueSky.SimulVersion >= trueSky.MakeSimulVersion(4, 2))
-                    {
-                        trueSky.AutomaticRainbowPosition = EditorGUILayout.Toggle("Automatic Rainbow Position", trueSky.AutomaticRainbowPosition);
-                        trueSky.RainbowElevation = EditorGUILayout.Slider("Rainbow Elevation", trueSky.RainbowElevation, -90.0F, 0.0F);
-                        trueSky.RainbowAzimuth = EditorGUILayout.Slider("Rainbow Azimuth", trueSky.RainbowAzimuth, 0.0F, 360.0F);
-                        trueSky.RainbowIntensity = EditorGUILayout.Slider("Rainbow Intensity", trueSky.RainbowIntensity, 0.0F, 10.0F);
-                        trueSky.RainbowDepthPoint= EditorGUILayout.Slider("Rainbow Depth Point", trueSky.RainbowDepthPoint, 0.0F, 1.0F);
-                        trueSky.AllowOccludedRainbows = EditorGUILayout.Toggle("Allow Occluded Rainbows", trueSky.AllowOccludedRainbows);
-                        trueSky.AllowLunarRainbows = EditorGUILayout.Toggle("Allow Lunar Rainbows", trueSky.AllowLunarRainbows);
-                    }
-                      
-                }
+				if (rainbows)
+				{
+					if (trueSky.SimulVersion >= trueSky.MakeSimulVersion(4, 2))
+					{
+						trueSky.AutomaticRainbowPosition = EditorGUILayout.Toggle("Automatic Rainbow Position", trueSky.AutomaticRainbowPosition);
+						trueSky.RainbowElevation = EditorGUILayout.Slider("Rainbow Elevation", trueSky.RainbowElevation, -90.0F, 0.0F);
+						trueSky.RainbowAzimuth = EditorGUILayout.Slider("Rainbow Azimuth", trueSky.RainbowAzimuth, 0.0F, 360.0F);
+						trueSky.RainbowIntensity = EditorGUILayout.Slider("Rainbow Intensity", trueSky.RainbowIntensity, 0.0F, 10.0F);
+						trueSky.RainbowDepthPoint = EditorGUILayout.Slider("Rainbow Depth Point", trueSky.RainbowDepthPoint, 0.0F, 1.0F);
+						trueSky.AllowOccludedRainbows = EditorGUILayout.Toggle("Allow Occluded Rainbows", trueSky.AllowOccludedRainbows);
+						trueSky.AllowLunarRainbows = EditorGUILayout.Toggle("Allow Lunar Rainbows", trueSky.AllowLunarRainbows);
+					}
+
+				}
 
 				// Celestial settings
 				EditorGUILayout.Space();
@@ -403,14 +403,14 @@ namespace simul
 				{
 					EditorGUILayout.Space();
 					stars = EditorGUILayout.Foldout(stars, "Stars", innerFoldoutStyle);
-                    if (stars)
-                    {
-                        trueSky.backgroundTexture = (Texture)EditorGUILayout.ObjectField("Cosmic Background", trueSky.backgroundTexture, typeof(Texture), false);
-                        trueSky.BackgroundBrightness = EditorGUILayout.FloatField("Cosmic Background Brightness", trueSky.BackgroundBrightness);
-                        trueSky.StarBrightness = EditorGUILayout.FloatField("Star Brightness", trueSky.StarBrightness);
-                        trueSky.MinimumStarPixelSize = EditorGUILayout.Slider("Minimum Star Pixel Size", trueSky.MinimumStarPixelSize, 0.01f, 10.0f);
-                        trueSky.MaximumStarMagnitude = EditorGUILayout.IntSlider("Maximum Star Magnitude", trueSky.MaximumStarMagnitude, 0, 10);
-                    }
+					if (stars)
+					{
+						trueSky.backgroundTexture = (Texture)EditorGUILayout.ObjectField("Cosmic Background", trueSky.backgroundTexture, typeof(Texture), false);
+						trueSky.BackgroundBrightness = EditorGUILayout.FloatField("Cosmic Background Brightness", trueSky.BackgroundBrightness);
+						trueSky.StarBrightness = EditorGUILayout.FloatField("Star Brightness", trueSky.StarBrightness);
+						trueSky.MinimumStarPixelSize = EditorGUILayout.Slider("Minimum Star Pixel Size", trueSky.MinimumStarPixelSize, 0.01f, 10.0f);
+						trueSky.MaximumStarMagnitude = EditorGUILayout.IntSlider("Maximum Star Magnitude", trueSky.MaximumStarMagnitude, 0, 10);
+					}
 
 					EditorGUILayout.Space();
 					constellations = EditorGUILayout.Foldout(constellations, "Constellations", innerFoldoutStyle);
@@ -427,7 +427,7 @@ namespace simul
 					"Sculptor","Scutum","Serpens","Sextans","Taurus","Telescopium","Triangulum","Triangulum Australe",
 					"Tucana","Ursa Major","Ursa Minor","Vela","Virgo","Volans","Vulpecula"};
 
-						
+
 						string f = EditorGUILayout.TextField("Find Constellation: ", "");
 						if (f.Length > 0)
 							hConsIndex = Array.FindIndex(constellations, t => t.Equals(f, StringComparison.InvariantCultureIgnoreCase));
@@ -474,7 +474,7 @@ namespace simul
 
 						foreach (var moon in trueSky._moons)
 						{
-							moon.Render = EditorGUILayout.Toggle("Render",moon.Render);
+							moon.Render = EditorGUILayout.Toggle("Render", moon.Render);
 
 							if (moon.Render)
 							{
@@ -540,10 +540,10 @@ namespace simul
 									}
 								}
 
-							}			
-							
+							}
+
 						}
-					
+
 					}
 				}
 
@@ -574,7 +574,7 @@ namespace simul
 						EditorGUILayout.Space();
 						auroraIntensity = EditorGUILayout.Foldout(auroraIntensity, "Aurora Intensity", innerFoldoutStyle);
 						if (auroraIntensity)
-						{ 
+						{
 							aurorae.AuroraElectronFreeTime = EditorGUILayout.Slider("Aurora Electron Free Time", aurorae.AuroraElectronFreeTime, 1.0F, 10.0F);
 							aurorae.AuroraElectronVolumeDensity = EditorGUILayout.Slider("Aurora Electron Volume Density", aurorae.AuroraElectronVolumeDensity, 1.0F, 1000000.0F);
 							aurorae.AuroralLayersIntensity = EditorGUILayout.Slider("Auroral Layers Intensity", aurorae.AuroralLayersIntensity, 0.0F, 10.0F);
@@ -607,7 +607,7 @@ namespace simul
 								}
 							}
 							if (aurorae.EditAuroralLayerIndex > -1)
-							{ 
+							{
 								if (GUILayout.Button("Remove"))
 								{
 									aurorae.AuroralLayers.Remove(aurorae.AuroralLayers[aurorae.EditAuroralLayerIndex]);
@@ -691,7 +691,7 @@ namespace simul
 						EditorGUILayout.Space();
 						auroraOther = EditorGUILayout.Foldout(auroraOther, "Other", innerFoldoutStyle);
 						if (auroraOther)
-						{ 
+						{
 							aurorae.AuroraIntensityMapSize = EditorGUILayout.IntSlider("Aurora Intensity Map Size", aurorae.AuroraIntensityMapSize, 128, 8192);
 							aurorae.AuroraTraceLength = EditorGUILayout.IntSlider("Aurora Trace Length", aurorae.AuroraTraceLength, 0, 1000);
 						}
@@ -790,16 +790,16 @@ namespace simul
 					else
 						trueSky.SetBool("Profiling", false);
 				}
-            }
 
-			// Build Options settings
-			EditorGUILayout.Space();
-			buildOptions = EditorGUILayout.Foldout(buildOptions, "Build Options", outerFoldoutStyle);
-            if (buildOptions)
-            {
-				trueSky.UsingIL2CPP = EditorGUILayout.Toggle("Use IL2CPP", trueSky.UsingIL2CPP);
-            }
-
+				// Build Options settings
+				EditorGUILayout.Space();
+				buildOptions = EditorGUILayout.Foldout(buildOptions, "Build Options", outerFoldoutStyle);
+				if (buildOptions)
+				{
+					trueSky.UsingIL2CPP = EditorGUILayout.Toggle("Use IL2CPP", trueSky.UsingIL2CPP);
+					EditorGUILayout.LabelField("Default enabled and locked for Xbox Series X (Scarlett) projects building with GameCore");
+				}
+			}
 			// trueSKY Advanced Mode
 			if (trueSKY.advancedMode)
 			{
