@@ -10,7 +10,7 @@ namespace simul
 	[CustomEditor(typeof(TrueSkyWaterObject))]
 	public class TrueSkyWaterObjectEditor : Editor
 	{
-		[MenuItem("GameObject/Create Other/Create trueSKY Water Object", false, 200000)]
+		[MenuItem("GameObject/Create trueSKY Water Object", false, 150000)]
 		public static void CreateWaterObject()
 		{
 			trueSKY trueSky = trueSKY.GetTrueSky();
@@ -69,20 +69,12 @@ namespace simul
 					waterObject.BeaufortScale = EditorGUILayout.Slider("Beaufort Scale", waterObject.BeaufortScale, 0.0f, 12.0f);
 					waterObject.WindDirection = EditorGUILayout.Slider("Wind Direction", waterObject.WindDirection, 0.0f, 1.0f);
 					waterObject.WindDependency = EditorGUILayout.Slider("Wind Dependency", waterObject.WindDependency, 0.0f, 1.0f);
-					waterObject.Scattering = EditorGUILayout.Vector3Field("Scattering", waterObject.Scattering);
-					if (waterObject.Scattering.x < 0.0f)
-						waterObject.Scattering = new Vector3 (0.0f, waterObject.Scattering.y, waterObject.Scattering.z);
-					if (waterObject.Scattering.y < 0.0f)
-						waterObject.Scattering = new Vector3(waterObject.Scattering.x, 0.0f, waterObject.Scattering.z);
-					if (waterObject.Scattering.z < 0.0f)
-						waterObject.Scattering = new Vector3(waterObject.Scattering.x, waterObject.Scattering.y, 0.0f);
-					waterObject.Absorption = EditorGUILayout.Vector3Field("Absorption", waterObject.Absorption);
-					if (waterObject.Absorption.x < 0.0f)
-						waterObject.Absorption = new Vector3(0.0f, waterObject.Absorption.y, waterObject.Absorption.z);
-					if (waterObject.Absorption.y < 0.0f)
-						waterObject.Absorption = new Vector3(waterObject.Absorption.x, 0.0f, waterObject.Absorption.z);
-					if (waterObject.Absorption.z < 0.0f)
-						waterObject.Absorption = new Vector3(waterObject.Absorption.x, waterObject.Absorption.y, 0.0f);
+					waterObject.Scattering = EditorGUILayout.ColorField("Scattering", waterObject.Scattering);
+					waterObject.Absorption = EditorGUILayout.ColorField("Absorption", waterObject.Absorption);
+					if (trueSky.SimulVersion >= trueSky.MakeSimulVersion(4, 3))
+					{
+						waterObject.CustomMesh = (Mesh)EditorGUILayout.ObjectField("Custom Water Surface Mesh", waterObject.CustomMesh, typeof(Mesh), false);
+					}
 				}
 				EditorGUILayout.EndVertical();
 				EditorGUILayout.Space();
@@ -101,7 +93,7 @@ namespace simul
 							waterObject.WaveAmplitude = EditorGUILayout.Slider("Wave Amplitude", waterObject.WaveAmplitude, 0.0f, 2.0f);
 							waterObject.MaxWaveLength = EditorGUILayout.Slider("Max WaveLength", waterObject.MaxWaveLength, 1.01f, 100.0f);
 							waterObject.MinWaveLength = EditorGUILayout.Slider("Min WaveLength", waterObject.MinWaveLength, 0.01f, 1.0f);
-							//waterObject.ChoppyScale = EditorGUILayout.Slider("ChoppyScale", waterObject.ChoppyScale, 0.0f, 4.0f);
+							
 						}
 						if (waterObject.BoundlessOcean)
 						{

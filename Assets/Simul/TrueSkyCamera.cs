@@ -23,7 +23,7 @@ namespace simul
 			return StaticGetOrAddView((System.IntPtr)view_ident);
 		}
 		// We will STORE the activeTexture from the camera and hope it's valid next frame.
-		private RenderTexture activeTexture = null;
+		RenderTexture activeTexture = null;
 		public RenderTexture inscatterRT;
 		public RenderTexture cloudShadowRT;
 		public RenderTexture lossRT;
@@ -64,8 +64,10 @@ namespace simul
 		/// <returns> A RenderStyle used by the plugin </returns>
 		public override RenderStyle GetRenderStyle()
 		{
-#if !UNITY_SWITCH
+#if !UNITY_GAMECORE 
+#if !UNITY_SWITCH 
 			UnityEngine.XR.XRSettings.showDeviceView = true;
+#endif
 #endif
 			RenderStyle r = base.GetRenderStyle();
 			if (trueSKY.GetTrueSky().DepthBlending)
@@ -96,8 +98,10 @@ namespace simul
 			{
 #if UNITY_SWITCH
                 return 0;
+#elif UNITY_GAMECORE
+                return 0;
 #else
-				return UnityEngine.XR.XRSettings.eyeTextureDesc.width;
+                return UnityEngine.XR.XRSettings.eyeTextureDesc.width;
 #endif
             }
             else
@@ -257,12 +261,12 @@ namespace simul
 			{
 				unityViewStruct.nativeColourRenderBuffer = activeTexture.colorBuffer.GetNativeRenderBufferPtr();
 				//if (!editorMode )
-					unityViewStruct.nativeDepthRenderBuffer = activeTexture.depthBuffer.GetNativeRenderBufferPtr();
+				unityViewStruct.nativeDepthRenderBuffer = activeTexture.depthBuffer.GetNativeRenderBufferPtr();
 			}
 
             bool il2cppScripting = UsingIL2CPP();
-			Marshal.StructureToPtr(unityViewStruct, unityViewStructPtr, !il2cppScripting);
-			mainCommandBuffer.IssuePluginEventAndData(UnityGetRenderEventFuncWithData(),TRUESKY_EVENT_ID + cbuf_view_id, unityViewStructPtr);
+            Marshal.StructureToPtr(unityViewStruct, unityViewStructPtr, !il2cppScripting);
+            mainCommandBuffer.IssuePluginEventAndData(UnityGetRenderEventFuncWithData(),TRUESKY_EVENT_ID + cbuf_view_id, unityViewStructPtr);
 			post_translucent_buf.IssuePluginEventAndData(UnityGetPostTranslucentFuncWithData(), TRUESKY_EVENT_ID + cbuf_view_id, unityViewStructPtr);
 			overlay_buf.IssuePluginEventAndData(UnityGetOverlayFuncWithData(), TRUESKY_EVENT_ID + cbuf_view_id, unityViewStructPtr);
 
@@ -333,32 +337,63 @@ namespace simul
 					targetViewports[i].h        = depthHeight;
 				}
 
+#if !UNITY_GAMECORE
 #if !UNITY_SWITCH
-				// If we are doing XR we need to setup the additional viewports
-				if ((renderStyle & RenderStyle.VR_STYLE) == RenderStyle.VR_STYLE)
+                // If we are doing XR we need to setup the additional viewports
+                if ((renderStyle & RenderStyle.VR_STYLE) == RenderStyle.VR_STYLE)
 				{
-					int fullEyeWidth = UnityEngine.XR.XRSettings.eyeTextureDesc.width;
-					int eyeHeight = UnityEngine.XR.XRSettings.eyeTextureDesc.height;
+                    if (UnityEngine.XR.XRSettings.stereoRenderingMode == UnityEngine.XR.XRSettings.StereoRenderingMode.SinglePass)
+                    {
+                        int fullEyeWidth = UnityEngine.XR.XRSettings.eyeTextureDesc.width;
+                        int halfEyeWidth = fullEyeWidth / 2;
+                        int eyeHeight = UnityEngine.XR.XRSettings.eyeTextureDesc.height;
 
-					// This is the viewport that we reset to (default vp):
-                    // it must cover all the texture
-                    depthViewports[0].x = targetViewports[0].x = 0;
-                    depthViewports[0].y = targetViewports[0].y = 0;
-                    depthViewports[0].z = targetViewports[0].w = fullEyeWidth * 2;
-                    depthViewports[0].w = targetViewports[0].h = eyeHeight;
+                        // This is the viewport that we reset to (default vp):
+                        // it must cover all the texture
+                        depthViewports[0].x = targetViewports[0].x = 0;
+                        depthViewports[0].y = targetViewports[0].y = 0;
+                        depthViewports[0].z = targetViewports[0].w = fullEyeWidth;
+                        depthViewports[0].w = targetViewports[0].h = eyeHeight;
 
-					// Left eye viewports
-					depthViewports[1].x = targetViewports[1].x = 0;
-					depthViewports[1].y = targetViewports[1].y = 0;
-					depthViewports[1].z = targetViewports[1].w = fullEyeWidth;
-					depthViewports[1].w = targetViewports[1].h = eyeHeight;
+                        // Left eye viewports
+                        depthViewports[1].x = targetViewports[1].x = 0;
+                        depthViewports[1].y = targetViewports[1].y = 0;
+                        depthViewports[1].z = targetViewports[1].w = halfEyeWidth;
+                        depthViewports[1].w = targetViewports[1].h = eyeHeight;
 
-					// Right eye viewports
-					depthViewports[2].x = targetViewports[2].x = fullEyeWidth;
-					depthViewports[2].y = targetViewports[2].y = 0;
-					depthViewports[2].z = targetViewports[2].w = fullEyeWidth;
-					depthViewports[2].w = targetViewports[2].h = eyeHeight;
+                        // Right eye viewports
+                        depthViewports[2].x = targetViewports[2].x = halfEyeWidth;
+                        depthViewports[2].y = targetViewports[2].y = 0;
+                        depthViewports[2].z = targetViewports[2].w = halfEyeWidth;
+                        depthViewports[2].w = targetViewports[2].h = eyeHeight;
+                    }
+                    else if(UnityEngine.XR.XRSettings.stereoRenderingMode == UnityEngine.XR.XRSettings.StereoRenderingMode.MultiPass
+                    || UnityEngine.XR.XRSettings.stereoRenderingMode == UnityEngine.XR.XRSettings.StereoRenderingMode.SinglePassInstanced)
+                    {
+                        int fullEyeWidth = UnityEngine.XR.XRSettings.eyeTextureDesc.width;
+                        int eyeHeight = UnityEngine.XR.XRSettings.eyeTextureDesc.height;
+
+                        // This is the viewport that we reset to (default vp):
+                        // it must cover all the texture
+                        depthViewports[0].x = targetViewports[0].x = 0;
+                        depthViewports[0].y = targetViewports[0].y = 0;
+                        depthViewports[0].z = targetViewports[0].w = fullEyeWidth * 2;
+                        depthViewports[0].w = targetViewports[0].h = eyeHeight;
+
+                        // Left eye viewports
+                        depthViewports[1].x = targetViewports[1].x = 0;
+                        depthViewports[1].y = targetViewports[1].y = 0;
+                        depthViewports[1].z = targetViewports[1].w = fullEyeWidth;
+                        depthViewports[1].w = targetViewports[1].h = eyeHeight;
+
+                        // Right eye viewports
+                        depthViewports[2].x = targetViewports[2].x = fullEyeWidth;
+                        depthViewports[2].y = targetViewports[2].y = 0;
+                        depthViewports[2].z = targetViewports[2].w = fullEyeWidth;
+                        depthViewports[2].w = targetViewports[2].h = eyeHeight;
+                    }
 				}
+#endif
 #endif
 				UnityRenderOptions unityRenderOptions = UnityRenderOptions.DEFAULT;
 				if (FlipOverlays)
@@ -370,7 +405,7 @@ namespace simul
 					, viewMatrices
 					, projMatrices
 					, overlayProjMatrix
-					, editorMode ? depthTexture.GetNative() : (System.IntPtr)0
+					, depthTexture.GetNative()
 					, depthViewports
 					, targetViewports
 					, renderStyle
@@ -388,7 +423,7 @@ namespace simul
 				unityViewStruct.viewMatrices4x4=viewMatrices;
 				unityViewStruct.projMatrices4x4=projMatrices;
 				unityViewStruct.overlayProjMatrix4x4=overlayProjMatrix;
-				unityViewStruct.depthTexture = editorMode ? depthTexture.GetNative() : (System.IntPtr)0;
+				unityViewStruct.depthTexture = depthTexture.GetNative();
 				unityViewStruct.depthViewports= depthViewports;
 				unityViewStruct.targetViewports=targetViewports;
 				unityViewStruct.renderStyle=renderStyle;

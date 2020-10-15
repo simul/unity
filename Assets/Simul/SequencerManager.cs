@@ -222,7 +222,19 @@ namespace simul
 
             trueSKY trueSKY = GetTrueSKY();
             // Initialize time from the trueSKY object
-            if(trueSKY) StaticSetFloat(Handle, "time", trueSKY.time);
+
+			if (trueSKY) StaticSetFloat(Handle, "time", trueSKY.TrueSKYTime);
+
+			EditorApplication.playModeStateChanged += CloseDueToPlayModeStateChange;
+			EditorApplication.update += UpdateSequencer;
+		}
+
+
+		static void CloseDueToPlayModeStateChange(PlayModeStateChange state)
+		{
+			if (_handle != (System.IntPtr)0)
+				CloseUI(_handle);
+			_handle = (System.IntPtr)0;
         }
 
         public static void CloseSequencer()
@@ -251,6 +263,7 @@ namespace simul
                 trueSKY trueSKY = (trueSKY)t;
                 if (trueSKY.sequence == currentSequence) return trueSKY;
             }
+			UnityEngine.Debug.LogError("Active trueSky not found with Current Sequence");
             return null;
         }
 

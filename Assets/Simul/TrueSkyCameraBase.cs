@@ -32,12 +32,14 @@ namespace simul
 			protected System.IntPtr _nativeDepthTexturePtr = (System.IntPtr)0;
 		};
 
+
 		//! An event ID that will hopefully be sufficiently unique to trueSKY - if not, change this.
 		protected const int TRUESKY_EVENT_ID = 13476;
 		public static int GetTRUESKY_EVENT_ID()
 		{
 			return TRUESKY_EVENT_ID;
 		}
+
 
 		[StructLayout(LayoutKind.Sequential)]
 		public struct UnityViewStruct

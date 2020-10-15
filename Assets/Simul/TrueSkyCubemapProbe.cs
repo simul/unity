@@ -59,11 +59,13 @@ namespace simul
 
         void Update()
         {
+#if !UNITY_GAMECORE
 #if !UNITY_SWITCH
-            if(UnityEngine.XR.XRSettings.enabled && !UnityEngine.XR.XRSettings.isDeviceActive)
+            if (UnityEngine.XR.XRSettings.enabled && !UnityEngine.XR.XRSettings.isDeviceActive)
             {
                 return;
             }
+#endif
 #endif
 
 
