@@ -589,7 +589,7 @@ namespace simul
 			LowestLatitude = 60.0f;
 			MaxBand = 10.0f;
 			MinBand = 3.0f;
-			ShowAuroralOvalInCloudWindow = false;
+			ShowAuroralOvalInCloudWindow = true;
 			AuroraElectronFreeTime = 1.0f;
 			AuroraElectronVolumeDensity = 1.0f;
 			AuroralLayersIntensity = 1.0f;
