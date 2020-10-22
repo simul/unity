@@ -799,6 +799,7 @@ namespace simul
 					else
 						EditorGUILayout.LabelField("HDRP RenderPipelineAsset: NULL");
 
+					trueSky.LoadRenderPipelineAsset = EditorGUILayout.Toggle("Load RenderPipelineAsset from trueSKY.cs", trueSky.LoadRenderPipelineAsset);
 					if (GUILayout.Button("Save RenderPipelineAsset") && UnityEngine.Rendering.GraphicsSettings.allConfiguredRenderPipelines.Length > 0)
 					{ 
 						trueSky.HDRP_RenderPipelineAsset = UnityEngine.Rendering.GraphicsSettings.allConfiguredRenderPipelines[0];
