@@ -13,29 +13,34 @@ namespace simul
 	{
 		public class RenderTextureHolder
 		{
-			public RenderTexture renderTexture=null;
+			public RenderTexture renderTexture = null;
 			public System.IntPtr GetNative()
 			{
-				if(cachedRenderTexture!=renderTexture)
+				if (cachedRenderTexture != renderTexture)
 				{
-					_nativeTexturePtr=(System.IntPtr)0;
+					_nativeTexturePtr = (System.IntPtr)0;
 				}
-				if(_nativeTexturePtr==(System.IntPtr)0&&renderTexture!=null)
+				if (_nativeTexturePtr == (System.IntPtr)0 && renderTexture != null)
 				{
 					_nativeTexturePtr = renderTexture.GetNativeTexturePtr();
 				}
 				return _nativeTexturePtr;
 			}
 
-			protected Texture cachedRenderTexture=null;
-			protected System.IntPtr _nativeTexturePtr=(System.IntPtr)0;
-			protected System.IntPtr _nativeDepthTexturePtr = (System.IntPtr)0; 
+			protected Texture cachedRenderTexture = null;
+			protected System.IntPtr _nativeTexturePtr = (System.IntPtr)0;
+			protected System.IntPtr _nativeDepthTexturePtr = (System.IntPtr)0;
 		};
-		 
 
-        //! An event ID that will hopefully be sufficiently unique to trueSKY - if not, change this.
-        protected const int TRUESKY_EVENT_ID = 13476;
-        
+
+		//! An event ID that will hopefully be sufficiently unique to trueSKY - if not, change this.
+		protected const int TRUESKY_EVENT_ID = 13476;
+		public static int GetTRUESKY_EVENT_ID()
+		{
+			return TRUESKY_EVENT_ID;
+		}
+
+
 		[StructLayout(LayoutKind.Sequential)]
 		public struct UnityViewStruct
 		{
