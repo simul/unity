@@ -1,19 +1,18 @@
 ﻿//#define TRUESKY_LOGGING
-using UnityEngine;
-using System.Collections;
-using System.Runtime.InteropServices;
 using System;
 using System.Text;
 using System.Reflection;
 using System.IO;
 using System.Threading;
+using System.Linq;
 using System.Diagnostics;
-using UnityEngine.Rendering;
+using System.Collections;
 using System.Collections.Generic;
-using UnityEngine.Experimental.Rendering;
+using System.Runtime.InteropServices;
+using UnityEngine;
+using UnityEngine.Rendering;
 
 using static simul.TrueSkyPluginRenderFunctionImporter;
-using System.Linq;
 
 namespace simul
 {
@@ -3596,6 +3595,27 @@ namespace simul
 		}
 
 		[SerializeField]
+		RenderPipelineAsset _HDRP_RenderPipelineAsset = null;
+		public RenderPipelineAsset HDRP_RenderPipelineAsset
+		{
+			get
+			{
+				return _HDRP_RenderPipelineAsset;
+			}
+			set
+			{
+				if (_HDRP_RenderPipelineAsset != value) try
+					{
+						_HDRP_RenderPipelineAsset = value;
+					}
+					catch (Exception exc)
+					{
+						UnityEngine.Debug.Log(exc.ToString());
+					}
+			}
+		}
+
+		[SerializeField]
 		bool _UsingIL2CPP = false;
 		public bool UsingIL2CPP
 		{
@@ -3803,11 +3823,14 @@ namespace simul
 			Marshal.StructureToPtr(EDV, EDVptr, true);
 			StaticSetExternalDynamicValues(EDVptr);
 		}
-		bool updateMoons = true;
+
 		bool _initialized = false;
 		bool _rendering_initialized = false;
 		void Update()
 		{
+			if (GraphicsSettings.renderPipelineAsset != HDRP_RenderPipelineAsset)
+				GraphicsSettings.renderPipelineAsset = HDRP_RenderPipelineAsset;
+
 			try
 			{
                 if (!_initialized)
@@ -3828,35 +3851,30 @@ namespace simul
 
 				UpdateExternalDynamic();
 
-
-				//if (updateMoons)
+				foreach(var moon in _moons)
 				{
-					foreach(var moon in _moons)
+					
+					if (moon.Render)
 					{
-						
-						if (moon.Render)
-						{
-							ExternalMoon Moon = new ExternalMoon();
-							Moon.version = ExternalMoon.static_version;
-							Moon.orbit = moon.GetOrbit();
-							Moon.name = moon.Name;
-							Moon.radiusArcMinutes = (float)moon.RadiusArcMinutes;
-							Moon.render = true;
-							ExternalTexture tex = new ExternalTexture();
-							tex.version = ExternalTexture.static_version;
-							InitExternalTexture(ref tex, moon.MoonTexture);
-							Moon.colour.x = moon.Colour.r;
-							Moon.colour.y = moon.Colour.g;
-							Moon.colour.z = moon.Colour.b;
-							Moon.albedo = (float)moon.Albedo;					
-							System.IntPtr Moonptr = Marshal.AllocHGlobal(Marshal.SizeOf(new ExternalMoon()));
-							Marshal.StructureToPtr(Moon, Moonptr, false); // TODO
-							StaticSetMoon(_moons.IndexOf(moon) + 1, Moonptr);
-						}
-						else
-							StaticSetMoon(_moons.IndexOf(moon) + 1, (System.IntPtr)null);
+						ExternalMoon Moon = new ExternalMoon();
+						Moon.version = ExternalMoon.static_version;
+						Moon.orbit = moon.GetOrbit();
+						Moon.name = moon.Name;
+						Moon.radiusArcMinutes = (float)moon.RadiusArcMinutes;
+						Moon.render = true;
+						ExternalTexture tex = new ExternalTexture();
+						tex.version = ExternalTexture.static_version;
+						InitExternalTexture(ref tex, moon.MoonTexture);
+						Moon.colour.x = moon.Colour.r;
+						Moon.colour.y = moon.Colour.g;
+						Moon.colour.z = moon.Colour.b;
+						Moon.albedo = (float)moon.Albedo;					
+						System.IntPtr Moonptr = Marshal.AllocHGlobal(Marshal.SizeOf(new ExternalMoon()));
+						Marshal.StructureToPtr(Moon, Moonptr, false); // TODO
+						StaticSetMoon(_moons.IndexOf(moon) + 1, Moonptr);
 					}
-					updateMoons = false;
+					else
+						StaticSetMoon(_moons.IndexOf(moon) + 1, (System.IntPtr)null);
 				}
 				StaticTick(0.0f);
 			}

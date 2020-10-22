@@ -1,11 +1,10 @@
-﻿using UnityEngine;
-using System;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
-using UnityEditor;
-//Used for File IO
 using System.IO;
-using System.Collections;
+using UnityEngine;
+using UnityEditor;
 using UnityEditor.Build.Reporting;
 
 namespace simul
@@ -17,7 +16,6 @@ namespace simul
 		public static void ShowTrueSkyDocs()
 		{
 			string path = @"http://docs.simul.co/unity";// "Simul/Documentation/TrueSkyUnity.html";
-														//
 			Help.BrowseURL(path);
 		}
 		bool recomp = false;
@@ -94,7 +92,7 @@ namespace simul
 		public static void BuildTest()
 		{
 			Debug.Log("trueSKY Build SimulTest has been started.");
-			BuildSimulTest("C:/temp/x64", "x64");
+			BuildSimulTest("C:/temp/x64", "x64", "0");
 		}
 
 
@@ -796,6 +794,20 @@ namespace simul
 				buildOptions = EditorGUILayout.Foldout(buildOptions, "Build Options", outerFoldoutStyle);
 				if (buildOptions)
 				{
+					if (trueSky.HDRP_RenderPipelineAsset)
+						EditorGUILayout.LabelField("HDRP RenderPipelineAsset: " + trueSky.HDRP_RenderPipelineAsset.name);
+					else
+						EditorGUILayout.LabelField("HDRP RenderPipelineAsset: NULL");
+
+					if (GUILayout.Button("Save RenderPipelineAsset") && UnityEngine.Rendering.GraphicsSettings.allConfiguredRenderPipelines.Length > 0)
+					{ 
+						trueSky.HDRP_RenderPipelineAsset = UnityEngine.Rendering.GraphicsSettings.allConfiguredRenderPipelines[0];
+					}
+					EditorGUILayout.LabelField("For HDRP scenes, this saves the current RenderPipelineAsset to trueSKY.cs.\n" +
+						"For Standard/Legacy Rendering mode, the RenderPipelineAsset is set to null.\n" +
+						"trueSKY.Upate() will load any changes.\n" +
+						"This allows a single project to have both standard and HDRP scenes.", GUILayout.Height(60.0f));
+					
 					trueSky.UsingIL2CPP = EditorGUILayout.Toggle("Use IL2CPP", trueSky.UsingIL2CPP);
 					EditorGUILayout.LabelField("Default enabled and locked for Xbox Series X (Scarlett) projects building with GameCore");
 				}
@@ -880,26 +892,35 @@ namespace simul
 			string f = CommandLineReader.GetCustomArgument("Path");
 			f = f.Replace("\"", "");
 			string p = CommandLineReader.GetCustomArgument("Platform");
-			UnityEngine.Debug.Log("ExportPackageCmdLine " + f + ", " + p);
-			BuildSimulTest(f, p);
+			string hdrp = CommandLineReader.GetCustomArgument("HDRP");
+			UnityEngine.Debug.Log("ExportPackageCmdLine " + f + ", " + p + ", " + hdrp);
+			BuildSimulTest(f, p, hdrp);
 		}
-		static void BuildSimulTest(string path, string platform)
+		static void BuildSimulTest(string path, string platform, string hdrp)
 		{
-			BuildPlayerOptions buildPlayerOptions = new BuildPlayerOptions();
-			buildPlayerOptions.scenes = new[] { "Assets/Simul/SimulTest/TestLevel.unity" };
-			
 			string fullPath = path;
-			buildPlayerOptions.locationPathName = fullPath+"/SimulTest.exe";
 			try
 			{
 				if (Directory.Exists(fullPath))
 					System.IO.Directory.Delete(fullPath, true);
 			}
-			catch(Exception )
+			catch (Exception)
 			{
 
 			}
 
+			BuildPlayerOptions buildPlayerOptions = new BuildPlayerOptions();
+			if (hdrp == "true" || hdrp == "1")
+			{
+				buildPlayerOptions.scenes = new[] { "Assets/Simul/SimulTest/TestLevelHDRP.unity" };
+				buildPlayerOptions.locationPathName = fullPath+"/SimulTestHDRP.exe";
+			}
+			else
+			{
+				buildPlayerOptions.scenes = new[] { "Assets/Simul/SimulTest/TestLevel.unity" };
+				buildPlayerOptions.locationPathName = fullPath+"/SimulTest.exe";
+			}
+			
 			if (platform == "x64")
 			{
 				buildPlayerOptions.target = BuildTarget.StandaloneWindows64;
