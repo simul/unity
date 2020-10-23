@@ -926,7 +926,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   SimulVersionMajor: 4
-  SimulVersionMinor: 3
+  SimulVersionMinor: 2
   SimulVersionBuild: 0
   _metresPerUnit: 1
   _renderInEditMode: 1
@@ -1023,7 +1023,7 @@ MonoBehaviour:
   _MieAsymmetry: 0.87
   _shadowTextureRes: 256
   _HDRP_RenderPipelineAsset: {fileID: 11400000, guid: 6fd88a366de24f24d9eae1191df5e21e, type: 2}
-  _LoadRenderPipelineAsset: 0
+  _LoadRenderPipelineAsset: 1
   _UsingIL2CPP: 0
   updateERV: 0
 --- !u!4 &2053481782
