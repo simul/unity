@@ -3616,6 +3616,27 @@ namespace simul
 		}
 
 		[SerializeField]
+		bool _LoadRenderPipelineAsset = false;
+		public bool LoadRenderPipelineAsset
+		{
+			get
+			{
+				return _LoadRenderPipelineAsset;
+			}
+			set
+			{
+				if (_LoadRenderPipelineAsset != value) try
+					{
+						_LoadRenderPipelineAsset = value;
+					}
+					catch (Exception exc)
+					{
+						UnityEngine.Debug.Log(exc.ToString());
+					}
+			}
+		}
+
+		[SerializeField]
 		bool _UsingIL2CPP = false;
 		public bool UsingIL2CPP
 		{
@@ -3828,7 +3849,7 @@ namespace simul
 		bool _rendering_initialized = false;
 		void Update()
 		{
-			if (GraphicsSettings.renderPipelineAsset != HDRP_RenderPipelineAsset)
+			if (GraphicsSettings.renderPipelineAsset != HDRP_RenderPipelineAsset && LoadRenderPipelineAsset)
 				GraphicsSettings.renderPipelineAsset = HDRP_RenderPipelineAsset;
 
 			try
