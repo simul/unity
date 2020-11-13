@@ -157,8 +157,8 @@ namespace simul
 
 		[SerializeField]
 		static bool interpolation = false;
-		//[SerializeField]
-		//static bool Shadows = false; Partially on camera, need  a material funtion for Unity's Shadows
+		[SerializeField]
+		static bool shadows = false; //Partially on camera, need  a material funtion for Unity's Shadows
 		[SerializeField]
 		static bool precipitation = false;
 		//[SerializeField]
@@ -333,9 +333,9 @@ namespace simul
 							trueSky.CloudTint = EditorGUILayout.ColorField("Cloud Tint", trueSky.CloudTint);
 					}
 				}
-
-				// Lighting settings
-				/*EditorGUILayout.Space();
+				/*
+				// lighting Settings
+				EditorGUILayout.Space();
 				if (lighting)
 				{
 					trueSky.MaxSunRadiance = EditorGUILayout.FloatField("Max Sun Radiance", trueSky.MaxSunRadiance);
@@ -725,6 +725,14 @@ namespace simul
 						trueSky.SkylightAmortization = EditorGUILayout.IntSlider("Skylight Amortization", trueSky.SkylightAmortization, 1, 8);
 					}
 
+				}
+				// Shadow Settings
+				EditorGUILayout.Space();
+				shadows = EditorGUILayout.Foldout(shadows, "Shadows", outerFoldoutStyle);
+				if (shadows)
+				{
+					trueSky.CloudShadowRangeKm = EditorGUILayout.IntSlider("Shadow Range KM", trueSky.CloudShadowRangeKm, 100, (int)trueSky.MaxCloudDistanceKm);
+					trueSky.CloudShadowStrength = EditorGUILayout.Slider("Cloud Shadow Strength", trueSky.CloudShadowStrength, 0.0F, 1.0F);
 				}
 
 				// Water settings

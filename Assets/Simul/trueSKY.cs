@@ -3595,6 +3595,49 @@ namespace simul
 		}
 
 		[SerializeField]
+		float _cloudShadowStrength = 0.8f;
+		public float CloudShadowStrength
+		{
+			get
+			{
+				return _cloudShadowStrength;
+			}
+			set
+			{
+				if (_cloudShadowStrength != value) try
+					{
+						_cloudShadowStrength = value;
+					}
+					catch (Exception exc)
+					{
+						UnityEngine.Debug.Log(exc.ToString());
+					}
+			}
+		}
+	
+		[SerializeField]
+		int _cloudShadowRangeKm = 300;
+		public int CloudShadowRangeKm
+		{
+			get
+			{
+				return _cloudShadowRangeKm;
+			}
+			set
+			{
+				if (_cloudShadowRangeKm != value) try
+					{
+						_cloudShadowRangeKm = value;
+					}
+					catch (Exception exc)
+					{
+						UnityEngine.Debug.Log(exc.ToString());
+					}
+			}
+		}
+
+
+		[SerializeField]
 		RenderPipelineAsset _HDRP_RenderPipelineAsset = null;
 		public RenderPipelineAsset HDRP_RenderPipelineAsset
 		{
@@ -3770,8 +3813,8 @@ namespace simul
 			EDV.AmbientLight = _AmbientLight;
 			EDV.AutomaticRainbowPosition = _AutomaticRainbowPosition;
 			EDV.CellNoiseWavelengthKm = _CellNoiseWavelengthKm;
-			EDV.CloudShadowRangeKm = //
-			EDV.CloudShadowStrength = //
+			EDV.CloudShadowRangeKm = _cloudShadowRangeKm;
+			EDV.CloudShadowStrength = _cloudShadowStrength;
 			EDV.CosmicBackgroundBrightness = _backgroundBrightness;
 			EDV.CrepuscularRayStrength = _crepuscularRaysStrength;
 			EDV.DirectLight = _DirectLight;
