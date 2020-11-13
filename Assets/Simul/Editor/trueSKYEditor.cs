@@ -115,7 +115,7 @@ namespace simul
 			static bool cloudLighting = false;
 
 		/*[SerializeField]
-		static bool  = false;*/
+		static bool lighting = false;*/
 			
 
 		[SerializeField]
@@ -276,9 +276,9 @@ namespace simul
 					render = EditorGUILayout.Foldout(render, "Render", innerFoldoutStyle);
 					if (render)
 					{
-						trueSky.CubemapResolution = EditorGUILayout.IntSlider("Cubemap Resolution", trueSky.CubemapResolution, 16, 2048);
+						trueSky.CubemapResolution = EditorGUILayout.IntSlider("Cubemap Resolution", trueSky.CubemapResolution, 64, 2048);
 						trueSky.WindSpeed = EditorGUILayout.Vector3Field("Wind Speed", trueSky.WindSpeed);
-						trueSky.MaxCloudDistanceKm = EditorGUILayout.Slider("Max Cloud Distance (km)", trueSky.MaxCloudDistanceKm, 100.0F, 1000.0F);
+						trueSky.MaxCloudDistanceKm = EditorGUILayout.Slider("Max Cloud Distance (km)", trueSky.MaxCloudDistanceKm, 100.0F, (trueSky.WindowWidthKm/2));
 						trueSky.IntegrationScheme = EditorGUILayout.Popup("Integration Scheme", trueSky.IntegrationScheme, renderOptions);
 
 						if (trueSky.IntegrationScheme == 0)
@@ -309,7 +309,7 @@ namespace simul
 						trueSky.EdgeNoiseFrequency = EditorGUILayout.IntSlider("Frequency", trueSky.EdgeNoiseFrequency, 1, 16);
 						trueSky.EdgeNoiseTextureSize = EditorGUILayout.IntSlider("Texture Size", trueSky.EdgeNoiseTextureSize, 32, 256);
 						trueSky.EdgeNoiseWavelengthKm = EditorGUILayout.Slider("Wavelength Km", trueSky.EdgeNoiseWavelengthKm, 0.01f, 50.0f);
-						trueSky.MaxFractalAmplitudeKm = EditorGUILayout.Slider("Amplitude Km", trueSky.MaxFractalAmplitudeKm, 0.0f, 20.0f);
+						trueSky.MaxFractalAmplitudeKm = EditorGUILayout.Slider("Amplitude Km", trueSky.MaxFractalAmplitudeKm, 0.01f, 20.0f);
 
 						//EditorGUILayout.LabelField("Cell Noise", EditorStyles.boldLabel);
 						trueSky.CellNoiseTextureSize = EditorGUILayout.IntSlider("Texture Size", trueSky.CellNoiseTextureSize, 32, 256);
@@ -807,6 +807,7 @@ namespace simul
 					else
 						EditorGUILayout.LabelField("HDRP RenderPipelineAsset: NULL");
 
+					trueSky.LoadRenderPipelineAsset = EditorGUILayout.Toggle("Load RenderPipelineAsset from trueSKY.cs", trueSky.LoadRenderPipelineAsset);
 					if (GUILayout.Button("Save RenderPipelineAsset") && UnityEngine.Rendering.GraphicsSettings.allConfiguredRenderPipelines.Length > 0)
 					{ 
 						trueSky.HDRP_RenderPipelineAsset = UnityEngine.Rendering.GraphicsSettings.allConfiguredRenderPipelines[0];
