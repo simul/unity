@@ -304,16 +304,14 @@ namespace simul
 					noise = EditorGUILayout.Foldout(noise, "Noise", innerFoldoutStyle);
 					if (noise)
 					{
-						//EditorGUILayout.LabelField("Edge Noise", EditorStyles.boldLabel);
-						trueSky.EdgeNoisePersistence = EditorGUILayout.Slider("Persistence", trueSky.EdgeNoisePersistence, 0.0f, 1.0f);
-						trueSky.EdgeNoiseFrequency = EditorGUILayout.IntSlider("Frequency", trueSky.EdgeNoiseFrequency, 1, 16);
-						trueSky.EdgeNoiseTextureSize = EditorGUILayout.IntSlider("Texture Size", trueSky.EdgeNoiseTextureSize, 32, 256);
-						trueSky.EdgeNoiseWavelengthKm = EditorGUILayout.Slider("Wavelength Km", trueSky.EdgeNoiseWavelengthKm, 0.01f, 50.0f);
-						trueSky.MaxFractalAmplitudeKm = EditorGUILayout.Slider("Amplitude Km", trueSky.MaxFractalAmplitudeKm, 0.01f, 20.0f);
+						trueSky.EdgeNoisePersistence = EditorGUILayout.Slider("Edge Noise Persistence", trueSky.EdgeNoisePersistence, 0.0f, 1.0f);
+						trueSky.EdgeNoiseFrequency = EditorGUILayout.IntSlider("Edge Noise Frequency", trueSky.EdgeNoiseFrequency, 1, 16);
+						trueSky.EdgeNoiseTextureSize = EditorGUILayout.IntSlider("Edge Noise Texture Size", trueSky.EdgeNoiseTextureSize, 32, 256);
+						trueSky.EdgeNoiseWavelengthKm = EditorGUILayout.Slider("Edge Noise Wavelength Km", trueSky.EdgeNoiseWavelengthKm, 0.01f, 50.0f);
 
-						//EditorGUILayout.LabelField("Cell Noise", EditorStyles.boldLabel);
-						trueSky.CellNoiseTextureSize = EditorGUILayout.IntSlider("Texture Size", trueSky.CellNoiseTextureSize, 32, 256);
-						trueSky.CellNoiseWavelengthKm = EditorGUILayout.Slider("Wavelength Km", trueSky.CellNoiseWavelengthKm, 0.01f, 50.0f);
+						trueSky.CellNoiseTextureSize = EditorGUILayout.IntSlider("Cell Noise Texture Size", trueSky.CellNoiseTextureSize, 32, 256);
+						trueSky.CellNoiseWavelengthKm = EditorGUILayout.Slider("Cell Noise Wavelength Km", trueSky.CellNoiseWavelengthKm, 0.01f, 50.0f);
+						trueSky.MaxFractalAmplitudeKm = EditorGUILayout.Slider("Max Fractal Amplitude Km", trueSky.MaxFractalAmplitudeKm, 0.01f, 20.0f);
 					}
 
 					// Cloud lighting settings
