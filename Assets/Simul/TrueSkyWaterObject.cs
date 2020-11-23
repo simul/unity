@@ -630,6 +630,10 @@ namespace simul
 						StaticSetWaterFloat("beaufortScale", ID, _beaufortScale);
 						StaticSetWaterFloat("windDirection", ID, _windDirection * 6.28f);
 						StaticSetWaterFloat("windDependency", ID, _windDependency);
+						float[] scattering = new float[] { 1.0f - _scattering.r, 1.0f - _scattering.g, 1.0f - _scattering.b };
+						float[] absorption = new float[] { 1.0f - _absorption.r, 1.0f - _absorption.g, 1.0f - _absorption.b };
+						StaticSetWaterVector("scattering", ID, scattering);
+						StaticSetWaterVector("absorption", ID, absorption);
 						updateCustomMesh(false);
 					}
 
@@ -651,6 +655,10 @@ namespace simul
 					StaticSetWaterFloat("beaufortScale", -1, _beaufortScale);
 					StaticSetWaterFloat("windDirection", -1, _windDirection * 6.28f);
 					StaticSetWaterFloat("windDependency", -1, _windDependency);
+					float[] scattering = new float[] { 1.0f - _scattering.r, 1.0f - _scattering.g, 1.0f - _scattering.b };
+					float[] absorption = new float[] { 1.0f - _absorption.r, 1.0f - _absorption.g, 1.0f - _absorption.b };
+					StaticSetWaterVector("scattering", -1, scattering);
+					StaticSetWaterVector("absorption", -1, absorption);
 				}
 			}
 		}

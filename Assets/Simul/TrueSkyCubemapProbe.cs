@@ -8,7 +8,7 @@ namespace simul
     public class TrueSkyCubemapProbe : MonoBehaviour
     {
         private Camera dummyCam                     = null;
-        private RenderTexture cubemapRenderTexture  = null;
+        public RenderTexture cubemapRenderTexture   = null;
         public int textureSize                      = 32;
         public float exposure                       = 1.0F;
         public float gamma                          = 0.44F;
@@ -209,7 +209,7 @@ namespace simul
             }
             else
                 UnityEngine.Debug.LogWarning("Can't find Material 'trueSKYSkybox' - it should be in Simul/Resources.");
-        }
+        } 
 
         void CreateTexture()
         {
