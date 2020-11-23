@@ -38,7 +38,7 @@ public class TrueSkyDirectionalLight : MonoBehaviour
     float intensity_scale = 0.1F;
     bool UpdateLight()
     {
-        LightingQueryResult res = mTsInstance.StaticLightingQuery(this.GetInstanceID(), transform.position);
+        LightingQueryResult res = mTsInstance.LightingQuery(this.GetInstanceID(), transform.position);
 		if (res.valid == 1)
 		{
 			Vector4 linearColour = new Vector4();
@@ -104,7 +104,7 @@ public class TrueSkyDirectionalLight : MonoBehaviour
             curShadowCenter = Vector3.zero;
         }
         uint currentKeyframe        = mTsInstance.GetInterpolatedCloudKeyframe(0);
-        float sunHeight             = mTsInstance.GetKeyframeValueFloat(currentKeyframe, "cloudBase") * 1000;
+        float sunHeight             = (float)mTsInstance.GetKeyframeValue(currentKeyframe, "cloudBase") * 1000;
         float shadowSize            = mTsInstance.getCloudShadowScale();
         //float halfShadowSize        = shadowSize * 0.5f;
         transform.position          = new Vector3(0.0f, sunHeight, 0.0f);

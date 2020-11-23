@@ -55,6 +55,47 @@ namespace simul
                 currentPath = dllPath2 + Path.PathSeparator + currentPath;
             }
             Environment.SetEnvironmentVariable("PATH", currentPath, EnvironmentVariableTarget.Process);
+            if(!File.Exists(Environment.GetEnvironmentVariable("WINDIR") + @"\system32\msvcr110.dll"))
+            {
+                if(EditorUtility.DisplayDialog("Visual Studio Redistributable", "The trueSKY UI requires the Visual Studio redistributable to be installed.", "Install", "Not now"))
+                {
+                    UnityEngine.Debug.Log("Can't find msvcr110.dll - will install");
+                    // Use ProcessStartInfo class
+                    ProcessStartInfo startInfo = new ProcessStartInfo();
+                    startInfo.CreateNoWindow = false;
+                    startInfo.UseShellExecute = false;
+                    startInfo.WindowStyle = ProcessWindowStyle.Hidden;
+                    startInfo.FileName = dllPath1 + s + "vcredist_x86.exe";
+
+                    try
+                    {
+                        // Start the process with the info we specified.
+                        // Call WaitForExit and then the using statement will close.
+                        using(Process exeProcess = Process.Start(startInfo))
+                        {
+                            exeProcess.WaitForExit();
+                        }
+                    }
+                    catch
+                    {
+                        // Log error.
+                        UnityEngine.Debug.LogError("Error installing vc redist x86");
+                    }
+                    startInfo.FileName = dllPath2 + s + "vcredist_x64.exe";
+                    try
+                    {
+                        using(Process exeProcess = Process.Start(startInfo))
+                        {
+                            exeProcess.WaitForExit();
+                        }
+                    }
+                    catch
+                    {
+                        // Log error.
+                        UnityEngine.Debug.LogError("Error installing vc redist x64");
+                    }
+                }
+            }
             return true;
         }
 
@@ -181,7 +222,19 @@ namespace simul
 
             trueSKY trueSKY = GetTrueSKY();
             // Initialize time from the trueSKY object
-            if(trueSKY) StaticSetFloat(Handle, "time", trueSKY.time);
+
+			if (trueSKY) StaticSetFloat(Handle, "time", trueSKY.TrueSKYTime);
+
+			EditorApplication.playModeStateChanged += CloseDueToPlayModeStateChange;
+			EditorApplication.update += UpdateSequencer;
+		}
+
+
+		static void CloseDueToPlayModeStateChange(PlayModeStateChange state)
+		{
+			if (_handle != (System.IntPtr)0)
+				CloseUI(_handle);
+			_handle = (System.IntPtr)0;
         }
 
         public static void CloseSequencer()
@@ -210,6 +263,7 @@ namespace simul
                 trueSKY trueSKY = (trueSKY)t;
                 if (trueSKY.sequence == currentSequence) return trueSKY;
             }
+			UnityEngine.Debug.LogError("Active trueSky not found with Current Sequence");
             return null;
         }
 
@@ -232,6 +286,7 @@ namespace simul
                 if(trueSKY) trueSKY.Reload();
 
                 EditorUtility.SetDirty(currentSequence);
+                AssetDatabase.SaveAssets();
             };
 
         //Delegate function for when the time is changed in the sequencer window.
