@@ -902,13 +902,19 @@ namespace simul
 				StaticRenderKeyframeSetBool(uid, name, (bool)value);
 			}
 		}
-		public object GetKeyframeValue(uint uid, string name)
+		public float GetKeyframeValueFloat(uint uid, string name)
 		{
 			if (StaticRenderKeyframeHasFloat(uid, name))
 				return StaticRenderKeyframeGetFloat(uid, name);
+			else
+				return 0.0f;
+		}
+		public int GetKeyframeValueInt(uint uid, string name)
+		{
 			if (StaticRenderKeyframeHasInt(uid, name))
 				return StaticRenderKeyframeGetInt(uid, name);
-			return 0;
+			else
+				return 0;
 		}
 
 		public uint GetStormUidByIndex(int index)
