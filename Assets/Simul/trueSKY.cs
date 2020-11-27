@@ -392,6 +392,7 @@ namespace simul
 		public float CloudTintR;
 		public float CloudTintG;
 		public float CloudTintB;
+		public float CSharpOffsetAlignment; //Required in order to align the struct correctly
 
 		//Aurorae
 		public float GeomagneticNorthPoleLatitude;
@@ -3854,6 +3855,9 @@ namespace simul
 			EDV.WindSpeedMS_X = _WindSpeed.x;
 			EDV.WindSpeedMS_Y = _WindSpeed.y;
 			EDV.WindSpeedMS_Z = _WindSpeed.z;
+			EDV.CloudTintR = _cloudTint.r;
+			EDV.CloudTintG = _cloudTint.g;
+			EDV.CloudTintB = _cloudTint.b;
 
 			EDV.GeomagneticNorthPoleLatitude = aurorae.GeomagneticNorthPoleLatitude;
 			EDV.GeomagneticNorthPoleLongitude = aurorae.GeomagneticNorthPoleLongitude;
