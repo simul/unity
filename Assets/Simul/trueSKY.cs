@@ -392,6 +392,7 @@ namespace simul
 		public float CloudTintR;
 		public float CloudTintG;
 		public float CloudTintB;
+		//public float CSharpOffsetAlignment; //offset apparently needed on DLL. Not for use in Unity. Why do we need this #FIX
 
 		//Aurorae
 		public float GeomagneticNorthPoleLatitude;
@@ -901,13 +902,19 @@ namespace simul
 				StaticRenderKeyframeSetBool(uid, name, (bool)value);
 			}
 		}
-		public object GetKeyframeValue(uint uid, string name)
+		public float GetKeyframeValueFloat(uint uid, string name)
 		{
 			if (StaticRenderKeyframeHasFloat(uid, name))
 				return StaticRenderKeyframeGetFloat(uid, name);
+			else
+				return 0.0f;
+		}
+		public int GetKeyframeValueInt(uint uid, string name)
+		{
 			if (StaticRenderKeyframeHasInt(uid, name))
 				return StaticRenderKeyframeGetInt(uid, name);
-			return 0;
+			else
+				return 0;
 		}
 
 		public uint GetStormUidByIndex(int index)
@@ -3848,6 +3855,9 @@ namespace simul
 			EDV.WindSpeedMS_X = _WindSpeed.x;
 			EDV.WindSpeedMS_Y = _WindSpeed.y;
 			EDV.WindSpeedMS_Z = _WindSpeed.z;
+			EDV.CloudTintR = _cloudTint.r;
+			EDV.CloudTintG = _cloudTint.g;
+			EDV.CloudTintB = _cloudTint.b;
 
 			EDV.GeomagneticNorthPoleLatitude = aurorae.GeomagneticNorthPoleLatitude;
 			EDV.GeomagneticNorthPoleLongitude = aurorae.GeomagneticNorthPoleLongitude;
