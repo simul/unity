@@ -392,7 +392,7 @@ namespace simul
 		public float CloudTintR;
 		public float CloudTintG;
 		public float CloudTintB;
-		public float CSharpOffsetAlignment; //Required in order to align the struct correctly
+		//public float CSharpOffsetAlignment; //offset apparently needed on DLL. Not for use in Unity. Why do we need this #FIX
 
 		//Aurorae
 		public float GeomagneticNorthPoleLatitude;
