@@ -117,8 +117,8 @@ namespace simul
             cbuf_view_id = InternalGetViewId();
 
             mainCommandBuffer.ClearRenderTarget(true, true, new Color(0.0F, 0.0F, 0.0F, 1.0F), 1.0F);
-			unityViewStruct.nativeColourRenderBuffer = (System.IntPtr)Graphics.activeColorBuffer.GetNativeRenderBufferPtr();
-			unityViewStruct.nativeDepthRenderBuffer = (System.IntPtr)Graphics.activeDepthBuffer.GetNativeRenderBufferPtr();
+			unityViewStruct.nativeColourRenderBuffer = (System.IntPtr)0;// (System.IntPtr)Graphics.activeColorBuffer.GetNativeRenderBufferPtr(); //These don't need to be passed for the cubemap to render and function, 
+            unityViewStruct.nativeDepthRenderBuffer = (System.IntPtr)0;// (System.IntPtr)Graphics.activeDepthBuffer.GetNativeRenderBufferPtr();  //and passsing them ssems to create some rendering issues
 
             bool il2cppScripting = UsingIL2CPP();
             Marshal.StructureToPtr(unityViewStruct, unityViewStructPtr, !il2cppScripting);

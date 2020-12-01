@@ -1024,8 +1024,11 @@ MonoBehaviour:
   _Extinction: 4
   _MieAsymmetry: 0.87
   _shadowTextureRes: 256
+  _cloudShadowStrength: 0.8
+  _cloudShadowRangeKm: 300
   _HDRP_RenderPipelineAsset: {fileID: 11400000, guid: 34018d961c670ba4681b930b08bd1a54,
     type: 2}
+  _LoadRenderPipelineAsset: 1
   _UsingIL2CPP: 0
   updateERV: 0
 --- !u!4 &2053481782
