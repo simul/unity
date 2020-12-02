@@ -3814,11 +3814,11 @@ namespace simul
 				return;
 
 			EDV.version = ExternalDynamicValues.static_version;
-			EDV.AdjustSunRadius = (UInt32)_adjustSunRadius;
-			EDV.AllowLunarRainbow = (UInt32)_AllowLunarRainbows;
-			EDV.AllowOccludedRainbow = (UInt32)_AllowOccludedRainbows;
+			EDV.AdjustSunRadius = Convert.ToUInt32(_adjustSunRadius);
+			EDV.AllowLunarRainbow = Convert.ToUInt32(_AllowLunarRainbows);
+			EDV.AllowOccludedRainbow = Convert.ToUInt32(_AllowOccludedRainbows);
 			EDV.AmbientLight = _AmbientLight;
-			EDV.AutomaticRainbowPosition = (UInt32)_AutomaticRainbowPosition;
+			EDV.AutomaticRainbowPosition = Convert.ToUInt32(_AutomaticRainbowPosition);
 			EDV.CellNoiseWavelengthKm = _CellNoiseWavelengthKm;
 			EDV.CloudShadowRangeKm = _cloudShadowRangeKm;
 			EDV.CloudShadowStrength = _cloudShadowStrength;
@@ -3865,7 +3865,7 @@ namespace simul
 			EDV.LowestLatitude = aurorae.LowestLatitude;
 			EDV.MaxBand = aurorae.MaxBand;
 			EDV.MinBand = aurorae.MinBand;
-			EDV.ShowAuroralOvalInCloudWindow = (UInt32)aurorae.ShowAuroralOvalInCloudWindow;
+			EDV.ShowAuroralOvalInCloudWindow = Convert.ToUInt32(aurorae.ShowAuroralOvalInCloudWindow);
 			EDV.AuroraElectronFreeTime = aurorae.AuroraElectronFreeTime * 1e-12f;
 			EDV.AuroraElectronVolumeDensity = aurorae.AuroraElectronVolumeDensity * 1e13f;
 			EDV.AuroralLayersIntensity = aurorae.AuroralLayersIntensity;
