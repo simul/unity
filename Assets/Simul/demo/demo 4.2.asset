@@ -35,10 +35,11 @@ MonoBehaviour:
     \"0.7071067966408575\"\n\t\t\t\"precipitationRegion.rainCentreY\": \"              
     0\"\n\t\t\t\"precipitationRegion.rainCentreZ\": \"               0\"\n\t\t\t\"precipitationRegion.rainEffectStrength\":
     \"               0\"\n\t\t\t\"precipitationRegion.rainRadiusKm\": \"             
-    50\"\n\t\t\t\"precipitationRegion.regional\": \"false\"\n\t\t\t\"rain_to_snow\":
-    \"               0\"\n\t\t\t\"scalekm\": \"             200,             200,             
-    10\"\n\t\t\t\"simulation\": \"               0\"\n\t\t\t\"time\": \"0.372958242893219\"\n\t\t\t\"uid\":
-    \"4319\"\n\t\t\t\"upperDensity\": \"0.699999988079071\"\n\t\t\t\"volumeStates\":\n\t\t\t[\n\t\t\t]\n\t\t}\n\t\t]\n\t\t\"storms\":\n\t\t[\n\t\t]\n\t\t\"volumes\":\n\t\t[\n\t\t]\n\t}\n\t\"skyKeyframer\":\n\t{\n\t\t\"BackgroundTexture\":
+    50\"\n\t\t\t\"precipitationRegion.regional\": \"false\"\n\t\t\t\"precipitation_base_km\":
+    \"               0\"\n\t\t\t\"rain_to_snow\": \"               0\"\n\t\t\t\"scalekm\":
+    \"             200,             200,              10\"\n\t\t\t\"simulation\":
+    \"               0\"\n\t\t\t\"time\": \"0.372958242893219\"\n\t\t\t\"uid\": \"4319\"\n\t\t\t\"upperDensity\":
+    \"0.699999988079071\"\n\t\t\t\"volumeStates\":\n\t\t\t[\n\t\t\t]\n\t\t}\n\t\t]\n\t\t\"storms\":\n\t\t[\n\t\t]\n\t\t\"volumes\":\n\t\t[\n\t\t]\n\t}\n\t\"skyKeyframer\":\n\t{\n\t\t\"BackgroundTexture\":
     \"\"\n\t\t\"BaseOzone\": \"0.05999999865889549,0.03999999910593033,0.009999999776482582,              
     0\"\n\t\t\"BrightnessPower\": \"            0.25\"\n\t\t\"ColourWavelengthsNm\":
     \"             630,             540,             450,4.590653769128101e-41\"\n\t\t\"DayLoop\":
@@ -52,11 +53,40 @@ MonoBehaviour:
     25\"\n\t\t\"SunRadiusArcMinutes\": \"              16\"\n\t\t\"SunTexture\":
     \"\"\n\t\t\"Time\": \"0.3351293206214905\"\n\t\t\"TimezoneHours\": \"              
     0\"\n\t\t\"atmosphereThicknessKm\": \"             100\"\n\t\t\"planetRadiusKm\":
-    \"            6378\"\n\t\t\"keyframes\":\n\t\t[\n\t\t{\n\t\t\t\"AutoMie\": \"true\"\n\t\t\t\"FogCeilingKm\":
-    \"               0\"\n\t\t\t\"GroundFog\": \"               0\"\n\t\t\t\"Haze\":
-    \"               1\"\n\t\t\t\"HazeBaseKm\": \"               0\"\n\t\t\t\"HazeEccentricity\":
-    \"0.8199999928474426\"\n\t\t\t\"HazeScaleKm\": \"             0.5\"\n\t\t\t\"Horizon\":
-    \"               0,               0,               0\"\n\t\t\t\"Mie\": \"0.006106850225478411,0.00817577913403511,0.01170013006776571,              
+    \"            6378\"\n\t\t\"aurora\":\n\t\t{\n\t\t\t\"AuroraElectronFreeTime\":
+    \"9.999999960041972e-13\"\n\t\t\t\"AuroraElectronVolumeDensity\": \"1.000000027256422e+16\"\n\t\t\t\"AuroraIntensityMapSize\":
+    \"1024\"\n\t\t\t\"AuroraTraceLength\": \"1000\"\n\t\t\t\"AuroralLayersIntensity\":
+    \"               1\"\n\t\t\t\"End_Dawn1\": \"             -30\"\n\t\t\t\"End_Dawn2\":
+    \"               0\"\n\t\t\t\"End_Dusk1\": \"            -180\"\n\t\t\t\"End_Dusk2\":
+    \"            -150\"\n\t\t\t\"GeomagneticNorthPole\": \"0.06565238343974733,-0.04829707225875851,-0.5906042055717831,0.8028348707678533\"\n\t\t\t\"HighestLatitude\":
+    \"              80\"\n\t\t\t\"LowestLatitude\": \"              60\"\n\t\t\t\"MaxBand\":
+    \"              10\"\n\t\t\t\"MinBand\": \"               3\"\n\t\t\t\"OriginLatitude_Dawn1\":
+    \"              90\"\n\t\t\t\"OriginLatitude_Dawn2\": \"              90\"\n\t\t\t\"OriginLatitude_Dusk1\":
+    \"              90\"\n\t\t\t\"OriginLatitude_Dusk2\": \"              90\"\n\t\t\t\"OriginLongitude_Dawn1\":
+    \"               0\"\n\t\t\t\"OriginLongitude_Dawn2\": \"               0\"\n\t\t\t\"OriginLongitude_Dusk1\":
+    \"               0\"\n\t\t\t\"OriginLongitude_Dusk2\": \"               0\"\n\t\t\t\"Radius_Dawn1\":
+    \"              19\"\n\t\t\t\"Radius_Dawn2\": \"              21\"\n\t\t\t\"Radius_Dusk1\":
+    \"              20\"\n\t\t\t\"Radius_Dusk2\": \"              22\"\n\t\t\t\"ShowAuroralOvalInCloudWindow\":
+    \"true\"\n\t\t\t\"Start_Dawn1\": \"             180\"\n\t\t\t\"Start_Dawn2\":
+    \"             150\"\n\t\t\t\"Start_Dusk1\": \"               0\"\n\t\t\t\"Start_Dusk2\":
+    \"              30\"\n\t\t\t\"AuroraLayers\":\n\t\t\t[\n\t\t\t{\n\t\t\t\t\"Base\":
+    \"              85\"\n\t\t\t\t\"EmittedWavelength\": \"427.7999877929688\"\n\t\t\t\t\"Strength\":
+    \"              30\"\n\t\t\t\t\"Top\": \"             105\"\n\t\t\t}\n\t\t\t{\n\t\t\t\t\"Base\":
+    \"              85\"\n\t\t\t\t\"EmittedWavelength\": \"             670\"\n\t\t\t\t\"Strength\":
+    \"              18\"\n\t\t\t\t\"Top\": \"             105\"\n\t\t\t}\n\t\t\t{\n\t\t\t\t\"Base\":
+    \"              85\"\n\t\t\t\t\"EmittedWavelength\": \"391.3999938964844\"\n\t\t\t\t\"Strength\":
+    \"               6\"\n\t\t\t\t\"Top\": \"             105\"\n\t\t\t}\n\t\t\t{\n\t\t\t\t\"Base\":
+    \"             100\"\n\t\t\t\t\"EmittedWavelength\": \"557.7000122070313\"\n\t\t\t\t\"Strength\":
+    \"             100\"\n\t\t\t\t\"Top\": \"             210\"\n\t\t\t}\n\t\t\t{\n\t\t\t\t\"Base\":
+    \"             100\"\n\t\t\t\t\"EmittedWavelength\": \"             471\"\n\t\t\t\t\"Strength\":
+    \"               6\"\n\t\t\t\t\"Top\": \"             210\"\n\t\t\t}\n\t\t\t{\n\t\t\t\t\"Base\":
+    \"             200\"\n\t\t\t\t\"EmittedWavelength\": \"             630\"\n\t\t\t\t\"Strength\":
+    \"              30\"\n\t\t\t\t\"Top\": \"             250\"\n\t\t\t}\n\t\t\t]\n\t\t}\n\t\t\"keyframes\":\n\t\t[\n\t\t{\n\t\t\t\"AutoMie\":
+    \"true\"\n\t\t\t\"FogCeilingKm\": \"               0\"\n\t\t\t\"GroundFog\":
+    \"               0\"\n\t\t\t\"Haze\": \"               1\"\n\t\t\t\"HazeBaseKm\":
+    \"               0\"\n\t\t\t\"HazeEccentricity\": \"0.8199999928474426\"\n\t\t\t\"HazeScaleKm\":
+    \"             0.5\"\n\t\t\t\"Horizon\": \"               0,               0,              
+    0\"\n\t\t\t\"Mie\": \"0.006106850225478411,0.00817577913403511,0.01170013006776571,              
     0\"\n\t\t\t\"SeaLevelTemperatureK\": \"288.1499938964844\"\n\t\t\t\"StoreAsColours\":
     \"false\"\n\t\t\t\"SunAzimuth\": \"-1.570796370506287\"\n\t\t\t\"SunElevation\":
     \"-0.7853981852531433\"\n\t\t\t\"Zenith\": \"               0,              
