@@ -287,7 +287,7 @@ namespace simul
 		public float HighDetailProportion;         //!< For cloud volume update rate.
 		public float MediumDetailProportion;           //!< For medium cloud volume update rate.
 
-		public int RenderSky;                      //!< Disable sky rendering, used primarily for when you only want water.
+		public uint RenderSky;                      //!< Disable sky rendering, used primarily for when you only want water.
 
 		public int MaximumCubemapResolution;       //!< Resolution to draw full-detail cloud buffers
 
@@ -326,7 +326,7 @@ namespace simul
 		public int MaxFramesBetweenViewUpdates;
 		public int AtmosphericsAmortization;
 		public float RainNearThreshold;
-		public bool AutomaticSunPosition;
+		public uint AutomaticSunPosition;
 	};
 
 	[StructLayout(LayoutKind.Sequential, Pack = 1)]
@@ -372,13 +372,13 @@ namespace simul
 		public float PrecipitationWaverTimescaleS;
 		public float PrecipitationThresholdKm;
 
-		public bool AutomaticRainbowPosition;
+		public uint AutomaticRainbowPosition;
 		public float RainbowElevation;
 		public float RainbowAzimuth;
 		public float RainbowIntensity;
 		public float RainbowDepthPoint;
-		public bool AllowOccludedRainbow;
-		public bool AllowLunarRainbow;
+		public uint AllowOccludedRainbow;
+		public uint AllowLunarRainbow;
 
 		public float CrepuscularRayStrength;
 
@@ -387,11 +387,12 @@ namespace simul
 		public float OriginHeading;
 
 		public float MaxSunRadiance;
-		public bool AdjustSunRadius;
+		public uint AdjustSunRadius;
 
 		public float CloudTintR;
 		public float CloudTintG;
 		public float CloudTintB;
+		//public float CSharpOffsetAlignment; //offset apparently needed on DLL. Not for use in Unity. Why do we need this #FIX
 
 		//Aurorae
 		public float GeomagneticNorthPoleLatitude;
@@ -400,7 +401,7 @@ namespace simul
 		public float LowestLatitude;
 		public float MaxBand;
 		public float MinBand;
-		public bool ShowAuroralOvalInCloudWindow;
+		public uint ShowAuroralOvalInCloudWindow;
 		public float AuroraElectronFreeTime;
 		public float AuroraElectronVolumeDensity;
 		public float AuroralLayersIntensity;
@@ -901,13 +902,19 @@ namespace simul
 				StaticRenderKeyframeSetBool(uid, name, (bool)value);
 			}
 		}
-		public object GetKeyframeValue(uint uid, string name)
+		public float GetKeyframeValueFloat(uint uid, string name)
 		{
 			if (StaticRenderKeyframeHasFloat(uid, name))
 				return StaticRenderKeyframeGetFloat(uid, name);
+			else
+				return 0.0f;
+		}
+		public int GetKeyframeValueInt(uint uid, string name)
+		{
 			if (StaticRenderKeyframeHasInt(uid, name))
 				return StaticRenderKeyframeGetInt(uid, name);
-			return 0;
+			else
+				return 0;
 		}
 
 		public uint GetStormUidByIndex(int index)
@@ -2339,11 +2346,11 @@ namespace simul
 				if (_cloudTint != value) try
 					{
 						_cloudTint = value;
-						Variant[] _Variant = { new Variant() };
-						_Variant[0].Vec3.x = _cloudTint.r;
-						_Variant[0].Vec3.y = _cloudTint.g;
-						_Variant[0].Vec3.z = _cloudTint.b;
-						StaticSetRender("render:cloudtint", 1, _Variant);
+						//Variant[] _Variant = { new Variant() };
+						//_Variant[0].Vec3.x = _cloudTint.r;
+						//_Variant[0].Vec3.y = _cloudTint.g;
+						//_Variant[0].Vec3.z = _cloudTint.b;
+						//StaticSetRender("render:cloudtint", 1, _Variant);
 
 					}
 					catch (Exception exc)
@@ -3745,7 +3752,7 @@ namespace simul
 					return;
 
 				ERV.version = ExternalRenderValues.static_version;
-				ERV.RenderSky = Convert.ToInt32(_renderSky);
+				ERV.RenderSky = Convert.ToUInt32(_renderSky);
 				ERV.IntegrationScheme = _IntegrationScheme;
 				ERV.LightingMode = _LightingMode;
 				ERV.RenderGridXKm = _RenderGridXKm;
@@ -3807,11 +3814,11 @@ namespace simul
 				return;
 
 			EDV.version = ExternalDynamicValues.static_version;
-			EDV.AdjustSunRadius = _adjustSunRadius;
-			EDV.AllowLunarRainbow = _AllowLunarRainbows;
-			EDV.AllowOccludedRainbow = _AllowOccludedRainbows;
+			EDV.AdjustSunRadius = Convert.ToUInt32(_adjustSunRadius);
+			EDV.AllowLunarRainbow = Convert.ToUInt32(_AllowLunarRainbows);
+			EDV.AllowOccludedRainbow = Convert.ToUInt32(_AllowOccludedRainbows);
 			EDV.AmbientLight = _AmbientLight;
-			EDV.AutomaticRainbowPosition = _AutomaticRainbowPosition;
+			EDV.AutomaticRainbowPosition = Convert.ToUInt32(_AutomaticRainbowPosition);
 			EDV.CellNoiseWavelengthKm = _CellNoiseWavelengthKm;
 			EDV.CloudShadowRangeKm = _cloudShadowRangeKm;
 			EDV.CloudShadowStrength = _cloudShadowStrength;
@@ -3848,6 +3855,9 @@ namespace simul
 			EDV.WindSpeedMS_X = _WindSpeed.x;
 			EDV.WindSpeedMS_Y = _WindSpeed.y;
 			EDV.WindSpeedMS_Z = _WindSpeed.z;
+			EDV.CloudTintR = _cloudTint.r;
+			EDV.CloudTintG = _cloudTint.g;
+			EDV.CloudTintB = _cloudTint.b;
 
 			EDV.GeomagneticNorthPoleLatitude = aurorae.GeomagneticNorthPoleLatitude;
 			EDV.GeomagneticNorthPoleLongitude = aurorae.GeomagneticNorthPoleLongitude;
@@ -3855,7 +3865,7 @@ namespace simul
 			EDV.LowestLatitude = aurorae.LowestLatitude;
 			EDV.MaxBand = aurorae.MaxBand;
 			EDV.MinBand = aurorae.MinBand;
-			EDV.ShowAuroralOvalInCloudWindow = aurorae.ShowAuroralOvalInCloudWindow;
+			EDV.ShowAuroralOvalInCloudWindow = Convert.ToUInt32(aurorae.ShowAuroralOvalInCloudWindow);
 			EDV.AuroraElectronFreeTime = aurorae.AuroraElectronFreeTime * 1e-12f;
 			EDV.AuroraElectronVolumeDensity = aurorae.AuroraElectronVolumeDensity * 1e13f;
 			EDV.AuroralLayersIntensity = aurorae.AuroralLayersIntensity;
