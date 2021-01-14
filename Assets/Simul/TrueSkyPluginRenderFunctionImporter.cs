@@ -176,13 +176,9 @@ namespace simul
 		[DllImport(renderer_dll)] public static extern IntPtr UnityGetRenderEventFuncWithData();
 		[DllImport(renderer_dll)] public static extern IntPtr UnityGetOverlayFuncWithData();
 		[DllImport(renderer_dll)] public static extern IntPtr UnityGetPostTranslucentFuncWithData();
-		[DllImport(renderer_dll)] public static extern IntPtr UnityGetRenderEventFunc();
-		[DllImport(renderer_dll)] public static extern IntPtr UnityGetOverlayFunc();
-		[DllImport(renderer_dll)] public static extern IntPtr UnityGetPostTranslucentFunc();
-		[DllImport(renderer_dll)] public static extern IntPtr UnityGetStoreStateFunc();
 		[DllImport(renderer_dll)] public static extern IntPtr UnityGetExecuteDeferredFunc();
 		//[DllImport(renderer_dll)] public static extern void UnitySetGraphicsDevice(IntPtr device, int deviceType, int eventType);
-		[DllImport(renderer_dll)] public static extern void UnitySetRenderFrameValues(int view_id, float[] viewMatrices4x4, float[] projMatrices4x4, float[] overlayProjMatrix4x4, IntPtr fullResDepthTexture2D, int4[] depthViewports, Viewport[] targetViewports, RenderStyle renderStyle, float exposure, float gamma, int framenumber, UnityRenderOptions unityRenderOptions, IntPtr colourTexture);
+		//[DllImport(renderer_dll)] public static extern void UnitySetRenderFrameValues(int view_id, float[] viewMatrices4x4, float[] projMatrices4x4, float[] overlayProjMatrix4x4, IntPtr fullResDepthTexture2D, int4[] depthViewports, Viewport[] targetViewports, RenderStyle renderStyle, float exposure, float gamma, int framenumber, UnityRenderOptions unityRenderOptions, IntPtr colourTexture);
 		
 		#if !UNITY_EDITOR && UNITY_SWITCH
 		[DllImport(renderer_dll)] public static extern void RegisterPlugin();

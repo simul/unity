@@ -312,7 +312,9 @@ namespace simul
 				string[] assetFiles = Directory.GetFiles (dir, "*.asset");
 				foreach (string p in assetFiles) 
 				{
-					Sequence sq = AssetDatabase.LoadAssetAtPath (p, typeof(Sequence)) as Sequence;
+					int count = p.IndexOf("\\Assets\\")+1;
+					string rel = p.Remove(0, count);
+					Sequence sq = AssetDatabase.LoadAssetAtPath (rel, typeof(Sequence)) as Sequence;
 					if (sq != null) 
 					{
 						sequence = sq;

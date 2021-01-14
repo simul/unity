@@ -66,13 +66,13 @@ namespace simul
                 targetViewport[0].x = targetViewport[0].y = 0;
                 targetViewport[0].w = depthWidth;
                 targetViewport[0].h = depthHeight;
-                UnitySetRenderFrameValues
+            /*    UnitySetRenderFrameValues
                 (
                     view_id, viewMatrices, projMatrices, cproj
                     ,depthTexture.GetNative(), depthViewports, targetViewport
                     ,renderStyle, exposure, gamma, Time.frameCount, UnityRenderOptions.DEFAULT
                     ,Graphics.activeColorBuffer.GetNativeRenderBufferPtr()
-                );
+                );*/
 				unityViewStruct.view_id = view_id;
 				unityViewStruct.framenumber = Time.renderedFrameCount;
 				unityViewStruct.exposure = exposure;

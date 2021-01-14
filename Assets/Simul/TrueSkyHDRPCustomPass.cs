@@ -182,7 +182,7 @@ namespace simul
 
                 RTHandle colour, depth;
                 GetCameraBuffers(out colour, out depth);
-
+/*
                 UnitySetRenderFrameValues(view_id
                     , viewMatrices
                     , projMatrices
@@ -196,7 +196,7 @@ namespace simul
                     , Time.renderedFrameCount
                     , unityRenderOptions
                     , colour.rt.colorBuffer.GetNativeRenderBufferPtr()
-                );
+                );*/
 
 
                 unityViewStruct.view_id = view_id;
@@ -212,8 +212,9 @@ namespace simul
                 unityViewStruct.renderStyle = renderStyle;
                 unityViewStruct.unityRenderOptions = unityRenderOptions;
                 unityViewStruct.colourTexture = colour.rt.colorBuffer.GetNativeRenderBufferPtr();
-
-                lastFrameCount = Time.renderedFrameCount;
+                unityViewStruct.externalDepthTexture = editorMode ? depthTexture.GetNative() : (System.IntPtr)0;
+                
+                  lastFrameCount = Time.renderedFrameCount;
                 /*_inscatterRT.renderTexture = inscatterRT;
                 _cloudVisibilityRT.renderTexture = cloudVisibilityRT;
                 _cloudShadowRT.renderTexture = cloudShadowRT;
