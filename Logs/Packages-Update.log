@@ -22,3 +22,11 @@ The following packages were updated:
   com.unity.timeline from version 1.0.0 to 1.2.6
 The following packages were removed:
   com.unity.package-manager-ui@2.1.2
+
+=== Thu Dec 17 19:36:35 2020
+
+Packages were changed.
+Update Mode: updateDependencies
+
+The following packages were updated:
+  com.unity.ide.rider from version 1.2.1 to 2.0.7
