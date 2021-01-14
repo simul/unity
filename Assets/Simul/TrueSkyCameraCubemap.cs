@@ -66,13 +66,13 @@ namespace simul
                 targetViewport[0].x = targetViewport[0].y = 0;
                 targetViewport[0].w = depthWidth;
                 targetViewport[0].h = depthHeight;
-                UnitySetRenderFrameValues
+            /*    UnitySetRenderFrameValues
                 (
                     view_id, viewMatrices, projMatrices, cproj
                     ,depthTexture.GetNative(), depthViewports, targetViewport
                     ,renderStyle, exposure, gamma, Time.frameCount, UnityRenderOptions.DEFAULT
                     ,Graphics.activeColorBuffer.GetNativeRenderBufferPtr()
-                );
+                );*/
 				unityViewStruct.view_id = view_id;
 				unityViewStruct.framenumber = Time.renderedFrameCount;
 				unityViewStruct.exposure = exposure;
@@ -117,12 +117,12 @@ namespace simul
             cbuf_view_id = InternalGetViewId();
 
             mainCommandBuffer.ClearRenderTarget(true, true, new Color(0.0F, 0.0F, 0.0F, 1.0F), 1.0F);
-			unityViewStruct.nativeColourRenderBuffer = (System.IntPtr)0;// (System.IntPtr)Graphics.activeColorBuffer.GetNativeRenderBufferPtr(); //These don't need to be passed for the cubemap to render and function, 
-            unityViewStruct.nativeDepthRenderBuffer = (System.IntPtr)0;// (System.IntPtr)Graphics.activeDepthBuffer.GetNativeRenderBufferPtr();  //and passsing them ssems to create some rendering issues
+			unityViewStruct.nativeColourRenderBuffer = (System.IntPtr)Graphics.activeColorBuffer.GetNativeRenderBufferPtr();
+			unityViewStruct.nativeDepthRenderBuffer = (System.IntPtr)Graphics.activeDepthBuffer.GetNativeRenderBufferPtr();
 
             bool il2cppScripting = UsingIL2CPP();
             Marshal.StructureToPtr(unityViewStruct, unityViewStructPtr, !il2cppScripting);
-            mainCommandBuffer.IssuePluginEventAndData(UnityGetRenderEventFuncWithData(), TRUESKY_EVENT_ID + cbuf_view_id, unityViewStructPtr);
+         //   mainCommandBuffer.IssuePluginEventAndData(UnityGetRenderEventFuncWithData(), TRUESKY_EVENT_ID + cbuf_view_id, unityViewStructPtr);
 		}
 
         float[] cview = new float[16];

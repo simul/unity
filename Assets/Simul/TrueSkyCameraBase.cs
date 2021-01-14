@@ -40,12 +40,21 @@ namespace simul
 			return TRUESKY_EVENT_ID;
 		}
 
+		public enum ResourceState : uint
+		{
+			Unknown = 0,
+			RenderTarget = 4,
+			DepthWrite=16,
+			GenericRead = 0xac3
+		};
 
-		[StructLayout(LayoutKind.Sequential)]
+		[StructLayout(LayoutKind.Sequential, Pack = 1)]
 		public struct UnityViewStruct
 		{
 			public System.IntPtr nativeColourRenderBuffer;
+			public ResourceState colourResourceState;
 			public System.IntPtr nativeDepthRenderBuffer;
+			public ResourceState depthResourceState;
 			public int view_id;
 			public int framenumber;
 			public float exposure;
@@ -59,6 +68,7 @@ namespace simul
 			public RenderStyle renderStyle;
 			public UnityRenderOptions unityRenderOptions;
 			public System.IntPtr colourTexture;
+			public System.IntPtr externalDepthTexture;
 		}
 
         protected bool UsingIL2CPP()
@@ -204,23 +214,23 @@ namespace simul
             float metresPerUnit = trueSKY.GetTrueSky().MetresPerUnit;
 
             proj[offset+00] = m.m00;
-			proj[offset+01] = m.m01;
-			proj[offset+02] = m.m02;
-			proj[offset+03] = m.m03* metresPerUnit;
+			proj[offset+04] = m.m01;
+			proj[offset+08] = m.m02;
+			proj[offset+012] = m.m03* metresPerUnit;
 			  
-			proj[offset+04] = m.m10;
+			proj[offset+01] = m.m10;
 			proj[offset+05] = m.m11;
-			proj[offset+06] = m.m12;
-			proj[offset+07] = m.m13 * metresPerUnit;
+			proj[offset+09] = m.m12;
+			proj[offset+13] = m.m13 * metresPerUnit;
 
-			proj[offset+08] = m.m20;
-			proj[offset+09] = m.m21;
+			proj[offset+02] = m.m20;
+			proj[offset+06] = m.m21;
 			proj[offset+10] = m.m22;
-			proj[offset+11] = m.m23*metresPerUnit;
+			proj[offset+14] = m.m23*metresPerUnit;
 			
-			proj[offset+12] = m.m30;
-			proj[offset+13] = m.m31;
-			proj[offset+14] = m.m32;
+			proj[offset+03] = m.m30;
+			proj[offset+07] = m.m31;
+			proj[offset+11] = m.m32;
 			proj[offset+15] = m.m33 * metresPerUnit;
 		}
 		static public void ViewMatrixToTrueSkyFormat(RenderStyle renderStyle,Matrix4x4 m,float[] view,int offset=0,bool swap_yz=true)
