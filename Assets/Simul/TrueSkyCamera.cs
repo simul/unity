@@ -218,19 +218,19 @@ namespace simul
 				cam.RemoveCommandBuffers(CameraEvent.AfterEverything);
 			}
             CommandBuffer[] bufs = cam.GetCommandBuffers(CameraEvent.BeforeImageEffectsOpaque);
-			if (editorMode)
+			//if (editorMode)
 				PrepareDepthMaterial();
 			int requiredNumber = 1 + (editorMode ? 2 : 0);
             if (bufs.Length != requiredNumber) 
 			{
 				RemoveCommandBuffers();
-				if (editorMode)
+				//if (editorMode)
 					cam.AddCommandBuffer(CameraEvent.BeforeImageEffectsOpaque, blitbuf);
 				cam.AddCommandBuffer(CameraEvent.BeforeImageEffectsOpaque, mainCommandBuffer);
 				cam.AddCommandBuffer(CameraEvent.AfterForwardAlpha, post_translucent_buf);
 				cam.AddCommandBuffer(CameraEvent.AfterEverything, overlay_buf);
 				//if (editorMode)
-				//cam.AddCommandBuffer(CameraEvent.AfterEverything, deferred_buf); 
+				cam.AddCommandBuffer(CameraEvent.AfterEverything, deferred_buf); 
 			}
             mainCommandBuffer.Clear();
 			blitbuf.Clear();
@@ -238,12 +238,12 @@ namespace simul
 			post_translucent_buf.Clear();
 			deferred_buf.Clear();
             cbuf_view_id = InternalGetViewId();
-			if (editorMode)
-			{
+			//if (editorMode)
+			//{
 				blitbuf.SetRenderTarget((RenderTexture)depthTexture.renderTexture);
 				blitbuf.DrawProcedural(Matrix4x4.identity, depthMaterial, 0, MeshTopology.Triangles, 6);
 				blitbuf.SetRenderTarget(Graphics.activeColorBuffer);
-			}
+			//}
 			if (lastFrameCount == Time.renderedFrameCount)
 			{
 				duplicateFrames++;

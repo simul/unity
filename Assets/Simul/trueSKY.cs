@@ -3912,11 +3912,17 @@ namespace simul
 				if (Application.isPlaying)
 				{
 					_trueSKYTime += Time.deltaTime * (_timeProgressionScale / (24.0F * 60.0F * 60.0F * _timeUnits));
+					Variant[] _Variant = { new Variant() };
+					_Variant[0].Vec3.x = _OriginLatitude;
+					_Variant[0].Vec3.y = _OriginLongitude;
+					_Variant[0].Vec3.z = _OriginHeading;
+					StaticSetRender("render:originlatlongheadingdeg", 1, _Variant);
 				}
 
 				UpdateTime();
 				//StaticSetRenderFloat("Time", _trueSKYTime);
 				StaticSetRenderFloat("RealTime", Time.time);
+
 				if (updateERV)
 				{
 					UpdateExternalRender();
