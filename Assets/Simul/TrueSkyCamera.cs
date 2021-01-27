@@ -271,9 +271,12 @@ namespace simul
 			}
 			else
 			{
-				//unityViewStruct.nativeColourRenderBuffer = Display.displays[cam.targetDisplay].colorBuffer.GetNativeRenderBufferPtr();
-				unityViewStruct.colourResourceState = ResourceState.Unknown;
-				unityViewStruct.depthResourceState = ResourceState.Unknown;
+				unityViewStruct.nativeColourRenderBuffer = Display.displays[cam.targetDisplay].colorBuffer.GetNativeRenderBufferPtr();
+				unityViewStruct.nativeDepthRenderBuffer = Display.displays[cam.targetDisplay].depthBuffer.GetNativeRenderBufferPtr();
+				unityViewStruct.colourResourceState = ResourceState.GenericRead;
+				unityViewStruct.depthResourceState = ResourceState.DepthWrite;
+				//unityViewStruct.colourResourceState = ResourceState.Unknown;
+				//unityViewStruct.depthResourceState = ResourceState.Unknown;
 			}
 
 			bool il2cppScripting = UsingIL2CPP();

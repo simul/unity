@@ -138,10 +138,17 @@ namespace simul
 			mTsInstance = trueSKY.GetTrueSky();
 			if (mTsInstance.SimulVersion >= mTsInstance.MakeSimulVersion(4, 2))
 			{
-				float[] location = new float[] {(transform.position.z + mTsInstance.transform.position.x) * mTsInstance.MetresPerUnit,
-											(transform.position.x + mTsInstance.transform.position.z) * mTsInstance.MetresPerUnit,
-											(transform.position.y + mTsInstance.transform.position.y) * mTsInstance.MetresPerUnit};
-				waterProbeCreated = StaticAddWaterProbe(waterProbeValuesPtr);
+				waterProbeValues.ID = ID;
+				waterProbeValues.radius = Radius;
+				waterProbeValues.dEnergy = 0.0f;
+				waterProbeValues.location.x = (transform.position.z + mTsInstance.transform.position.x) * mTsInstance.MetresPerUnit;
+				waterProbeValues.location.y = (transform.position.x + mTsInstance.transform.position.z) * mTsInstance.MetresPerUnit;
+				waterProbeValues.location.z = (transform.position.y + mTsInstance.transform.position.y) * mTsInstance.MetresPerUnit;
+				waterProbeValues.velocity.x = 0.0f;
+				waterProbeValues.velocity.y = 0.0f;
+				waterProbeValues.velocity.z = 0.0f;
+
+				//waterProbeCreated = StaticAddWaterProbe(waterProbeValuesPtr);
 			}
 		}
 	}
