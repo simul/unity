@@ -271,7 +271,7 @@ namespace simul
 			}
 			else
 			{
-				return;
+			//	return;
 				//unityViewStruct.nativeColourRenderBuffer = Display.displays[cam.targetDisplay].colorBuffer.GetNativeRenderBufferPtr();
 				unityViewStruct.colourResourceState = ResourceState.Unknown;
 				unityViewStruct.depthResourceState = ResourceState.Unknown;

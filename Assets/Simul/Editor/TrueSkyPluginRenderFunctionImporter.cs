@@ -98,10 +98,10 @@ namespace simul
 		[DllImport(renderer_dll)] public static extern bool StaticUpdateCustomWaterMesh(int ID, IntPtr newMesh);
 		[DllImport(renderer_dll)] public static extern void StaticRemoveCustomWaterMesh(int ID);
 		[DllImport(renderer_dll)] public static extern void StaticRemoveBoundedWaterObject(uint ID);
-		[DllImport(renderer_dll)] public static extern bool StaticAddWaterProbe(uint ID, float[] location);
-		[DllImport(renderer_dll)] public static extern void StaticRemoveWaterProbe(uint ID);
+		[DllImport(renderer_dll)] public static extern bool StaticAddWaterProbe(IntPtr values);
+		[DllImport(renderer_dll)] public static extern void StaticRemoveWaterProbe(int ID);
 		[DllImport(renderer_dll)] public static extern void StaticGetWaterProbeValues(uint ID, float[] result);
-		[DllImport(renderer_dll)] public static extern void StaticUpdateWaterProbeValues(uint ID, float[] location);
+		[DllImport(renderer_dll)] public static extern void StaticUpdateWaterProbeValues(IntPtr values);
 		[DllImport(renderer_dll)] public static extern bool StaticAddWaterBuoyancyObject(IntPtr newObject);
 		[DllImport(renderer_dll)] public static extern void StaticUpdateWaterBuoyancyObjectValues(IntPtr values);
 		[DllImport(renderer_dll)] public static extern float[] StaticGetWaterBuoyancyObjectResults(int ID);

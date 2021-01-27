@@ -26,13 +26,34 @@ namespace simul
 				_radius = value;
 			}
 		}
+
+		protected bool UsingIL2CPP()
+		{
+			return simul.trueSKY.GetTrueSky().UsingIL2CPP;
+		}
+
+
+		//! Values of a water probe
+		[StructLayout(LayoutKind.Sequential, Pack = 1)]
+		public struct WaterProbeValues
+		{
+			public int ID;
+			public float radius;
+			public float dEnergy;
+			public vec3 location;
+			public vec3 velocity;
+		};
+
 		private trueSKY mTsInstance;
-		private uint ID;
+		private int ID;
 		private bool active;
 		private bool waterProbeCreated;
 		private float depth;
 		private Vector3 direction;
-		private static uint ProbeIDCount = 0;
+		private static int ProbeIDCount = 0;
+
+		WaterProbeValues waterProbeValues = new WaterProbeValues();
+		System.IntPtr waterProbeValuesPtr = Marshal.AllocHGlobal(Marshal.SizeOf(new WaterProbeValues()));
 
 		public TrueSkyWaterProbe()
 		{
@@ -90,15 +111,25 @@ namespace simul
 		{
 			if (mTsInstance.SimulVersion >= mTsInstance.MakeSimulVersion(4, 2))
 			{
-				
-				float[] location = new float[] {(transform.position.z + mTsInstance.transform.position.x) * mTsInstance.MetresPerUnit,
-											(transform.position.x + mTsInstance.transform.position.z) * mTsInstance.MetresPerUnit,
-											(transform.position.y + mTsInstance.transform.position.y) * mTsInstance.MetresPerUnit};
+				waterProbeValues.ID = ID;
+				waterProbeValues.radius = Radius;
+				waterProbeValues.dEnergy = 0.0f;
+				waterProbeValues.location.x = (transform.position.z + mTsInstance.transform.position.x) * mTsInstance.MetresPerUnit;
+				waterProbeValues.location.y = (transform.position.x + mTsInstance.transform.position.z) * mTsInstance.MetresPerUnit;
+				waterProbeValues.location.z = (transform.position.y + mTsInstance.transform.position.y) * mTsInstance.MetresPerUnit;
+				waterProbeValues.velocity.x = 0.0f;
+				waterProbeValues.velocity.y = 0.0f;
+				waterProbeValues.velocity.z = 0.0f;
+
+				bool il2cppScripting = UsingIL2CPP();
+				Marshal.StructureToPtr(waterProbeValues, waterProbeValuesPtr, !il2cppScripting);
 
 				if (!waterProbeCreated)
-					waterProbeCreated = StaticAddWaterProbe(ID, location);
-
-				StaticUpdateWaterProbeValues(ID, location);
+					waterProbeCreated = StaticAddWaterProbe(waterProbeValuesPtr);
+				else
+				{
+					StaticUpdateWaterProbeValues(waterProbeValuesPtr);
+				}
 			}
 		}
 
@@ -107,10 +138,17 @@ namespace simul
 			mTsInstance = trueSKY.GetTrueSky();
 			if (mTsInstance.SimulVersion >= mTsInstance.MakeSimulVersion(4, 2))
 			{
-				float[] location = new float[] {(transform.position.z + mTsInstance.transform.position.x) * mTsInstance.MetresPerUnit,
-											(transform.position.x + mTsInstance.transform.position.z) * mTsInstance.MetresPerUnit,
-											(transform.position.y + mTsInstance.transform.position.y) * mTsInstance.MetresPerUnit};
-				waterProbeCreated = StaticAddWaterProbe(ID, location);
+				waterProbeValues.ID = ID;
+				waterProbeValues.radius = Radius;
+				waterProbeValues.dEnergy = 0.0f;
+				waterProbeValues.location.x = (transform.position.z + mTsInstance.transform.position.x) * mTsInstance.MetresPerUnit;
+				waterProbeValues.location.y = (transform.position.x + mTsInstance.transform.position.z) * mTsInstance.MetresPerUnit;
+				waterProbeValues.location.z = (transform.position.y + mTsInstance.transform.position.y) * mTsInstance.MetresPerUnit;
+				waterProbeValues.velocity.x = 0.0f;
+				waterProbeValues.velocity.y = 0.0f;
+				waterProbeValues.velocity.z = 0.0f;
+
+				//waterProbeCreated = StaticAddWaterProbe(waterProbeValuesPtr);
 			}
 		}
 	}
