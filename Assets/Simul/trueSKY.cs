@@ -529,6 +529,7 @@ namespace simul
 		//FVector Direction;
 		//FQuat Orientation;
 		public bool Render;
+		public bool DestroyMoon;
 	};
 
 	public class Aurorae
@@ -3934,7 +3935,7 @@ namespace simul
 				foreach(var moon in _moons)
 				{
 					
-					if (moon.Render)
+					if (moon.Render && !moon.DestroyMoon)
 					{
 						ExternalMoon Moon = new ExternalMoon();
 						Moon.version = ExternalMoon.static_version;
@@ -3954,7 +3955,11 @@ namespace simul
 						StaticSetMoon(_moons.IndexOf(moon) + 1, Moonptr);
 					}
 					else
+					{ 
 						StaticSetMoon(_moons.IndexOf(moon) + 1, (System.IntPtr)null);
+						if(moon.DestroyMoon)
+							_moons.Remove(moon);
+					}
 				}
 				StaticTick(0.0f);
 			}

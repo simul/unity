@@ -201,7 +201,11 @@ namespace simul
 
 		public override void OnInspectorGUI()
 		{
+			EditorGUI.BeginChangeCheck();
+
 			trueSKY trueSky = (trueSKY)target;
+
+			Undo.RecordObject(trueSky, "Change Value");
 
 			//Styles
 			
@@ -533,6 +537,10 @@ namespace simul
 										moon.MeanAnomalyRate = EditorGUILayout.DoubleField("Mean Anomaly Rate", moon.MeanAnomalyRate);
 										moon.MeanDistance = EditorGUILayout.DoubleField("Mean Distance", moon.MeanDistance);
 										moon.RadiusArcMinutes = EditorGUILayout.DoubleField("RadiusArcMinutes", moon.RadiusArcMinutes);
+									}
+									if (GUILayout.Button("Delete Moon"))
+									{
+										moon.DestroyMoon = true;
 									}
 								}
 
