@@ -529,6 +529,7 @@ namespace simul
 		//FVector Direction;
 		//FQuat Orientation;
 		public bool Render;
+		public bool DestroyMoon;
 	};
 
 	public class Aurorae
@@ -3912,11 +3913,17 @@ namespace simul
 				if (Application.isPlaying)
 				{
 					_trueSKYTime += Time.deltaTime * (_timeProgressionScale / (24.0F * 60.0F * 60.0F * _timeUnits));
+					Variant[] _Variant = { new Variant() };
+					_Variant[0].Vec3.x = _OriginLatitude;
+					_Variant[0].Vec3.y = _OriginLongitude;
+					_Variant[0].Vec3.z = _OriginHeading;
+					StaticSetRender("render:originlatlongheadingdeg", 1, _Variant);
 				}
 
 				UpdateTime();
 				//StaticSetRenderFloat("Time", _trueSKYTime);
 				StaticSetRenderFloat("RealTime", Time.time);
+
 				if (updateERV)
 				{
 					UpdateExternalRender();
@@ -3928,7 +3935,7 @@ namespace simul
 				foreach(var moon in _moons)
 				{
 					
-					if (moon.Render)
+					if (moon.Render && !moon.DestroyMoon)
 					{
 						ExternalMoon Moon = new ExternalMoon();
 						Moon.version = ExternalMoon.static_version;
@@ -3948,7 +3955,11 @@ namespace simul
 						StaticSetMoon(_moons.IndexOf(moon) + 1, Moonptr);
 					}
 					else
+					{ 
 						StaticSetMoon(_moons.IndexOf(moon) + 1, (System.IntPtr)null);
+						if(moon.DestroyMoon)
+							_moons.Remove(moon);
+					}
 				}
 				StaticTick(0.0f);
 			}
