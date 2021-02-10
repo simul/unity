@@ -183,7 +183,7 @@ namespace simul
                 RTHandle colour, depth;
                 GetCameraBuffers(out colour, out depth);
 
-                UnitySetRenderFrameValues(view_id
+                /*UnitySetRenderFrameValues(view_id
                     , viewMatrices
                     , projMatrices
                     , overlayProjMatrix
@@ -196,7 +196,7 @@ namespace simul
                     , Time.renderedFrameCount
                     , unityRenderOptions
                     , colour.rt.colorBuffer.GetNativeRenderBufferPtr()
-                );
+                );*/
 
 
                 unityViewStruct.view_id = view_id;
