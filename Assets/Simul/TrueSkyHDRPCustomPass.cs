@@ -147,6 +147,7 @@ namespace simul
                     targetViewports[i].h = depthHeight;
                 }
 
+#if !UNITY_GAMECORE
 #if !UNITY_SWITCH
                 // If we are doing XR we need to setup the additional viewports
                 if ((renderStyle & RenderStyle.VR_STYLE) == RenderStyle.VR_STYLE)
@@ -174,29 +175,15 @@ namespace simul
                     depthViewports[2].w = targetViewports[2].h = eyeHeight;
                 }
 #endif
+#endif
+
                 UnityRenderOptions unityRenderOptions = UnityRenderOptions.DEFAULT;
                 if (FlipOverlays)
                     unityRenderOptions = unityRenderOptions | UnityRenderOptions.FLIP_OVERLAYS;
                 if (ShareBuffersForVR)
                     unityRenderOptions = unityRenderOptions | UnityRenderOptions.NO_SEPARATION;
 
-                RTHandle colour, depth;
-                GetCameraBuffers(out colour, out depth);
-
-                /*UnitySetRenderFrameValues(view_id
-                    , viewMatrices
-                    , projMatrices
-                    , overlayProjMatrix
-                    , editorMode ? depthTexture.GetNative() : (System.IntPtr)0
-                    , depthViewports
-                    , targetViewports
-                    , renderStyle
-                    , exposure
-                    , gamma
-                    , Time.renderedFrameCount
-                    , unityRenderOptions
-                    , colour.rt.colorBuffer.GetNativeRenderBufferPtr()
-                );*/
+                
 
 
                 unityViewStruct.view_id = view_id;
@@ -206,12 +193,12 @@ namespace simul
                 unityViewStruct.viewMatrices4x4 = viewMatrices;
                 unityViewStruct.projMatrices4x4 = projMatrices;
                 unityViewStruct.overlayProjMatrix4x4 = overlayProjMatrix;
-                unityViewStruct.depthTexture = editorMode ? depthTexture.GetNative() : (System.IntPtr)0;
+                unityViewStruct.depthTexture = depthTexture.GetNative();
                 unityViewStruct.depthViewports = depthViewports;
                 unityViewStruct.targetViewports = targetViewports;
                 unityViewStruct.renderStyle = renderStyle;
                 unityViewStruct.unityRenderOptions = unityRenderOptions;
-                unityViewStruct.colourTexture = colour.rt.colorBuffer.GetNativeRenderBufferPtr();
+                unityViewStruct.colourTexture = (System.IntPtr)0;
 
                 lastFrameCount = Time.renderedFrameCount;
                 /*_inscatterRT.renderTexture = inscatterRT;
@@ -304,6 +291,8 @@ namespace simul
 
             offset *= 16;
             float metresPerUnit = ts.MetresPerUnit;
+
+            m=m.transpose;
 
             proj[offset + 00] = m.m00;
             proj[offset + 01] = m.m01;
