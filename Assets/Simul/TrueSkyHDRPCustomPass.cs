@@ -38,8 +38,13 @@ namespace simul
             unityViewStructPtr = Marshal.AllocHGlobal(Marshal.SizeOf(new UnityViewStruct()));
         }
 
-        protected override void Execute(ScriptableRenderContext src, CommandBuffer cmd, HDCamera camera, CullingResults cullingResult)
+        protected override void Execute(CustomPassContext ctx)
         {
+            ScriptableRenderContext src = ctx.renderContext;
+            CommandBuffer cmd = ctx.cmd;
+            HDCamera camera = ctx.hdCamera;
+            CullingResults cullingResult = ctx.cullingResults;
+
             //Don't draw to the scene view. This should never be removed!
             if (camera.camera.cameraType == CameraType.SceneView)
                 return;
@@ -47,8 +52,8 @@ namespace simul
             //Fill-in UnityViewStruct
             PrepareMatrices(camera);
 
-            RTHandle colour, depth;
-            GetCameraBuffers(out colour, out depth);
+            RTHandle colour = ctx.cameraColorBuffer;
+            RTHandle depth = ctx.cameraDepthBuffer;
 
             unityViewStruct.nativeColourRenderBuffer = colour.rt.colorBuffer.GetNativeRenderBufferPtr();
             unityViewStruct.nativeDepthRenderBuffer = depth.rt.depthBuffer.GetNativeRenderBufferPtr();
@@ -180,25 +185,6 @@ namespace simul
                 if (ShareBuffersForVR)
                     unityRenderOptions = unityRenderOptions | UnityRenderOptions.NO_SEPARATION;
 
-                RTHandle colour, depth;
-                GetCameraBuffers(out colour, out depth);
-/*
-                UnitySetRenderFrameValues(view_id
-                    , viewMatrices
-                    , projMatrices
-                    , overlayProjMatrix
-                    , editorMode ? depthTexture.GetNative() : (System.IntPtr)0
-                    , depthViewports
-                    , targetViewports
-                    , renderStyle
-                    , exposure
-                    , gamma
-                    , Time.renderedFrameCount
-                    , unityRenderOptions
-                    , colour.rt.colorBuffer.GetNativeRenderBufferPtr()
-                );*/
-
-
                 unityViewStruct.view_id = view_id;
                 unityViewStruct.framenumber = Time.renderedFrameCount;
                 unityViewStruct.exposure = exposure;
@@ -206,13 +192,13 @@ namespace simul
                 unityViewStruct.viewMatrices4x4 = viewMatrices;
                 unityViewStruct.projMatrices4x4 = projMatrices;
                 unityViewStruct.overlayProjMatrix4x4 = overlayProjMatrix;
-                unityViewStruct.depthTexture = editorMode ? depthTexture.GetNative() : (System.IntPtr)0;
+                unityViewStruct.depthTexture = depthTexture.GetNative();
                 unityViewStruct.depthViewports = depthViewports;
                 unityViewStruct.targetViewports = targetViewports;
                 unityViewStruct.renderStyle = renderStyle;
                 unityViewStruct.unityRenderOptions = unityRenderOptions;
-                unityViewStruct.colourTexture = colour.rt.colorBuffer.GetNativeRenderBufferPtr();
-                unityViewStruct.externalDepthTexture = editorMode ? depthTexture.GetNative() : (System.IntPtr)0;
+                unityViewStruct.colourTexture = (System.IntPtr)0; ;
+                unityViewStruct.externalDepthTexture = (System.IntPtr)0;
                 
                   lastFrameCount = Time.renderedFrameCount;
                 /*_inscatterRT.renderTexture = inscatterRT;
@@ -305,6 +291,8 @@ namespace simul
 
             offset *= 16;
             float metresPerUnit = ts.MetresPerUnit;
+
+            m = m.transpose;
 
             proj[offset + 00] = m.m00;
             proj[offset + 01] = m.m01;
