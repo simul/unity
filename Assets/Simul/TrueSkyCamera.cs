@@ -220,7 +220,7 @@ namespace simul
             CommandBuffer[] bufs = cam.GetCommandBuffers(CameraEvent.BeforeImageEffectsOpaque);
 			//if (editorMode)
 				PrepareDepthMaterial();
-			int requiredNumber = 1 + (editorMode ? 2 : 0);
+			int requiredNumber = 5;
             if (bufs.Length != requiredNumber) 
 			{
 				RemoveCommandBuffers();
@@ -239,11 +239,11 @@ namespace simul
 			deferred_buf.Clear();
             cbuf_view_id = InternalGetViewId();
 			//if (editorMode)
-			//{
+			{
 				blitbuf.SetRenderTarget((RenderTexture)depthTexture.renderTexture);
 				blitbuf.DrawProcedural(Matrix4x4.identity, depthMaterial, 0, MeshTopology.Triangles, 6);
 				blitbuf.SetRenderTarget(Graphics.activeColorBuffer);
-			//}
+			}
 			if (lastFrameCount == Time.renderedFrameCount)
 			{
 				duplicateFrames++;
@@ -264,19 +264,17 @@ namespace simul
 			if (activeTexture!=null)
 			{
 				unityViewStruct.nativeColourRenderBuffer = activeTexture.colorBuffer.GetNativeRenderBufferPtr();
-				//if (!editorMode )
 				unityViewStruct.nativeDepthRenderBuffer = activeTexture.depthBuffer.GetNativeRenderBufferPtr();
 				unityViewStruct.colourResourceState = ResourceState.GenericRead;
 				unityViewStruct.depthResourceState = ResourceState.DepthWrite;
 			}
 			else
 			{
-				unityViewStruct.nativeColourRenderBuffer = Display.displays[cam.targetDisplay].colorBuffer.GetNativeRenderBufferPtr();
-				unityViewStruct.nativeDepthRenderBuffer = Display.displays[cam.targetDisplay].depthBuffer.GetNativeRenderBufferPtr();
-				unityViewStruct.colourResourceState = ResourceState.GenericRead;
-				unityViewStruct.depthResourceState = ResourceState.DepthWrite;
-				//unityViewStruct.colourResourceState = ResourceState.Unknown;
-				//unityViewStruct.depthResourceState = ResourceState.Unknown;
+				unityViewStruct.nativeColourRenderBuffer = Graphics.activeColorBuffer.GetNativeRenderBufferPtr();
+				unityViewStruct.nativeDepthRenderBuffer = Graphics.activeDepthBuffer.GetNativeRenderBufferPtr();
+				//unityViewStruct.nativeColourRenderBuffer = Display.displays[cam.targetDisplay].colorBuffer.GetNativeRenderBufferPtr();
+				unityViewStruct.colourResourceState = ResourceState.Unknown;
+				unityViewStruct.depthResourceState = ResourceState.Unknown;
 			}
 
 			bool il2cppScripting = UsingIL2CPP();

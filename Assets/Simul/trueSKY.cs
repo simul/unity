@@ -90,7 +90,7 @@ namespace simul
 	{
 		public int x, y, w, h;
 	};
-	public enum RenderStyle
+	public enum RenderStyle : uint
 	{
 		DEFAULT_STYLE = 0
 			, UNITY_STYLE = 2
@@ -102,7 +102,7 @@ namespace simul
 			, VR_STYLE_SIDE_BY_SIDE = 256
 			, DEPTH_BLENDING = 512
 	};
-	public enum UnityRenderOptions
+	public enum UnityRenderOptions: uint
 	{
 		DEFAULT = 0
 		, FLIP_OVERLAYS = 1      //! Compensate for Unity's texture flipping
