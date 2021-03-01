@@ -122,7 +122,7 @@ namespace simul
 
             bool il2cppScripting = UsingIL2CPP();
             Marshal.StructureToPtr(unityViewStruct, unityViewStructPtr, !il2cppScripting);
-         //   mainCommandBuffer.IssuePluginEventAndData(UnityGetRenderEventFuncWithData(), TRUESKY_EVENT_ID + cbuf_view_id, unityViewStructPtr);
+            mainCommandBuffer.IssuePluginEventAndData(UnityGetRenderEventFuncWithData(), TRUESKY_EVENT_ID + cbuf_view_id, unityViewStructPtr);
 		}
 
         float[] cview = new float[16];
