@@ -3977,18 +3977,20 @@ namespace simul
 
 		public void UpdateTime()
 		{
-
-			if (Loop)
+			if (Application.isPlaying)
 			{
-				if (TrueSKYTime > LoopEnd)
-					TrueSKYTime = LoopStart;
-				else if (TrueSKYTime < LoopStart)
-					TrueSKYTime = LoopStart;
-			}
+				if (Loop)
+				{
+					if (TrueSKYTime > LoopEnd)
+						TrueSKYTime = LoopStart;
+					else if (TrueSKYTime < LoopStart)
+						TrueSKYTime = LoopStart;
+				}
 
-			//Allowing for personalised units of time (Day is 0-1, 0-24 or 0-100 etc.)
-			if(TimeProgressionScale != 0)
-				TrueSKYTime += (((TimeProgressionScale / (24.0F * 60.0F * 60.0F)) * TimeUnits) * Time.deltaTime);
+				//Allowing for personalised units of time (Day is 0-1, 0-24 or 0-100 etc.)
+				if (TimeProgressionScale != 0)
+					TrueSKYTime += (((TimeProgressionScale / (24.0F * 60.0F * 60.0F)) * TimeUnits) * Time.deltaTime);
+			}
 			StaticSetRenderFloat("Time", _trueSKYTime/TimeUnits);
 		}
 		public Vector3 getSunColour(Vector3 pos,int id=0)
@@ -4150,13 +4152,6 @@ namespace simul
 				trueSkySingleton = this;
 			}
 		}
-
-#if UNITY_EDITOR
-		static trueSKY()
-		{
-		}
-#endif
-
 		public static string GetShaderbinSourceDir(string target)
 		{
 			char s = Path.DirectorySeparatorChar;
