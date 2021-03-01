@@ -1013,7 +1013,7 @@ namespace simul
 		{
 			if (platform == "x64")
 			{
-				AssetDatabase.ExportPackage("Assets/Simul", fileName, ExportPackageOptions.Recurse | ExportPackageOptions.IncludeDependencies);
+				AssetDatabase.ExportPackage("Assets/Simul", fileName, ExportPackageOptions.Recurse);
 
 				UnityEngine.Debug.Log("Exported: " + fileName);
 			}
@@ -1024,7 +1024,7 @@ namespace simul
 					"Assets/Simul/shaderbin/ps4",
 					"Assets/Simul/Plugins/PS4"
 				};
-				AssetDatabase.ExportPackage(paths, fileName, ExportPackageOptions.Recurse | ExportPackageOptions.IncludeDependencies);
+				AssetDatabase.ExportPackage(paths, fileName, ExportPackageOptions.Recurse | ExportPackageOptions.IncludeDependencies); //Include dependancies not tested with HDRP PlayStation
 
 				UnityEngine.Debug.Log("Exported: " + fileName);
 			}
