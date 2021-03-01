@@ -263,7 +263,8 @@ namespace simul
                 trueSKY trueSKY = (trueSKY)t;
                 if (trueSKY.sequence == currentSequence) return trueSKY;
             }
-			UnityEngine.Debug.LogError("Active trueSky not found with Current Sequence");
+            //no need to spam warnings about incorrect sequence
+			//UnityEngine.Debug.LogError("Active trueSky not found with Current Sequence");
             return null;
         }
 
