@@ -284,8 +284,8 @@ namespace simul
 			overlayViewStruct.colourResourceState = ResourceState.GenericRead;
 			overlayViewStruct.depthResourceState = ResourceState.GenericRead;
 			Marshal.StructureToPtr(overlayViewStruct, overlayViewStructPtr, !il2cppScripting);
-			//post_translucent_buf.IssuePluginEventAndData(UnityGetPostTranslucentFuncWithData(), TRUESKY_EVENT_ID + cbuf_view_id, unityViewStructPtr);
-			//overlay_buf.IssuePluginEventAndData(UnityGetOverlayFuncWithData(), TRUESKY_EVENT_ID + cbuf_view_id, overlayViewStructPtr);
+			post_translucent_buf.IssuePluginEventAndData(UnityGetPostTranslucentFuncWithData(), TRUESKY_EVENT_ID + cbuf_view_id, unityViewStructPtr);
+			overlay_buf.IssuePluginEventAndData(UnityGetOverlayFuncWithData(), TRUESKY_EVENT_ID + cbuf_view_id, overlayViewStructPtr);
 
 		}
 		int duplicateFrames = 0;

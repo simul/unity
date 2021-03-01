@@ -23,13 +23,13 @@ MonoBehaviour:
     \"           0.125\"\n\t\t\t\"WorleyScale\": \"               3\"\n\t\t\t\"baseNoiseFactor\":
     \"             0.5\"\n\t\t\t\"churn\": \"               1\"\n\t\t\t\"cloud_base_km\":
     \"4.631999969482422\"\n\t\t\t\"cloud_height_km\": \"               4\"\n\t\t\t\"cloud_width_km\":
-    \"              50\"\n\t\t\t\"cloudiness\": \"0.6110000014305115\"\n\t\t\t\"diffusivity\":
+    \"              50\"\n\t\t\t\"cloudiness\": \"               1\"\n\t\t\t\"diffusivity\":
     \"0.009999999776482582\"\n\t\t\t\"distributionBaseLayer\": \"0.239999994635582\"\n\t\t\t\"distributionTransition\":
     \"0.2000000029802322\"\n\t\t\t\"edgeSharpness\": \"0.1000000014901161\"\n\t\t\t\"fractal_amplitude\":
     \"2.400000095367432\"\n\t\t\t\"maxDensityGm3\": \"             0.5\"\n\t\t\t\"octaves\":
     \"3\"\n\t\t\t\"offsetKmx\": \"               0\"\n\t\t\t\"offsetKmy\": \"              
     0\"\n\t\t\t\"origin\": \"0.7071067966408575,               0,               0,0.7071067657322372\"\n\t\t\t\"persistence\":
-    \"0.6000000238418579\"\n\t\t\t\"precipitation\": \"               0\"\n\t\t\t\"precipitationRegion.base_radial_km\":
+    \"0.6000000238418579\"\n\t\t\t\"precipitation\": \"               1\"\n\t\t\t\"precipitationRegion.base_radial_km\":
     \"            6378\"\n\t\t\t\"precipitationRegion.edge\": \"0.1000000014901161\"\n\t\t\t\"precipitationRegion.lockToClouds\":
     \"true\"\n\t\t\t\"precipitationRegion.rainCentreS\": \"               1\"\n\t\t\t\"precipitationRegion.rainCentreX\":
     \"               0\"\n\t\t\t\"precipitationRegion.rainCentreY\": \"              
