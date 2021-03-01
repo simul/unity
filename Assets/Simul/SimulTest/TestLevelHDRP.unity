@@ -364,6 +364,11 @@ MonoBehaviour:
   dithering: 1
   stopNaNs: 0
   taaSharpenStrength: 0.6
+  TAAQuality: 1
+  taaHistorySharpening: 0.35
+  taaAntiFlicker: 0.5
+  taaMotionVectorRejection: 0
+  taaAntiHistoryRinging: 0
   physicalParameters:
     m_Iso: 200
     m_ShutterSpeed: 0.005
@@ -382,6 +387,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 1
   hasPersistentHistory: 0
+  exposureTarget: {fileID: 0}
   m_RenderingPathCustomFrameSettings:
     bitDatas:
       data1: 68906302766941
@@ -392,6 +398,9 @@ MonoBehaviour:
     maximumLODLevel: 0
     maximumLODLevelMode: 0
     maximumLODLevelQualityLevel: 0
+    sssQualityMode: 0
+    sssQualityLevel: 0
+    sssCustomSampleBudget: 20
     materialQuality: 0
   renderingPathCustomFrameSettingsOverrideMask:
     mask:
@@ -448,8 +457,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1297650280}
-  m_LocalRotation: {x: -0.010675794, y: 0.7803365, z: -0.013326375, w: -0.6251267}
-  m_LocalPosition: {x: -35187.477, y: -42109.434, z: 163993.55}
+  m_LocalRotation: {x: 0.02522056, y: -0.97297126, z: -0.18956104, w: -0.129451}
+  m_LocalPosition: {x: 14.230107, y: 7.9811296, z: 20.034597}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -468,8 +477,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   flippedView: 0
-  exposure: 0.5
-  gamma: 0.5
+  exposure: 1
+  gamma: 1
   inscatterRT: {fileID: 8400000, guid: a60675db333863f489c8f7a794463b70, type: 2}
   cloudShadowRT: {fileID: 8400000, guid: d388558e9c5128a488a29e7e8f90ab7f, type: 2}
   lossRT: {fileID: 8400000, guid: f06e8f3443418f849a67577e21b54664, type: 2}
@@ -730,6 +739,7 @@ Light:
   m_UseColorTemperature: 1
   m_BoundingSphereOverride: {x: 0, y: 0, z: 0, w: 0}
   m_UseBoundingSphereOverride: 0
+  m_UseViewFrustumForShadowCasterCull: 1
   m_ShadowRadius: 0
   m_ShadowAngle: 0.53
 --- !u!4 &2035111235
@@ -785,10 +795,12 @@ MonoBehaviour:
   m_EnableSpotReflector: 0
   m_LuxAtDistance: 1
   m_InnerSpotPercent: 0
+  m_SpotIESCutoffPercent: 100
   m_LightDimmer: 1
   m_VolumetricDimmer: 1
   m_LightUnit: 2
   m_FadeDistance: 10000
+  m_VolumetricFadeDistance: 10000
   m_AffectDiffuse: 1
   m_AffectSpecular: 1
   m_NonLightmappedOnly: 0
@@ -803,6 +815,9 @@ MonoBehaviour:
   m_ApplyRangeAttenuation: 1
   m_DisplayAreaLightEmissiveMesh: 0
   m_AreaLightCookie: {fileID: 0}
+  m_IESPoint: {fileID: 0}
+  m_IESSpot: {fileID: 0}
+  m_IncludeForRayTracing: 1
   m_AreaLightShadowCone: 120
   m_UseScreenSpaceShadows: 0
   m_InteractsWithSky: 1
@@ -821,6 +836,7 @@ MonoBehaviour:
   m_LightShadowRadius: 0.5
   m_SemiTransparentShadow: 0
   m_ColorShadow: 1
+  m_DistanceBasedFiltering: 0
   m_EvsmExponent: 15
   m_EvsmLightLeakBias: 0
   m_EvsmVarianceBias: 0.00001
@@ -851,8 +867,13 @@ MonoBehaviour:
   m_NormalBias: 0.75
   m_SlopeBias: 0.5
   m_ShadowUpdateMode: 0
+  m_AlwaysDrawDynamicShadows: 0
+  m_UpdateShadowOnLightMovement: 0
+  m_CachedShadowTranslationThreshold: 0.01
+  m_CachedShadowAngularThreshold: 0.5
   m_BarnDoorAngle: 90
   m_BarnDoorLength: 0.05
+  m_preserveCachedShadow: 0
   m_ShadowCascadeRatios:
   - 0.005
   - 0.015
@@ -926,7 +947,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   SimulVersionMajor: 4
-  SimulVersionMinor: 2
+  SimulVersionMinor: 3
   SimulVersionBuild: 0
   _metresPerUnit: 1
   _renderInEditMode: 1
@@ -952,7 +973,7 @@ MonoBehaviour:
   _edgeNoiseWavelengthKm: 2.5
   _worleyTextureSize: 64
   _worleyWavelengthKm: 8.7
-  _trueSKYTime: 12
+  _trueSKYTime: 12.216494
   _timeProgressionScale: 0
   _timeUnits: 24
   _loop: 0
@@ -1022,6 +1043,8 @@ MonoBehaviour:
   _Extinction: 4
   _MieAsymmetry: 0.87
   _shadowTextureRes: 256
+  _cloudShadowStrength: 0.8
+  _cloudShadowRangeKm: 300
   _HDRP_RenderPipelineAsset: {fileID: 11400000, guid: 6fd88a366de24f24d9eae1191df5e21e, type: 2}
   _LoadRenderPipelineAsset: 1
   _UsingIL2CPP: 0
@@ -1071,8 +1094,8 @@ MonoBehaviour:
         passFoldout: 0
         m_Version: 0
         FlipOverlays: 0
-        exposure: 0.5
-        gamma: 0.5
+        exposure: 1
+        gamma: 1
         flippedView: 0
         ShareBuffersForVR: 1
 --- !u!114 &2053481784
@@ -1106,8 +1129,8 @@ MonoBehaviour:
         passFoldout: 0
         m_Version: 0
         FlipOverlays: 0
-        exposure: 0.5
-        gamma: 0.5
+        exposure: 1
+        gamma: 1
         flippedView: 0
         ShareBuffersForVR: 1
 --- !u!114 &2053481785
@@ -1141,8 +1164,8 @@ MonoBehaviour:
         passFoldout: 0
         m_Version: 0
         FlipOverlays: 0
-        exposure: 0.5
-        gamma: 0.5
+        exposure: 1
+        gamma: 1
         flippedView: 0
         ShareBuffersForVR: 1
 --- !u!114 &2053481786
