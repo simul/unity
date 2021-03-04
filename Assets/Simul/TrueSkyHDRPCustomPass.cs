@@ -38,8 +38,13 @@ namespace simul
             unityViewStructPtr = Marshal.AllocHGlobal(Marshal.SizeOf(new UnityViewStruct()));
         }
 
-        protected override void Execute(ScriptableRenderContext src, CommandBuffer cmd, HDCamera camera, CullingResults cullingResult)
+        protected override void Execute(CustomPassContext ctx)
         {
+            ScriptableRenderContext src = ctx.renderContext;
+            CommandBuffer cmd = ctx.cmd;
+            HDCamera camera = ctx.hdCamera;
+            CullingResults cullingResult = ctx.cullingResults;
+
             //Don't draw to the scene view. This should never be removed!
             if (camera.camera.cameraType == CameraType.SceneView)
                 return;
@@ -47,8 +52,8 @@ namespace simul
             //Fill-in UnityViewStruct
             PrepareMatrices(camera);
 
-            RTHandle colour, depth;
-            GetCameraBuffers(out colour, out depth);
+            RTHandle colour = ctx.cameraColorBuffer;
+            RTHandle depth = ctx.cameraDepthBuffer;
 
             unityViewStruct.nativeColourRenderBuffer = colour.rt.colorBuffer.GetNativeRenderBufferPtr();
             unityViewStruct.nativeDepthRenderBuffer = depth.rt.depthBuffer.GetNativeRenderBufferPtr();
