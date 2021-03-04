@@ -848,7 +848,7 @@ namespace simul
 					}
 					EditorGUILayout.LabelField("For HDRP scenes, this saves the current RenderPipelineAsset to trueSKY.cs.\n" +
 						"For Standard/Legacy Rendering mode, the RenderPipelineAsset is set to null.\n" +
-						"trueSKY.Upate() will load any changes.\n" +
+						"trueSKY.Update() will load any changes.\n" +
 						"This allows a single project to have both standard and HDRP scenes.", GUILayout.Height(60.0f));
 					
 					trueSky.UsingIL2CPP = EditorGUILayout.Toggle("Use IL2CPP", trueSky.UsingIL2CPP);
@@ -861,48 +861,8 @@ namespace simul
 				EditorGUILayout.BeginHorizontal();
 				EditorGUILayout.Space();
 				if (GUILayout.Button("Export Package"))
-				{
-					string simul_dir = "C:/Simul/4.3/Simul";
-					string dir = simul_dir + "/Products/TrueSky/Release/";
-					string version = "4.3.0.";
-					string version_file = simul_dir + "/version.txt";
-					try
-					{
-						using (StreamReader sr = new StreamReader(version_file))
-						{
-							version = sr.ReadToEnd();
-						}
-					}
-					catch (Exception e)
-					{
-						UnityEngine.Debug.Log(e);
-						UnityEngine.Debug.Log("The version string file could not be read: " + version_file);
-					}
-					string filenameRoot = "trueSKYPlugin-Unity2018-" + version;
-					string[] aFilePaths = Directory.GetFiles(dir, filenameRoot + "*.unitypackage");
-					int largest = 1;
-					foreach (string p in aFilePaths)
-					{
-						string pat = filenameRoot + @"(.*)\.unitypackage";
-						// Instantiate the regular expression object.
-						Regex r = new Regex(pat, RegexOptions.IgnoreCase);
-						// Match the regular expression pattern against a text string.
-						Match m = r.Match(p);
-						while (m.Success)
-						{
-							{
-								Group g = m.Groups[1];
-								string numstr = g.ToString();
-								int ct = Convert.ToInt32(numstr);
-								if (ct > largest)
-									largest = ct;
-							}
-							m = m.NextMatch();
-						}
-					}
-					largest++;
-					string fileName = dir + filenameRoot + largest.ToString("D4") + ".unitypackage";
-					ExportPackage(fileName, "x64");
+				{							
+					ExportPackage("C:/Simul/Unity/ExportedPackage.unitypackage", "x64");
 				}
 				EditorGUILayout.EndHorizontal();
 			}
@@ -1013,7 +973,7 @@ namespace simul
 		{
 			if (platform == "x64")
 			{
-				AssetDatabase.ExportPackage("Assets/Simul", fileName, ExportPackageOptions.Recurse | ExportPackageOptions.IncludeDependencies);
+				AssetDatabase.ExportPackage("Assets/Simul", fileName, ExportPackageOptions.Recurse);
 
 				UnityEngine.Debug.Log("Exported: " + fileName);
 			}
@@ -1024,7 +984,7 @@ namespace simul
 					"Assets/Simul/shaderbin/ps4",
 					"Assets/Simul/Plugins/PS4"
 				};
-				AssetDatabase.ExportPackage(paths, fileName, ExportPackageOptions.Recurse | ExportPackageOptions.IncludeDependencies);
+				AssetDatabase.ExportPackage(paths, fileName, ExportPackageOptions.Recurse | ExportPackageOptions.IncludeDependencies); //Include dependancies not tested with HDRP PlayStation
 
 				UnityEngine.Debug.Log("Exported: " + fileName);
 			}

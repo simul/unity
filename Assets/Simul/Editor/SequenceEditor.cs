@@ -170,11 +170,13 @@ namespace simul
             }
             string txt = ClipboardHelper.clipBoard;
 
-            if(txt.Length > 0)
-            {
-                StaticSetSequence(SequencerManager.Handle, txt, txt.Length + 1);
-                //onPropertiesChangedCallback(handle, txt);
-            }
+			if (txt.Length > 0 && txt.Contains("skyKeyframer"))
+			{
+				StaticSetSequence(SequencerManager.Handle, txt, txt.Length + 1);
+				//onPropertiesChangedCallback(handle, txt);
+			}
+            else
+                UnityEngine.Debug.LogError("Sequence information not found in clipboard");
         }
     }
 }
