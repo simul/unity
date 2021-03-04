@@ -9,7 +9,7 @@ using static simul.TrueSkyCameraBase;
 
 namespace simul
 {
-    class TrueSkyHDRPCustomPass : CustomPass
+    public class TrueSkyHDRPCustomPass : CustomPass
     {
         UnityViewStruct unityViewStruct;
         System.IntPtr unityViewStructPtr;
@@ -82,8 +82,8 @@ namespace simul
         protected float[] overlayProjMatrix;
 
         public bool FlipOverlays = false;
-        public float exposure = 0.5F;
-        public float gamma = 0.5F;
+        public float exposure = 1.0F;
+        public float gamma = 1.0F;
         public bool flippedView = false;
         public bool ShareBuffersForVR = true;
 

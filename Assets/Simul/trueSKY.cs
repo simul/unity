@@ -3104,6 +3104,7 @@ namespace simul
 			try
 			{
 				StaticSetSequenceTxt(_sequence.SequenceAsText);
+				StaticTriggerAction("Reset");
 			}
 			catch (Exception exc)
 			{
@@ -3784,6 +3785,7 @@ namespace simul
 
 				Marshal.StructureToPtr(ERV, ERVptr, true);
 				StaticSetExternalRenderValues(ERVptr);
+				//StaticTriggerAction("Reset");
 			}
 			else
 			{
@@ -3901,6 +3903,7 @@ namespace simul
 
 		bool _initialized = false;
 		bool _rendering_initialized = false;
+		bool isApplicationPlaying = false;
 		void Update()
 		{
 			if (GraphicsSettings.renderPipelineAsset != HDRP_RenderPipelineAsset && LoadRenderPipelineAsset)
@@ -3912,13 +3915,21 @@ namespace simul
 					Init();
 				if (Application.isPlaying)
 				{
+					if (!isApplicationPlaying)
+					{
+						StaticTriggerAction("Reset");
+						isApplicationPlaying = true;
+					}
 					_trueSKYTime += Time.deltaTime * (_timeProgressionScale / (24.0F * 60.0F * 60.0F * _timeUnits));
-					Variant[] _Variant = { new Variant() };
+					Variant[] _Variant = { new Variant() }; //temp fix.
 					_Variant[0].Vec3.x = _OriginLatitude;
 					_Variant[0].Vec3.y = _OriginLongitude;
 					_Variant[0].Vec3.z = _OriginHeading;
 					StaticSetRender("render:originlatlongheadingdeg", 1, _Variant);
+
 				}
+				else
+					isApplicationPlaying = false;
 
 				UpdateTime();
 				//StaticSetRenderFloat("Time", _trueSKYTime);

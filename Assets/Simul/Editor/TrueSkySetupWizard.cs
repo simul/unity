@@ -1,4 +1,4 @@
-﻿using UnityEngine; 
+﻿using UnityEngine;
 using System.Collections;
 using UnityEditor;
 using System.Runtime.InteropServices;
@@ -6,6 +6,11 @@ using System;
 using System.Text;
 using System.Diagnostics;
 using System.IO;
+
+#if USING_HDRP
+	using UnityEngine.Rendering.HighDefinition;
+#endif
+
 
 namespace simul
 {
@@ -68,24 +73,24 @@ namespace simul
 		[MenuItem("GameObject/Initialize trueSKY in Scene", false, 100000)]
 		public static void InitTrueSkySequence()
 		{
-			TrueSkySetupWizard w = (TrueSkySetupWizard)EditorWindow.GetWindow(typeof(TrueSkySetupWizard),true,"Initialize trueSKY",true);
+			TrueSkySetupWizard w = (TrueSkySetupWizard)EditorWindow.GetWindow(typeof(TrueSkySetupWizard), true, "Initialize trueSKY", true);
 			Texture iconTexture = Resources.Load("trueSKY Icon") as Texture;
 			w.titleContent = new GUIContent(" trueSKY", iconTexture);
 		}
 
 		void GetSceneFilename()
 		{
-            string n = "";
+			string n = "";
 #if UNITY_5_4_OR_NEWER
-            n = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
+			n = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
 #else
             n = EditorApplication.currentScene;
 #endif
-            sceneFilename = n;
+			sceneFilename = n;
 		}
 
 		void OnGUI()
-		{   
+		{
 			if (stage == Stage.PRE_START)
 			{
 				// DirectoryCopy.CopyPluginsAndGizmosToAssetsFolder();
@@ -94,7 +99,7 @@ namespace simul
 			GUIStyle textStyle = new GUIStyle();
 			textStyle.margin = new RectOffset(12, 12, 4, 4);
 			textStyle.wordWrap = true;
-			
+
 			GUIStyle defaultButtonStyle = new GUIStyle(GUI.skin.button);
 			if (EditorGUIUtility.isProSkin)
 			{
@@ -111,11 +116,14 @@ namespace simul
 			{
 				GetSceneFilename();
 				if (sceneFilename.Length > 0)
-					GUILayout.Label("This wizard will initialize trueSKY for the current scene.\n\n\tScene: " + sceneFilename , textStyle);
+					GUILayout.Label("This wizard will initialize trueSKY for the current scene.\n\n\tScene: " + sceneFilename, textStyle);
 				else
 				{
 					GUILayout.Label("This wizard will initialize trueSKY for the current scene.\nThe current scene has not yet been saved - plase do this first, so the wizard knows where to put the trueSKY data.", textStyle);
 				}
+#if USING_HDRP
+				GUILayout.Label("trueSKY will configure for HDRP", textStyle);
+#endif
 			}
 			if (stage == Stage.FIND_SEQUENCE)
 			{
@@ -131,35 +139,35 @@ namespace simul
 				sequence = (Sequence)EditorGUILayout.ObjectField("Sequence Asset", sequence, typeof(Sequence), false);
 			}
 			if (stage == Stage.FIND_CAMERA)
-			{  
+			{
 				FindCamera();
-				if (Camera.main != null) 									// Case 1: Main Camera exists 
+				if (Camera.main != null)                                    // Case 1: Main Camera exists 
 				{
-					GUILayout.Label ("A main camera was found in the current scene. The TrueSkyCamera script will be assigned to this camera.", textStyle);
+					GUILayout.Label("A main camera was found in the current scene. The TrueSkyCamera script will be assigned to this camera.", textStyle);
 
-					if (Camera.allCamerasCount > 1) 						// Case 2: The are other cameras (in addition to Main Camera)	
-					{			
-						GUILayout.Label ("Additionally, check the box to assign the script to all cameras.", textStyle);	
-						multipleCameras = GUILayout.Toggle (multipleCameras, "Assign TrueSkyCamera to all cameras");
+					if (Camera.allCamerasCount > 1)                         // Case 2: The are other cameras (in addition to Main Camera)	
+					{
+						GUILayout.Label("Additionally, check the box to assign the script to all cameras.", textStyle);
+						multipleCameras = GUILayout.Toggle(multipleCameras, "Assign TrueSkyCamera to all cameras");
 					}
 
 					mainCamera = Camera.main;
-				} 
-				else if (Camera.allCamerasCount >= 1)  						// Case 3: The are other cameras (but no Main Camera)
+				}
+				else if (Camera.allCamerasCount >= 1)                       // Case 3: The are other cameras (but no Main Camera)
 				{
-					GUILayout.Label ("No main camera was found in the current scene. You can select another camera or check the option to make a new main camera and assign it to this.", textStyle);
-					GUILayout.Label ("Additionally, check the box to assign the script to all cameras", textStyle);
+					GUILayout.Label("No main camera was found in the current scene. You can select another camera or check the option to make a new main camera and assign it to this.", textStyle);
+					GUILayout.Label("Additionally, check the box to assign the script to all cameras", textStyle);
 					createAMainCamera = GUILayout.Toggle(createAMainCamera, "Create a new Main Camera and attach the TrueSkyCamera script to it.");
-					multipleCameras = GUILayout.Toggle(multipleCameras, "Assign TrueSkyCamera to all cameras");	
+					multipleCameras = GUILayout.Toggle(multipleCameras, "Assign TrueSkyCamera to all cameras");
 
 				}
-				else                                                    	// Case 4: No Cameras
+				else                                                        // Case 4: No Cameras
 				{
 					GUILayout.Label("No main camera or other cameras found in the current scene. You can select one or check the box to have one created for you, and the script assigned to this.", textStyle);
 					createAMainCamera = GUILayout.Toggle(createAMainCamera, "Create a new Main Camera and attach the TrueSkyCamera script to it.");
 				}
 
-				if (!createAMainCamera  && mainCamera == null)										// Don't give option to select other camera if there is/will be a main camera
+				if (!createAMainCamera && mainCamera == null)                                       // Don't give option to select other camera if there is/will be a main camera
 					mainCamera = (Camera)EditorGUILayout.ObjectField("Camera", mainCamera, typeof(Camera), true);
 
 			}
@@ -168,59 +176,66 @@ namespace simul
 				FindTrueSky();
 				if (trueSky != null)
 				{
-                    GUILayout.Label("A trueSKY GameObject " + trueSky.name + " was found in the current scene.", textStyle);
+					GUILayout.Label("A trueSKY GameObject " + trueSky.name + " was found in the current scene.", textStyle);
 				}
 				else
 				{
-                    GUILayout.Label("No trueSKY GameObject was found in the current scene, one will be created.", textStyle);
+					GUILayout.Label("No trueSKY GameObject was found in the current scene, one will be created.", textStyle);
 				}
 			}
 			if (stage == Stage.FIND_SUN)
-			{ 
+			{
 				UnityEngine.Light[] lights;
-				lights              = FindObjectsOfType (typeof(Light)) as Light[];
+				lights = FindObjectsOfType(typeof(Light)) as Light[];
 				int directionalLights = 0;
-                
-				foreach (Light t in lights) 
+
+				foreach (Light t in lights)
 				{
 					Light l = (Light)t;
 					if (l.type == LightType.Directional)
 						directionalLights++;
 				}
 				if (directionalLights == 0)
-                {
-					GUILayout.Label ("No directional light on scene, one will be created.", textStyle);
-                }
+				{
+					GUILayout.Label("No directional light on scene, one will be created.", textStyle);
+				}
+				else if (directionalLights == 1)
+				{
+					GUILayout.Label("A Directional Light was found in the scene, the trueSKY Light Script will be applied.", textStyle);
+					lightGameObject = lights[0].gameObject;
+					lightComponent = lightGameObject.GetComponent<TrueSkyDirectionalLight>();
+				}
 				else if (directionalLights >= 1)
-                {
-					GUILayout.Label ("There's 1 or more directional lights on the scene. TrueSKY only needs one directional light.", textStyle);
-                    lightGameObject = lights[0].gameObject;
-                    lightComponent  = lightGameObject.GetComponent<TrueSkyDirectionalLight>();
-                } 
+				{
+					GUILayout.Label("There's 1 or more directional lights on the scene. TrueSKY only needs one directional light.", textStyle);
+					lightGameObject = lights[0].gameObject;
+					lightComponent = lightGameObject.GetComponent<TrueSkyDirectionalLight>();
+				}
 			}
 			if (stage == Stage.FINISH)
 			{
 				GUILayout.Label("When you click Finish, trueSKY will be initialized for this scene.", textStyle);
-				
+				createCubemapProbe = GUILayout.Toggle(createCubemapProbe, "Add trueSKY Cubemap Probe to trueSKY Object");
 				removeFog = GUILayout.Toggle(removeFog, "Remove standard distance fog");
 				removeSkybox = GUILayout.Toggle(removeSkybox, "Remove default skybox from camera");
-				if (Camera.main == null && !createAMainCamera) 
-				{
-					createCubemapProbeObj = GUILayout.Toggle (createCubemapProbeObj, "Add trueSKY Cubemap Probe to trueSKY Object (will replace any existing)", textStyle);
 
-					createCubemapProbeCam = false;  	// set to false as no main camera, so can't attach to cam
-				} 
-				else 
-				{
-					createCubemapProbeCam = GUILayout.Toggle (createCubemapProbeCam, "Add trueSKY Cubemap Probe to main camera (will replace any existing)", textStyle);
+				//if (Camera.main == null && !createAMainCamera) 
+				//{
 
-					createCubemapProbeObj = false;	 	// want to assign to main cam as it exists, so don't allow option to assign to obj
-				}
 
-				GUILayout.Label ("\n\nTo view more information on using trueSKY for Unity, along with code reference pages and a detailed explanation of the sequencer, please click the button below.", textStyle);
+				//	createCubemapProbeCam = false;  	// set to false as no main camera, so can't attach to cam
+				//} 
+				//else 
+				//{
+				//	createCubemapProbeCam = GUILayout.Toggle (createCubemapProbeCam, "Add trueSKY Cubemap Probe to main camera (will replace any existing)", textStyle);
 
-				if (GUILayout.Button ("Launch Documentation",defaultButtonStyle))
-					Application.OpenURL ("http://docs.simul.co/unity");
+				//	createCubemapProbeObj = false;	 	// want to assign to main cam as it exists, so don't allow option to assign to obj
+				//}
+
+				GUILayout.Label("\n\nTo view more information on using trueSKY for Unity, along with code reference pages and a detailed explanation of the sequencer, please click the button below.", textStyle);
+
+				if (GUILayout.Button("Launch Documentation", defaultButtonStyle))
+					Application.OpenURL("http://docs.simul.co/unity");
 
 			}
 			GUILayout.FlexibleSpace();
@@ -234,7 +249,7 @@ namespace simul
 					Close();
 				if (sceneFilename.Length == 0)
 					GUI.enabled = false;
-				if (GUILayout.Button("Next",defaultButtonStyle))
+				if (GUILayout.Button("Next", defaultButtonStyle))
 					OnWizardNext();
 				if (sceneFilename.Length == 0)
 					GUI.enabled = true;
@@ -281,39 +296,38 @@ namespace simul
 			stage--;
 		}
 
-		Sequence        sequence = null;
-		Camera          mainCamera = null; 
-		trueSKY         trueSky = null;
-		GameObject      lightGameObject = null;
-		TrueSkyDirectionalLight    lightComponent;
+		Sequence sequence = null;
+		Camera mainCamera = null;
+		trueSKY trueSky = null;
+		GameObject lightGameObject = null;
+		TrueSkyDirectionalLight lightComponent;
 
-		public bool     removeFog = true;
-		public bool     removeSkybox = true;
-		public bool     createCubemapProbeCam = true;
-		public bool     createCubemapProbeObj = true;
-		public bool     multipleCameras = false;  
-		public bool     createAMainCamera = false;
+		public bool removeFog = true;
+		public bool removeSkybox = true;
+		public bool createCubemapProbe = true;
+		public bool multipleCameras = false;
+		public bool createAMainCamera = false;
 
-		string          sceneFilename;
+		string sceneFilename;
 
 		void FindSequence()
 		{
-			if (sequence == null) 				 	// to stop GUILayout.ObjectField selections being overwritten
+			if (sequence == null)                   // to stop GUILayout.ObjectField selections being overwritten
 			{
-                string projPath     = UnityEngine.Application.dataPath;
-                string relativePath = UnityEngine.SceneManagement.SceneManager.GetActiveScene().path;
-                relativePath        = relativePath.Remove(0, 7);    //remove Assets/
-                string curScenPath  = projPath + "/" + relativePath;
-                //UnityEngine.Debug.Log("Current scene path:" + curScenPath);     
-                           
+				string projPath = UnityEngine.Application.dataPath;
+				string relativePath = UnityEngine.SceneManagement.SceneManager.GetActiveScene().path;
+				relativePath = relativePath.Remove(0, 7);    //remove Assets/
+				string curScenPath = projPath + "/" + relativePath;
+				//UnityEngine.Debug.Log("Current scene path:" + curScenPath);     
+
 				// 1. Is there a sequence asset in the current scene's assets directory?
-				string dir = Path.GetDirectoryName (curScenPath);
+				string dir = Path.GetDirectoryName(curScenPath);
 				// Find any sequence asset:
-				string[] assetFiles = Directory.GetFiles (dir, "*.asset");
-				foreach (string p in assetFiles) 
+				string[] assetFiles = Directory.GetFiles(dir, "*.asset");
+				foreach (string p in assetFiles)
 				{
-					Sequence sq = AssetDatabase.LoadAssetAtPath (p, typeof(Sequence)) as Sequence;
-					if (sq != null) 
+					Sequence sq = AssetDatabase.LoadAssetAtPath(p, typeof(Sequence)) as Sequence;
+					if (sq != null)
 					{
 						sequence = sq;
 					}
@@ -321,98 +335,112 @@ namespace simul
 			}
 		}
 
-        void FindCamera()
+		void FindCamera()
 		{
 			// Now we find the main camera, and add the TrueSkyCamera.cs script to it, IF it is not already present:
-			if (mainCamera == null) 				// to stop GUILayout.ObjectField selections being overwritten
+			if (mainCamera == null)                 // to stop GUILayout.ObjectField selections being overwritten
 				mainCamera = Camera.main;
 		}
 
 		void Finish()
-		{   
+		{
 			TrueSkyCamera trueSkyCamera;
 
 			if (sequence == null)
 			{
-                // Build asset path and name (it has to be relative)
-                string relativePath = UnityEngine.SceneManagement.SceneManager.GetActiveScene().path;
+				// Build asset path and name (it has to be relative)
+				string relativePath = UnityEngine.SceneManagement.SceneManager.GetActiveScene().path;
 
-                string sequenceFilename = relativePath.Replace(".unity", "_sq.asset");
+				string sequenceFilename = relativePath.Replace(".unity", "_sq.asset");
 				sequence = CustomAssetUtility.CreateAsset<Sequence>(sequenceFilename);
-			}
-			if (createAMainCamera) 		// if user has requested a main camera to be created (as none already)
-			{  
-				GameObject MainCam = new GameObject("Main Camera"); 
-				MainCam.gameObject.AddComponent<Camera>();
-				MainCam.tag = "MainCamera";
-				mainCamera = MainCam.GetComponent<Camera>();
-			}
-			if (multipleCameras) 	// if user has requested the script o be assigned to cameras
-			{   
-				Camera[] cams = new Camera[Camera.allCamerasCount];    		 // find all cameras
-				if (Camera.allCamerasCount >= 1)		
-					Array.Copy (Camera.allCameras, cams, Camera.allCamerasCount);  
-
-				for (int i = 0; i < cams.Length; i++) 	 
-				{  
-					trueSkyCamera = cams[i].gameObject.GetComponent<TrueSkyCamera>();
-					if(trueSkyCamera == null)
-						cams[i].gameObject.AddComponent <TrueSkyCamera> ();
-				}  
-
-			} 
-			if (mainCamera==null)         			// if mainCamera still = null, inform user script wasn't assigned + how to assign it
-			{
-				if (Camera.allCamerasCount < 1)
-					UnityEngine.Debug.LogWarning ("Can't find any cameras for trueSky Camera script. Please add a camera manually and repeat the wizard to assign the script to the camera of your choice/all cameras. Alternatively, check the option to automatically create a main camera with the script assigned.");
-				else if (!multipleCameras)
-					UnityEngine.Debug.LogWarning ("Can't find a main camera for trueSKy Camera script, but other cameras found. Repeat the wizard and assign the script to the camera of your choice/all cameras");
-			} 
-			else 
-			{ 
-				trueSkyCamera = mainCamera.gameObject.GetComponent<TrueSkyCamera> ();
-				if (trueSkyCamera == null)
-					mainCamera.gameObject.AddComponent<TrueSkyCamera> ();
 			}
 			if (trueSky == null)
 			{
 				GameObject g = new GameObject("trueSky");
 				trueSky = g.AddComponent<trueSKY>();
 			}
-#if CREATE_PROBE
-			if (createCubemapProbeCam || createCubemapProbeObj) {  			// must be after trueSKY obj assigned, in case assigning probe to this instead of mainCam
- 
-				UnityEngine.Object[] objects = FindObjectsOfType(typeof(TrueSkyCubemapProbe));
+			if (createAMainCamera)      // if user has requested a main camera to be created (as none already)
+			{
+				GameObject MainCam = new GameObject("Main Camera");
+				MainCam.gameObject.AddComponent<Camera>();
+				MainCam.tag = "MainCamera";
+				mainCamera = MainCam.GetComponent<Camera>();
+			}
+			if (multipleCameras)    // if user has requested the script o be assigned to cameras
+			{
+				Camera[] cams = new Camera[Camera.allCamerasCount];          // find all cameras
+				if (Camera.allCamerasCount >= 1)
+					Array.Copy(Camera.allCameras, cams, Camera.allCamerasCount);
 
-				foreach (UnityEngine.Object t in objects) 		// Destroy any other cubemap probes 
+				for (int i = 0; i < cams.Length; i++)
 				{
-					MonoBehaviour b = (MonoBehaviour)t;
-					if (b.GetComponent<TrueSkyCubemapProbe> () != null)
-						DestroyImmediate (b.GetComponent<TrueSkyCubemapProbe> ());
+					trueSkyCamera = cams[i].gameObject.GetComponent<TrueSkyCamera>();
+					if (trueSkyCamera == null)
+						cams[i].gameObject.AddComponent<TrueSkyCamera>();
 				}
 
-				if (createCubemapProbeCam) 
-					mainCamera.gameObject.AddComponent<TrueSkyCubemapProbe> ();
+			}
+			if (mainCamera == null)                     // if mainCamera still = null, inform user script wasn't assigned + how to assign it
+			{
+				if (Camera.allCamerasCount < 1)
+					UnityEngine.Debug.LogWarning("Can't find any cameras for trueSky Camera script. Please add a camera manually and repeat the wizard to assign the script to the camera of your choice/all cameras. Alternatively, check the option to automatically create a main camera with the script assigned.");
+				else if (!multipleCameras)
+					UnityEngine.Debug.LogWarning("Can't find a main camera for trueSKy Camera script, but other cameras found. Repeat the wizard and assign the script to the camera of your choice/all cameras");
+			}
+			else
+			{
+#if USING_HDRP
+				simul.TrueSkyHDRPCustomPass trueSKYPreRefraction = new simul.TrueSkyHDRPCustomPass();
+				simul.TrueSkyHDRPCustomPass trueSKYPrePostProcess = new simul.TrueSkyHDRPCustomPass();
+				CustomPassVolume trueSKYPassBeforePreRefraction =trueSky.gameObject.GetComponent<CustomPassVolume>();
+				if (trueSKYPassBeforePreRefraction == null)
+				{
+					trueSKYPreRefraction.name = "trueSKY - Before Pre Refraction(Main Render)";
+					trueSKYPassBeforePreRefraction = trueSky.gameObject.AddComponent<CustomPassVolume>();
+					trueSKYPassBeforePreRefraction.injectionPoint = CustomPassInjectionPoint.BeforePreRefraction;
+					trueSKYPassBeforePreRefraction.customPasses.Add(trueSKYPreRefraction);
 
-				else if (createCubemapProbeObj)
-					trueSky.gameObject.AddComponent<TrueSkyCubemapProbe> ();
+					CustomPassVolume trueSKYPassBeforePostProcess;
+					trueSKYPrePostProcess.name = "trueSKY - Before Post Process(Translucent Effects)";
+					trueSKYPassBeforePostProcess = trueSky.gameObject.AddComponent<CustomPassVolume>();
+					trueSKYPassBeforePostProcess.injectionPoint = CustomPassInjectionPoint.BeforePostProcess;
+					trueSKYPassBeforePostProcess.customPasses.Add(trueSKYPrePostProcess);
+				}
+				if (UnityEngine.Rendering.GraphicsSettings.allConfiguredRenderPipelines.Length > 0)
+				{
+					trueSky.HDRP_RenderPipelineAsset = UnityEngine.Rendering.GraphicsSettings.allConfiguredRenderPipelines[0];
+				}
+#else
+					trueSkyCamera = mainCamera.gameObject.GetComponent<TrueSkyCamera>();
+					if (trueSkyCamera == null)
+						mainCamera.gameObject.AddComponent<TrueSkyCamera>();
+#endif
+			}
+			if (createCubemapProbe)
+			{           // must be after trueSKY obj assigned, in case assigning probe to this instead of mainCam
 
-				Material trueSKYSkyboxMat = Resources.Load ("trueSKYSkybox", typeof(Material)) as Material;
+				UnityEngine.Object[] objects = FindObjectsOfType(typeof(TrueSkyCubemapProbe));
+
+				if (trueSky.gameObject.GetComponent<TrueSkyCubemapProbe>() != null)
+					DestroyImmediate(trueSky.gameObject.GetComponent<TrueSkyCubemapProbe>());
+
+				trueSky.gameObject.AddComponent<TrueSkyCubemapProbe>();
+
+				Material trueSKYSkyboxMat = Resources.Load("trueSKYSkybox", typeof(Material)) as Material;
 				RenderSettings.skybox = trueSKYSkyboxMat;
 			}
-#endif
 			// If there is not light on the scene, add one:
 			if (lightGameObject == null)
-            {
-                lightGameObject = new GameObject("TrueSkyDirectionalLight");
-                Light dirLight  = lightGameObject.AddComponent<Light>();
-                dirLight.type   = LightType.Directional;
-                lightComponent  = lightGameObject.AddComponent<TrueSkyDirectionalLight>();
+			{
+				lightGameObject = new GameObject("TrueSkyDirectionalLight");
+				Light dirLight = lightGameObject.AddComponent<Light>();
+				dirLight.type = LightType.Directional;
+				lightComponent = lightGameObject.AddComponent<TrueSkyDirectionalLight>();
 			}
-            // If there is a light, but without the component, add it:
+			// If there is a light, but without the component, add it:
 			if (lightComponent == null)
 			{
-                lightComponent = lightGameObject.AddComponent<TrueSkyDirectionalLight>();
+				lightComponent = lightGameObject.AddComponent<TrueSkyDirectionalLight>();
 			}
 			RenderSettings.sun = lightGameObject.GetComponent<Light>();
 			if (removeFog)
@@ -429,7 +457,7 @@ namespace simul
 			}
 
 			// Now the sequence must be assigned to the trueSKY object.
-			trueSky.sequence    = sequence;
+			trueSky.sequence = sequence;
 			trueSky.TrueSKYTime = 12.0F;
 		}
 
@@ -443,7 +471,7 @@ namespace simul
 				trueSky = (trueSKY)t;
 			}
 		}
-		
+
 		void OnWizardNext()
 		{
 			stage++;
