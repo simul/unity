@@ -8,7 +8,7 @@ using System.Diagnostics;
 using System.IO;
 
 #if USING_HDRP
-	using UnityEngine.Rendering.HighDefinition;
+using UnityEngine.Rendering.HighDefinition;
 #endif
 
 
@@ -186,6 +186,7 @@ namespace simul
 			if (stage == Stage.FIND_SUN)
 			{
 				UnityEngine.Light[] lights;
+
 				lights = FindObjectsOfType(typeof(Light)) as Light[];
 				int directionalLights = 0;
 
@@ -193,7 +194,10 @@ namespace simul
 				{
 					Light l = (Light)t;
 					if (l.type == LightType.Directional)
+					{
 						directionalLights++;
+						lightGameObject = l.gameObject;
+					}
 				}
 				if (directionalLights == 0)
 				{
@@ -202,13 +206,11 @@ namespace simul
 				else if (directionalLights == 1)
 				{
 					GUILayout.Label("A Directional Light was found in the scene, the trueSKY Light Script will be applied.", textStyle);
-					lightGameObject = lights[0].gameObject;
 					lightComponent = lightGameObject.GetComponent<TrueSkyDirectionalLight>();
 				}
 				else if (directionalLights >= 1)
 				{
 					GUILayout.Label("There's 1 or more directional lights on the scene. TrueSKY only needs one directional light.", textStyle);
-					lightGameObject = lights[0].gameObject;
 					lightComponent = lightGameObject.GetComponent<TrueSkyDirectionalLight>();
 				}
 			}
@@ -392,7 +394,7 @@ namespace simul
 #if USING_HDRP
 				simul.TrueSkyHDRPCustomPass trueSKYPreRefraction = new simul.TrueSkyHDRPCustomPass();
 				simul.TrueSkyHDRPCustomPass trueSKYPrePostProcess = new simul.TrueSkyHDRPCustomPass();
-				CustomPassVolume trueSKYPassBeforePreRefraction =trueSky.gameObject.GetComponent<CustomPassVolume>();
+				CustomPassVolume trueSKYPassBeforePreRefraction = trueSky.gameObject.GetComponent<CustomPassVolume>();
 				if (trueSKYPassBeforePreRefraction == null)
 				{
 					trueSKYPreRefraction.name = "trueSKY - Before Pre Refraction(Main Render)";
