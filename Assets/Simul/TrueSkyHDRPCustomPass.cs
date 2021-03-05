@@ -103,7 +103,7 @@ namespace simul
 
         public bool FlipOverlays = false;
         public float exposure = 0.5F;
-        public float gamma = 1.0F;
+        public float gamma = 0.5F;
         public bool flippedView = false;
         public bool ShareBuffersForVR = true;
 
