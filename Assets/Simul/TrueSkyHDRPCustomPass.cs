@@ -70,9 +70,6 @@ namespace simul
             //Fill-in UnityViewStruct
             PrepareMatrices(camera);
 
-            RTHandle colour, depth;
-            GetCameraBuffers(out colour, out depth);
-
             unityViewStruct.nativeColourRenderBuffer = colour.rt.colorBuffer.GetNativeRenderBufferPtr();
             unityViewStruct.nativeDepthRenderBuffer = depth.rt.depthBuffer.GetNativeRenderBufferPtr();
 
