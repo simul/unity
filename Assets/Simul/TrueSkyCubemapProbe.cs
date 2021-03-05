@@ -11,7 +11,7 @@ namespace simul
         private RenderTexture cubemapRenderTexture  = null;
         public int textureSize                      = 32;
         public float exposure                       = 1.0F;
-        public float gamma                          = 0.44F;
+        public float gamma                          = 1.0F;//0.44F
         public float updatePeriodSeconds            = 0.5F;
         float _updatePeriodSeconds                  = 0.0F;
         public bool skyOnly                         = true;
