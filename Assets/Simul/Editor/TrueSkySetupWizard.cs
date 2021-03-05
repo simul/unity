@@ -213,6 +213,12 @@ namespace simul
 					GUILayout.Label("There's 1 or more directional lights on the scene. TrueSKY only needs one directional light.", textStyle);
 					lightComponent = lightGameObject.GetComponent<TrueSkyDirectionalLight>();
 				}
+
+			#if USING_HDRP
+				lightComponent.Units = TrueSkyDirectionalLight.LightUnits.Photometric;
+			#else
+				lightComponent.Units = TrueSkyDirectionalLight.LightUnits.Radiometric;
+			#endif
 			}
 			if (stage == Stage.FINISH)
 			{
