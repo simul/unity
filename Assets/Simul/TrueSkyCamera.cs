@@ -218,14 +218,14 @@ namespace simul
 				cam.RemoveCommandBuffers(CameraEvent.AfterEverything);
 			}
             CommandBuffer[] bufs = cam.GetCommandBuffers(CameraEvent.BeforeImageEffectsOpaque);
-			//if (editorMode)
+			//if(editorMode)
 				PrepareDepthMaterial();
 			int requiredNumber = 5;
             if (bufs.Length != requiredNumber) 
 			{
 				RemoveCommandBuffers();
-				//if (editorMode)
-					cam.AddCommandBuffer(CameraEvent.BeforeImageEffectsOpaque, blitbuf);
+				//if(editorMode)
+				cam.AddCommandBuffer(CameraEvent.BeforeImageEffectsOpaque, blitbuf);
 				cam.AddCommandBuffer(CameraEvent.BeforeImageEffectsOpaque, mainCommandBuffer);
 				cam.AddCommandBuffer(CameraEvent.AfterForwardAlpha, post_translucent_buf);
 				cam.AddCommandBuffer(CameraEvent.AfterEverything, overlay_buf);
@@ -277,7 +277,7 @@ namespace simul
 				unityViewStruct.depthResourceState = ResourceState.Unknown;
 			}
 
-			bool il2cppScripting = UsingIL2CPP();
+            bool il2cppScripting = UsingIL2CPP();
             Marshal.StructureToPtr(unityViewStruct, unityViewStructPtr, !il2cppScripting);
             mainCommandBuffer.IssuePluginEventAndData(UnityGetRenderEventFuncWithData(),TRUESKY_EVENT_ID + cbuf_view_id, unityViewStructPtr);
 			overlayViewStruct = unityViewStruct;
