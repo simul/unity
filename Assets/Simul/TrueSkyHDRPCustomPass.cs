@@ -9,7 +9,7 @@ using static simul.TrueSkyCameraBase;
 
 namespace simul
 {
-    class TrueSkyHDRPCustomPass : CustomPass
+    public class TrueSkyHDRPCustomPass : CustomPass
     {
         UnityViewStruct unityViewStruct;
         System.IntPtr unityViewStructPtr;
@@ -38,7 +38,30 @@ namespace simul
             unityViewStructPtr = Marshal.AllocHGlobal(Marshal.SizeOf(new UnityViewStruct()));
         }
 
-        protected override void Execute(ScriptableRenderContext src, CommandBuffer cmd, HDCamera camera, CullingResults cullingResult)
+#if UNITY_2020_2_OR_NEWER
+        protected override void Execute(CustomPassContext ctx)
+        {
+            ScriptableRenderContext src = ctx.renderContext;
+            CommandBuffer cmd = ctx.cmd;
+            HDCamera camera = ctx.hdCamera;
+            CullingResults cullingResult = ctx.cullingResults;
+
+            RTHandle colour = ctx.cameraColorBuffer;
+            RTHandle depth = ctx.cameraDepthBuffer;
+
+            InteranlExecute(src, cmd, camera, cullingResult, colour, depth);
+        }
+#else
+        protected virtual void Execute(ScriptableRenderContext renderContext, CommandBuffer cmd, HDCamera hdCamera, CullingResults cullingResult)
+        {
+            RTHandle colour, depth;
+            GetCameraBuffers(out colour, out depth);
+
+            InteranlExecute(renderContext, cmd, hdCamera, cullingResult, colour, depth);
+        }
+#endif
+        
+        private void InteranlExecute(ScriptableRenderContext src, CommandBuffer cmd, HDCamera camera, CullingResults cullingResult, RTHandle colour, RTHandle depth)
         {
             //Don't draw to the scene view. This should never be removed!
             if (camera.camera.cameraType == CameraType.SceneView)
@@ -46,9 +69,6 @@ namespace simul
 
             //Fill-in UnityViewStruct
             PrepareMatrices(camera);
-
-            RTHandle colour, depth;
-            GetCameraBuffers(out colour, out depth);
 
             unityViewStruct.nativeColourRenderBuffer = colour.rt.colorBuffer.GetNativeRenderBufferPtr();
             unityViewStruct.nativeDepthRenderBuffer = depth.rt.depthBuffer.GetNativeRenderBufferPtr();
@@ -292,7 +312,7 @@ namespace simul
             offset *= 16;
             float metresPerUnit = ts.MetresPerUnit;
 
-            m=m.transpose;
+            m = m.transpose;
 
             proj[offset + 00] = m.m00;
             proj[offset + 01] = m.m01;
