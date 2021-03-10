@@ -896,7 +896,7 @@ namespace simul
 			f = f.Replace("\"", "");
 			string p = CommandLineReader.GetCustomArgument("Platform");
 			string hdrp = CommandLineReader.GetCustomArgument("HDRP");
-			UnityEngine.Debug.Log("ExportPackageCmdLine " + f + ", " + p + ", " + hdrp);
+			UnityEngine.Debug.Log("BuildSimulTestCmdLine " + f + ", " + p + ", " + hdrp);
 			BuildSimulTest(f, p, hdrp);
 		}
 		static void BuildSimulTest(string path, string platform, string hdrp)
@@ -972,6 +972,12 @@ namespace simul
 		static void ExportPackage(string fileName, string platform)
 		{
 			if (platform == "x64")
+			{
+				AssetDatabase.ExportPackage("Assets/Simul", fileName, ExportPackageOptions.Recurse);
+
+				UnityEngine.Debug.Log("Exported: " + fileName);
+			}
+			else if (platform == "XboxOne")
 			{
 				AssetDatabase.ExportPackage("Assets/Simul", fileName, ExportPackageOptions.Recurse);
 
