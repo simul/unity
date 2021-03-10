@@ -9,7 +9,7 @@ using static simul.TrueSkyCameraBase;
 
 namespace simul
 {
-    class TrueSkyHDRPCustomPass : CustomPass
+    public class TrueSkyHDRPCustomPass : CustomPass
     {
         UnityViewStruct unityViewStruct;
         System.IntPtr unityViewStructPtr;
@@ -176,11 +176,15 @@ namespace simul
                 }
 #endif
 #endif
+
                 UnityRenderOptions unityRenderOptions = UnityRenderOptions.DEFAULT;
                 if (FlipOverlays)
                     unityRenderOptions = unityRenderOptions | UnityRenderOptions.FLIP_OVERLAYS;
                 if (ShareBuffersForVR)
                     unityRenderOptions = unityRenderOptions | UnityRenderOptions.NO_SEPARATION;
+
+                
+
 
                 unityViewStruct.view_id = view_id;
                 unityViewStruct.framenumber = Time.renderedFrameCount;
