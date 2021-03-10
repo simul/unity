@@ -62,7 +62,7 @@ namespace simul
 													((transform.localPosition.y + ((_customMesh != null ? 0 : 1) * ((_dimension.y / 2.0f)))) + mTsInstance.transform.position.y) * mTsInstance.MetresPerUnit };
 						float[] dimension = new float[] { _dimension.x * mTsInstance.MetresPerUnit, _dimension.y * mTsInstance.MetresPerUnit, _dimension.z * mTsInstance.MetresPerUnit };
 
-						boundedWaterObjectCreated = StaticCreateBoundedWaterObject((uint)ID, dimension, location);
+						boundedWaterObjectCreated = (StaticCreateBoundedWaterObject((uint)ID, dimension, location) > 0);
 					}
 				}
 			}
@@ -106,7 +106,7 @@ namespace simul
 													((transform.localPosition.y + ((_customMesh != null ? 0 : 1) * ((_dimension.y / 2.0f)))) + mTsInstance.transform.position.y) * mTsInstance.MetresPerUnit };
 					float[] dimension = new float[] { _dimension.x * mTsInstance.MetresPerUnit, _dimension.y * mTsInstance.MetresPerUnit, _dimension.z * mTsInstance.MetresPerUnit };
 					
-					boundedWaterObjectCreated = StaticCreateBoundedWaterObject((uint)ID, dimension, location);
+					boundedWaterObjectCreated = StaticCreateBoundedWaterObject((uint)ID, dimension, location) > 0;
 					meshUpdated = true;
 					StaticSetWaterBool("Render", ID, _render);
 					StaticSetRenderBool("EnableBoundlessOcean", false);
@@ -554,7 +554,7 @@ namespace simul
 				bool il2cppScripting = UsingIL2CPP();
 				Marshal.StructureToPtr(meshValues, unmanagedWaterMeshPtr, !il2cppScripting);
 
-				meshUpdated = !StaticCreateCustomWaterMesh(ID, unmanagedWaterMeshPtr, tempVertexHolder, tempNormalsHolder, tempIndicesHolder);
+				meshUpdated = !(StaticCreateCustomWaterMesh(ID, unmanagedWaterMeshPtr, tempVertexHolder, tempNormalsHolder, tempIndicesHolder) > 0);
 
 				Marshal.FreeHGlobal(unmanagedWaterMeshPtr);
 				//Marshal.FreeHGlobal(unmanagedVertexArrayPtr);
@@ -617,7 +617,7 @@ namespace simul
 
 					if (!boundedWaterObjectCreated)
 					{
-						boundedWaterObjectCreated = StaticCreateBoundedWaterObject((uint)ID, dimension, location);
+						boundedWaterObjectCreated = (StaticCreateBoundedWaterObject((uint)ID, dimension, location) > 0);
 					}
 
 					if (boundedWaterObjectCreated)
@@ -687,7 +687,7 @@ namespace simul
 				{
 					ID++;
 					IDCount++;
-					boundedWaterObjectCreated = StaticCreateBoundedWaterObject((uint)ID, dimension, location);
+					boundedWaterObjectCreated = (StaticCreateBoundedWaterObject((uint)ID, dimension, location)>0);
 					StaticSetWaterBool("Render", ID, _render);
 					StaticSetWaterVector("location", ID, location);
 					StaticSetWaterVector("dimension", ID, dimension);
@@ -725,7 +725,7 @@ namespace simul
 					else
 					{
 						_boundlessOcean = false;
-						boundedWaterObjectCreated = StaticCreateBoundedWaterObject((uint)ID, dimension, location);
+						boundedWaterObjectCreated = (StaticCreateBoundedWaterObject((uint)ID, dimension, location) > 0);
 						StaticSetWaterBool("Render", ID, _render);
 						StaticSetWaterVector("location", ID, location);
 						StaticSetWaterVector("dimension", ID, dimension);
