@@ -125,7 +125,7 @@ namespace simul
 				Marshal.StructureToPtr(waterProbeValues, waterProbeValuesPtr, !il2cppScripting);
 
 				if (!waterProbeCreated)
-					waterProbeCreated = StaticAddWaterProbe(waterProbeValuesPtr);
+					waterProbeCreated = (StaticAddWaterProbe(waterProbeValuesPtr) > 0);
 				else
 				{
 					StaticUpdateWaterProbeValues(waterProbeValuesPtr);
@@ -148,7 +148,7 @@ namespace simul
 				waterProbeValues.velocity.y = 0.0f;
 				waterProbeValues.velocity.z = 0.0f;
 
-				//waterProbeCreated = StaticAddWaterProbe(waterProbeValuesPtr);
+				//waterProbeCreated = (StaticAddWaterProbe(waterProbeValuesPtr) > 0);
 			}
 		}
 	}
