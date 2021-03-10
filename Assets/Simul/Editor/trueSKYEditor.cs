@@ -208,7 +208,7 @@ namespace simul
 			Undo.RecordObject(trueSky, "Change Value");
 
 			//Styles
-			
+
 			GUIStyle outerFoldoutStyle = new GUIStyle(EditorStyles.foldoutHeader);
 			Color outerColor = usetrueSKYColour ? new Color(0.114f, 0.443f, 0.722f) : Color.Lerp(Color.black, Color.white, 0.75f);
 			outerFoldoutStyle.fontStyle = FontStyle.Bold;
@@ -281,10 +281,24 @@ namespace simul
 					if (render)
 					{
 						trueSky.CubemapResolution = EditorGUILayout.IntSlider("Cubemap Resolution", trueSky.CubemapResolution, 64, 2048);
-						trueSky.WindSpeed = EditorGUILayout.Vector3Field("Wind Speed", trueSky.WindSpeed);
-						trueSky.MaxCloudDistanceKm = EditorGUILayout.Slider("Max Cloud Distance (km)", trueSky.MaxCloudDistanceKm, 100.0F, (trueSky.WindowWidthKm/2));
+
+						if (trueSky.SimulVersion >= trueSky.MakeSimulVersion(4, 2))
+							trueSky.WindSpeed = EditorGUILayout.Vector3Field("Wind Speed", trueSky.WindSpeed);
+						else
+							EditorGUILayout.LabelField("Wind speed is set in the trueSKY Sequence asset in 4.1");
+
+						if (trueSky.SimulVersion >= trueSky.MakeSimulVersion(4, 3))
+							trueSky.MaxCloudDistanceKm = EditorGUILayout.Slider("Max Cloud Distance (km)", trueSky.MaxCloudDistanceKm, 100.0F, (trueSky.WindowWidthKm / 2));
+						else
+							trueSky.MaxCloudDistanceKm = EditorGUILayout.Slider("Max Cloud Distance (km)", trueSky.MaxCloudDistanceKm, 100.0F, 1000.0F);
+
 						trueSky.IntegrationScheme = EditorGUILayout.Popup("Integration Scheme", trueSky.IntegrationScheme, renderOptions);
 
+						if (trueSky.IntegrationScheme == 2 && trueSky.SimulVersion < trueSky.MakeSimulVersion(4, 3))
+						{
+							trueSky.IntegrationScheme = 0;
+							Debug.Log("Variable Grid is only supported in trueSKY 4.3+");
+						}
 						if (trueSky.IntegrationScheme == 0)
 						{
 							trueSky.RenderGridXKm = EditorGUILayout.Slider("Render Grid X (km)", trueSky.RenderGridXKm, 0.01F, 10.0F);
@@ -296,7 +310,7 @@ namespace simul
 						trueSky.WindowHeightKm = EditorGUILayout.IntSlider("Window Height (Km)", trueSky.WindowHeightKm, 5, 20);
 
 						trueSky.CloudSteps = EditorGUILayout.IntSlider("Cloud Steps", trueSky.CloudSteps, 60, 500);
-						trueSky.Amortization = EditorGUILayout.IntSlider("Amortization", trueSky.Amortization, 1, 4);
+						trueSky.Amortization = EditorGUILayout.IntSlider("Amortization", trueSky.Amortization, 1, 8);
 						trueSky.CloudThresholdDistanceKm = EditorGUILayout.Slider("Threshold Distance (km)", trueSky.CloudThresholdDistanceKm, 0.0F, 10.0F);
 						trueSky.DepthSamplingPixelRange = EditorGUILayout.Slider("Depth Sampling Range", trueSky.DepthSamplingPixelRange, 0.0f, 4.0f);
 						trueSky.DepthTemporalAlpha = EditorGUILayout.Slider("Depth Temporal Alpha", trueSky.DepthTemporalAlpha, 0.01f, 1.0f);
@@ -308,14 +322,19 @@ namespace simul
 					noise = EditorGUILayout.Foldout(noise, "Noise", innerFoldoutStyle);
 					if (noise)
 					{
-						trueSky.EdgeNoisePersistence = EditorGUILayout.Slider("Edge Noise Persistence", trueSky.EdgeNoisePersistence, 0.0f, 1.0f);
-						trueSky.EdgeNoiseFrequency = EditorGUILayout.IntSlider("Edge Noise Frequency", trueSky.EdgeNoiseFrequency, 1, 16);
-						trueSky.EdgeNoiseTextureSize = EditorGUILayout.IntSlider("Edge Noise Texture Size", trueSky.EdgeNoiseTextureSize, 32, 256);
-						trueSky.EdgeNoiseWavelengthKm = EditorGUILayout.Slider("Edge Noise Wavelength Km", trueSky.EdgeNoiseWavelengthKm, 0.01f, 50.0f);
+						if (trueSky.SimulVersion >= trueSky.MakeSimulVersion(4, 2))
+						{
+							trueSky.EdgeNoisePersistence = EditorGUILayout.Slider("Edge Noise Persistence", trueSky.EdgeNoisePersistence, 0.0f, 1.0f);
+							trueSky.EdgeNoiseFrequency = EditorGUILayout.IntSlider("Edge Noise Frequency", trueSky.EdgeNoiseFrequency, 1, 16);
+							trueSky.EdgeNoiseTextureSize = EditorGUILayout.IntSlider("Edge Noise Texture Size", trueSky.EdgeNoiseTextureSize, 32, 256);
+							trueSky.EdgeNoiseWavelengthKm = EditorGUILayout.Slider("Edge Noise Wavelength Km", trueSky.EdgeNoiseWavelengthKm, 0.01f, 50.0f);
 
-						trueSky.CellNoiseTextureSize = EditorGUILayout.IntSlider("Cell Noise Texture Size", trueSky.CellNoiseTextureSize, 32, 256);
-						trueSky.CellNoiseWavelengthKm = EditorGUILayout.Slider("Cell Noise Wavelength Km", trueSky.CellNoiseWavelengthKm, 0.01f, 50.0f);
-						trueSky.MaxFractalAmplitudeKm = EditorGUILayout.Slider("Max Fractal Amplitude Km", trueSky.MaxFractalAmplitudeKm, 0.01f, 20.0f);
+							trueSky.CellNoiseTextureSize = EditorGUILayout.IntSlider("Cell Noise Texture Size", trueSky.CellNoiseTextureSize, 32, 256);
+							trueSky.CellNoiseWavelengthKm = EditorGUILayout.Slider("Cell Noise Wavelength Km", trueSky.CellNoiseWavelengthKm, 0.01f, 50.0f);
+							trueSky.MaxFractalAmplitudeKm = EditorGUILayout.Slider("Max Fractal Amplitude Km", trueSky.MaxFractalAmplitudeKm, 0.01f, 20.0f);
+						}
+						else
+							EditorGUILayout.LabelField("Noise settings are set in the trueSKY Sequence asset in 4.1");
 					}
 
 					// Cloud lighting settings
@@ -392,6 +411,10 @@ namespace simul
 						trueSky.RainbowDepthPoint = EditorGUILayout.Slider("Rainbow Depth Point", trueSky.RainbowDepthPoint, 0.0F, 1.0F);
 						trueSky.AllowOccludedRainbows = EditorGUILayout.Toggle("Allow Occluded Rainbows", trueSky.AllowOccludedRainbows);
 						trueSky.AllowLunarRainbows = EditorGUILayout.Toggle("Allow Lunar Rainbows", trueSky.AllowLunarRainbows);
+					}
+					else
+					{
+						EditorGUILayout.LabelField("Rainbows are supported from trueSKY 4.2a onwards.");
 					}
 
 				}
@@ -746,16 +769,21 @@ namespace simul
 				water = EditorGUILayout.Foldout(water, "Water", outerFoldoutStyle);
 				if (water)
 				{
-					trueSky.RenderWater = EditorGUILayout.Toggle("Render Water", trueSky.RenderWater);
-					trueSky.WaterFullResolution = EditorGUILayout.Toggle("Full Resolution Water", trueSky.WaterFullResolution);
-					trueSky.EnableReflections = EditorGUILayout.Toggle("Enable Reflections", trueSky.EnableReflections);
-					if (trueSky.EnableReflections)
+					if (trueSky.SimulVersion >= trueSky.MakeSimulVersion(4, 2))
 					{
-						trueSky.WaterFullResolutionReflections = EditorGUILayout.Toggle("Full Resolution Reflections", trueSky.WaterFullResolutionReflections);
-						trueSky.WaterReflectionSteps = EditorGUILayout.IntSlider("Reflection Steps", trueSky.WaterReflectionSteps, 10, 100);
-						trueSky.WaterReflectionPixelStep = EditorGUILayout.IntSlider("Pixel Steps", trueSky.WaterReflectionPixelStep, 1, 10);
-						trueSky.WaterReflectionDistance = EditorGUILayout.Slider("Reflection Distance", trueSky.WaterReflectionDistance, 1000, 40000);
+						trueSky.RenderWater = EditorGUILayout.Toggle("Render Water", trueSky.RenderWater);
+						trueSky.WaterFullResolution = EditorGUILayout.Toggle("Full Resolution Water", trueSky.WaterFullResolution);
+						trueSky.EnableReflections = EditorGUILayout.Toggle("Enable Reflections", trueSky.EnableReflections);
+						if (trueSky.EnableReflections)
+						{
+							trueSky.WaterFullResolutionReflections = EditorGUILayout.Toggle("Full Resolution Reflections", trueSky.WaterFullResolutionReflections);
+							trueSky.WaterReflectionSteps = EditorGUILayout.IntSlider("Reflection Steps", trueSky.WaterReflectionSteps, 10, 100);
+							trueSky.WaterReflectionPixelStep = EditorGUILayout.IntSlider("Pixel Steps", trueSky.WaterReflectionPixelStep, 1, 10);
+							trueSky.WaterReflectionDistance = EditorGUILayout.Slider("Reflection Distance", trueSky.WaterReflectionDistance, 1000, 40000);
+						}
 					}
+					else
+						EditorGUILayout.LabelField("Water is supported from trueSKY 4.2 onwards.");
 				}
 
 				// Debugging settings
@@ -820,7 +848,7 @@ namespace simul
 					}
 					EditorGUILayout.LabelField("For HDRP scenes, this saves the current RenderPipelineAsset to trueSKY.cs.\n" +
 						"For Standard/Legacy Rendering mode, the RenderPipelineAsset is set to null.\n" +
-						"trueSKY.Upate() will load any changes.\n" +
+						"trueSKY.Update() will load any changes.\n" +
 						"This allows a single project to have both standard and HDRP scenes.", GUILayout.Height(60.0f));
 					
 					trueSky.UsingIL2CPP = EditorGUILayout.Toggle("Use IL2CPP", trueSky.UsingIL2CPP);
@@ -828,53 +856,13 @@ namespace simul
 				}
 			}
 			// trueSKY Advanced Mode
-			if (trueSKY.advancedMode)
+			if (true)
 			{
 				EditorGUILayout.BeginHorizontal();
 				EditorGUILayout.Space();
 				if (GUILayout.Button("Export Package"))
-				{
-					string simul_dir = "C:/Simul/4.3/Simul";
-					string dir = simul_dir + "/Products/TrueSky/Release/";
-					string version = "4.3.0.";
-					string version_file = simul_dir + "/version.txt";
-					try
-					{
-						using (StreamReader sr = new StreamReader(version_file))
-						{
-							version = sr.ReadToEnd();
-						}
-					}
-					catch (Exception e)
-					{
-						UnityEngine.Debug.Log(e);
-						UnityEngine.Debug.Log("The version string file could not be read: " + version_file);
-					}
-					string filenameRoot = "trueSKYPlugin-Unity2018-" + version;
-					string[] aFilePaths = Directory.GetFiles(dir, filenameRoot + "*.unitypackage");
-					int largest = 1;
-					foreach (string p in aFilePaths)
-					{
-						string pat = filenameRoot + @"(.*)\.unitypackage";
-						// Instantiate the regular expression object.
-						Regex r = new Regex(pat, RegexOptions.IgnoreCase);
-						// Match the regular expression pattern against a text string.
-						Match m = r.Match(p);
-						while (m.Success)
-						{
-							{
-								Group g = m.Groups[1];
-								string numstr = g.ToString();
-								int ct = Convert.ToInt32(numstr);
-								if (ct > largest)
-									largest = ct;
-							}
-							m = m.NextMatch();
-						}
-					}
-					largest++;
-					string fileName = dir + filenameRoot + largest.ToString("D4") + ".unitypackage";
-					ExportPackage(fileName, "x64");
+				{							
+					ExportPackage("C:/Simul/Unity/ExportedPackage.unitypackage", "x64");
 				}
 				EditorGUILayout.EndHorizontal();
 			}
@@ -908,7 +896,7 @@ namespace simul
 			f = f.Replace("\"", "");
 			string p = CommandLineReader.GetCustomArgument("Platform");
 			string hdrp = CommandLineReader.GetCustomArgument("HDRP");
-			UnityEngine.Debug.Log("ExportPackageCmdLine " + f + ", " + p + ", " + hdrp);
+			UnityEngine.Debug.Log("BuildSimulTestCmdLine " + f + ", " + p + ", " + hdrp);
 			BuildSimulTest(f, p, hdrp);
 		}
 		static void BuildSimulTest(string path, string platform, string hdrp)
@@ -985,7 +973,13 @@ namespace simul
 		{
 			if (platform == "x64")
 			{
-				AssetDatabase.ExportPackage("Assets/Simul", fileName, ExportPackageOptions.Recurse | ExportPackageOptions.IncludeDependencies);
+				AssetDatabase.ExportPackage("Assets/Simul", fileName, ExportPackageOptions.Recurse);
+
+				UnityEngine.Debug.Log("Exported: " + fileName);
+			}
+			else if (platform == "XboxOne")
+			{
+				AssetDatabase.ExportPackage("Assets/Simul", fileName, ExportPackageOptions.Recurse);
 
 				UnityEngine.Debug.Log("Exported: " + fileName);
 			}
@@ -996,7 +990,7 @@ namespace simul
 					"Assets/Simul/shaderbin/ps4",
 					"Assets/Simul/Plugins/PS4"
 				};
-				AssetDatabase.ExportPackage(paths, fileName, ExportPackageOptions.Recurse | ExportPackageOptions.IncludeDependencies);
+				AssetDatabase.ExportPackage(paths, fileName, ExportPackageOptions.Recurse | ExportPackageOptions.IncludeDependencies); //Include dependancies not tested with HDRP PlayStation
 
 				UnityEngine.Debug.Log("Exported: " + fileName);
 			}
