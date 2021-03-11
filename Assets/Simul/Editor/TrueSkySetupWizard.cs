@@ -213,12 +213,6 @@ namespace simul
 					GUILayout.Label("There's 1 or more directional lights on the scene. TrueSKY only needs one directional light.", textStyle);
 					lightComponent = lightGameObject.GetComponent<TrueSkyDirectionalLight>();
 				}
-
-			#if USING_HDRP
-				lightComponent.Units = TrueSkyDirectionalLight.LightUnits.Photometric;
-			#else
-				lightComponent.Units = TrueSkyDirectionalLight.LightUnits.Radiometric;
-			#endif
 			}
 			if (stage == Stage.FINISH)
 			{
@@ -451,6 +445,12 @@ namespace simul
 				lightComponent = lightGameObject.AddComponent<TrueSkyDirectionalLight>();
 			}
 			RenderSettings.sun = lightGameObject.GetComponent<Light>();
+
+#if USING_HDRP
+			lightComponent.Units = TrueSkyDirectionalLight.LightUnits.Photometric;
+#else
+			lightComponent.Units = TrueSkyDirectionalLight.LightUnits.Radiometric;
+#endif
 			if (removeFog)
 			{
 				RenderSettings.fog = false;
@@ -463,7 +463,6 @@ namespace simul
 					mainCamera.backgroundColor = Color.black;
 				}
 			}
-
 			// Now the sequence must be assigned to the trueSKY object.
 			trueSky.sequence = sequence;
 			trueSky.TrueSKYTime = 12.0F;

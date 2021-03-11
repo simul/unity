@@ -102,8 +102,8 @@ namespace simul
         protected float[] overlayProjMatrix;
 
         public bool FlipOverlays = false;
-        public float exposure = 1.0F;
-        public float gamma = 1.0F;
+        public float exposure = 0.5F;
+        public float gamma = 0.5F;
         public bool flippedView = false;
         public bool ShareBuffersForVR = true;
 
@@ -312,7 +312,7 @@ namespace simul
             offset *= 16;
             float metresPerUnit = ts.MetresPerUnit;
 
-            m=m.transpose;
+            m = m.transpose;
 
             proj[offset + 00] = m.m00;
             proj[offset + 01] = m.m01;
