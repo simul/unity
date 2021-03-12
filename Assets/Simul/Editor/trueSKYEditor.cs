@@ -936,6 +936,14 @@ namespace simul
 			{
 				buildPlayerOptions.target = BuildTarget.XboxOne;
 			}
+			else if (platform == "GameCoreScarlett")
+			{
+				buildPlayerOptions.target = BuildTarget.GameCoreScarlett;
+			}
+			else if (platform == "GameCoreXboxOne")
+			{
+				buildPlayerOptions.target = BuildTarget.GameCoreXboxOne;
+			}
 			else if (platform == "PS4")
 			{
 				buildPlayerOptions.target = BuildTarget.PS4;
@@ -971,13 +979,7 @@ namespace simul
 
 		static void ExportPackage(string fileName, string platform)
 		{
-			if (platform == "x64")
-			{
-				AssetDatabase.ExportPackage("Assets/Simul", fileName, ExportPackageOptions.Recurse);
-
-				UnityEngine.Debug.Log("Exported: " + fileName);
-			}
-			else if (platform == "XboxOne")
+			if (platform == "x64" || platform == "XboxOne" || platform == "GameCoreScarlett" || platform == "GameCoreXboxOne")
 			{
 				AssetDatabase.ExportPackage("Assets/Simul", fileName, ExportPackageOptions.Recurse);
 
