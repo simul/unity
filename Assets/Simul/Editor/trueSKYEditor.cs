@@ -923,7 +923,7 @@ namespace simul
 				buildPlayerOptions.scenes = new[] { "Assets/Simul/SimulTest/TestLevel.unity" };
 				buildPlayerOptions.locationPathName = fullPath+"/SimulTest.exe";
 			}
-			
+
 			if (platform == "x64")
 			{
 				buildPlayerOptions.target = BuildTarget.StandaloneWindows64;
@@ -935,6 +935,14 @@ namespace simul
 			else if (platform == "XboxOne")
 			{
 				buildPlayerOptions.target = BuildTarget.XboxOne;
+			}
+			else if (platform == "GameCoreScarlett")
+			{
+				buildPlayerOptions.target = BuildTarget.GameCoreScarlett;
+			}
+			else if (platform == "GameCoreXboxOne")
+			{
+				buildPlayerOptions.target = BuildTarget.GameCoreXboxOne;
 			}
 			else if (platform == "PS4")
 			{
@@ -971,13 +979,7 @@ namespace simul
 
 		static void ExportPackage(string fileName, string platform)
 		{
-			if (platform == "x64")
-			{
-				AssetDatabase.ExportPackage("Assets/Simul", fileName, ExportPackageOptions.Recurse);
-
-				UnityEngine.Debug.Log("Exported: " + fileName);
-			}
-			else if (platform == "XboxOne")
+			if (platform == "x64" || platform == "XboxOne" || platform == "GameCoreScarlett" || platform == "GameCoreXboxOne")
 			{
 				AssetDatabase.ExportPackage("Assets/Simul", fileName, ExportPackageOptions.Recurse);
 
