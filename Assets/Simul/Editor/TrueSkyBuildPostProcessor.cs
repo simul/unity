@@ -21,7 +21,7 @@ namespace simul
                     return "x86_64";
                 case BuildTarget.WSAPlayer:
                     return "WSA";
-            #if UNTIY_GAMECORE
+            #if UNITY_GAMECORE
                 case BuildTarget.GameCoreScarlett:
                     return "XboxSeriesX";
                 case BuildTarget.GameCoreXboxOne: 
@@ -72,12 +72,12 @@ namespace simul
                 fixedPath           = fixedPath.Remove(lastSep);
                 buildDirectory      = fixedPath + "/StagingArea/Data";
             }
-#if UNITY_GAMECORE
+            #if UNITY_GAMECORE
             if (target == BuildTarget.GameCoreScarlett)
             {
                 //buildDirectory += s + "Loose" + s + "Data" + s + "Plugins";
             }
-#endif
+            #endif
 
             Debug.Log("Build directory is: " + buildDirectory);
 
