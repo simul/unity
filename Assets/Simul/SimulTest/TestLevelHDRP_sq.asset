@@ -39,17 +39,7 @@ MonoBehaviour:
     \"               0\"\n\t\t\t\"rain_to_snow\": \"               0\"\n\t\t\t\"scalekm\":
     \"             200,             200,              10\"\n\t\t\t\"simulation\":
     \"               0\"\n\t\t\t\"time\": \"0.4987113475799561\"\n\t\t\t\"uid\":
-    \"46\"\n\t\t\t\"upperDensity\": \"0.8500000238418579\"\n\t\t\t\"volumeStates\":\n\t\t\t[\n\t\t\t]\n\t\t}\n\t\t]\n\t\t\"storms\":\n\t\t[\n\t\t{\n\t\t\t\"branchAngleDegrees\":
-    \"              45\"\n\t\t\t\"colour.x\": \"               1\"\n\t\t\t\"colour.y\":
-    \"0.800000011920929\"\n\t\t\t\"colour.z\": \"0.800000011920929\"\n\t\t\t\"end_time\":
-    \"0.7551546096801758\"\n\t\t\t\"maxRadiance\": \"            1000\"\n\t\t\t\"minPixelWidth\":
-    \"             1.5\"\n\t\t\t\"motion\": \"               0\"\n\t\t\t\"numBranches\":
-    \"2\"\n\t\t\t\"numLevels\": \"2\"\n\t\t\t\"origin\": \"0.7071067966408575,              
-    0,               0,0.7071067657322372\"\n\t\t\t\"radiusKm\": \"             
-    20\"\n\t\t\t\"realTime\": \"true\"\n\t\t\t\"roughness\": \"0.2000000029802322\"\n\t\t\t\"seed\":
-    \"1\"\n\t\t\t\"sheet\": \"0.1000000014901161\"\n\t\t\t\"start_time\": \"0.2564432919025421\"\n\t\t\t\"strikeDurationSeconds\":
-    \"            1000\"\n\t\t\t\"strikeFrequencyPerSecond\": \"              10\"\n\t\t\t\"strikeThicknessMetres\":
-    \"0.02999999932944775\"\n\t\t}\n\t\t]\n\t\t\"volumes\":\n\t\t[\n\t\t]\n\t}\n\t\"skyKeyframer\":\n\t{\n\t\t\"BackgroundTexture\":
+    \"46\"\n\t\t\t\"upperDensity\": \"0.8500000238418579\"\n\t\t\t\"volumeStates\":\n\t\t\t[\n\t\t\t]\n\t\t}\n\t\t]\n\t\t\"storms\":\n\t\t[\n\t\t]\n\t\t\"volumes\":\n\t\t[\n\t\t]\n\t}\n\t\"skyKeyframer\":\n\t{\n\t\t\"BackgroundTexture\":
     \"MilkyWay_6000_3000.png\"\n\t\t\"BaseOzone\": \"0.05999999865889549,0.03999999910593033,0.009999999776482582,              
     0\"\n\t\t\"BrightnessPower\": \"            0.25\"\n\t\t\"ColourWavelengthsNm\":
     \"             630,             540,             450,1.050973848243613e-43\"\n\t\t\"DayLoop\":
@@ -59,9 +49,9 @@ MonoBehaviour:
     300\"\n\t\t\"MaxStarMagnitude\": \"               6\"\n\t\t\"MaxSunRadiance\":
     \"           12000\"\n\t\t\"NumAltitudes\": \"4\"\n\t\t\"NumDistances\": \"32\"\n\t\t\"NumElevations\":
     \"32\"\n\t\t\"OzoneStrength\": \"0.05000000074505806\"\n\t\t\"Rayleigh\": \"0.007127305958420038,0.01320421323180199,0.02738025225698948\"\n\t\t\"StartDayNumber\":
-    \"7733\"\n\t\t\"SunIrradiance\": \"              25,              25,             
+    \"0\"\n\t\t\"SunIrradiance\": \"              25,              25,             
     25\"\n\t\t\"SunRadiusArcMinutes\": \"              16\"\n\t\t\"SunTexture\":
-    \"Sun.png\"\n\t\t\"Time\": \"0.4961340129375458\"\n\t\t\"TimezoneHours\": \"              
+    \"Sun.png\"\n\t\t\"Time\": \"12.21649360656738\"\n\t\t\"TimezoneHours\": \"              
     0\"\n\t\t\"atmosphereThicknessKm\": \"             100\"\n\t\t\"planetRadiusKm\":
     \"            6378\"\n\t\t\"keyframes\":\n\t\t[\n\t\t{\n\t\t\t\"AutoMie\": \"true\"\n\t\t\t\"FogCeilingKm\":
     \"               1\"\n\t\t\t\"GroundFog\": \"               0\"\n\t\t\t\"Haze\":
