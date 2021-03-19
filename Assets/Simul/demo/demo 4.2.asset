@@ -56,7 +56,7 @@ MonoBehaviour:
     \"               0\"\n\t\t\t\"GroundFog\": \"               0\"\n\t\t\t\"Haze\":
     \"               1\"\n\t\t\t\"HazeBaseKm\": \"               0\"\n\t\t\t\"HazeEccentricity\":
     \"0.8199999928474426\"\n\t\t\t\"HazeScaleKm\": \"             0.5\"\n\t\t\t\"Horizon\":
-    \"               0,               0,               0\"\n\t\t\t\"Mie\": \"0.006106850225478411,0.00817577913403511,0.01170013006776571,              
+    \"               0,               0,               0\"\n\t\t\t\"Mie\": \"0.006106851156800985,0.00817577913403511,0.01170013099908829,              
     0\"\n\t\t\t\"SeaLevelTemperatureK\": \"288.1499938964844\"\n\t\t\t\"StoreAsColours\":
     \"false\"\n\t\t\t\"SunAzimuth\": \"-1.570796370506287\"\n\t\t\t\"SunElevation\":
     \"-0.7853981852531433\"\n\t\t\t\"Zenith\": \"               0,              
@@ -66,7 +66,7 @@ MonoBehaviour:
     \"               0\"\n\t\t\t\"Haze\": \"               1\"\n\t\t\t\"HazeBaseKm\":
     \"               0\"\n\t\t\t\"HazeEccentricity\": \"0.8199999928474426\"\n\t\t\t\"HazeScaleKm\":
     \"             0.5\"\n\t\t\t\"Horizon\": \"               0,               0,              
-    0\"\n\t\t\t\"Mie\": \"0.006106850225478411,0.00817577913403511,0.01170013006776571,              
+    0\"\n\t\t\t\"Mie\": \"0.006106851156800985,0.00817577913403511,0.01170013099908829,              
     0\"\n\t\t\t\"SeaLevelTemperatureK\": \"288.1499938964844\"\n\t\t\t\"StoreAsColours\":
     \"false\"\n\t\t\t\"SunAzimuth\": \"1.96614396572113\"\n\t\t\t\"SunElevation\":
     \"-0.02085360512137413\"\n\t\t\t\"Zenith\": \"               0,              
@@ -76,7 +76,7 @@ MonoBehaviour:
     \"               0\"\n\t\t\t\"Haze\": \"               1\"\n\t\t\t\"HazeBaseKm\":
     \"               0\"\n\t\t\t\"HazeEccentricity\": \"0.8199999928474426\"\n\t\t\t\"HazeScaleKm\":
     \"             0.5\"\n\t\t\t\"Horizon\": \"               0,               0,              
-    0\"\n\t\t\t\"Mie\": \"0.006106850225478411,0.00817577913403511,0.01170013006776571,              
+    0\"\n\t\t\t\"Mie\": \"0.006106851156800985,0.00817577913403511,0.01170013099908829,              
     0\"\n\t\t\t\"SeaLevelTemperatureK\": \"288.1499938964844\"\n\t\t\t\"StoreAsColours\":
     \"false\"\n\t\t\t\"SunAzimuth\": \"4.317628383636475\"\n\t\t\t\"SunElevation\":
     \"0.01745329424738884\"\n\t\t\t\"Zenith\": \"               0,              

@@ -923,7 +923,7 @@ namespace simul
 				buildPlayerOptions.scenes = new[] { "Assets/Simul/SimulTest/TestLevel.unity" };
 				buildPlayerOptions.locationPathName = fullPath+"/SimulTest.exe";
 			}
-			
+
 			if (platform == "x64")
 			{
 				buildPlayerOptions.target = BuildTarget.StandaloneWindows64;
