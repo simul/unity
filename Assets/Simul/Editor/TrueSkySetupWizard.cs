@@ -463,6 +463,10 @@ namespace simul
 					mainCamera.backgroundColor = Color.black;
 				}
 			}
+			// Set the Near and Far clipping planes on the main camera.
+			mainCamera.nearClipPlane = 0.1f;
+			mainCamera.farClipPlane = 300000.0f;
+
 			// Now the sequence must be assigned to the trueSKY object.
 			trueSky.sequence = sequence;
 			trueSky.TrueSKYTime = 12.0F;
