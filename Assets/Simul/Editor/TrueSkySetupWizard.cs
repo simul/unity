@@ -27,6 +27,13 @@ namespace simul
 		};
 		Stage stage = Stage.PRE_START;
 
+		//Be careful adding more than 6 due to UI spacing issues.
+		string[] currentIssues = { 
+			"No Dynamic Lighting with Lightning Strikes in clouds",
+			"Rain Streaks non-functional with Variable Grid integration Scheme.",
+			"Performance issues with bounded water objects.",
+		};
+
 		[MenuItem("GameObject/Remove trueSKY from Scene", false, 200000)]
 		public static void RemoveTrueSky()
 		{
@@ -216,28 +223,39 @@ namespace simul
 			}
 			if (stage == Stage.FINISH)
 			{
-				GUILayout.Label("When you click Finish, trueSKY will be initialized for this scene.", textStyle);
 				createCubemapProbe = GUILayout.Toggle(createCubemapProbe, "Add trueSKY Cubemap Probe to trueSKY Object");
 				removeFog = GUILayout.Toggle(removeFog, "Remove standard distance fog");
 				removeSkybox = GUILayout.Toggle(removeSkybox, "Remove default skybox from camera");
 
 				//if (Camera.main == null && !createAMainCamera) 
 				//{
-
-
 				//	createCubemapProbeCam = false;  	// set to false as no main camera, so can't attach to cam
 				//} 
 				//else 
 				//{
 				//	createCubemapProbeCam = GUILayout.Toggle (createCubemapProbeCam, "Add trueSKY Cubemap Probe to main camera (will replace any existing)", textStyle);
-
 				//	createCubemapProbeObj = false;	 	// want to assign to main cam as it exists, so don't allow option to assign to obj
 				//}
 
 				GUILayout.Label("\n\nTo view more information on using trueSKY for Unity, along with code reference pages and a detailed explanation of the sequencer, please click the button below.", textStyle);
 
 				if (GUILayout.Button("Launch Documentation", defaultButtonStyle))
-					Application.OpenURL("http://docs.simul.co/unity");
+					Application.OpenURL("https://docs.simul.co/unity");
+
+				GUILayout.Label("\n\nOur currently known issues thread in our Q&A forum will let you see what we are working on.", textStyle);
+
+				if (GUILayout.Button("Currently known issues", defaultButtonStyle))
+					Application.OpenURL("https://simul.co/question/currently-known-issues-in-the-latest-update/");
+
+				textStyle.fontSize = 0; //default
+				textStyle.alignment = TextAnchor.UpperLeft;
+
+				for (int i = 0; i< currentIssues.Length; ++i)
+				{
+					string issuePrefix = "\n" + (i+1) + ". ";
+					GUILayout.Label(issuePrefix + currentIssues[i], textStyle);
+				}
+
 
 			}
 			GUILayout.FlexibleSpace();
@@ -265,6 +283,8 @@ namespace simul
 			}
 			else
 			{
+				minSize = new Vector2(550.0F, 550.0F);
+				maxSize = new Vector2(550.0F, 550.0F);
 				if (GUILayout.Button("Back"))
 					OnWizardBack();
 				if (GUILayout.Button("Finish", defaultButtonStyle))

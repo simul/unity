@@ -223,7 +223,7 @@ namespace simul
             trueSKY trueSKY = GetTrueSKY();
             // Initialize time from the trueSKY object
 
-			if (trueSKY) StaticSetFloat(Handle, "time", trueSKY.TrueSKYTime);
+			if (trueSKY) StaticSetFloat(Handle, "time", trueSKY.TrueSKYTime / trueSKY.TimeUnits);
 
 			EditorApplication.playModeStateChanged += CloseDueToPlayModeStateChange;
 			EditorApplication.update += UpdateSequencer;

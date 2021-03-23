@@ -795,9 +795,7 @@ namespace simul
 					trueSky.RenderInEditMode = EditorGUILayout.Toggle("Render in Edit Mode", trueSky.RenderInEditMode);
 					string gv = SystemInfo.graphicsDeviceVersion;
 					EditorGUILayout.LabelField("Unity Renderer", gv);
-					if (gv.Contains("Direct3D 11") || gv.Contains("Direct3D 12") || gv.Contains("Vulkan"))
-						EditorGUILayout.LabelField("GOOD", GUILayout.Width(48));
-					else
+					if (!gv.Contains("Direct3D 11") || !gv.Contains("Direct3D 12") || !gv.Contains("Vulkan"))
 						EditorGUILayout.LabelField("Unsupported", GUILayout.Width(48));
 					if (trueSKY.advancedMode)
 					{
