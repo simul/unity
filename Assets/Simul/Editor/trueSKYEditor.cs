@@ -894,7 +894,7 @@ namespace simul
 			f = f.Replace("\"", "");
 			string p = CommandLineReader.GetCustomArgument("Platform");
 			string hdrp = CommandLineReader.GetCustomArgument("HDRP");
-			UnityEngine.Debug.Log("ExportPackageCmdLine " + f + ", " + p + ", " + hdrp);
+			UnityEngine.Debug.Log("BuildSimulTestCmdLine " + f + ", " + p + ", " + hdrp);
 			BuildSimulTest(f, p, hdrp);
 		}
 		static void BuildSimulTest(string path, string platform, string hdrp)
@@ -921,7 +921,7 @@ namespace simul
 				buildPlayerOptions.scenes = new[] { "Assets/Simul/SimulTest/TestLevel.unity" };
 				buildPlayerOptions.locationPathName = fullPath+"/SimulTest.exe";
 			}
-			
+
 			if (platform == "x64")
 			{
 				buildPlayerOptions.target = BuildTarget.StandaloneWindows64;
@@ -934,6 +934,16 @@ namespace simul
 			{
 				buildPlayerOptions.target = BuildTarget.XboxOne;
 			}
+			#if UNITY_GAMECORE
+			else if (platform == "GameCoreScarlett")
+			{
+				buildPlayerOptions.target = BuildTarget.GameCoreScarlett;
+			}
+			else if (platform == "GameCoreXboxOne")
+			{
+				buildPlayerOptions.target = BuildTarget.GameCoreXboxOne;
+			}
+			#endif
 			else if (platform == "PS4")
 			{
 				buildPlayerOptions.target = BuildTarget.PS4;
@@ -969,7 +979,11 @@ namespace simul
 
 		static void ExportPackage(string fileName, string platform)
 		{
-			if (platform == "x64")
+			if (platform == "x64" || platform == "XboxOne"
+				#if UNITY_GAMECORE
+				|| platform == "GameCoreScarlett" || platform == "GameCoreXboxOne"
+				#endif
+				)
 			{
 				AssetDatabase.ExportPackage("Assets/Simul", fileName, ExportPackageOptions.Recurse);
 

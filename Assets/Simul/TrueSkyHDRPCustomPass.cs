@@ -266,7 +266,11 @@ namespace simul
         }
         public RenderStyle GetRenderStyle(Camera cam)
         {
+#if !UNITY_GAMECORE
+#if !UNITY_SWITCH
             UnityEngine.XR.XRSettings.showDeviceView = true;
+#endif
+#endif
             RenderStyle r = GetBaseRenderStyle(cam);
             if (trueSKY.GetTrueSky().DepthBlending)
             {
