@@ -151,7 +151,7 @@ namespace simul
                     targetViewports[i].w = depthWidth;
                     targetViewports[i].h = depthHeight;
                 }
-
+#if !UNITY_GAMECORE
 #if !UNITY_SWITCH
                 // If we are doing XR we need to setup the additional viewports
                 if ((renderStyle & RenderStyle.VR_STYLE) == RenderStyle.VR_STYLE)
@@ -178,6 +178,7 @@ namespace simul
                     depthViewports[2].z = targetViewports[2].w = fullEyeWidth;
                     depthViewports[2].w = targetViewports[2].h = eyeHeight;
                 }
+#endif
 #endif
                 UnityRenderOptions unityRenderOptions = UnityRenderOptions.DEFAULT;
                 if (FlipOverlays)
@@ -246,7 +247,11 @@ namespace simul
         }
         public RenderStyle GetRenderStyle(Camera cam)
         {
+#if !UNITY_GAMECORE
+#if !UNITY_SWITCH
             UnityEngine.XR.XRSettings.showDeviceView = true;
+#endif
+#endif
             RenderStyle r = GetBaseRenderStyle(cam);
             if (trueSKY.GetTrueSky().DepthBlending)
             {
