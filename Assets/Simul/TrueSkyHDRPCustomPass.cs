@@ -57,6 +57,8 @@ namespace simul
 
             unityViewStruct.nativeColourRenderBuffer = colour.rt.colorBuffer.GetNativeRenderBufferPtr();
             unityViewStruct.nativeDepthRenderBuffer = depth.rt.depthBuffer.GetNativeRenderBufferPtr();
+            unityViewStruct.colourResourceState = colour.rt.antiAliasing > 1 ? ResourceState.ResolveSource : ResourceState.RenderTarget;
+            unityViewStruct.depthResourceState = ResourceState.DepthWrite;
 
             //Execute CmdBuffer
             cbuf_view_id = InternalGetViewId();

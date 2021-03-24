@@ -264,18 +264,18 @@ namespace simul
 			if (activeTexture != null)
 			{
 				unityViewStruct.nativeColourRenderBuffer = activeTexture.colorBuffer.GetNativeRenderBufferPtr();
-				//if (!editorMode )
 				unityViewStruct.nativeDepthRenderBuffer = activeTexture.depthBuffer.GetNativeRenderBufferPtr();
-				unityViewStruct.colourResourceState = ResourceState.RenderTarget;
+				unityViewStruct.colourResourceState = activeTexture.antiAliasing > 1 ? ResourceState.ResolveSource : ResourceState.RenderTarget;
 				unityViewStruct.depthResourceState = ResourceState.DepthWrite;
 			}
 			else
 			{
-				//unityViewStruct.nativeColourRenderBuffer = Display.displays[cam.targetDisplay].colorBuffer.GetNativeRenderBufferPtr();
-				unityViewStruct.colourResourceState = ResourceState.Unknown;
-				unityViewStruct.depthResourceState = ResourceState.Unknown;
+				unityViewStruct.nativeColourRenderBuffer = Graphics.activeColorBuffer.GetNativeRenderBufferPtr();
+				unityViewStruct.nativeDepthRenderBuffer = Graphics.activeDepthBuffer.GetNativeRenderBufferPtr();
+				unityViewStruct.colourResourceState = ResourceState.Common;
+				unityViewStruct.depthResourceState = ResourceState.Common;
 			}
-			
+
 			bool il2cppScripting = UsingIL2CPP();
 			Marshal.StructureToPtr(unityViewStruct, unityViewStructPtr, !il2cppScripting);
 			mainCommandBuffer.IssuePluginEventAndData(UnityGetRenderEventFuncWithData(), TRUESKY_EVENT_ID + cbuf_view_id, unityViewStructPtr);
