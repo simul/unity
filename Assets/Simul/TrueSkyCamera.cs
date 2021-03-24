@@ -261,23 +261,22 @@ namespace simul
 			PrepareMatrices();
 			unityViewStruct.nativeColourRenderBuffer = (System.IntPtr)0;
 			unityViewStruct.nativeDepthRenderBuffer = (System.IntPtr)0;
-			if (activeTexture!=null)
+			if (activeTexture != null)
 			{
 				unityViewStruct.nativeColourRenderBuffer = activeTexture.colorBuffer.GetNativeRenderBufferPtr();
 				unityViewStruct.nativeDepthRenderBuffer = activeTexture.depthBuffer.GetNativeRenderBufferPtr();
-				unityViewStruct.colourResourceState = ResourceState.GenericRead;
+				unityViewStruct.colourResourceState = activeTexture.antiAliasing > 1 ? ResourceState.ResolveSource : ResourceState.RenderTarget;
 				unityViewStruct.depthResourceState = ResourceState.DepthWrite;
 			}
 			else
 			{
 				unityViewStruct.nativeColourRenderBuffer = Graphics.activeColorBuffer.GetNativeRenderBufferPtr();
 				unityViewStruct.nativeDepthRenderBuffer = Graphics.activeDepthBuffer.GetNativeRenderBufferPtr();
-				//unityViewStruct.nativeColourRenderBuffer = Display.displays[cam.targetDisplay].colorBuffer.GetNativeRenderBufferPtr();
-				unityViewStruct.colourResourceState = ResourceState.Unknown;
-				unityViewStruct.depthResourceState = ResourceState.Unknown;
+				unityViewStruct.colourResourceState = ResourceState.Common;
+				unityViewStruct.depthResourceState = ResourceState.Common;
 			}
 
-            bool il2cppScripting = UsingIL2CPP();
+			bool il2cppScripting = UsingIL2CPP();
             Marshal.StructureToPtr(unityViewStruct, unityViewStructPtr, !il2cppScripting);
             mainCommandBuffer.IssuePluginEventAndData(UnityGetRenderEventFuncWithData(),TRUESKY_EVENT_ID + cbuf_view_id, unityViewStructPtr);
 			overlayViewStruct = unityViewStruct;
