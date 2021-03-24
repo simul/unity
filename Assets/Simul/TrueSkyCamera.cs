@@ -265,10 +265,7 @@ namespace simul
 			{
 				unityViewStruct.nativeColourRenderBuffer = activeTexture.colorBuffer.GetNativeRenderBufferPtr();
 				unityViewStruct.nativeDepthRenderBuffer = activeTexture.depthBuffer.GetNativeRenderBufferPtr();
-				if (activeTexture.antiAliasing > 1)
-					unityViewStruct.colourResourceState = ResourceState.ResolveSource;
-				else
-					unityViewStruct.colourResourceState = ResourceState.GenericRead;
+				unityViewStruct.colourResourceState = activeTexture.antiAliasing > 1 ? ResourceState.ResolveSource : ResourceState.RenderTarget;
 				unityViewStruct.depthResourceState = ResourceState.DepthWrite;
 			}
 			else
@@ -284,8 +281,8 @@ namespace simul
 			mainCommandBuffer.IssuePluginEventAndData(UnityGetRenderEventFuncWithData(),TRUESKY_EVENT_ID + cbuf_view_id, unityViewStructPtr);
 			post_translucent_buf.IssuePluginEventAndData(UnityGetPostTranslucentFuncWithData(), TRUESKY_EVENT_ID + cbuf_view_id, unityViewStructPtr);
 			overlayViewStruct = unityViewStruct;
-			//overlayViewStruct.colourResourceState = ResourceState.GenericRead;
-			//overlayViewStruct.depthResourceState = ResourceState.GenericRead;
+			overlayViewStruct.colourResourceState = ResourceState.GenericRead;
+			overlayViewStruct.depthResourceState = ResourceState.GenericRead;
 			Marshal.StructureToPtr(overlayViewStruct, overlayViewStructPtr, !il2cppScripting);
 			overlay_buf.IssuePluginEventAndData(UnityGetOverlayFuncWithData(), TRUESKY_EVENT_ID + cbuf_view_id, overlayViewStructPtr);
 
