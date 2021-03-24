@@ -54,3 +54,18 @@ The following packages were updated:
   com.unity.textmeshpro from version 3.0.1 to 3.0.3
   com.unity.timeline from version 1.4.3 to 1.5.1-pre.3
   com.unity.xr.legacyinputhelpers from version 2.1.4 to 2.1.6
+
+=== Wed Mar 24 12:12:22 2021
+
+Packages were changed.
+Update Mode: updateDependencies
+
+The following packages were updated:
+  com.unity.ide.rider from version 3.0.3 to 3.0.5
+  com.unity.ide.visualstudio from version 2.0.5 to 2.0.7
+  com.unity.purchasing from version 3.0.0-pre.4 to 3.0.1
+  com.unity.render-pipelines.high-definition from version 10.2.0 to 11.0.0
+  com.unity.test-framework from version 1.1.19 to 1.1.22
+  com.unity.textmeshpro from version 3.0.3 to 3.0.4
+  com.unity.timeline from version 1.5.1-pre.3 to 1.5.2
+  com.unity.xr.legacyinputhelpers from version 2.1.6 to 2.1.7
