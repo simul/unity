@@ -56,9 +56,13 @@ namespace simul
 				trueSky = (trueSKY)t;
 			}
 
+			EditorGUI.BeginChangeCheck();
+
 			if (trueSky && trueSky.SimulVersion >= trueSky.MakeSimulVersion(4, 2))
 			{
 				TrueSkyWaterObject waterObject = (TrueSkyWaterObject)target;
+
+				Undo.RecordObject(waterObject, "Change Value");
 
 				EditorGUILayout.Space();
 			

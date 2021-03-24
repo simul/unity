@@ -218,19 +218,19 @@ namespace simul
 				cam.RemoveCommandBuffers(CameraEvent.AfterEverything);
 			}
 			CommandBuffer[] bufs = cam.GetCommandBuffers(CameraEvent.BeforeImageEffectsOpaque);
-			if (editorMode)
+			//if(editorMode)
 				PrepareDepthMaterial();
-			int requiredNumber = 1 + (editorMode ? 2 : 0);
+			int requiredNumber = 5;
 			if (bufs.Length != requiredNumber)
 			{
 				RemoveCommandBuffers();
-				if (editorMode)
+				//if(editorMode)
 					cam.AddCommandBuffer(CameraEvent.BeforeImageEffectsOpaque, blitbuf);
 				cam.AddCommandBuffer(CameraEvent.BeforeImageEffectsOpaque, mainCommandBuffer);
 				cam.AddCommandBuffer(CameraEvent.AfterForwardAlpha, post_translucent_buf);
 				cam.AddCommandBuffer(CameraEvent.AfterEverything, overlay_buf);
 				//if (editorMode)
-				//cam.AddCommandBuffer(CameraEvent.AfterEverything, deferred_buf); 
+				cam.AddCommandBuffer(CameraEvent.AfterEverything, deferred_buf); 
 			}
 			mainCommandBuffer.Clear();
 			blitbuf.Clear();
@@ -238,7 +238,7 @@ namespace simul
 			post_translucent_buf.Clear();
 			deferred_buf.Clear();
 			cbuf_view_id = InternalGetViewId();
-			if (editorMode)
+			//if (editorMode)
 			{
 				blitbuf.SetRenderTarget((RenderTexture)depthTexture.renderTexture);
 				blitbuf.DrawProcedural(Matrix4x4.identity, depthMaterial, 0, MeshTopology.Triangles, 6);
@@ -285,6 +285,7 @@ namespace simul
 			Marshal.StructureToPtr(overlayViewStruct, overlayViewStructPtr, !il2cppScripting);
 			post_translucent_buf.IssuePluginEventAndData(UnityGetPostTranslucentFuncWithData(), TRUESKY_EVENT_ID + cbuf_view_id, unityViewStructPtr);
 			overlay_buf.IssuePluginEventAndData(UnityGetOverlayFuncWithData(), TRUESKY_EVENT_ID + cbuf_view_id, overlayViewStructPtr);
+
 		}
 		int duplicateFrames = 0;
 		int localFrameCount = 0;
@@ -419,7 +420,6 @@ namespace simul
                     unityRenderOptions = unityRenderOptions | UnityRenderOptions.NO_SEPARATION;
 
 
-
 				unityViewStruct.view_id= view_id;
 				unityViewStruct.framenumber=Time.renderedFrameCount;
 				unityViewStruct.exposure=exposure;
@@ -434,6 +434,7 @@ namespace simul
 				unityViewStruct.unityRenderOptions=unityRenderOptions;
 				unityViewStruct.colourTexture= Graphics.activeColorBuffer.GetNativeRenderBufferPtr();
 				
+
 				lastFrameCount = Time.renderedFrameCount;
 				_inscatterRT.renderTexture = inscatterRT;
 				_cloudVisibilityRT.renderTexture = cloudVisibilityRT;
