@@ -41,7 +41,7 @@ namespace simul
             // Check supported targets
 			if (target != BuildTarget.StandaloneWindows && target != BuildTarget.StandaloneWindows64 && 
                 target != BuildTarget.PS4               && target != BuildTarget.WSAPlayer           &&
-            #if UNTIY_GAMECORE
+            #if UNITY_GAMECORE
                 target != BuildTarget.GameCoreScarlett  && target != BuildTarget.GameCoreXboxOne     &&
             #endif
                 target != BuildTarget.Switch)

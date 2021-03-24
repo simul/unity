@@ -187,58 +187,58 @@ namespace simul
 		System.IntPtr overlayViewStructPtr = Marshal.AllocHGlobal(Marshal.SizeOf(new UnityViewStruct()));
 		void OnPreRender()
 		{
-			if (!enabled || !gameObject.activeInHierarchy)
+			if(!enabled||!gameObject.activeInHierarchy)
 			{
 				UnityEngine.Debug.Log("Failed to draw");
 				return;
 			}
-			GetComponent<Camera>().depthTextureMode |= DepthTextureMode.Depth;
+			GetComponent<Camera>().depthTextureMode|=DepthTextureMode.Depth;
 			PreRender();
 			Camera cam = GetComponent<Camera>();
-			if (mainCommandBuffer == null)
+            if (mainCommandBuffer == null) 
 			{
 				RemoveCommandBuffers();
-				mainCommandBuffer = new CommandBuffer();
-				mainCommandBuffer.name = "trueSKY render";
-				overlay_buf = new CommandBuffer();
-				overlay_buf.name = "trueSKY overlay";
-				post_translucent_buf = new CommandBuffer();
-				post_translucent_buf.name = "trueSKY post translucent";
-				deferred_buf = new CommandBuffer();
-				deferred_buf.name = "trueSKY deferred contexts";
-				blitbuf = new CommandBuffer();
-				blitbuf.name = "trueSKY depth blit";
+				mainCommandBuffer           = new CommandBuffer();
+				mainCommandBuffer.name      = "trueSKY render";
+				overlay_buf                 = new CommandBuffer();
+				overlay_buf.name            = "trueSKY overlay";
+				post_translucent_buf        = new CommandBuffer();
+				post_translucent_buf.name   = "trueSKY post translucent";
+				deferred_buf				= new CommandBuffer();
+				deferred_buf.name			= "trueSKY deferred contexts";
+				blitbuf						= new CommandBuffer();
+				blitbuf.name				= "trueSKY depth blit";
 
-				cbuf_view_id = -1;
+				cbuf_view_id                = -1;
 			}
-			if (cbuf_view_id != InternalGetViewId())
+			if (cbuf_view_id != InternalGetViewId()) 
 			{
 				cam.RemoveCommandBuffers(CameraEvent.BeforeImageEffectsOpaque);
 				cam.RemoveCommandBuffers(CameraEvent.AfterForwardAlpha);
 				cam.RemoveCommandBuffers(CameraEvent.AfterEverything);
 			}
-			CommandBuffer[] bufs = cam.GetCommandBuffers(CameraEvent.BeforeImageEffectsOpaque);
-			if (editorMode)
+            CommandBuffer[] bufs = cam.GetCommandBuffers(CameraEvent.BeforeImageEffectsOpaque);
+			//if(editorMode)
 				PrepareDepthMaterial();
-			int requiredNumber = 1 + (editorMode ? 2 : 0);
-			if (bufs.Length != requiredNumber)
+			int requiredNumber = 5;
+            if (bufs.Length != requiredNumber) 
 			{
 				RemoveCommandBuffers();
-				if (editorMode)
-					cam.AddCommandBuffer(CameraEvent.BeforeImageEffectsOpaque, blitbuf);
+				//if(editorMode)
+				cam.AddCommandBuffer(CameraEvent.BeforeImageEffectsOpaque, blitbuf);
 				cam.AddCommandBuffer(CameraEvent.BeforeImageEffectsOpaque, mainCommandBuffer);
 				cam.AddCommandBuffer(CameraEvent.AfterForwardAlpha, post_translucent_buf);
 				cam.AddCommandBuffer(CameraEvent.AfterEverything, overlay_buf);
 				//if (editorMode)
-				//cam.AddCommandBuffer(CameraEvent.AfterEverything, deferred_buf); 
+				cam.AddCommandBuffer(CameraEvent.AfterEverything, deferred_buf); 
 			}
-			mainCommandBuffer.Clear();
+            mainCommandBuffer.Clear();
 			blitbuf.Clear();
 			overlay_buf.Clear();
 			post_translucent_buf.Clear();
 			deferred_buf.Clear();
-			cbuf_view_id = InternalGetViewId();
-			if (editorMode)
+            cbuf_view_id = InternalGetViewId();
+			//if (editorMode)
 			{
 				blitbuf.SetRenderTarget((RenderTexture)depthTexture.renderTexture);
 				blitbuf.DrawProcedural(Matrix4x4.identity, depthMaterial, 0, MeshTopology.Triangles, 6);
@@ -261,30 +261,32 @@ namespace simul
 			PrepareMatrices();
 			unityViewStruct.nativeColourRenderBuffer = (System.IntPtr)0;
 			unityViewStruct.nativeDepthRenderBuffer = (System.IntPtr)0;
-			if (activeTexture != null)
+			if (activeTexture!=null)
 			{
 				unityViewStruct.nativeColourRenderBuffer = activeTexture.colorBuffer.GetNativeRenderBufferPtr();
-				//if (!editorMode )
 				unityViewStruct.nativeDepthRenderBuffer = activeTexture.depthBuffer.GetNativeRenderBufferPtr();
-				unityViewStruct.colourResourceState = ResourceState.RenderTarget;
+				unityViewStruct.colourResourceState = ResourceState.GenericRead;
 				unityViewStruct.depthResourceState = ResourceState.DepthWrite;
 			}
 			else
 			{
+				unityViewStruct.nativeColourRenderBuffer = Graphics.activeColorBuffer.GetNativeRenderBufferPtr();
+				unityViewStruct.nativeDepthRenderBuffer = Graphics.activeDepthBuffer.GetNativeRenderBufferPtr();
 				//unityViewStruct.nativeColourRenderBuffer = Display.displays[cam.targetDisplay].colorBuffer.GetNativeRenderBufferPtr();
 				unityViewStruct.colourResourceState = ResourceState.Unknown;
 				unityViewStruct.depthResourceState = ResourceState.Unknown;
 			}
-			
-			bool il2cppScripting = UsingIL2CPP();
-			Marshal.StructureToPtr(unityViewStruct, unityViewStructPtr, !il2cppScripting);
-			mainCommandBuffer.IssuePluginEventAndData(UnityGetRenderEventFuncWithData(), TRUESKY_EVENT_ID + cbuf_view_id, unityViewStructPtr);
+
+            bool il2cppScripting = UsingIL2CPP();
+            Marshal.StructureToPtr(unityViewStruct, unityViewStructPtr, !il2cppScripting);
+            mainCommandBuffer.IssuePluginEventAndData(UnityGetRenderEventFuncWithData(),TRUESKY_EVENT_ID + cbuf_view_id, unityViewStructPtr);
 			overlayViewStruct = unityViewStruct;
 			overlayViewStruct.colourResourceState = ResourceState.GenericRead;
 			overlayViewStruct.depthResourceState = ResourceState.GenericRead;
 			Marshal.StructureToPtr(overlayViewStruct, overlayViewStructPtr, !il2cppScripting);
 			post_translucent_buf.IssuePluginEventAndData(UnityGetPostTranslucentFuncWithData(), TRUESKY_EVENT_ID + cbuf_view_id, unityViewStructPtr);
 			overlay_buf.IssuePluginEventAndData(UnityGetOverlayFuncWithData(), TRUESKY_EVENT_ID + cbuf_view_id, overlayViewStructPtr);
+
 		}
 		int duplicateFrames = 0;
 		int localFrameCount = 0;
@@ -419,7 +421,6 @@ namespace simul
                     unityRenderOptions = unityRenderOptions | UnityRenderOptions.NO_SEPARATION;
 
 
-
 				unityViewStruct.view_id= view_id;
 				unityViewStruct.framenumber=Time.renderedFrameCount;
 				unityViewStruct.exposure=exposure;
@@ -433,7 +434,8 @@ namespace simul
 				unityViewStruct.renderStyle=renderStyle;
 				unityViewStruct.unityRenderOptions=unityRenderOptions;
 				unityViewStruct.colourTexture= Graphics.activeColorBuffer.GetNativeRenderBufferPtr();
-				
+
+
 				lastFrameCount = Time.renderedFrameCount;
 				_inscatterRT.renderTexture = inscatterRT;
 				_cloudVisibilityRT.renderTexture = cloudVisibilityRT;

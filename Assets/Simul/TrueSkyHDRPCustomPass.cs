@@ -9,7 +9,7 @@ using static simul.TrueSkyCameraBase;
 
 namespace simul
 {
-    class TrueSkyHDRPCustomPass : CustomPass
+    public class TrueSkyHDRPCustomPass : CustomPass
     {
         UnityViewStruct unityViewStruct;
         System.IntPtr unityViewStructPtr;
@@ -38,6 +38,7 @@ namespace simul
             unityViewStructPtr = Marshal.AllocHGlobal(Marshal.SizeOf(new UnityViewStruct()));
         }
 
+#if UNITY_2020_2_OR_NEWER
         protected override void Execute(CustomPassContext ctx)
         {
             ScriptableRenderContext src = ctx.renderContext;
@@ -45,15 +46,29 @@ namespace simul
             HDCamera camera = ctx.hdCamera;
             CullingResults cullingResult = ctx.cullingResults;
 
+            RTHandle colour = ctx.cameraColorBuffer;
+            RTHandle depth = ctx.cameraDepthBuffer;
+
+            InteranlExecute(src, cmd, camera, cullingResult, colour, depth);
+        }
+#else
+        protected virtual void Execute(ScriptableRenderContext renderContext, CommandBuffer cmd, HDCamera hdCamera, CullingResults cullingResult)
+        {
+            RTHandle colour, depth;
+            GetCameraBuffers(out colour, out depth);
+
+            InteranlExecute(renderContext, cmd, hdCamera, cullingResult, colour, depth);
+        }
+#endif
+        
+        private void InteranlExecute(ScriptableRenderContext src, CommandBuffer cmd, HDCamera camera, CullingResults cullingResult, RTHandle colour, RTHandle depth)
+        {
             //Don't draw to the scene view. This should never be removed!
             if (camera.camera.cameraType == CameraType.SceneView)
                 return;
 
             //Fill-in UnityViewStruct
             PrepareMatrices(camera);
-
-            RTHandle colour = ctx.cameraColorBuffer;
-            RTHandle depth = ctx.cameraDepthBuffer;
 
             unityViewStruct.nativeColourRenderBuffer = colour.rt.colorBuffer.GetNativeRenderBufferPtr();
             unityViewStruct.nativeDepthRenderBuffer = depth.rt.depthBuffer.GetNativeRenderBufferPtr();
@@ -151,6 +166,7 @@ namespace simul
                     targetViewports[i].w = depthWidth;
                     targetViewports[i].h = depthHeight;
                 }
+
 #if !UNITY_GAMECORE
 #if !UNITY_SWITCH
                 // If we are doing XR we need to setup the additional viewports
@@ -180,11 +196,15 @@ namespace simul
                 }
 #endif
 #endif
+
                 UnityRenderOptions unityRenderOptions = UnityRenderOptions.DEFAULT;
                 if (FlipOverlays)
                     unityRenderOptions = unityRenderOptions | UnityRenderOptions.FLIP_OVERLAYS;
                 if (ShareBuffersForVR)
                     unityRenderOptions = unityRenderOptions | UnityRenderOptions.NO_SEPARATION;
+
+                
+
 
                 unityViewStruct.view_id = view_id;
                 unityViewStruct.framenumber = Time.renderedFrameCount;
@@ -198,10 +218,9 @@ namespace simul
                 unityViewStruct.targetViewports = targetViewports;
                 unityViewStruct.renderStyle = renderStyle;
                 unityViewStruct.unityRenderOptions = unityRenderOptions;
-                unityViewStruct.colourTexture = (System.IntPtr)0; ;
-                unityViewStruct.externalDepthTexture = (System.IntPtr)0;
-                
-                  lastFrameCount = Time.renderedFrameCount;
+                unityViewStruct.colourTexture = (System.IntPtr)0;
+
+                lastFrameCount = Time.renderedFrameCount;
                 /*_inscatterRT.renderTexture = inscatterRT;
                 _cloudVisibilityRT.renderTexture = cloudVisibilityRT;
                 _cloudShadowRT.renderTexture = cloudShadowRT;

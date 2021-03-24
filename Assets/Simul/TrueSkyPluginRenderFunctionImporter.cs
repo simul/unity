@@ -93,23 +93,23 @@ namespace simul
 		[DllImport(renderer_dll)] public static extern void StaticSetRenderInt(string name, int value);
 
 		//trueWATER
-		[DllImport(renderer_dll)] public static extern bool StaticCreateBoundedWaterObject(uint ID, float[] dimension, float[] location);
-		[DllImport(renderer_dll)] public static extern bool StaticCreateCustomWaterMesh(int ID, IntPtr newMesh, float[] vertices, float[] normals, uint[] indices);
-		[DllImport(renderer_dll)] public static extern bool StaticUpdateCustomWaterMesh(int ID, IntPtr newMesh);
+		[DllImport(renderer_dll)] public static extern uint StaticCreateBoundedWaterObject(uint ID, float[] dimension, float[] location);
+		[DllImport(renderer_dll)] public static extern uint StaticCreateCustomWaterMesh(int ID, IntPtr newMesh, float[] vertices, float[] normals, uint[] indices);
+		[DllImport(renderer_dll)] public static extern void StaticUpdateCustomWaterMesh(int ID, IntPtr newMesh);
 		[DllImport(renderer_dll)] public static extern void StaticRemoveCustomWaterMesh(int ID);
 		[DllImport(renderer_dll)] public static extern void StaticRemoveBoundedWaterObject(uint ID);
-		[DllImport(renderer_dll)] public static extern bool StaticAddWaterProbe(uint ID, float[] location);
-		[DllImport(renderer_dll)] public static extern void StaticRemoveWaterProbe(uint ID);
-		[DllImport(renderer_dll)] public static extern void StaticGetWaterProbeValues(uint ID, float[] result);
-		[DllImport(renderer_dll)] public static extern void StaticUpdateWaterProbeValues(uint ID, float[] location);
-		[DllImport(renderer_dll)] public static extern bool StaticAddWaterBuoyancyObject(IntPtr newObject);
+		[DllImport(renderer_dll)] public static extern uint StaticAddWaterProbe(IntPtr values);
+		[DllImport(renderer_dll)] public static extern void StaticRemoveWaterProbe(int ID);
+		[DllImport(renderer_dll)] public static extern void StaticGetWaterProbeValues(int ID, float[] result);
+		[DllImport(renderer_dll)] public static extern void StaticUpdateWaterProbeValues(IntPtr values);
+		[DllImport(renderer_dll)] public static extern uint StaticAddWaterBuoyancyObject(IntPtr newObject);
 		[DllImport(renderer_dll)] public static extern void StaticUpdateWaterBuoyancyObjectValues(IntPtr values);
 		[DllImport(renderer_dll)] public static extern float[] StaticGetWaterBuoyancyObjectResults(int ID);
 		[DllImport(renderer_dll)] public static extern void StaticRemoveWaterBuoyancyObject(int ID);
-		[DllImport(renderer_dll)] public static extern bool StaticAddWaterMaskObject(IntPtr newObject);
+		[DllImport(renderer_dll)] public static extern uint StaticAddWaterMaskObject(IntPtr newObject);
 		[DllImport(renderer_dll)] public static extern void StaticUpdateWaterMaskObjectValues(IntPtr values);
 		[DllImport(renderer_dll)] public static extern void StaticRemoveWaterMaskObject(int ID);
-		[DllImport(renderer_dll)] public static extern bool StaticAddWaterParticleGenerator(IntPtr newGenerator, int newGeneratorType, IntPtr customPlaneTexture);
+		[DllImport(renderer_dll)] public static extern uint StaticAddWaterParticleGenerator(IntPtr newGenerator, int newGeneratorType, IntPtr customPlaneTexture);
 		[DllImport(renderer_dll)] public static extern void StaticUpdateWaterParticleGeneratorValues(IntPtr values, int generatorType, IntPtr customPlaneTexture);
 		[DllImport(renderer_dll)] public static extern void StaticRemoveWaterParticleGenerator(int ID);
 		[DllImport(renderer_dll)] public static extern void StaticSetWaterFloat(string name, int ID, float value);
@@ -176,6 +176,10 @@ namespace simul
 		[DllImport(renderer_dll)] public static extern IntPtr UnityGetRenderEventFuncWithData();
 		[DllImport(renderer_dll)] public static extern IntPtr UnityGetOverlayFuncWithData();
 		[DllImport(renderer_dll)] public static extern IntPtr UnityGetPostTranslucentFuncWithData();
+		[DllImport(renderer_dll)] public static extern IntPtr UnityGetRenderEventFunc();
+		[DllImport(renderer_dll)] public static extern IntPtr UnityGetOverlayFunc();
+		[DllImport(renderer_dll)] public static extern IntPtr UnityGetPostTranslucentFunc();
+		[DllImport(renderer_dll)] public static extern IntPtr UnityGetStoreStateFunc();
 		[DllImport(renderer_dll)] public static extern IntPtr UnityGetExecuteDeferredFunc();
 		//[DllImport(renderer_dll)] public static extern void UnitySetGraphicsDevice(IntPtr device, int deviceType, int eventType);
 		//[DllImport(renderer_dll)] public static extern void UnitySetRenderFrameValues(int view_id, float[] viewMatrices4x4, float[] projMatrices4x4, float[] overlayProjMatrix4x4, IntPtr fullResDepthTexture2D, int4[] depthViewports, Viewport[] targetViewports, RenderStyle renderStyle, float exposure, float gamma, int framenumber, UnityRenderOptions unityRenderOptions, IntPtr colourTexture);
