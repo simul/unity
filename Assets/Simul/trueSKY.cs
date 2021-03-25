@@ -1789,7 +1789,7 @@ namespace simul
 
 						_trueSKYTime = value;
 						Math.Round(_trueSKYTime, 2);
-						//StaticSetRenderFloat("Time", value / _timeUnits);
+						StaticSetRenderFloat("Time", value / _timeUnits);
 						// What if, having changed this value, we now ask for a light colour before the next Update?
 						// so we force it:
 						StaticTick(0.0f);
@@ -3182,6 +3182,7 @@ namespace simul
 			{
 				if (_CubemapResolution != value) try
 					{
+
 						_CubemapResolution = value;
 						updateERV = true;
 					}
@@ -3458,9 +3459,7 @@ namespace simul
 				if (_CellNoiseWavelengthKm != value) try
 					{
 						_CellNoiseWavelengthKm = value;
-						if (SimulVersion >= MakeSimulVersion(4, 2))
-							StaticSetRenderFloat("render:cellnoisewavelengthkm", _CellNoiseWavelengthKm);
-						else
+						if (SimulVersion < MakeSimulVersion(4, 2))
 							StaticSetRenderFloat("WorleyWavelengthKm", _CellNoiseWavelengthKm);
 					}
 					catch (Exception exc)
@@ -3711,6 +3710,8 @@ namespace simul
 		//Returns true sizes do not match.
 		private bool CheckSizeOfExternalRenderValues()
         {
+			if (SimulVersion < MakeSimulVersion(4, 2))
+				return false; //4.1 does not supprt ERV
 			string str= "sizeof:ExternalRenderValues";
 			int dllSize = StaticGetRenderInt(str);
 			int thisSize = Marshal.SizeOf(typeof(ExternalRenderValues));
@@ -3725,6 +3726,8 @@ namespace simul
 		//Returns true sizes do not match.
 		private bool CheckSizeOfExternalDynamicValues()
 		{
+			if (SimulVersion < MakeSimulVersion(4, 2))
+				return false; //4.1 does not supprt EDV
 			string str = "sizeof:ExternalDynamicValues";
 			int dllSize = StaticGetRenderInt(str);
 			int thisSize = Marshal.SizeOf(typeof(ExternalDynamicValues));
@@ -3785,28 +3788,6 @@ namespace simul
 				Marshal.StructureToPtr(ERV, ERVptr, true);
 				StaticSetExternalRenderValues(ERVptr);
 				//StaticTriggerAction("Reset");
-			}
-			else
-			{
-				StaticSetRenderBool("RenderSky", true);
-				StaticSetRenderFloat("render:rendergridxkm", _RenderGridXKm);
-				StaticSetRenderFloat("render:rendergridzkm", _RenderGridZKm);
-				StaticSetRenderInt("MaximumCubemapResolution", _CubemapResolution);
-				StaticSetRenderBool("gridrendering", _IntegrationScheme == 0);
-				StaticSetRenderInt("CloudSteps", _CloudSteps);
-				StaticSetRenderFloat("depthsamplingpixelrange", _depthSamplingPixelRange);
-				StaticSetRenderInt("render:edgenoisetexturesize", _edgeNoiseTextureSize);
-				StaticSetRenderInt("godraysgrid.x", (int)_godRaysGrid.x);
-				StaticSetRenderInt("godraysgrid.y", (int)_godRaysGrid.y);
-				StaticSetRenderInt("godraysgrid.z", (int)_godRaysGrid.z);
-				StaticSetRenderFloat("render:highdetailproportion", _HighDetailProportion);
-				StaticSetRenderFloat("render:mediumdetailproportion", _MediumDetailProportion);
-				StaticSetRenderInt("render:CellNoiseTextureSize", _worleyTextureSize);
-				StaticSetRenderInt("render:AtmosphericsAmortization", _atmosphericsAmortization);
-				StaticSetRenderInt("render:Amortization", _amortization);
-				StaticSetRenderFloat("render:precipitationradiusmetres", _PrecipitationRadiusMetres);
-				StaticSetRenderFloat("render:maxclouddistancekm", _MaxCloudDistanceKm);
-				StaticSetRenderFloat("render:precipitationthresholdkm", _PrecipitationThresholdKm);
 			}
 		}
 
@@ -3910,7 +3891,7 @@ namespace simul
 
 			try
 			{
-                if (!_initialized)
+				if (!_initialized)
 					Init();
 				if (Application.isPlaying)
 				{
@@ -3931,46 +3912,73 @@ namespace simul
 					isApplicationPlaying = false;
 
 				UpdateTime();
-				//StaticSetRenderFloat("Time", _trueSKYTime);
+
 				StaticSetRenderFloat("RealTime", Time.time);
 
 				if (updateERV)
 				{
-					UpdateExternalRender();
-					updateERV = false;
-				}
-
-				UpdateExternalDynamic();
-
-				foreach(var moon in _moons)
-				{
-					
-					if (moon.Render && !moon.DestroyMoon)
+					if (SimulVersion >= MakeSimulVersion(4, 2))
 					{
-						ExternalMoon Moon = new ExternalMoon();
-						Moon.version = ExternalMoon.static_version;
-						Moon.orbit = moon.GetOrbit();
-						Moon.name = moon.Name;
-						Moon.radiusArcMinutes = (float)moon.RadiusArcMinutes;
-						Moon.render = true;
-						ExternalTexture tex = new ExternalTexture();
-						tex.version = ExternalTexture.static_version;
-						InitExternalTexture(ref tex, moon.MoonTexture);
-						Moon.colour.x = moon.Colour.r;
-						Moon.colour.y = moon.Colour.g;
-						Moon.colour.z = moon.Colour.b;
-						Moon.albedo = (float)moon.Albedo;					
-						System.IntPtr Moonptr = Marshal.AllocHGlobal(Marshal.SizeOf(new ExternalMoon()));
-						Marshal.StructureToPtr(Moon, Moonptr, false); // TODO
-						StaticSetMoon(_moons.IndexOf(moon) + 1, Moonptr);
+						UpdateExternalRender();
+						updateERV = false;
 					}
 					else
-					{ 
-						StaticSetMoon(_moons.IndexOf(moon) + 1, (System.IntPtr)null);
-						if(moon.DestroyMoon)
-							_moons.Remove(moon);
+					{
+						StaticSetRenderBool("RenderSky", true);
+						StaticSetRenderFloat("render:rendergridxkm", _RenderGridXKm);
+						StaticSetRenderFloat("render:rendergridzkm", _RenderGridZKm);
+						StaticSetRenderInt("MaximumCubemapResolution", _CubemapResolution);
+						StaticSetRenderBool("gridrendering", _IntegrationScheme == 0);
+						StaticSetRenderInt("CloudSteps", _CloudSteps);
+						StaticSetRenderFloat("depthsamplingpixelrange", _depthSamplingPixelRange);
+						StaticSetRenderInt("render:edgenoisetexturesize", _edgeNoiseTextureSize);
+						StaticSetRenderInt("godraysgrid.x", (int)_godRaysGrid.x);
+						StaticSetRenderInt("godraysgrid.y", (int)_godRaysGrid.y);
+						StaticSetRenderInt("godraysgrid.z", (int)_godRaysGrid.z);
+						StaticSetRenderFloat("render:highdetailproportion", _HighDetailProportion);
+						StaticSetRenderFloat("render:mediumdetailproportion", _MediumDetailProportion);
+						StaticSetRenderInt("render:CellNoiseTextureSize", _worleyTextureSize);
+						StaticSetRenderInt("render:AtmosphericsAmortization", _atmosphericsAmortization);
+						StaticSetRenderInt("render:Amortization", _amortization);
+						StaticSetRenderFloat("render:precipitationradiusmetres", _PrecipitationRadiusMetres);
+						StaticSetRenderFloat("render:maxclouddistancekm", _MaxCloudDistanceKm);
+						StaticSetRenderFloat("render:precipitationthresholdkm", _PrecipitationThresholdKm);
 					}
 				}
+				if (SimulVersion >= MakeSimulVersion(4, 2))
+				{
+					UpdateExternalDynamic();
+
+					foreach (var moon in _moons)
+					{
+						if (moon.Render && !moon.DestroyMoon)
+						{
+							ExternalMoon Moon = new ExternalMoon();
+							Moon.version = ExternalMoon.static_version;
+							Moon.orbit = moon.GetOrbit();
+							Moon.name = moon.Name;
+							Moon.radiusArcMinutes = (float)moon.RadiusArcMinutes;
+							Moon.render = true;
+							ExternalTexture tex = new ExternalTexture();
+							tex.version = ExternalTexture.static_version;
+							InitExternalTexture(ref tex, moon.MoonTexture);
+							Moon.colour.x = moon.Colour.r;
+							Moon.colour.y = moon.Colour.g;
+							Moon.colour.z = moon.Colour.b;
+							Moon.albedo = (float)moon.Albedo;
+							System.IntPtr Moonptr = Marshal.AllocHGlobal(Marshal.SizeOf(new ExternalMoon()));
+							Marshal.StructureToPtr(Moon, Moonptr, false); // TODO
+							StaticSetMoon(_moons.IndexOf(moon) + 1, Moonptr);
+						}
+						else
+						{
+							StaticSetMoon(_moons.IndexOf(moon) + 1, (System.IntPtr)null);
+							if (moon.DestroyMoon)
+								_moons.Remove(moon);
+						}
+					}
+				}
+			
 				StaticTick(0.0f);
 			}
 			catch (Exception exc)
@@ -4000,8 +4008,9 @@ namespace simul
 				//Allowing for personalised units of time (Day is 0-1, 0-24 or 0-100 etc.)
 				if (TimeProgressionScale != 0)
 					TrueSKYTime += (((TimeProgressionScale / (24.0F * 60.0F * 60.0F)) * TimeUnits) * Time.deltaTime);
+
+				StaticSetRenderFloat("Time", _trueSKYTime / TimeUnits);
 			}
-			StaticSetRenderFloat("Time", _trueSKYTime/TimeUnits);
 		}
 		public Vector3 getSunColour(Vector3 pos,int id=0)
 		{
@@ -4271,6 +4280,7 @@ namespace simul
 				StaticSetRenderBool("ShowRainTextures", _showRainTextures);
 				StaticSetRenderBool("SimulationTimeRain", _simulationTimeRain);
 				StaticSetRenderBool("instantupdate", _instantUpdate);
+				StaticSetRenderFloat("Time", _trueSKYTime / TimeUnits);
 				//StaticSetRenderBool("gridrendering", _IntegrationScheme == 0);
 				//StaticSetRenderInt("MaximumCubemapResolution", _CubemapResolution);
 				//StaticSetRenderInt("CloudSteps", _CloudSteps);

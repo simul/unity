@@ -381,9 +381,10 @@ namespace simul
 				precipitation = EditorGUILayout.Foldout(precipitation, "Precipitation", outerFoldoutStyle);
 				if (precipitation)
 				{
-					trueSky.SimulationTimeRain = EditorGUILayout.Toggle("Sim Time Rain", trueSky.SimulationTimeRain);
+					
 					if (trueSky.SimulVersion >= trueSky.MakeSimulVersion(4, 2))
 					{
+						trueSky.SimulationTimeRain = EditorGUILayout.Toggle("Sim Time Rain", trueSky.SimulationTimeRain);
 						trueSky.MaxPrecipitationParticles = EditorGUILayout.IntField("Max Particles", trueSky.MaxPrecipitationParticles);
 						trueSky.PrecipitationRadiusMetres = EditorGUILayout.Slider("Radius (m)", trueSky.PrecipitationRadiusMetres, 0.5F, 100.0F);
 						trueSky.RainFallSpeedMS = EditorGUILayout.Slider("Rain fall speed (m/s)", trueSky.RainFallSpeedMS, 0.0F, 20.0F);
@@ -395,6 +396,8 @@ namespace simul
 						trueSky.PrecipitationWaverTimescaleS = EditorGUILayout.Slider("WaverTimescaleS", trueSky.PrecipitationWaverTimescaleS, 0.1F, 60.0F);
 						trueSky.PrecipitationThresholdKm = EditorGUILayout.Slider("ThresholdKm", trueSky.PrecipitationThresholdKm, 0.5F, 20.0F);
 					}
+					else
+						EditorGUILayout.LabelField("Precipitation Settings are set in the trueSKY Sequence asset in 4.1");
 				}
 
 				// Rainbow settings
