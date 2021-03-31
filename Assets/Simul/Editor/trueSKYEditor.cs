@@ -795,10 +795,10 @@ namespace simul
 					trueSky.RenderInEditMode = EditorGUILayout.Toggle("Render in Edit Mode", trueSky.RenderInEditMode);
 					string gv = SystemInfo.graphicsDeviceVersion;
 					EditorGUILayout.LabelField("Unity Renderer", gv);
-					if (gv.Contains("Direct3D 11") || gv.Contains("Direct3D 12") || gv.Contains("Vulkan"))
-						EditorGUILayout.LabelField("GOOD", GUILayout.Width(48));
-					else
+					if (!gv.Contains("Direct3D") && !gv.Contains("Vulkan"))
+					{
 						EditorGUILayout.LabelField("Unsupported", GUILayout.Width(48));
+					}
 					if (trueSKY.advancedMode)
 					{
 						if (GUILayout.Button("Recompile Shaders"))
@@ -856,7 +856,7 @@ namespace simul
 				}
 			}
 			// trueSKY Advanced Mode
-			if (true)
+			if (trueSKY.advancedMode)
 			{
 				EditorGUILayout.BeginHorizontal();
 				EditorGUILayout.Space();
@@ -936,7 +936,7 @@ namespace simul
 			{
 				buildPlayerOptions.target = BuildTarget.XboxOne;
 			}
-			#if UNTIY_GAMECORE
+			#if UNITY_GAMECORE
 			else if (platform == "GameCoreScarlett")
 			{
 				buildPlayerOptions.target = BuildTarget.GameCoreScarlett;
@@ -982,7 +982,7 @@ namespace simul
 		static void ExportPackage(string fileName, string platform)
 		{
 			if (platform == "x64" || platform == "XboxOne"
-				#if UNTIY_GAMECORE
+				#if UNITY_GAMECORE
 				|| platform == "GameCoreScarlett" || platform == "GameCoreXboxOne"
 				#endif
 				)

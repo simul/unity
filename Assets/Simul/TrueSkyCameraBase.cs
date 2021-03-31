@@ -40,8 +40,8 @@ namespace simul
 			return TRUESKY_EVENT_ID;
 		}
 
-        public enum ResourceState : uint
-        {
+		public enum ResourceState : uint
+		{
 			Common = 0,
 			VertexAndConstantBuffer = 0x1,
 			IndexBuffer = 0x2,
