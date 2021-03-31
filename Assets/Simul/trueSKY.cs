@@ -3691,6 +3691,10 @@ namespace simul
 		bool _UsingIL2CPP = false;
 		public bool UsingIL2CPP
 		{
+#if UNITY_GAMECORE
+			get { _UsingIL2CPP = true;  return _UsingIL2CPP; }
+			set { _UsingIL2CPP = true; }
+#else
 			get
 			{
 				return _UsingIL2CPP;
@@ -3706,6 +3710,7 @@ namespace simul
 						UnityEngine.Debug.Log(exc.ToString());
 					}
 			}
+#endif
 		}
 
 		//Returns true sizes do not match.
