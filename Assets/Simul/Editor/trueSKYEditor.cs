@@ -984,16 +984,26 @@ namespace simul
 
 		static void ExportPackage(string fileName, string platform)
 		{
-			if (platform == "x64" || platform == "XboxOne"
-				#if UNITY_GAMECORE
-				|| platform == "GameCoreScarlett" || platform == "GameCoreXboxOne"
-				#endif
-				)
+			if (platform == "x64" || platform == "XboxOne")	
 			{
 				AssetDatabase.ExportPackage("Assets/Simul", fileName, ExportPackageOptions.Recurse);
 
 				UnityEngine.Debug.Log("Exported: " + fileName);
 			}
+			#if UNITY_GAMECORE
+			else if (platform == "GameCoreScarlett")
+			{
+				AssetDatabase.ExportPackage("Assets/Plugins/GameCoreScarlett", fileName, ExportPackageOptions.Recurse);
+
+				UnityEngine.Debug.Log("Exported: " + fileName);
+			}
+			else if (platform == "GameCoreXboxOne")
+			{
+				AssetDatabase.ExportPackage("Assets/Plugins/GameCoreXboxOne", fileName, ExportPackageOptions.Recurse);
+
+				UnityEngine.Debug.Log("Exported: " + fileName);
+			}
+			#endif
 			else if (platform == "PS4")
 			{
 				string[] paths =
