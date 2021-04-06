@@ -72,13 +72,7 @@ namespace simul
                 fixedPath           = fixedPath.Remove(lastSep);
                 buildDirectory      = fixedPath + "/StagingArea/Data";
             }
-            #if UNITY_GAMECORE
-            if (target == BuildTarget.GameCoreScarlett)
-            {
-                //buildDirectory += s + "Loose" + s + "Data" + s + "Plugins";
-            }
-            #endif
-
+           
             Debug.Log("Build directory is: " + buildDirectory);
 
             // Copy shaders

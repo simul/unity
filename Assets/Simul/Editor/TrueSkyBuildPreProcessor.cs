@@ -39,7 +39,7 @@ namespace simul
             #if UNITY_GAMECORE
             if(target == BuildTarget.GameCoreScarlett)
             {
-                string shaderbinSource = trueSKY.GetShaderbinSourceDir("scarlett");
+                string shaderbinSource = Environment.CurrentDirectory + s + "Assets/Plugins/GameCoreScarlett/shaderbin";
                 string assetsPath = Environment.CurrentDirectory + s + "Assets";
                 string simulPath = assetsPath + s + "Simul";
                 string mediaPath = simulPath + s + "Media";
