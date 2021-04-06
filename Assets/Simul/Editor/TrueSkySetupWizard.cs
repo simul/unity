@@ -367,6 +367,7 @@ namespace simul
 		void Finish()
 		{
 			TrueSkyCamera trueSkyCamera;
+			trueSKY ts = trueSKY.GetTrueSky();
 
 			if (sequence == null)
 			{
@@ -455,16 +456,17 @@ namespace simul
 			if (lightGameObject == null)
 			{
 				lightGameObject = new GameObject("TrueSkyDirectionalLight");
+				lightComponent = lightGameObject.AddComponent<TrueSkyDirectionalLight>();
 				Light dirLight = lightGameObject.AddComponent<Light>();
 				dirLight.type = LightType.Directional;
-				lightComponent = lightGameObject.AddComponent<TrueSkyDirectionalLight>();
-			}
+			}		
 			// If there is a light, but without the component, add it:
 			if (lightComponent == null)
 			{
 				lightComponent = lightGameObject.AddComponent<TrueSkyDirectionalLight>();
 			}
-			RenderSettings.sun = lightGameObject.GetComponent<Light>();
+			RenderSettings.sun = lightGameObject.GetComponent<Light>(); 
+			lightGameObject.GetComponent<Light>().cookie = Resources.Load("CloudShadowRT", typeof(RenderTexture)) as RenderTexture;
 
 #if USING_HDRP
 			lightComponent.Units = TrueSkyDirectionalLight.LightUnits.Photometric;

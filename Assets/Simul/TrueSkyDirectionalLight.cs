@@ -155,6 +155,6 @@ public class TrueSkyDirectionalLight : MonoBehaviour
         float shadowSize            = mTsInstance.getCloudShadowScale();
         //float halfShadowSize        = shadowSize * 0.5f;
         transform.position          = new Vector3(0.0f, sunHeight, 0.0f);
-        mLightComponent.cookieSize  = shadowSize / 4.0f;
+        mLightComponent.cookieSize  = shadowSize / 4.0f;//would be moved if using shaderGraph
     }
 }

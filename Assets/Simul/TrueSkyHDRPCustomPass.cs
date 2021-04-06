@@ -12,16 +12,15 @@ namespace simul
     public class TrueSkyHDRPCustomPass : CustomPass
     {
         UnityViewStruct unityViewStruct;
-        System.IntPtr unityViewStructPtr;
+		System.IntPtr unityViewStructPtr;
 
         int lastFrameCount = -1;
         protected int cbuf_view_id = -1;
         protected int view_ident = 0;
-        protected int InternalGetViewId()
-        {
-            return StaticGetOrAddView((System.IntPtr)view_ident);
-        }
-
+		protected int InternalGetViewId()
+		{
+			return StaticGetOrAddView((System.IntPtr)view_ident);
+		}
         protected override void Setup(ScriptableRenderContext src, CommandBuffer cmd)
         {
             ts = trueSKY.GetTrueSky();
@@ -206,7 +205,7 @@ namespace simul
                     unityRenderOptions = unityRenderOptions | UnityRenderOptions.NO_SEPARATION;
 
                 
-
+              
 
                 unityViewStruct.view_id = view_id;
                 unityViewStruct.framenumber = Time.renderedFrameCount;
@@ -223,19 +222,23 @@ namespace simul
                 unityViewStruct.colourTexture = (System.IntPtr)0;
 
                 lastFrameCount = Time.renderedFrameCount;
-                /*_inscatterRT.renderTexture = inscatterRT;
-                _cloudVisibilityRT.renderTexture = cloudVisibilityRT;
-                _cloudShadowRT.renderTexture = cloudShadowRT;
+                trueSKY ts = trueSKY.GetTrueSky();
+                //_inscatterRT.renderTexture = inscatterRT;
+                //_cloudVisibilityRT.renderTexture = cloudVisibilityRT;
 
-                _lossRT.renderTexture = lossRT;
-                StaticSetRenderTexture("inscatter2D", _inscatterRT.GetNative());
-                StaticSetRenderTexture("Loss2D", _lossRT.GetNative());
-                StaticSetRenderTexture("CloudVisibilityRT", _cloudVisibilityRT.GetNative());
-                if (reflectionProbeTexture.renderTexture)
-                {
-                    StaticSetRenderTexture("Cubemap", reflectionProbeTexture.GetNative());
-                }
-                StaticSetRenderTexture("CloudShadowRT", _cloudShadowRT.GetNative());
+                //best in in trueSKy.cs
+                ts._cloudShadowRT.renderTexture = ts.cloudShadowRT;
+                ts._lossRT.renderTexture = ts.lossRT;
+				ts._cloudVisibilityRT.renderTexture = ts.cloudVisibilityRT;
+				ts._inscatterRT.renderTexture = ts.inscatterRT;
+
+                StaticSetRenderTexture("inscatter2D", ts._inscatterRT.GetNative());
+                StaticSetRenderTexture("Loss2D", ts._lossRT.GetNative());
+                StaticSetRenderTexture("CloudVisibilityRT", ts._cloudVisibilityRT.GetNative());
+				StaticSetRenderTexture("CloudShadowRT", ts._cloudShadowRT.GetNative());
+
+              /*
+
                 MatrixTransform(cubemapTransformMatrix);
                 StaticSetMatrix4x4("CubemapTransform", cubemapTransformMatrix);
 

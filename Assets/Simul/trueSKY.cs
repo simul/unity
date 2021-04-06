@@ -13,6 +13,7 @@ using UnityEngine;
 using UnityEngine.Rendering;
 
 using static simul.TrueSkyPluginRenderFunctionImporter;
+using static simul.TrueSkyCameraBase;
 
 namespace simul
 {
@@ -700,9 +701,34 @@ namespace simul
 
         public trueSKY()
         {
-        }
 
-        ~trueSKY()
+		}
+
+		void OnEnable()
+		{
+			if (!cloudShadowRT)
+			{
+				cloudShadowRT = new RenderTexture(256, 256, 16, RenderTextureFormat.ARGB32);
+				cloudShadowRT.Create();
+			}
+			if (!lossRT)
+			{
+				lossRT = new RenderTexture(256, 256, 16, RenderTextureFormat.ARGB32);
+				lossRT.Create();
+			}
+			if (!inscatterRT)
+			{
+				inscatterRT = new RenderTexture(256, 256, 16, RenderTextureFormat.ARGB32);
+				inscatterRT.Create();
+			}
+			if (!cloudVisibilityRT)
+			{
+				cloudVisibilityRT = new RenderTexture(256, 256, 16, RenderTextureFormat.ARGB32);
+				cloudVisibilityRT.Create();
+			}
+		}
+
+		~trueSKY()
         {
             if (this == trueSkySingleton)
                 trueSkySingleton = null;
@@ -1030,7 +1056,6 @@ namespace simul
 		}
 
 		#endregion
-		[SerializeField]
 		public List<FMoon> _moons = new List<FMoon>();
 
 		public void AddNewMoon()
@@ -1054,7 +1079,7 @@ namespace simul
 			}
 		}
 
-		[SerializeField]
+
 		public Aurorae aurorae = new Aurorae();
 
 		[SerializeField]
@@ -2246,7 +2271,8 @@ namespace simul
 			}
 			return str.ToString();
 		}
-		[SerializeField]
+		
+		
 		static public bool _showCubemaps = false;
 		[SerializeField]
 		float _cloudShadowing = 0.5F;
@@ -2254,17 +2280,24 @@ namespace simul
 		float _cloudShadowSharpness = 0.05F;
 		[SerializeField]
 		float _cloudThresholdDistanceKm = 1.0F;
-		[SerializeField]
-		static public bool _showCloudCrossSections = false;
-		[SerializeField]
-		static public bool _showRainTextures = false;
-		[SerializeField]
+
+		public RenderTexture cloudShadowRT;
+		public RenderTexture inscatterRT;
+		public RenderTexture lossRT;
+		public RenderTexture cloudVisibilityRT;
+
+		public RenderTextureHolder _cloudShadowRT = new RenderTextureHolder();	
+		public RenderTextureHolder _inscatterRT = new RenderTextureHolder();
+		public RenderTextureHolder _lossRT = new RenderTextureHolder();
+		public RenderTextureHolder _cloudVisibilityRT = new RenderTextureHolder();
+		
+		static public bool _showCloudCrossSections = false;		
+		static public bool _showRainTextures = false;		
 		static public bool _showAuroraeTextures = false;
-		[SerializeField]
 		static public bool _showWaterTextures = false;
-		[SerializeField]
+		
 		bool _simulationTimeRain = false;
-		[SerializeField]
+	
 		int _MaxPrecipitationParticles = 100000;
 
 		[SerializeField]
@@ -2402,7 +2435,6 @@ namespace simul
 					}
 			}
 		}
-		[SerializeField]
 		public bool SimulationTimeRain
 		{
 			get
@@ -2422,7 +2454,6 @@ namespace simul
 					}
 			}
 		}
-		[SerializeField]
 		public int MaxPrecipitationParticles
 		{
 			get
@@ -2786,11 +2817,11 @@ namespace simul
 			}
 		}
 
-		[SerializeField]
+
 		static public bool _showCompositing = false;
-		[SerializeField]
+
 		static public bool _showFades = false;
-		[SerializeField]
+
 		static public bool _showCelestials = false;
 		[SerializeField]
 		static bool _onscreenProfiling = false;
@@ -3625,7 +3656,83 @@ namespace simul
 					}
 			}
 		}
-	
+
+		public RenderTextureHolder CloudShadowTexture
+		{
+			get
+			{
+				return _cloudShadowRT;
+			}
+			set
+			{
+				if (_cloudShadowRT != null) try
+					{
+						_cloudShadowRT = value;
+					}
+					catch (Exception exc)
+					{
+						UnityEngine.Debug.Log(exc.ToString());
+					}
+			}
+		}
+
+		public RenderTextureHolder LossTexture
+		{
+			get
+			{
+				return _lossRT;
+			}
+			set
+			{
+				if (_lossRT != null) try
+					{
+						_lossRT = value;
+					}
+					catch (Exception exc)
+					{
+						UnityEngine.Debug.Log(exc.ToString());
+					}
+			}
+		}
+
+		public RenderTextureHolder InscatterTexture
+		{
+			get
+			{
+				return _inscatterRT;
+			}
+			set
+			{
+				if (_inscatterRT != null) try
+					{
+						_inscatterRT = value;
+					}
+					catch (Exception exc)
+					{
+						UnityEngine.Debug.Log(exc.ToString());
+					}
+			}
+		}
+
+		public RenderTextureHolder CloudVisibilityTexture
+		{
+			get
+			{
+				return _cloudVisibilityRT;
+			}
+			set
+			{
+				if (_cloudVisibilityRT != null) try
+					{
+						_cloudVisibilityRT = value;
+					}
+					catch (Exception exc)
+					{
+						UnityEngine.Debug.Log(exc.ToString());
+					}
+			}
+		}
+
 		[SerializeField]
 		int _cloudShadowRangeKm = 300;
 		public int CloudShadowRangeKm
