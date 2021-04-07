@@ -3802,6 +3802,8 @@ namespace simul
 
 		public void UpdateExternalDynamic()
 		{
+			if (SimulVersion >= MakeSimulVersion(4, 2))
+			{
 			if (CheckSizeOfExternalDynamicValues())
 				return;
 
@@ -3888,6 +3890,7 @@ namespace simul
 
 			Marshal.StructureToPtr(EDV, EDVptr, true);
 			StaticSetExternalDynamicValues(EDVptr);
+		}
 		}
 
 		bool _initialized = false;
@@ -4238,6 +4241,13 @@ namespace simul
 						StaticPushPath("ShaderBinaryPath", Application.dataPath + @"/Simul/shaderbin/x86_64");
 #endif
                     StaticPushPath("TexturePath", Application.dataPath + @"/Simul/Media/Textures");
+					#if UNITY_GAMECORE
+					if (SystemInfo.graphicsDeviceType == GraphicsDeviceType.GameCoreScarlett)
+					{
+						StaticPushPath("ShaderBinaryPath", "D3D12");
+						StaticPushPath("ShaderPath", "D3D12");
+					}
+					#endif
                 }
                 else
                 {
@@ -4256,6 +4266,13 @@ namespace simul
 						StaticPushPath("ShaderBinaryPath", Application.dataPath + @"/Simul/shaderbin/x86_64/vulkan");
 						StaticPushPath("ShaderPath", Application.dataPath + @"/Simul/shaderbin/x86_64/vulkan");
 					}
+					#if UNITY_GAMECORE
+					else if (SystemInfo.graphicsDeviceType == GraphicsDeviceType.GameCoreScarlett)
+					{
+						StaticPushPath("ShaderBinaryPath", "D3D12");
+						StaticPushPath("ShaderPath", "D3D12");
+					}
+					#endif
 					else
 					{
 						StaticPushPath("ShaderBinaryPath", Application.dataPath + @"/Simul/shaderbin/x86_64");
