@@ -183,8 +183,6 @@ namespace simul
 		}
 		UnityViewStruct unityViewStruct=new UnityViewStruct();
 		System.IntPtr unityViewStructPtr = Marshal.AllocHGlobal(Marshal.SizeOf(new UnityViewStruct()));
-		UnityViewStruct overlayViewStruct = new UnityViewStruct();
-		System.IntPtr overlayViewStructPtr = Marshal.AllocHGlobal(Marshal.SizeOf(new UnityViewStruct()));
 		void OnPreRender()
 		{
 			if (!enabled || !gameObject.activeInHierarchy)
@@ -270,21 +268,18 @@ namespace simul
 			}
 			else
 			{
-				unityViewStruct.nativeColourRenderBuffer = Graphics.activeColorBuffer.GetNativeRenderBufferPtr();
+				return;
+				/*unityViewStruct.nativeColourRenderBuffer = Graphics.activeColorBuffer.GetNativeRenderBufferPtr();
 				unityViewStruct.nativeDepthRenderBuffer = Graphics.activeDepthBuffer.GetNativeRenderBufferPtr();
 				unityViewStruct.colourResourceState = ResourceState.Common;
-				unityViewStruct.depthResourceState = ResourceState.Common;
+				unityViewStruct.depthResourceState = ResourceState.Common;*/
 			}
 
 			bool il2cppScripting = UsingIL2CPP();
 			Marshal.StructureToPtr(unityViewStruct, unityViewStructPtr, !il2cppScripting);
 			mainCommandBuffer.IssuePluginEventAndData(UnityGetRenderEventFuncWithData(), TRUESKY_EVENT_ID + cbuf_view_id, unityViewStructPtr);
-			overlayViewStruct = unityViewStruct;
-			overlayViewStruct.colourResourceState = ResourceState.GenericRead;
-			overlayViewStruct.depthResourceState = ResourceState.GenericRead;
-			Marshal.StructureToPtr(overlayViewStruct, overlayViewStructPtr, !il2cppScripting);
 			post_translucent_buf.IssuePluginEventAndData(UnityGetPostTranslucentFuncWithData(), TRUESKY_EVENT_ID + cbuf_view_id, unityViewStructPtr);
-			overlay_buf.IssuePluginEventAndData(UnityGetOverlayFuncWithData(), TRUESKY_EVENT_ID + cbuf_view_id, overlayViewStructPtr);
+			overlay_buf.IssuePluginEventAndData(UnityGetOverlayFuncWithData(), TRUESKY_EVENT_ID + cbuf_view_id, unityViewStructPtr);
 
 		}
 		int duplicateFrames = 0;
