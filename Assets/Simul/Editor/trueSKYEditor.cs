@@ -984,7 +984,7 @@ namespace simul
 
 		static void ExportPackage(string fileName, string platform)
 		{
-			if (platform == "x64" || platform == "XboxOne")	
+			if (platform == "x64" || platform == "XboxOne")
 			{
 				AssetDatabase.ExportPackage("Assets/Simul", fileName, ExportPackageOptions.Recurse);
 
