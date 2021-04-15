@@ -59,7 +59,7 @@ namespace simul
             InteranlExecute(renderContext, cmd, hdCamera, cullingResult, colour, depth);
         }
 #endif
-        
+
         private void InteranlExecute(ScriptableRenderContext src, CommandBuffer cmd, HDCamera camera, CullingResults cullingResult, RTHandle colour, RTHandle depth)
         {
             //Don't draw to the scene view. This should never be removed!
@@ -69,26 +69,47 @@ namespace simul
             //Fill-in UnityViewStruct
             PrepareMatrices(camera);
 
-            unityViewStruct.nativeColourRenderBuffer = colour.rt.colorBuffer.GetNativeRenderBufferPtr();
-            unityViewStruct.nativeDepthRenderBuffer = depth.rt.depthBuffer.GetNativeRenderBufferPtr();
-            unityViewStruct.colourResourceState = colour.rt.antiAliasing > 1 ? ResourceState.ResolveSource : ResourceState.RenderTarget;
+            bool useCamerasRB = camera.camera.name.Equals("CubemapCamera1");
+
+            RenderBuffer rbColour = useCamerasRB ? camera.camera.targetTexture.colorBuffer : colour.rt.colorBuffer;
+            RenderBuffer rbDepth = useCamerasRB ? camera.camera.targetTexture.depthBuffer : depth.rt.depthBuffer;
+            bool msaa = useCamerasRB ? (camera.camera.targetTexture.antiAliasing > 1) : (colour.rt.antiAliasing > 1);
+
+            unityViewStruct.nativeColourRenderBuffer = rbColour.GetNativeRenderBufferPtr();
+            unityViewStruct.nativeDepthRenderBuffer = rbDepth.GetNativeRenderBufferPtr();
+            unityViewStruct.colourResourceState = msaa ? ResourceState.ResolveSource : ResourceState.RenderTarget;
             unityViewStruct.depthResourceState = ResourceState.DepthWrite;
 
             //Execute CmdBuffer
             cbuf_view_id = InternalGetViewId();
 
-            bool il2cppScripting = simul.trueSKY.GetTrueSky().UsingIL2CPP;
-            Marshal.StructureToPtr(unityViewStruct, unityViewStructPtr, !il2cppScripting);
+            if (!useCamerasRB) //Main view render
+            {
+                bool il2cppScripting = simul.trueSKY.GetTrueSky().UsingIL2CPP;
+                Marshal.StructureToPtr(unityViewStruct, unityViewStructPtr, !il2cppScripting);
 
-            if (injectionPoint == CustomPassInjectionPoint.BeforePreRefraction)
-                cmd.IssuePluginEventAndData(UnityGetRenderEventFuncWithData(), GetTRUESKY_EVENT_ID() + cbuf_view_id, unityViewStructPtr);
-            else if (injectionPoint == CustomPassInjectionPoint.BeforePostProcess)
-                cmd.IssuePluginEventAndData(UnityGetPostTranslucentFuncWithData(), GetTRUESKY_EVENT_ID() + cbuf_view_id, unityViewStructPtr);
-            else if (injectionPoint == CustomPassInjectionPoint.AfterPostProcess)
-                cmd.IssuePluginEventAndData(UnityGetOverlayFuncWithData(), GetTRUESKY_EVENT_ID() + cbuf_view_id, unityViewStructPtr);
-            else
-                return;
+                if (injectionPoint == CustomPassInjectionPoint.BeforePreRefraction)
+                    cmd.IssuePluginEventAndData(UnityGetRenderEventFuncWithData(), GetTRUESKY_EVENT_ID() + cbuf_view_id, unityViewStructPtr);
+                else if (injectionPoint == CustomPassInjectionPoint.BeforePostProcess)
+                    cmd.IssuePluginEventAndData(UnityGetPostTranslucentFuncWithData(), GetTRUESKY_EVENT_ID() + cbuf_view_id, unityViewStructPtr);
+                else if (injectionPoint == CustomPassInjectionPoint.AfterPostProcess)
+                    cmd.IssuePluginEventAndData(UnityGetOverlayFuncWithData(), GetTRUESKY_EVENT_ID() + cbuf_view_id, unityViewStructPtr);
+                else
+                    return;
+            } 
+            else //Cubemap view render
+            {
+                unityViewStruct.colourResourceState = ResourceState.RenderTarget;
+                unityViewStruct.depthResourceState = ResourceState.DepthWrite;
 
+                bool il2cppScripting = simul.trueSKY.GetTrueSky().UsingIL2CPP;
+                Marshal.StructureToPtr(unityViewStruct, unityViewStructPtr, !il2cppScripting);
+
+                if (injectionPoint == CustomPassInjectionPoint.BeforePreRefraction)
+                    cmd.IssuePluginEventAndData(UnityGetRenderEventFuncWithData(), GetTRUESKY_EVENT_ID() + cbuf_view_id, unityViewStructPtr);
+                else
+                    return;
+            }
             src.ExecuteCommandBuffer(cmd);
         }
 
@@ -204,9 +225,12 @@ namespace simul
                 if (ShareBuffersForVR)
                     unityRenderOptions = unityRenderOptions | UnityRenderOptions.NO_SEPARATION;
 
+<<<<<<< HEAD
                 
               
 
+=======
+>>>>>>> 049496641bf81d2da61cfdd3714ebc01ec21b735
                 unityViewStruct.view_id = view_id;
                 unityViewStruct.framenumber = Time.renderedFrameCount;
                 unityViewStruct.exposure = exposure;
