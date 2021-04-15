@@ -12,15 +12,16 @@ namespace simul
     public class TrueSkyHDRPCustomPass : CustomPass
     {
         UnityViewStruct unityViewStruct;
-		System.IntPtr unityViewStructPtr;
+        System.IntPtr unityViewStructPtr;
 
         int lastFrameCount = -1;
         protected int cbuf_view_id = -1;
         protected int view_ident = 0;
-		protected int InternalGetViewId()
-		{
-			return StaticGetOrAddView((System.IntPtr)view_ident);
-		}
+        protected int InternalGetViewId()
+        {
+            return StaticGetOrAddView((System.IntPtr)view_ident);
+        }
+
         protected override void Setup(ScriptableRenderContext src, CommandBuffer cmd)
         {
             ts = trueSKY.GetTrueSky();
@@ -37,30 +38,7 @@ namespace simul
             unityViewStructPtr = Marshal.AllocHGlobal(Marshal.SizeOf(new UnityViewStruct()));
         }
 
-#if UNITY_2020_2_OR_NEWER
-        protected override void Execute(CustomPassContext ctx)
-        {
-            ScriptableRenderContext src = ctx.renderContext;
-            CommandBuffer cmd = ctx.cmd;
-            HDCamera camera = ctx.hdCamera;
-            CullingResults cullingResult = ctx.cullingResults;
-
-            RTHandle colour = ctx.cameraColorBuffer;
-            RTHandle depth = ctx.cameraDepthBuffer;
-
-            InteranlExecute(src, cmd, camera, cullingResult, colour, depth);
-        }
-#else
-        protected virtual void Execute(ScriptableRenderContext renderContext, CommandBuffer cmd, HDCamera hdCamera, CullingResults cullingResult)
-        {
-            RTHandle colour, depth;
-            GetCameraBuffers(out colour, out depth);
-
-            InteranlExecute(renderContext, cmd, hdCamera, cullingResult, colour, depth);
-        }
-#endif
-        
-        private void InteranlExecute(ScriptableRenderContext src, CommandBuffer cmd, HDCamera camera, CullingResults cullingResult, RTHandle colour, RTHandle depth)
+        protected override void Execute(ScriptableRenderContext src, CommandBuffer cmd, HDCamera camera, CullingResults cullingResult)
         {
             //Don't draw to the scene view. This should never be removed!
             if (camera.camera.cameraType == CameraType.SceneView)
@@ -68,6 +46,9 @@ namespace simul
 
             //Fill-in UnityViewStruct
             PrepareMatrices(camera);
+
+            RTHandle colour, depth;
+            GetCameraBuffers(out colour, out depth);
 
             unityViewStruct.nativeColourRenderBuffer = colour.rt.colorBuffer.GetNativeRenderBufferPtr();
             unityViewStruct.nativeDepthRenderBuffer = depth.rt.depthBuffer.GetNativeRenderBufferPtr();
@@ -205,7 +186,7 @@ namespace simul
                     unityRenderOptions = unityRenderOptions | UnityRenderOptions.NO_SEPARATION;
 
                 
-              
+
 
                 unityViewStruct.view_id = view_id;
                 unityViewStruct.framenumber = Time.renderedFrameCount;

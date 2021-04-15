@@ -22,7 +22,7 @@ public class KeyframeTesting : MonoBehaviour
 				UnityEngine.Debug.Log("Got "+numk+" cloud keyframes.");
 				for(int i=0;i<numk;i++)
 				{
-					uint uid=trueSky.GetCloudKeyframeByIndex(i);
+					uint uid=trueSky.GetCloudKeyframeByIndex(i,0);
 					UnityEngine.Debug.Log("Setting "+uid+" cloudiness to 0.8");
 					trueSky.SetKeyframeValue(uid,"cloudiness",0.8);
 				}
