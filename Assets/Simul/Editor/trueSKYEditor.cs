@@ -794,6 +794,18 @@ namespace simul
 				debugging = EditorGUILayout.Foldout(debugging, "Debugging", outerFoldoutStyle);
 				if (debugging)
 				{
+					EditorGUILayout.BeginHorizontal();
+					trueSky.cloudShadowRT = (RenderTexture)EditorGUILayout.ObjectField(trueSky.cloudShadowRT, typeof(RenderTexture), false, GUILayout.Width(90), GUILayout.Height(90));
+					trueSky.inscatterRT = (RenderTexture)EditorGUILayout.ObjectField(trueSky.inscatterRT, typeof(RenderTexture), false, GUILayout.Width(90), GUILayout.Height(90));
+					trueSky.lossRT = (RenderTexture)EditorGUILayout.ObjectField(trueSky.lossRT, typeof(RenderTexture), false, GUILayout.Width(90), GUILayout.Height(90));
+					trueSky.cloudVisibilityRT = (RenderTexture)EditorGUILayout.ObjectField(trueSky.cloudVisibilityRT, typeof(RenderTexture), false, GUILayout.Width(90), GUILayout.Height(90));
+					EditorGUILayout.EndHorizontal();
+					EditorGUILayout.BeginHorizontal();
+					EditorGUILayout.LabelField("Cloud Shadow", GUILayout.Width(90));
+					EditorGUILayout.LabelField("Inscatter", GUILayout.Width(90));
+					EditorGUILayout.LabelField("Loss", GUILayout.Width(90));
+					EditorGUILayout.LabelField("Cloud Visibility", GUILayout.Width(100));
+					EditorGUILayout.EndHorizontal();
 					usetrueSKYColour = EditorGUILayout.Toggle("Use Style Colour on Script", usetrueSKYColour);
 					trueSky.RenderInEditMode = EditorGUILayout.Toggle("Render in Edit Mode", trueSky.RenderInEditMode);
 					string gv = SystemInfo.graphicsDeviceVersion;
