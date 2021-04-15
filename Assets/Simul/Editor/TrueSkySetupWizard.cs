@@ -31,7 +31,7 @@ namespace simul
 		string[] currentIssues = { 
 			"No Dynamic Lighting with Lightning Strikes in clouds",
 			"Rain Streaks non-functional with Variable Grid integration Scheme.",
-			"Performance issues with bounded water objects.",
+			"Cloud Movement issues with Wind Speed and Progression Scale",
 		};
 
 		[MenuItem("GameObject/Remove trueSKY from Scene", false, 200000)]
@@ -455,16 +455,17 @@ namespace simul
 			if (lightGameObject == null)
 			{
 				lightGameObject = new GameObject("TrueSkyDirectionalLight");
+				lightComponent = lightGameObject.AddComponent<TrueSkyDirectionalLight>();
 				Light dirLight = lightGameObject.AddComponent<Light>();
 				dirLight.type = LightType.Directional;
-				lightComponent = lightGameObject.AddComponent<TrueSkyDirectionalLight>();
-			}
+			}		
 			// If there is a light, but without the component, add it:
 			if (lightComponent == null)
 			{
 				lightComponent = lightGameObject.AddComponent<TrueSkyDirectionalLight>();
 			}
-			RenderSettings.sun = lightGameObject.GetComponent<Light>();
+			RenderSettings.sun = lightGameObject.GetComponent<Light>(); 
+			//lightGameObject.GetComponent<Light>().cookie = Resources.Load("CloudShadowRT", typeof(RenderTexture)) as RenderTexture;
 
 #if USING_HDRP
 			lightComponent.Units = TrueSkyDirectionalLight.LightUnits.Photometric;

@@ -13,6 +13,7 @@ using UnityEngine;
 using UnityEngine.Rendering;
 
 using static simul.TrueSkyPluginRenderFunctionImporter;
+using static simul.TrueSkyCameraBase;
 
 namespace simul
 {
@@ -700,9 +701,39 @@ namespace simul
 
         public trueSKY()
         {
-        }
 
-        ~trueSKY()
+		}
+
+		void OnEnable()
+		{
+			if (!cloudShadowRT)
+			{
+				cloudShadowRT = new RenderTexture(256, 256, 16, RenderTextureFormat.ARGB32);
+				cloudShadowRT.Create();
+			}
+			if (!lossRT)
+			{
+				lossRT = new RenderTexture(256, 256, 16, RenderTextureFormat.ARGB32);
+				lossRT.Create();		
+			}
+			if (!inscatterRT)
+			{
+				inscatterRT = new RenderTexture(256, 256, 16, RenderTextureFormat.ARGB32);
+				inscatterRT.Create();			
+			}
+			if (!cloudVisibilityRT)
+			{
+				cloudVisibilityRT = new RenderTexture(256, 256, 16, RenderTextureFormat.ARGB32);
+				cloudVisibilityRT.Create();
+			}
+
+			LossTexture.renderTexture = lossRT;
+			InscatterTexture.renderTexture = inscatterRT;
+			CloudVisibilityTexture.renderTexture = cloudVisibilityRT;
+			CloudShadowTexture.renderTexture = cloudShadowRT;
+		}
+
+		~trueSKY()
         {
             if (this == trueSkySingleton)
                 trueSkySingleton = null;
@@ -853,9 +884,13 @@ namespace simul
 			return StaticRenderGetKeyframeByIndex(0, index);
 		}
 
-		public uint GetCloudKeyframeByIndex(int index)
+		public uint GetCloudKeyframeByIndex(int layer, int index)
 		{
-			return StaticRenderGetKeyframeByIndex(1, index);
+			return StaticRenderGetKeyframeByIndex(layer, index);
+		}
+		public uint GetCloudKeyframerByIndex(int index)
+		{
+			return GetCloudLayerUIDByIndex(index);
 		}
 
 		public uint GetCloud2DKeyframeByIndex(int index)
@@ -1030,7 +1065,6 @@ namespace simul
 		}
 
 		#endregion
-		[SerializeField]
 		public List<FMoon> _moons = new List<FMoon>();
 
 		public void AddNewMoon()
@@ -1054,7 +1088,7 @@ namespace simul
 			}
 		}
 
-		[SerializeField]
+
 		public Aurorae aurorae = new Aurorae();
 
 		[SerializeField]
@@ -2246,7 +2280,8 @@ namespace simul
 			}
 			return str.ToString();
 		}
-		[SerializeField]
+		
+		
 		static public bool _showCubemaps = false;
 		[SerializeField]
 		float _cloudShadowing = 0.5F;
@@ -2254,17 +2289,24 @@ namespace simul
 		float _cloudShadowSharpness = 0.05F;
 		[SerializeField]
 		float _cloudThresholdDistanceKm = 1.0F;
-		[SerializeField]
-		static public bool _showCloudCrossSections = false;
-		[SerializeField]
-		static public bool _showRainTextures = false;
-		[SerializeField]
+
+		public RenderTexture cloudShadowRT;
+		public RenderTexture inscatterRT;
+		public RenderTexture lossRT;
+		public RenderTexture cloudVisibilityRT;
+
+		RenderTextureHolder _cloudShadowRT = new RenderTextureHolder();	
+		RenderTextureHolder _inscatterRT = new RenderTextureHolder();
+		RenderTextureHolder _lossRT = new RenderTextureHolder();
+		RenderTextureHolder _cloudVisibilityRT = new RenderTextureHolder();
+		
+		static public bool _showCloudCrossSections = false;		
+		static public bool _showRainTextures = false;		
 		static public bool _showAuroraeTextures = false;
-		[SerializeField]
 		static public bool _showWaterTextures = false;
-		[SerializeField]
+		
 		bool _simulationTimeRain = false;
-		[SerializeField]
+	
 		int _MaxPrecipitationParticles = 100000;
 
 		[SerializeField]
@@ -2402,7 +2444,6 @@ namespace simul
 					}
 			}
 		}
-		[SerializeField]
 		public bool SimulationTimeRain
 		{
 			get
@@ -2422,7 +2463,6 @@ namespace simul
 					}
 			}
 		}
-		[SerializeField]
 		public int MaxPrecipitationParticles
 		{
 			get
@@ -2518,6 +2558,8 @@ namespace simul
 				if (_RainDropSizeMm != value) try
 					{
 						_RainDropSizeMm = value;
+						if (SimulVersion < MakeSimulVersion(4, 2))
+							StaticSetRenderFloat("render:raindropsizemm", _RainDropSizeMm);
 					}
 					catch (Exception exc)
 					{
@@ -2539,6 +2581,8 @@ namespace simul
 				if (_SnowFlakeSizeMm != value) try
 					{
 						_SnowFlakeSizeMm = value;
+						if(SimulVersion < MakeSimulVersion(4,2))
+							StaticSetRenderFloat("render:snowflakesizemm", _SnowFlakeSizeMm);
 					}
 					catch (Exception exc)
 					{
@@ -2782,11 +2826,11 @@ namespace simul
 			}
 		}
 
-		[SerializeField]
+
 		static public bool _showCompositing = false;
-		[SerializeField]
+
 		static public bool _showFades = false;
-		[SerializeField]
+
 		static public bool _showCelestials = false;
 		[SerializeField]
 		static bool _onscreenProfiling = false;
@@ -3621,7 +3665,83 @@ namespace simul
 					}
 			}
 		}
-	
+
+		public RenderTextureHolder CloudShadowTexture
+		{
+			get
+			{
+				return _cloudShadowRT;
+			}
+			set
+			{
+				if (_cloudShadowRT != null) try
+					{
+						_cloudShadowRT = value;
+					}
+					catch (Exception exc)
+					{
+						UnityEngine.Debug.Log(exc.ToString());
+					}
+			}
+		}
+
+		public RenderTextureHolder LossTexture
+		{
+			get
+			{
+				return _lossRT;
+			}
+			set
+			{
+				if (_lossRT != null) try
+					{
+						_lossRT = value;
+					}
+					catch (Exception exc)
+					{
+						UnityEngine.Debug.Log(exc.ToString());
+					}
+			}
+		}
+
+		public RenderTextureHolder InscatterTexture
+		{
+			get
+			{
+				return _inscatterRT;
+			}
+			set
+			{
+				if (_inscatterRT != null) try
+					{
+						_inscatterRT = value;
+					}
+					catch (Exception exc)
+					{
+						UnityEngine.Debug.Log(exc.ToString());
+					}
+			}
+		}
+
+		public RenderTextureHolder CloudVisibilityTexture
+		{
+			get
+			{
+				return _cloudVisibilityRT;
+			}
+			set
+			{
+				if (_cloudVisibilityRT != null) try
+					{
+						_cloudVisibilityRT = value;
+					}
+					catch (Exception exc)
+					{
+						UnityEngine.Debug.Log(exc.ToString());
+					}
+			}
+		}
+
 		[SerializeField]
 		int _cloudShadowRangeKm = 300;
 		public int CloudShadowRangeKm
@@ -3800,93 +3920,93 @@ namespace simul
 		{
 			if (SimulVersion >= MakeSimulVersion(4, 2))
 			{
-				if (CheckSizeOfExternalDynamicValues())
-					return;
+			if (CheckSizeOfExternalDynamicValues())
+				return;
 
-				EDV.version = ExternalDynamicValues.static_version;
-				EDV.AdjustSunRadius = Convert.ToUInt32(_adjustSunRadius);
-				EDV.AllowLunarRainbow = Convert.ToUInt32(_AllowLunarRainbows);
-				EDV.AllowOccludedRainbow = Convert.ToUInt32(_AllowOccludedRainbows);
-				EDV.AmbientLight = _AmbientLight;
-				EDV.AutomaticRainbowPosition = Convert.ToUInt32(_AutomaticRainbowPosition);
-				EDV.CellNoiseWavelengthKm = _CellNoiseWavelengthKm;
-				EDV.CloudShadowRangeKm = _cloudShadowRangeKm;
-				EDV.CloudShadowStrength = _cloudShadowStrength;
-				EDV.CosmicBackgroundBrightness = _backgroundBrightness;
-				EDV.CrepuscularRayStrength = _crepuscularRaysStrength;
-				EDV.DirectLight = _DirectLight;
-				EDV.EdgeNoiseFrequency = _edgeNoiseFrequency;
-				EDV.EdgeNoisePersistence = _edgeNoisePersistence;
-				EDV.EdgeNoiseWavelengthKm = _edgeNoiseWavelengthKm;
-				EDV.Extinction = _Extinction;
-				EDV.IndirectLight = _IndirectLight;
-				EDV.MaxCloudDistanceKm = _MaxCloudDistanceKm;
-				EDV.MaxFractalAmplitudeKm = _MaxFractalAmplitudeKm;
-				EDV.MaxPrecipitationParticles = _MaxPrecipitationParticles;
-				EDV.MaxSunRadiance = _maxSunRadiance;
-				EDV.MieAsymmetry = _MieAsymmetry;
-				EDV.MinimumStarPixelSize = _minimumStarPixelSize;
-				EDV.OriginHeading = _OriginHeading;
-				EDV.OriginLatitude = _OriginLatitude;
-				EDV.OriginLongitude = _OriginLongitude;
-				EDV.PrecipitationThresholdKm = _PrecipitationThresholdKm;
-				EDV.PrecipitationWaver = _PrecipitationWaver;
-				EDV.PrecipitationWaverTimescaleS = _PrecipitationWaverTimescaleS;
-				EDV.PrecipitationWindEffect = _PrecipitationWindEffect;
-				EDV.RainbowAzimuth = _RainbowAzimuth;
-				EDV.RainbowDepthPoint = _RainbowDepthPoint;
-				EDV.RainbowElevation = _RainbowElevation;
-				EDV.RainbowIntensity = _RainbowIntensity;
-				EDV.RainDropSizeMm = _RainDropSizeMm;
-				EDV.RainFallSpeedMS = _RainFallSpeedMS;
-				EDV.SnowFallSpeedMS = _SnowFallSpeedMS;
-				EDV.SnowFlakeSizeMm = _SnowFlakeSizeMm;
-				EDV.StarBrightness = _starBrightness;
-				EDV.WindSpeedMS_X = _WindSpeed.x;
-				EDV.WindSpeedMS_Y = _WindSpeed.y;
-				EDV.WindSpeedMS_Z = _WindSpeed.z;
-				EDV.CloudTintR = _cloudTint.r;
-				EDV.CloudTintG = _cloudTint.g;
-				EDV.CloudTintB = _cloudTint.b;
+			EDV.version = ExternalDynamicValues.static_version;
+			EDV.AdjustSunRadius = Convert.ToUInt32(_adjustSunRadius);
+			EDV.AllowLunarRainbow = Convert.ToUInt32(_AllowLunarRainbows);
+			EDV.AllowOccludedRainbow = Convert.ToUInt32(_AllowOccludedRainbows);
+			EDV.AmbientLight = _AmbientLight;
+			EDV.AutomaticRainbowPosition = Convert.ToUInt32(_AutomaticRainbowPosition);
+			EDV.CellNoiseWavelengthKm = _CellNoiseWavelengthKm;
+			EDV.CloudShadowRangeKm = _cloudShadowRangeKm;
+			EDV.CloudShadowStrength = _cloudShadowStrength;
+			EDV.CosmicBackgroundBrightness = _backgroundBrightness;
+			EDV.CrepuscularRayStrength = _crepuscularRaysStrength;
+			EDV.DirectLight = _DirectLight;
+			EDV.EdgeNoiseFrequency = _edgeNoiseFrequency;
+			EDV.EdgeNoisePersistence = _edgeNoisePersistence;
+			EDV.EdgeNoiseWavelengthKm = _edgeNoiseWavelengthKm;
+			EDV.Extinction = _Extinction;
+			EDV.IndirectLight = _IndirectLight;
+			EDV.MaxCloudDistanceKm = _MaxCloudDistanceKm;
+			EDV.MaxFractalAmplitudeKm = _MaxFractalAmplitudeKm;
+			EDV.MaxPrecipitationParticles = _MaxPrecipitationParticles;
+			EDV.MaxSunRadiance = _maxSunRadiance;
+			EDV.MieAsymmetry = _MieAsymmetry;
+			EDV.MinimumStarPixelSize = _minimumStarPixelSize;
+			EDV.OriginHeading = _OriginHeading;
+			EDV.OriginLatitude = _OriginLatitude;
+			EDV.OriginLongitude = _OriginLongitude;
+			EDV.PrecipitationThresholdKm = _PrecipitationThresholdKm;
+			EDV.PrecipitationWaver = _PrecipitationWaver;
+			EDV.PrecipitationWaverTimescaleS = _PrecipitationWaverTimescaleS;
+			EDV.PrecipitationWindEffect = _PrecipitationWindEffect;
+			EDV.RainbowAzimuth = _RainbowAzimuth;
+			EDV.RainbowDepthPoint = _RainbowDepthPoint;
+			EDV.RainbowElevation = _RainbowElevation;
+			EDV.RainbowIntensity = _RainbowIntensity;
+			EDV.RainDropSizeMm = _RainDropSizeMm;
+			EDV.RainFallSpeedMS = _RainFallSpeedMS;
+			EDV.SnowFallSpeedMS = _SnowFallSpeedMS;
+			EDV.SnowFlakeSizeMm = _SnowFlakeSizeMm;
+			EDV.StarBrightness = _starBrightness;
+			EDV.WindSpeedMS_X = _WindSpeed.x;
+			EDV.WindSpeedMS_Y = _WindSpeed.y;
+			EDV.WindSpeedMS_Z = _WindSpeed.z;
+			EDV.CloudTintR = _cloudTint.r;
+			EDV.CloudTintG = _cloudTint.g;
+			EDV.CloudTintB = _cloudTint.b;
 
-				EDV.GeomagneticNorthPoleLatitude = aurorae.GeomagneticNorthPoleLatitude;
-				EDV.GeomagneticNorthPoleLongitude = aurorae.GeomagneticNorthPoleLongitude;
-				EDV.HighestLatitude = aurorae.HighestLatitude;
-				EDV.LowestLatitude = aurorae.LowestLatitude;
-				EDV.MaxBand = aurorae.MaxBand;
-				EDV.MinBand = aurorae.MinBand;
-				EDV.ShowAuroralOvalInCloudWindow = Convert.ToUInt32(aurorae.ShowAuroralOvalInCloudWindow);
-				EDV.AuroraElectronFreeTime = aurorae.AuroraElectronFreeTime * 1e-12f;
-				EDV.AuroraElectronVolumeDensity = aurorae.AuroraElectronVolumeDensity * 1e13f;
-				EDV.AuroralLayersIntensity = aurorae.AuroralLayersIntensity;
-				EDV.AuroraLayers = aurorae.GetAuroralLayerVec4Array();
-				EDV.AuroraLayerCount = (UInt64)aurorae.GetAuroralLayerCount();
-				EDV.Start_Dawn1 = aurorae.Start_Dawn1;
-				EDV.End_Dawn1 = aurorae.End_Dawn1;
-				EDV.Radius_Dawn1 = aurorae.Radius_Dawn1;
-				EDV.OriginLatitude_Dawn1 = aurorae.OriginLatitude_Dawn1;
-				EDV.OriginLongitude_Dawn1 = aurorae.OriginLongitude_Dawn1;
-				EDV.Start_Dusk1 = aurorae.Start_Dusk1;
-				EDV.End_Dusk1 = aurorae.End_Dusk1;
-				EDV.Radius_Dusk1 = aurorae.Radius_Dusk1;
-				EDV.OriginLatitude_Dusk1 = aurorae.OriginLatitude_Dusk1;
-				EDV.OriginLongitude_Dusk1 = aurorae.OriginLongitude_Dusk1;
-				EDV.Start_Dawn2 = aurorae.Start_Dawn2;
-				EDV.End_Dawn2 = aurorae.End_Dawn2;
-				EDV.Radius_Dawn2 = aurorae.Radius_Dawn2;
-				EDV.OriginLatitude_Dawn2 = aurorae.OriginLatitude_Dawn2;
-				EDV.OriginLongitude_Dawn2 = aurorae.OriginLongitude_Dawn2;
-				EDV.Start_Dusk2 = aurorae.Start_Dusk2;
-				EDV.End_Dusk2 = aurorae.End_Dusk2;
-				EDV.Radius_Dusk2 = aurorae.Radius_Dusk2;
-				EDV.OriginLatitude_Dusk2 = aurorae.OriginLatitude_Dusk2;
-				EDV.OriginLongitude_Dusk2 = aurorae.OriginLongitude_Dusk2;
-				EDV.AuroraIntensityMapSize = aurorae.AuroraIntensityMapSize;
-				EDV.AuroraTraceLength = aurorae.AuroraTraceLength;
+			EDV.GeomagneticNorthPoleLatitude = aurorae.GeomagneticNorthPoleLatitude;
+			EDV.GeomagneticNorthPoleLongitude = aurorae.GeomagneticNorthPoleLongitude;
+			EDV.HighestLatitude = aurorae.HighestLatitude;
+			EDV.LowestLatitude = aurorae.LowestLatitude;
+			EDV.MaxBand = aurorae.MaxBand;
+			EDV.MinBand = aurorae.MinBand;
+			EDV.ShowAuroralOvalInCloudWindow = Convert.ToUInt32(aurorae.ShowAuroralOvalInCloudWindow);
+			EDV.AuroraElectronFreeTime = aurorae.AuroraElectronFreeTime * 1e-12f;
+			EDV.AuroraElectronVolumeDensity = aurorae.AuroraElectronVolumeDensity * 1e13f;
+			EDV.AuroralLayersIntensity = aurorae.AuroralLayersIntensity;
+			EDV.AuroraLayers = aurorae.GetAuroralLayerVec4Array();
+			EDV.AuroraLayerCount = (UInt64)aurorae.GetAuroralLayerCount();
+			EDV.Start_Dawn1 = aurorae.Start_Dawn1;
+			EDV.End_Dawn1 = aurorae.End_Dawn1;
+			EDV.Radius_Dawn1 = aurorae.Radius_Dawn1;
+			EDV.OriginLatitude_Dawn1 = aurorae.OriginLatitude_Dawn1;
+			EDV.OriginLongitude_Dawn1 = aurorae.OriginLongitude_Dawn1;
+			EDV.Start_Dusk1 = aurorae.Start_Dusk1;
+			EDV.End_Dusk1 = aurorae.End_Dusk1;
+			EDV.Radius_Dusk1 = aurorae.Radius_Dusk1;
+			EDV.OriginLatitude_Dusk1 = aurorae.OriginLatitude_Dusk1;
+			EDV.OriginLongitude_Dusk1 = aurorae.OriginLongitude_Dusk1;
+			EDV.Start_Dawn2 = aurorae.Start_Dawn2;
+			EDV.End_Dawn2 = aurorae.End_Dawn2;
+			EDV.Radius_Dawn2 = aurorae.Radius_Dawn2;
+			EDV.OriginLatitude_Dawn2 = aurorae.OriginLatitude_Dawn2;
+			EDV.OriginLongitude_Dawn2 = aurorae.OriginLongitude_Dawn2;
+			EDV.Start_Dusk2 = aurorae.Start_Dusk2;
+			EDV.End_Dusk2 = aurorae.End_Dusk2;
+			EDV.Radius_Dusk2 = aurorae.Radius_Dusk2;
+			EDV.OriginLatitude_Dusk2 = aurorae.OriginLatitude_Dusk2;
+			EDV.OriginLongitude_Dusk2 = aurorae.OriginLongitude_Dusk2;
+			EDV.AuroraIntensityMapSize = aurorae.AuroraIntensityMapSize;
+			EDV.AuroraTraceLength = aurorae.AuroraTraceLength;
 
-				Marshal.StructureToPtr(EDV, EDVptr, true);
-				StaticSetExternalDynamicValues(EDVptr);
-			}
+			Marshal.StructureToPtr(EDV, EDVptr, true);
+			StaticSetExternalDynamicValues(EDVptr);
+		}
 		}
 
 		bool _initialized = false;
