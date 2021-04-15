@@ -714,18 +714,23 @@ namespace simul
 			if (!lossRT)
 			{
 				lossRT = new RenderTexture(256, 256, 16, RenderTextureFormat.ARGB32);
-				lossRT.Create();
+				lossRT.Create();		
 			}
 			if (!inscatterRT)
 			{
 				inscatterRT = new RenderTexture(256, 256, 16, RenderTextureFormat.ARGB32);
-				inscatterRT.Create();
+				inscatterRT.Create();			
 			}
 			if (!cloudVisibilityRT)
 			{
 				cloudVisibilityRT = new RenderTexture(256, 256, 16, RenderTextureFormat.ARGB32);
 				cloudVisibilityRT.Create();
 			}
+
+			LossTexture.renderTexture = lossRT;
+			InscatterTexture.renderTexture = inscatterRT;
+			CloudVisibilityTexture.renderTexture = cloudVisibilityRT;
+			CloudShadowTexture.renderTexture = cloudShadowRT;
 		}
 
 		~trueSKY()
@@ -879,9 +884,13 @@ namespace simul
 			return StaticRenderGetKeyframeByIndex(0, index);
 		}
 
-		public uint GetCloudKeyframeByIndex(int index)
+		public uint GetCloudKeyframeByIndex(int layer, int index)
 		{
-			return StaticRenderGetKeyframeByIndex(1, index);
+			return StaticRenderGetKeyframeByIndex(layer, index);
+		}
+		public uint GetCloudKeyframerByIndex(int index)
+		{
+			return GetCloudLayerUIDByIndex(index);
 		}
 
 		public uint GetCloud2DKeyframeByIndex(int index)
@@ -2286,10 +2295,10 @@ namespace simul
 		public RenderTexture lossRT;
 		public RenderTexture cloudVisibilityRT;
 
-		public RenderTextureHolder _cloudShadowRT = new RenderTextureHolder();	
-		public RenderTextureHolder _inscatterRT = new RenderTextureHolder();
-		public RenderTextureHolder _lossRT = new RenderTextureHolder();
-		public RenderTextureHolder _cloudVisibilityRT = new RenderTextureHolder();
+		RenderTextureHolder _cloudShadowRT = new RenderTextureHolder();	
+		RenderTextureHolder _inscatterRT = new RenderTextureHolder();
+		RenderTextureHolder _lossRT = new RenderTextureHolder();
+		RenderTextureHolder _cloudVisibilityRT = new RenderTextureHolder();
 		
 		static public bool _showCloudCrossSections = false;		
 		static public bool _showRainTextures = false;		

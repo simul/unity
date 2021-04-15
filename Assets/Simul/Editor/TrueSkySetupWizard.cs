@@ -31,7 +31,7 @@ namespace simul
 		string[] currentIssues = { 
 			"No Dynamic Lighting with Lightning Strikes in clouds",
 			"Rain Streaks non-functional with Variable Grid integration Scheme.",
-			"Performance issues with bounded water objects.",
+			"Cloud Movement issues with Wind Speed and Progression Scale",
 		};
 
 		[MenuItem("GameObject/Remove trueSKY from Scene", false, 200000)]
@@ -367,7 +367,6 @@ namespace simul
 		void Finish()
 		{
 			TrueSkyCamera trueSkyCamera;
-			trueSKY ts = trueSKY.GetTrueSky();
 
 			if (sequence == null)
 			{
@@ -466,7 +465,7 @@ namespace simul
 				lightComponent = lightGameObject.AddComponent<TrueSkyDirectionalLight>();
 			}
 			RenderSettings.sun = lightGameObject.GetComponent<Light>(); 
-			lightGameObject.GetComponent<Light>().cookie = Resources.Load("CloudShadowRT", typeof(RenderTexture)) as RenderTexture;
+			//lightGameObject.GetComponent<Light>().cookie = Resources.Load("CloudShadowRT", typeof(RenderTexture)) as RenderTexture;
 
 #if USING_HDRP
 			lightComponent.Units = TrueSkyDirectionalLight.LightUnits.Photometric;

@@ -223,19 +223,17 @@ namespace simul
 
                 lastFrameCount = Time.renderedFrameCount;
                 trueSKY ts = trueSKY.GetTrueSky();
-                //_inscatterRT.renderTexture = inscatterRT;
-                //_cloudVisibilityRT.renderTexture = cloudVisibilityRT;
 
-                //best in in trueSKy.cs
-                ts._cloudShadowRT.renderTexture = ts.cloudShadowRT;
-                ts._lossRT.renderTexture = ts.lossRT;
-				ts._cloudVisibilityRT.renderTexture = ts.cloudVisibilityRT;
-				ts._inscatterRT.renderTexture = ts.inscatterRT;
-
-                StaticSetRenderTexture("inscatter2D", ts._inscatterRT.GetNative());
-                StaticSetRenderTexture("Loss2D", ts._lossRT.GetNative());
-                StaticSetRenderTexture("CloudVisibilityRT", ts._cloudVisibilityRT.GetNative());
-				StaticSetRenderTexture("CloudShadowRT", ts._cloudShadowRT.GetNative());
+                //
+                ts.InscatterTexture.renderTexture = ts.inscatterRT;
+				ts.LossTexture.renderTexture = ts.lossRT;
+				ts.CloudVisibilityTexture.renderTexture = ts.cloudVisibilityRT;
+				ts.CloudShadowTexture.renderTexture = ts.cloudShadowRT;
+	
+				StaticSetRenderTexture("inscatter2D", ts.InscatterTexture.GetNative());
+				StaticSetRenderTexture("Loss2D", ts.LossTexture.GetNative());
+				StaticSetRenderTexture("CloudVisibilityRT", ts.CloudVisibilityTexture.GetNative());
+				StaticSetRenderTexture("CloudShadowRT", ts.CloudShadowTexture.GetNative());
 
               /*
 
