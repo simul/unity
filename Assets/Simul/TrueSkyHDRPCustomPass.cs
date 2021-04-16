@@ -59,7 +59,7 @@ namespace simul
             InternalExecute(renderContext, cmd, hdCamera, cullingResult, colour, depth);
         }
 #endif
-
+        
         private void InternalExecute(ScriptableRenderContext src, CommandBuffer cmd, HDCamera camera, CullingResults cullingResult, RTHandle colour, RTHandle depth)
         {
             //Don't draw to the scene view. This should never be removed!
@@ -225,12 +225,9 @@ namespace simul
                 if (ShareBuffersForVR)
                     unityRenderOptions = unityRenderOptions | UnityRenderOptions.NO_SEPARATION;
 
-<<<<<<< HEAD
                 
               
 
-=======
->>>>>>> 049496641bf81d2da61cfdd3714ebc01ec21b735
                 unityViewStruct.view_id = view_id;
                 unityViewStruct.framenumber = Time.renderedFrameCount;
                 unityViewStruct.exposure = exposure;
