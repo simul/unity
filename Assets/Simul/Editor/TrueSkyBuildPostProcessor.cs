@@ -72,7 +72,7 @@ namespace simul
                 fixedPath           = fixedPath.Remove(lastSep);
                 buildDirectory      = fixedPath + "/StagingArea/Data";
             }
-
+           
             Debug.Log("Build directory is: " + buildDirectory);
 
             // Copy shaders
