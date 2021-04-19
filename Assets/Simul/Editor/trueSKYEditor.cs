@@ -951,16 +951,16 @@ namespace simul
 			{
 				buildPlayerOptions.target = BuildTarget.XboxOne;
 			}
-			#if UNITY_GAMECORE
-			else if (platform == "GameCoreScarlett")
+#if UNITY_GAMECORE
+			else if (platform == "GameCoreXboxSeries")
 			{
-				buildPlayerOptions.target = BuildTarget.GameCoreScarlett;
+				buildPlayerOptions.target = BuildTarget.GameCoreXboxSeries;
 			}
 			else if (platform == "GameCoreXboxOne")
 			{
 				buildPlayerOptions.target = BuildTarget.GameCoreXboxOne;
 			}
-			#endif
+#endif
 			else if (platform == "PS4")
 			{
 				buildPlayerOptions.target = BuildTarget.PS4;
@@ -1005,7 +1005,7 @@ namespace simul
 #if UNITY_GAMECORE
 			else if (platform == "GameCoreXboxSeries")
 			{
-				AssetDatabase.ExportPackage("Assets/Plugins/GameCoreScarlett", fileName, ExportPackageOptions.Recurse);
+				AssetDatabase.ExportPackage("Assets/Plugins/GameCoreXboxSeries", fileName, ExportPackageOptions.Recurse);
 
 				UnityEngine.Debug.Log("Exported: " + fileName);
 			}

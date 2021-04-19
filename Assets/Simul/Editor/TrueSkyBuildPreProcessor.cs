@@ -39,7 +39,7 @@ namespace simul
 #if UNITY_GAMECORE
             if(target == BuildTarget.GameCoreXboxSeries)
             {
-                string shaderbinSource = Environment.CurrentDirectory + s + "Assets/Plugins/GameCoreScarlett/shaderbin";
+                string shaderbinSource = Environment.CurrentDirectory + s + "Assets/Plugins/GameCoreXboxSeries/shaderbin";
                 string assetsPath = Environment.CurrentDirectory + s + "Assets";
                 string simulPath = assetsPath + s + "Simul";
                 string mediaPath = simulPath + s + "Media";
