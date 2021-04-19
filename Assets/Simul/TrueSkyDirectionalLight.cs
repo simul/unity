@@ -155,7 +155,7 @@ public class TrueSkyDirectionalLight : MonoBehaviour
         {
             curShadowCenter = Vector3.zero;
         }
-        uint currentKeyframe        = mTsInstance.GetCloudKeyframerByIndex(0);
+        uint currentKeyframe        = mTsInstance.GetInterpolatedCloudKeyframe(0);
         float sunHeight             = mTsInstance.GetKeyframeValueFloat(currentKeyframe, "cloudBase") * 1000.0f;
         float shadowSize            = mTsInstance.getCloudShadowScale();
         //float halfShadowSize        = shadowSize * 0.5f;

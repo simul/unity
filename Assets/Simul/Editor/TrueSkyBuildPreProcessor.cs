@@ -36,8 +36,8 @@ namespace simul
 				DirectoryCopy.Copy(MediaSource, saDir, true, true, false, false);
 				Debug.Log("DirectoryCopy: " + MediaSource + "->" + saDir);
 			}
-            #if UNITY_GAMECORE
-            if(target == BuildTarget.GameCoreScarlett)
+#if UNITY_GAMECORE
+            if(target == BuildTarget.GameCoreXboxSeries)
             {
                 string shaderbinSource = Environment.CurrentDirectory + s + "Assets/Plugins/GameCoreScarlett/shaderbin";
                 string assetsPath = Environment.CurrentDirectory + s + "Assets";
@@ -55,7 +55,7 @@ namespace simul
                 DirectoryCopy.Copy(mediaPath, stagingAreaPath, true, true, false, false);
                 Debug.Log("DirectoryCopy: " + mediaPath + "->" + stagingAreaPath);
             }
-            #endif
-        }
+#endif
+		}
 	}
 }

@@ -1002,8 +1002,8 @@ namespace simul
 
 				UnityEngine.Debug.Log("Exported: " + fileName);
 			}
-			#if UNITY_GAMECORE
-			else if (platform == "GameCoreScarlett")
+#if UNITY_GAMECORE
+			else if (platform == "GameCoreXboxSeries")
 			{
 				AssetDatabase.ExportPackage("Assets/Plugins/GameCoreScarlett", fileName, ExportPackageOptions.Recurse);
 
@@ -1015,7 +1015,7 @@ namespace simul
 
 				UnityEngine.Debug.Log("Exported: " + fileName);
 			}
-			#endif
+#endif
 			else if (platform == "PS4")
 			{
 				string[] paths =

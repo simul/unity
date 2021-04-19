@@ -879,9 +879,9 @@ namespace simul
 			StaticRenderDeleteKeyframe(uid);
 		}
 
-		public uint GetSkyKeyframeByIndex(int index)
+		public uint GetSkyKeyframeByIndex(int layer, int index)
 		{
-			return StaticRenderGetKeyframeByIndex(0, index);
+			return StaticRenderGetKeyframeByIndex(layer, index);
 		}
 
 		public uint GetCloudKeyframeByIndex(int layer, int index)
@@ -890,7 +890,12 @@ namespace simul
 		}
 		public uint GetCloudKeyframerByIndex(int index)
 		{
-			return GetCloudLayerUIDByIndex(index);
+			if (SimulVersion < MakeSimulVersion(4, 2))
+			{
+				return GetCloudLayerUIDByIndex(index);
+			}
+			return 0;
+			
 		}
 
 		public uint GetCloud2DKeyframeByIndex(int index)
@@ -4357,15 +4362,15 @@ namespace simul
 						StaticPushPath("ShaderBinaryPath", Application.dataPath + @"/Simul/shaderbin/x86_64");
 #endif
                     StaticPushPath("TexturePath", Application.dataPath + @"/Simul/Media/Textures");
-					#if UNITY_GAMECORE
-					if (SystemInfo.graphicsDeviceType == GraphicsDeviceType.GameCoreScarlett)
+#if UNITY_GAMECORE
+					if (SystemInfo.graphicsDeviceType == GraphicsDeviceType.GameCoreXboxSeries)
 					{
 						StaticPushPath("ShaderBinaryPath", "D3D12");
 						StaticPushPath("ShaderPath", "D3D12");
 					}
-					#endif
-                }
-                else
+#endif
+				}
+				else
                 {
 					if (SystemInfo.graphicsDeviceType == GraphicsDeviceType.Direct3D11)
                     {
@@ -4382,13 +4387,13 @@ namespace simul
 						StaticPushPath("ShaderBinaryPath", Application.dataPath + @"/Simul/shaderbin/x86_64/vulkan");
 						StaticPushPath("ShaderPath", Application.dataPath + @"/Simul/shaderbin/x86_64/vulkan");
 					}
-					#if UNITY_GAMECORE
-					else if (SystemInfo.graphicsDeviceType == GraphicsDeviceType.GameCoreScarlett)
+#if UNITY_GAMECORE
+					else if (SystemInfo.graphicsDeviceType == GraphicsDeviceType.GameCoreXboxSeries)
 					{
 						StaticPushPath("ShaderBinaryPath", "D3D12");
 						StaticPushPath("ShaderPath", "D3D12");
 					}
-					#endif
+#endif
 					else
 					{
 						StaticPushPath("ShaderBinaryPath", Application.dataPath + @"/Simul/shaderbin/x86_64");
