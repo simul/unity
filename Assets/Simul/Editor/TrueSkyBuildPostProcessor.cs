@@ -16,7 +16,9 @@ namespace simul
             {
                 case BuildTarget.PS4:
                     return "ps4";
-                case BuildTarget.StandaloneWindows:
+				case BuildTarget.PS5:
+					return "ps5";
+				case BuildTarget.StandaloneWindows:
                 case BuildTarget.StandaloneWindows64:
                     return "x86_64";
                 case BuildTarget.WSAPlayer:
@@ -41,10 +43,12 @@ namespace simul
             // Check supported targets
 			if (target != BuildTarget.StandaloneWindows && target != BuildTarget.StandaloneWindows64 && 
                 target != BuildTarget.PS4               && target != BuildTarget.WSAPlayer           &&
-            #if UNITY_GAMECORE
+#if UNITY_GAMECORE
                 target != BuildTarget.GameCoreScarlett  && target != BuildTarget.GameCoreXboxOne     &&
-            #endif
-                target != BuildTarget.Switch)
+#endif
+				target != BuildTarget.PS5 &&
+
+				target != BuildTarget.Switch)
 			{
 				Debug.LogError("Trying to build for a non-supported platform! (" + target.ToString() + ")");
 				return;
@@ -59,7 +63,12 @@ namespace simul
                 buildDirectory += s + "Media" + s;
 				targetstr = "ps4";
 			}
-            if(target == BuildTarget.WSAPlayer)
+			if (target == BuildTarget.PS5)
+			{
+				buildDirectory += s + "Media" ;
+				targetstr = "ps5";
+			}
+			if (target == BuildTarget.WSAPlayer)
             {
                 buildDirectory += s + Application.productName + s + "Data";
             }

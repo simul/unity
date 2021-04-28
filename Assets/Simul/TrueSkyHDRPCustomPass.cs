@@ -49,7 +49,7 @@ namespace simul
             RTHandle colour = ctx.cameraColorBuffer;
             RTHandle depth = ctx.cameraDepthBuffer;
 
-            InteranlExecute(src, cmd, camera, cullingResult, colour, depth);
+			InternalExecute(src, cmd, camera, cullingResult, colour, depth);
         }
 #else
         protected virtual void Execute(ScriptableRenderContext renderContext, CommandBuffer cmd, HDCamera hdCamera, CullingResults cullingResult)
@@ -61,7 +61,7 @@ namespace simul
         }
 #endif
         
-        private void InteranlExecute(ScriptableRenderContext src, CommandBuffer cmd, HDCamera camera, CullingResults cullingResult, RTHandle colour, RTHandle depth)
+        private void InternalExecute(ScriptableRenderContext src, CommandBuffer cmd, HDCamera camera, CullingResults cullingResult, RTHandle colour, RTHandle depth)
         {
             //Don't draw to the scene view. This should never be removed!
             if (camera.camera.cameraType == CameraType.SceneView)

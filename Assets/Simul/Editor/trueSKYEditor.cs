@@ -950,6 +950,10 @@ namespace simul
 			{
 				buildPlayerOptions.target = BuildTarget.PS4;
 			}
+			else if (platform == "PS5")
+			{
+				buildPlayerOptions.target = BuildTarget.PS5;
+			}
 			else
 			{
 				UnityEngine.Debug.LogError("Unknown platform:" + platform);
@@ -997,6 +1001,17 @@ namespace simul
 				{
 					"Assets/Simul/shaderbin/ps4",
 					"Assets/Simul/Plugins/PS4"
+				};
+				AssetDatabase.ExportPackage(paths, fileName, ExportPackageOptions.Recurse | ExportPackageOptions.IncludeDependencies); //Include dependancies not tested with HDRP PlayStation
+
+				UnityEngine.Debug.Log("Exported: " + fileName);
+			}
+			else if (platform == "PS5")
+			{
+				string[] paths =
+				{
+					"Assets/Simul/shaderbin/ps5",
+					"Assets/Simul/Plugins/PS5"
 				};
 				AssetDatabase.ExportPackage(paths, fileName, ExportPackageOptions.Recurse | ExportPackageOptions.IncludeDependencies); //Include dependancies not tested with HDRP PlayStation
 
