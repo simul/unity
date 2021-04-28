@@ -852,7 +852,7 @@ namespace simul
 						"This allows a single project to have both standard and HDRP scenes.", GUILayout.Height(60.0f));
 					
 					trueSky.UsingIL2CPP = EditorGUILayout.Toggle("Use IL2CPP", trueSky.UsingIL2CPP);
-					EditorGUILayout.LabelField("Default enabled and locked for Xbox Series X (Scarlett) projects building with GameCore");
+					EditorGUILayout.LabelField("Default enabled and locked for projects building with GameCore");
 				}
 			}
 			// trueSKY Advanced Mode
@@ -936,8 +936,8 @@ namespace simul
 			{
 				buildPlayerOptions.target = BuildTarget.XboxOne;
 			}
-			#if UNITY_GAMECORE
-			else if (platform == "GameCoreScarlett")
+#if UNITY_GAMECORE
+			else if (platform == "GameCoreXboxSeries")
 			{
 				buildPlayerOptions.target = BuildTarget.GameCoreScarlett;
 			}
@@ -945,7 +945,7 @@ namespace simul
 			{
 				buildPlayerOptions.target = BuildTarget.GameCoreXboxOne;
 			}
-			#endif
+#endif
 			else if (platform == "PS4")
 			{
 				buildPlayerOptions.target = BuildTarget.PS4;
@@ -987,8 +987,8 @@ namespace simul
 
 				UnityEngine.Debug.Log("Exported: " + fileName);
 			}
-			#if UNITY_GAMECORE
-			else if (platform == "GameCoreScarlett")
+#if UNITY_GAMECORE
+			else if (platform == "GameCoreXboxSeries")
 			{
 				AssetDatabase.ExportPackage("Assets/Plugins/GameCoreScarlett", fileName, ExportPackageOptions.Recurse);
 
@@ -1000,7 +1000,7 @@ namespace simul
 
 				UnityEngine.Debug.Log("Exported: " + fileName);
 			}
-			#endif
+#endif
 			else if (platform == "PS4")
 			{
 				string[] paths =
