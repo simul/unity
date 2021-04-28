@@ -1005,7 +1005,7 @@ namespace simul
 #if UNITY_GAMECORE
 			else if (platform == "GameCoreXboxSeries")
 			{
-				AssetDatabase.ExportPackage("Assets/Plugins/GameCoreScarlett", fileName, ExportPackageOptions.Recurse);
+				AssetDatabase.ExportPackage("Assets/Plugins/GameCoreXboxSeries", fileName, ExportPackageOptions.Recurse);
 
 				UnityEngine.Debug.Log("Exported: " + fileName);
 			}
