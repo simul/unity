@@ -203,19 +203,21 @@ namespace simul
                 unityViewStruct.colourTexture = (System.IntPtr)0;
 
                 lastFrameCount = Time.renderedFrameCount;
-                /*_inscatterRT.renderTexture = inscatterRT;
-                _cloudVisibilityRT.renderTexture = cloudVisibilityRT;
-                _cloudShadowRT.renderTexture = cloudShadowRT;
+                trueSKY ts = trueSKY.GetTrueSky();
 
-                _lossRT.renderTexture = lossRT;
-                StaticSetRenderTexture("inscatter2D", _inscatterRT.GetNative());
-                StaticSetRenderTexture("Loss2D", _lossRT.GetNative());
-                StaticSetRenderTexture("CloudVisibilityRT", _cloudVisibilityRT.GetNative());
-                if (reflectionProbeTexture.renderTexture)
-                {
-                    StaticSetRenderTexture("Cubemap", reflectionProbeTexture.GetNative());
-                }
-                StaticSetRenderTexture("CloudShadowRT", _cloudShadowRT.GetNative());
+                //
+                ts.InscatterTexture.renderTexture = ts.inscatterRT;
+				ts.LossTexture.renderTexture = ts.lossRT;
+				ts.CloudVisibilityTexture.renderTexture = ts.cloudVisibilityRT;
+				ts.CloudShadowTexture.renderTexture = ts.cloudShadowRT;
+	
+				StaticSetRenderTexture("inscatter2D", ts.InscatterTexture.GetNative());
+				StaticSetRenderTexture("Loss2D", ts.LossTexture.GetNative());
+				StaticSetRenderTexture("CloudVisibilityRT", ts.CloudVisibilityTexture.GetNative());
+				StaticSetRenderTexture("CloudShadowRT", ts.CloudShadowTexture.GetNative());
+
+              /*
+
                 MatrixTransform(cubemapTransformMatrix);
                 StaticSetMatrix4x4("CubemapTransform", cubemapTransformMatrix);
 

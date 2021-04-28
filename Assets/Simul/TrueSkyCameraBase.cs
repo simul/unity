@@ -23,6 +23,7 @@ namespace simul
 				if (_nativeTexturePtr == (System.IntPtr)0 && renderTexture != null)
 				{
 					_nativeTexturePtr = renderTexture.GetNativeTexturePtr();
+					cachedRenderTexture = renderTexture;
 				}
 				return _nativeTexturePtr;
 			}
