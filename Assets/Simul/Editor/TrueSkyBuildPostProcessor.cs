@@ -21,11 +21,11 @@ namespace simul
                     return "x86_64";
                 case BuildTarget.WSAPlayer:
                     return "WSA";
-            #if UNITY_GAMECORE
+#if UNITY_GAMECORE
                 case BuildTarget.GameCoreScarlett:
                     return "XboxSeriesX";
                 case BuildTarget.GameCoreXboxOne: 
-            #endif 
+#endif
                 case BuildTarget.XboxOne:
                     return "XboxOne";
                 case BuildTarget.Switch:
@@ -41,9 +41,9 @@ namespace simul
             // Check supported targets
 			if (target != BuildTarget.StandaloneWindows && target != BuildTarget.StandaloneWindows64 && 
                 target != BuildTarget.PS4               && target != BuildTarget.WSAPlayer           &&
-            #if UNITY_GAMECORE
+#if UNITY_GAMECORE
                 target != BuildTarget.GameCoreScarlett  && target != BuildTarget.GameCoreXboxOne     &&
-            #endif
+#endif
                 target != BuildTarget.Switch)
 			{
 				Debug.LogError("Trying to build for a non-supported platform! (" + target.ToString() + ")");
@@ -72,7 +72,7 @@ namespace simul
                 fixedPath           = fixedPath.Remove(lastSep);
                 buildDirectory      = fixedPath + "/StagingArea/Data";
             }
-
+           
             Debug.Log("Build directory is: " + buildDirectory);
 
             // Copy shaders
