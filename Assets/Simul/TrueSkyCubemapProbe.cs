@@ -118,7 +118,7 @@ namespace simul
 		{
 			if (textureSize != 8 && textureSize != 16 && textureSize != 32 && textureSize != 64
                 && textureSize != 128 && textureSize != 256 && textureSize != 512)
-                textureSize = 32;   // if textureSize (inc. from inspector) isn't pow of 2 & between 8-512, then overwrite with default
+                textureSize = Mathf.Clamp(Mathf.ClosestPowerOfTwo(textureSize), 8, 512);   // if textureSize (inc. from inspector) isn't pow of 2 & between 8-512, then overwrite with default
                                     
             if (dummyCam == null)
             {
