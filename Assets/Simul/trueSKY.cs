@@ -4358,7 +4358,7 @@ namespace simul
 #endif
                     StaticPushPath("TexturePath", Application.dataPath + @"/Simul/Media/Textures");
 #if UNITY_GAMECORE
-					if (SystemInfo.graphicsDeviceType == GraphicsDeviceType.GameCoreXboxSeries 
+					if (SystemInfo.graphicsDeviceType == GraphicsDeviceType.GameCoreScarlett 
 						|| SystemInfo.graphicsDeviceType == GraphicsDeviceType.GameCoreXboxOne)
 					{
 						StaticPushPath("ShaderBinaryPath", "D3D12");
@@ -4384,7 +4384,7 @@ namespace simul
 						StaticPushPath("ShaderPath", Application.dataPath + @"/Simul/shaderbin/x86_64/vulkan");
 					}
 #if UNITY_GAMECORE
-					else if (SystemInfo.graphicsDeviceType == GraphicsDeviceType.GameCoreXboxSeries
+					else if (SystemInfo.graphicsDeviceType == GraphicsDeviceType.GameCoreScarlett
 						|| SystemInfo.graphicsDeviceType == GraphicsDeviceType.GameCoreXboxOne)
 					{
 						StaticPushPath("ShaderBinaryPath", "D3D12");

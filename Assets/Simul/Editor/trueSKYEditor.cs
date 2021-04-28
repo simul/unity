@@ -954,7 +954,7 @@ namespace simul
 #if UNITY_GAMECORE
 			else if (platform == "GameCoreXboxSeries")
 			{
-				buildPlayerOptions.target = BuildTarget.GameCoreXboxSeries;
+				buildPlayerOptions.target = BuildTarget.GameCoreScarlett;
 			}
 			else if (platform == "GameCoreXboxOne")
 			{
