@@ -39,10 +39,10 @@ namespace simul
 		public static void OnPostprocessBuild(BuildTarget target, string pathToBuiltProject)
 		{
             // Check supported targets
-			if (target != BuildTarget.StandaloneWindows && target != BuildTarget.StandaloneWindows64 && 
-                target != BuildTarget.PS4               && target != BuildTarget.WSAPlayer           &&
+			if (target != BuildTarget.StandaloneWindows  && target != BuildTarget.StandaloneWindows64 && 
+                target != BuildTarget.PS4                && target != BuildTarget.WSAPlayer           &&
 #if UNITY_GAMECORE
-                target != BuildTarget.GameCoreXboxSeries  && target != BuildTarget.GameCoreXboxOne     &&
+                target != BuildTarget.GameCoreXboxSeries && target != BuildTarget.GameCoreXboxOne     &&
 #endif
                 target != BuildTarget.Switch)
 			{
