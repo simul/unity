@@ -24,7 +24,7 @@ namespace simul
                 case BuildTarget.WSAPlayer:
                     return "WSA";
             #if UNITY_GAMECORE
-                case BuildTarget.GameCoreScarlett:
+                case BuildTarget.GameCoreXboxSeries:
                     return "XboxSeriesX";
                 case BuildTarget.GameCoreXboxOne: 
             #endif 
@@ -44,7 +44,7 @@ namespace simul
 			if (target != BuildTarget.StandaloneWindows && target != BuildTarget.StandaloneWindows64 && 
                 target != BuildTarget.PS4               && target != BuildTarget.WSAPlayer           &&
 #if UNITY_GAMECORE
-                target != BuildTarget.GameCoreScarlett  && target != BuildTarget.GameCoreXboxOne     &&
+                target != BuildTarget.GameCoreXboxSeries && target != BuildTarget.GameCoreXboxOne     &&
 #endif
 				target != BuildTarget.PS5 &&
 

@@ -32,7 +32,7 @@ public class TrueSkyDirectionalLight : MonoBehaviour
         }
     }
 
-    private void Update()
+		private void Update()
     {
         if(mLightComponent && mTsInstance)
         {
@@ -40,6 +40,11 @@ public class TrueSkyDirectionalLight : MonoBehaviour
 			{
 				UpdateCookie();
 			}
+			else if (mTsInstance.CloudShadowTexture.renderTexture)
+			{
+				mLightComponent.cookie = mTsInstance.CloudShadowTexture.renderTexture;
+			}
+
 			UpdateLight();
         }
     }
@@ -155,6 +160,9 @@ public class TrueSkyDirectionalLight : MonoBehaviour
         float shadowSize            = mTsInstance.getCloudShadowScale();
         //float halfShadowSize        = shadowSize * 0.5f;
         transform.position          = new Vector3(0.0f, sunHeight, 0.0f);
-        mLightComponent.cookieSize  = shadowSize / 4.0f;
+		mLightComponent.cookieSize = shadowSize / 4.0f;//would be moved if using shaderGraph.
+													   //cookie size does not appear to work in HDRP
+
+		//mLightComponent.areaSize = new Vector2Int(262144, 262144);
     }
 }

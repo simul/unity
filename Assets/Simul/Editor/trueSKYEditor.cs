@@ -381,9 +381,10 @@ namespace simul
 				precipitation = EditorGUILayout.Foldout(precipitation, "Precipitation", outerFoldoutStyle);
 				if (precipitation)
 				{
-					trueSky.SimulationTimeRain = EditorGUILayout.Toggle("Sim Time Rain", trueSky.SimulationTimeRain);
+					
 					if (trueSky.SimulVersion >= trueSky.MakeSimulVersion(4, 2))
 					{
+						trueSky.SimulationTimeRain = EditorGUILayout.Toggle("Sim Time Rain", trueSky.SimulationTimeRain);
 						trueSky.MaxPrecipitationParticles = EditorGUILayout.IntField("Max Particles", trueSky.MaxPrecipitationParticles);
 						trueSky.PrecipitationRadiusMetres = EditorGUILayout.Slider("Radius (m)", trueSky.PrecipitationRadiusMetres, 0.5F, 100.0F);
 						trueSky.RainFallSpeedMS = EditorGUILayout.Slider("Rain fall speed (m/s)", trueSky.RainFallSpeedMS, 0.0F, 20.0F);
@@ -395,6 +396,8 @@ namespace simul
 						trueSky.PrecipitationWaverTimescaleS = EditorGUILayout.Slider("WaverTimescaleS", trueSky.PrecipitationWaverTimescaleS, 0.1F, 60.0F);
 						trueSky.PrecipitationThresholdKm = EditorGUILayout.Slider("ThresholdKm", trueSky.PrecipitationThresholdKm, 0.5F, 20.0F);
 					}
+					else
+						EditorGUILayout.LabelField("Precipitation Settings are set in the trueSKY Sequence asset in 4.1");
 				}
 
 				// Rainbow settings
@@ -791,6 +794,18 @@ namespace simul
 				debugging = EditorGUILayout.Foldout(debugging, "Debugging", outerFoldoutStyle);
 				if (debugging)
 				{
+					EditorGUILayout.BeginHorizontal();
+					trueSky.cloudShadowRT = (RenderTexture)EditorGUILayout.ObjectField(trueSky.cloudShadowRT, typeof(RenderTexture), false, GUILayout.Width(90), GUILayout.Height(90));
+					trueSky.inscatterRT = (RenderTexture)EditorGUILayout.ObjectField(trueSky.inscatterRT, typeof(RenderTexture), false, GUILayout.Width(90), GUILayout.Height(90));
+					trueSky.lossRT = (RenderTexture)EditorGUILayout.ObjectField(trueSky.lossRT, typeof(RenderTexture), false, GUILayout.Width(90), GUILayout.Height(90));
+					trueSky.cloudVisibilityRT = (RenderTexture)EditorGUILayout.ObjectField(trueSky.cloudVisibilityRT, typeof(RenderTexture), false, GUILayout.Width(90), GUILayout.Height(90));
+					EditorGUILayout.EndHorizontal();
+					EditorGUILayout.BeginHorizontal();
+					EditorGUILayout.LabelField("Cloud Shadow", GUILayout.Width(90));
+					EditorGUILayout.LabelField("Inscatter", GUILayout.Width(90));
+					EditorGUILayout.LabelField("Loss", GUILayout.Width(90));
+					EditorGUILayout.LabelField("Cloud Visibility", GUILayout.Width(100));
+					EditorGUILayout.EndHorizontal();
 					usetrueSKYColour = EditorGUILayout.Toggle("Use Style Colour on Script", usetrueSKYColour);
 					trueSky.RenderInEditMode = EditorGUILayout.Toggle("Render in Edit Mode", trueSky.RenderInEditMode);
 					string gv = SystemInfo.graphicsDeviceVersion;
@@ -852,7 +867,7 @@ namespace simul
 						"This allows a single project to have both standard and HDRP scenes.", GUILayout.Height(60.0f));
 					
 					trueSky.UsingIL2CPP = EditorGUILayout.Toggle("Use IL2CPP", trueSky.UsingIL2CPP);
-					EditorGUILayout.LabelField("Default enabled and locked for Xbox Series X (Scarlett) projects building with GameCore");
+					EditorGUILayout.LabelField("Default enabled and locked for projects building with GameCore");
 				}
 			}
 			// trueSKY Advanced Mode
@@ -936,16 +951,16 @@ namespace simul
 			{
 				buildPlayerOptions.target = BuildTarget.XboxOne;
 			}
-			#if UNITY_GAMECORE
-			else if (platform == "GameCoreScarlett")
+#if UNITY_GAMECORE
+			else if (platform == "GameCoreXboxSeries")
 			{
-				buildPlayerOptions.target = BuildTarget.GameCoreScarlett;
+				buildPlayerOptions.target = BuildTarget.GameCoreXboxSeries;
 			}
 			else if (platform == "GameCoreXboxOne")
 			{
 				buildPlayerOptions.target = BuildTarget.GameCoreXboxOne;
 			}
-			#endif
+#endif
 			else if (platform == "PS4")
 			{
 				buildPlayerOptions.target = BuildTarget.PS4;
@@ -985,16 +1000,26 @@ namespace simul
 
 		static void ExportPackage(string fileName, string platform)
 		{
-			if (platform == "x64" || platform == "XboxOne"
-				#if UNITY_GAMECORE
-				|| platform == "GameCoreScarlett" || platform == "GameCoreXboxOne"
-				#endif
-				)
+			if (platform == "x64" || platform == "XboxOne")
 			{
 				AssetDatabase.ExportPackage("Assets/Simul", fileName, ExportPackageOptions.Recurse);
 
 				UnityEngine.Debug.Log("Exported: " + fileName);
 			}
+#if UNITY_GAMECORE
+			else if (platform == "GameCoreXboxSeries")
+			{
+				AssetDatabase.ExportPackage("Assets/Plugins/GameCoreXboxSeries", fileName, ExportPackageOptions.Recurse);
+
+				UnityEngine.Debug.Log("Exported: " + fileName);
+			}
+			else if (platform == "GameCoreXboxOne")
+			{
+				AssetDatabase.ExportPackage("Assets/Plugins/GameCoreXboxOne", fileName, ExportPackageOptions.Recurse);
+
+				UnityEngine.Debug.Log("Exported: " + fileName);
+			}
+#endif
 			else if (platform == "PS4")
 			{
 				string[] paths =

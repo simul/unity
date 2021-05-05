@@ -28,10 +28,10 @@ namespace simul
 		Stage stage = Stage.PRE_START;
 
 		//Be careful adding more than 6 due to UI spacing issues.
-		string[] currentIssues = { 
+		string[] currentIssues = {
 			"No Dynamic Lighting with Lightning Strikes in clouds",
-			"Rain Streaks non-functional with Variable Grid integration Scheme.",
-			"Performance issues with bounded water objects.",
+			"Rain Streaks are not compatible with Variable Grid integration scheme ",
+			"Cloud movement issues with Wind Speed and Progression Scale",
 		};
 
 		[MenuItem("GameObject/Remove trueSKY from Scene", false, 200000)]
