@@ -95,29 +95,29 @@ namespace simul
 
             if (!useCamerasRB) //Main view render
             {
-			bool il2cppScripting = simul.trueSKY.GetTrueSky().UsingIL2CPP;
-			Marshal.StructureToPtr(unityViewStruct, unityViewStructPtr, !il2cppScripting);
-			PrepareTestMaterial();
+				bool il2cppScripting = simul.trueSKY.GetTrueSky().UsingIL2CPP;
+				Marshal.StructureToPtr(unityViewStruct, unityViewStructPtr, !il2cppScripting);
+				PrepareTestMaterial();
 
-			if (injectionPoint == CustomPassInjectionPoint.BeforeTransparent)
-			{
-				// Draw quad on current rt. This SEEMS to be needed to force unity to activate its rendertarget/depth target. Sadly.
-				cmd.DrawProcedural(Matrix4x4.identity, testMaterial, 0, MeshTopology.Quads, 4);
-				cmd.IssuePluginEventAndData(UnityGetRenderEventFuncWithData(), GetTRUESKY_EVENT_ID() + cbuf_view_id, unityViewStructPtr);
+				if (injectionPoint == CustomPassInjectionPoint.BeforeTransparent)
+				{
+					// Draw quad on current rt. This SEEMS to be needed to force unity to activate its rendertarget/depth target. Sadly.
+					cmd.DrawProcedural(Matrix4x4.identity, testMaterial, 0, MeshTopology.Quads, 4);
+					cmd.IssuePluginEventAndData(UnityGetRenderEventFuncWithData(), GetTRUESKY_EVENT_ID() + cbuf_view_id, unityViewStructPtr);
+				}
+				else if (injectionPoint == CustomPassInjectionPoint.BeforePostProcess)
+				{
+					cmd.DrawProcedural(Matrix4x4.identity, testMaterial, 0, MeshTopology.Quads, 4);
+					cmd.IssuePluginEventAndData(UnityGetPostTranslucentFuncWithData(), GetTRUESKY_EVENT_ID() + cbuf_view_id, unityViewStructPtr);
+				}
+				else if (injectionPoint == CustomPassInjectionPoint.AfterPostProcess)
+				{
+					//cmd.DrawProcedural(Matrix4x4.identity, testMaterial, 0, MeshTopology.Quads, 4);
+					//cmd.IssuePluginEventAndData(UnityGetOverlayFuncWithData(), GetTRUESKY_EVENT_ID() + cbuf_view_id, unityViewStructPtr);
+				}
+				else
+					return;
 			}
-			else if (injectionPoint == CustomPassInjectionPoint.BeforePostProcess)
-			{
-				cmd.DrawProcedural(Matrix4x4.identity, testMaterial, 0, MeshTopology.Quads, 4);
-				cmd.IssuePluginEventAndData(UnityGetPostTranslucentFuncWithData(), GetTRUESKY_EVENT_ID() + cbuf_view_id, unityViewStructPtr);
-			}
-			else if (injectionPoint == CustomPassInjectionPoint.AfterPostProcess)
-			{
-				//cmd.DrawProcedural(Matrix4x4.identity, testMaterial, 0, MeshTopology.Quads, 4);
-				//cmd.IssuePluginEventAndData(UnityGetOverlayFuncWithData(), GetTRUESKY_EVENT_ID() + cbuf_view_id, unityViewStructPtr);
-			}
-			else
-				return;
-            } 
             else //Cubemap view render
             {
                 unityViewStruct.colourResourceState = ResourceState.RenderTarget;
@@ -270,13 +270,13 @@ namespace simul
 				ts.LossTexture.renderTexture = ts.lossRT;
 				ts.CloudVisibilityTexture.renderTexture = ts.cloudVisibilityRT;
 				ts.CloudShadowTexture.renderTexture = ts.cloudShadowRT;
-	
+
 				StaticSetRenderTexture("inscatter2D", ts.InscatterTexture.GetNative());
 				StaticSetRenderTexture("Loss2D", ts.LossTexture.GetNative());
-				StaticSetRenderTexture("CloudVisibilityRT", ts.CloudVisibilityTexture.GetNative());
+				StaticSetRenderTexture("CloudVisibilityRT", ts.CloudVisibilityTexture.GetNative()); 
 				StaticSetRenderTexture("CloudShadowRT", ts.CloudShadowTexture.GetNative());
 
-              /*_inscatterRT.renderTexture = inscatterRT;
+             /*_inscatterRT.renderTexture = inscatterRT;
 				_cloudVisibilityRT.renderTexture = cloudVisibilityRT;
 				_cloudShadowRT.renderTexture = cloudShadowRT;
 

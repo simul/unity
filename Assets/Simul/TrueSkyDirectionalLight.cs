@@ -2,17 +2,19 @@
 using System.Collections.Generic;
 using UnityEngine;
 using simul;
+using UnityEngine.Rendering.HighDefinition;
 
 [ExecuteInEditMode]
 public class TrueSkyDirectionalLight : MonoBehaviour
 {
-    private trueSKY mTsInstance;
-    private Light   mLightComponent;
+	private trueSKY mTsInstance;
+	private Light   mLightComponent;
+	private HDAdditionalLightData mHDAdditionalLightData;
 
-    public float SunMultiplier  = 1.0f;
-    public float MoonMultiplier = 1.0f;
-    public float AmbientMultiplier = 1.0f;
-    public bool ApplyRotation   = true;
+	public float SunMultiplier  = 1.0f;
+	public float MoonMultiplier = 1.0f;
+	public float AmbientMultiplier = 1.0f;
+	public bool ApplyRotation   = true;
 
 	public enum LightUnits : byte
 	{
@@ -23,36 +25,35 @@ public class TrueSkyDirectionalLight : MonoBehaviour
 
 
 	private void Start()
-    {
-        mTsInstance = trueSKY.GetTrueSky();
-        mLightComponent = GetComponent<Light>();
-        if(!mLightComponent)
-        {
-            Debug.LogError("This script should be attatched to an object with a light component");
-        }
-    }
+	{
+		mTsInstance = trueSKY.GetTrueSky();
+		mLightComponent = GetComponent<Light>();
+		if(!mLightComponent)
+		{
+			Debug.LogError("This script should be attatched to an object with a light component");
+		}
 
-		private void Update()
-    {
-        if(mLightComponent && mTsInstance)
-        {
+		mHDAdditionalLightData = GetComponent<HDAdditionalLightData>();//Get Reference to the class holding HDRP light properties
+	}
+
+	private void Update()
+	{
+		if(mLightComponent && mTsInstance)
+		{
+			mLightComponent.cookie = mTsInstance.CloudShadowTexture.renderTexture;
 			if (mLightComponent.cookie)
 			{
 				UpdateCookie();
 			}
-			else if (mTsInstance.CloudShadowTexture.renderTexture)
-			{
-				mLightComponent.cookie = mTsInstance.CloudShadowTexture.renderTexture;
-			}
 
 			UpdateLight();
-        }
-    }
+		}
+	}
    
 	float intensity_scale = 0.1f;
-    bool UpdateLight()
-    {
-        LightingQueryResult res = mTsInstance.LightingQuery(this.GetInstanceID(), transform.position);
+	bool UpdateLight()
+	{
+		LightingQueryResult res = mTsInstance.LightingQuery(this.GetInstanceID(), transform.position);
 		if (res.valid == 1)
 		{
 			//This is checking if the units are photometric, the Units Unity wants. 
@@ -73,9 +74,9 @@ public class TrueSkyDirectionalLight : MonoBehaviour
 				res.moonlight.y *= PhotometricUnitConversion;
 				res.moonlight.z *= PhotometricUnitConversion;
 				res.moonlight.w *= PhotometricUnitConversion;
-				res.ambient.x *= PhotometricUnitConversion;    
-				res.ambient.y *= PhotometricUnitConversion;    
-				res.ambient.z *= PhotometricUnitConversion;    
+				res.ambient.x *= PhotometricUnitConversion;	
+				res.ambient.y *= PhotometricUnitConversion;	
+				res.ambient.z *= PhotometricUnitConversion;	
 				res.ambient.w *= PhotometricUnitConversion;
 			}
 
@@ -146,23 +147,29 @@ public class TrueSkyDirectionalLight : MonoBehaviour
 		//	Debug.LogError("Valid = "+ res.valid);
 		}
 		return false;
-    }
+	}
 
-    void UpdateCookie()
-    {
-        Vector3 curShadowCenter = mTsInstance.getCloudShadowCentre();
-        if (curShadowCenter.x >= Mathf.Infinity || curShadowCenter.z >= Mathf.Infinity)
-        {
-            curShadowCenter = Vector3.zero;
-        }
-        uint currentKeyframe        = mTsInstance.GetInterpolatedCloudKeyframe(0);
-        float sunHeight             = mTsInstance.GetKeyframeValueFloat(currentKeyframe, "cloudBase") * 1000.0f;
-        float shadowSize            = mTsInstance.getCloudShadowScale();
-        //float halfShadowSize        = shadowSize * 0.5f;
-        transform.position          = new Vector3(0.0f, sunHeight, 0.0f);
+	void UpdateCookie()
+	{
+		Vector3 curShadowCenter = mTsInstance.getCloudShadowCentre();
+		if (curShadowCenter.x >= Mathf.Infinity || curShadowCenter.z >= Mathf.Infinity)
+		{
+			curShadowCenter = Vector3.zero;
+		}
+		uint currentKeyframe		= mTsInstance.GetInterpolatedCloudKeyframe(0);
+		float sunHeight			 = mTsInstance.GetKeyframeValueFloat(currentKeyframe, "cloudBase") * 1000.0f;
+		float shadowSize			= mTsInstance.getCloudShadowScale();
+		//float halfShadowSize		= shadowSize * 0.5f;
+		transform.position		  = new Vector3(0.0f, sunHeight, 0.0f);
 		mLightComponent.cookieSize = shadowSize / 4.0f;//would be moved if using shaderGraph.
-													   //cookie size does not appear to work in HDRP
+		// cookieSize does not work in HDRP, instead we use:
+
+		if (mHDAdditionalLightData != null)
+		{
+			//mHDAdditionalLightData.intensity = 200000.0F*mLightComponent.intensity;//Change the intensity of the light
+			mHDAdditionalLightData.SetCookie(mLightComponent.cookie, new Vector2(shadowSize / 4.0f, shadowSize / 4.0f));//Change size of the light cookie
+		}
 
 		//mLightComponent.areaSize = new Vector2Int(262144, 262144);
-    }
+	}
 }
