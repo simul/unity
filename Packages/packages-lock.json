@@ -13,7 +13,7 @@
       "dependencies": {}
     },
     "com.unity.ads": {
-      "version": "3.5.2",
+      "version": "3.7.1",
       "depth": 0,
       "source": "registry",
       "dependencies": {
@@ -67,8 +67,23 @@
       "dependencies": {},
       "url": "https://packages.unity.com"
     },
+    "com.unity.inputsystem": {
+      "version": "1.0.2",
+      "depth": 1,
+      "source": "registry",
+      "dependencies": {},
+      "url": "https://packages.unity.com"
+    },
+    "com.unity.inputsystem.ps5": {
+      "version": "file:C:/Users/roder/Downloads/com.unity.inputsystem.ps5-0.1.7-preview.tgz",
+      "depth": 0,
+      "source": "local-tarball",
+      "dependencies": {
+        "com.unity.inputsystem": "1.0.0"
+      }
+    },
     "com.unity.purchasing": {
-      "version": "3.0.1",
+      "version": "3.0.2",
       "depth": 0,
       "source": "registry",
       "dependencies": {
@@ -111,6 +126,12 @@
         "com.unity.render-pipelines.core": "11.0.0"
       }
     },
+    "com.unity.render-pipelines.ps5": {
+      "version": "file:C:/Users/roder/Downloads/com.unity.render-pipelines.ps5-1.4.0.tgz",
+      "depth": 0,
+      "source": "local-tarball",
+      "dependencies": {}
+    },
     "com.unity.searcher": {
       "version": "4.3.2",
       "depth": 2,
@@ -128,7 +149,7 @@
       }
     },
     "com.unity.test-framework": {
-      "version": "1.1.22",
+      "version": "1.1.24",
       "depth": 0,
       "source": "registry",
       "dependencies": {
@@ -148,7 +169,7 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.timeline": {
-      "version": "1.5.2",
+      "version": "1.5.4",
       "depth": 0,
       "source": "registry",
       "dependencies": {

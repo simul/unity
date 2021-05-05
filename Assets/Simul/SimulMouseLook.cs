@@ -147,8 +147,8 @@ public class SimulMouseLook : MonoBehaviour
 		if (GetComponent<simul.GamePad>())
 		{
             simul.GamePad pad = GetComponent<simul.GamePad>();
-			new_rot_speed += 25.0F*pad.leftStick;
-			new_speed += 25.0F*pad.rightstick;
+			new_rot_speed += 5.0F*pad.leftStick;
+			new_speed += 5.0F*pad.rightstick;
 		}
 	}
 	void Update()

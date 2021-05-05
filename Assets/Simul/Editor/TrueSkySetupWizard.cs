@@ -412,21 +412,21 @@ namespace simul
 			else
 			{
 #if USING_HDRP
-				simul.TrueSkyHDRPCustomPass trueSKYPreRefraction = new simul.TrueSkyHDRPCustomPass();
-				simul.TrueSkyHDRPCustomPass trueSKYPrePostProcess = new simul.TrueSkyHDRPCustomPass();
-				CustomPassVolume trueSKYPassBeforePreRefraction = trueSky.gameObject.GetComponent<CustomPassVolume>();
-				if (trueSKYPassBeforePreRefraction == null)
+				simul.TrueSkyHDRPCustomPass TrueSkyMainPass = new simul.TrueSkyHDRPCustomPass();
+				simul.TrueSkyHDRPCustomPass TrueSkyTranslucentPass = new simul.TrueSkyHDRPCustomPass();
+				CustomPassVolume MainPassVolume = trueSky.gameObject.GetComponent<CustomPassVolume>();
+				if (MainPassVolume == null)
 				{
-					trueSKYPreRefraction.name = "trueSKY - Before Pre Refraction(Main Render)";
-					trueSKYPassBeforePreRefraction = trueSky.gameObject.AddComponent<CustomPassVolume>();
-					trueSKYPassBeforePreRefraction.injectionPoint = CustomPassInjectionPoint.BeforePreRefraction;
-					trueSKYPassBeforePreRefraction.customPasses.Add(trueSKYPreRefraction);
+					TrueSkyMainPass.name = "trueSKY - Before Pre Refraction(Main Render)";
+					MainPassVolume = trueSky.gameObject.AddComponent<CustomPassVolume>();
+					MainPassVolume.injectionPoint = CustomPassInjectionPoint.BeforeTransparent;
+					MainPassVolume.customPasses.Add(TrueSkyMainPass);
 
-					CustomPassVolume trueSKYPassBeforePostProcess;
-					trueSKYPrePostProcess.name = "trueSKY - Before Post Process(Translucent Effects)";
-					trueSKYPassBeforePostProcess = trueSky.gameObject.AddComponent<CustomPassVolume>();
-					trueSKYPassBeforePostProcess.injectionPoint = CustomPassInjectionPoint.BeforePostProcess;
-					trueSKYPassBeforePostProcess.customPasses.Add(trueSKYPrePostProcess);
+					CustomPassVolume TranslucentVolume;
+					TrueSkyTranslucentPass.name = "trueSKY - Before Post Process(Translucent Effects)";
+					TranslucentVolume = trueSky.gameObject.AddComponent<CustomPassVolume>();
+					TranslucentVolume.injectionPoint = CustomPassInjectionPoint.BeforePostProcess;
+					TranslucentVolume.customPasses.Add(TrueSkyTranslucentPass);
 				}
 				if (UnityEngine.Rendering.GraphicsSettings.allConfiguredRenderPipelines.Length > 0)
 				{

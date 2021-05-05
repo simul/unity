@@ -56,21 +56,22 @@ namespace simul
             
 			char s = Path.DirectorySeparatorChar;
 			string buildDirectory = pathToBuiltProject.Replace(".exe", "_Data");
-			String targetstr = "x86_64";
+			string mediaDirectory = buildDirectory;
+			 String targetstr = "x86_64";
             // Per-platform changes
 			if(target == BuildTarget.PS4)
 			{
-                buildDirectory += s + "Media" + s;
+                mediaDirectory += s + "Media" + s;
 				targetstr = "ps4";
 			}
 			if (target == BuildTarget.PS5)
 			{
-				buildDirectory += s + "Media" ;
+				mediaDirectory += s + "Media" ;
 				targetstr = "ps5";
 			}
 			if (target == BuildTarget.WSAPlayer)
             {
-                buildDirectory += s + Application.productName + s + "Data";
+                mediaDirectory += s + Application.productName + s + "Data";
             }
             if(target == BuildTarget.Switch)
             {
@@ -79,27 +80,27 @@ namespace simul
 				string fixedPath    = pathToBuiltProject;
                 int lastSep         = fixedPath.LastIndexOf("/");
                 fixedPath           = fixedPath.Remove(lastSep);
-                buildDirectory      = fixedPath + "/StagingArea/Data";
+                mediaDirectory      = fixedPath + "/StagingArea/Data";
             }
             #if UNITY_GAMECORE
             if (target == BuildTarget.GameCoreScarlett)
             {
-                //buildDirectory += s + "Loose" + s + "Data" + s + "Plugins";
+                //mediaDirectory += s + "Loose" + s + "Data" + s + "Plugins";
             }
             #endif
 
-            Debug.Log("Build directory is: " + buildDirectory);
+            Debug.Log("Build directory is: " + mediaDirectory);
 
             // Copy shaders
 			string assetsPath = Environment.CurrentDirectory + s + "Assets";
 			string shaderbinSource = trueSKY.GetShaderbinSourceDir(targetstr);
-			string shaderbinBuild = buildDirectory + s + "Simul" + s + "shaderbin" + s + targetstr;
+			string shaderbinBuild = mediaDirectory + s + "Simul" + s + "shaderbin" + s + targetstr;
 			DirectoryCopy.Copy(shaderbinSource, shaderbinBuild, true, true);
 			Debug.Log("DirectoryCopy: " + shaderbinSource + "->" + shaderbinBuild);
 			if (target == BuildTarget.StandaloneWindows || target == BuildTarget.StandaloneWindows64)
 			{
 				shaderbinSource = trueSKY.GetShaderbinSourceDir("vulkan");
-				shaderbinBuild = buildDirectory + s + "Simul" + s + "shaderbin" + s + "vulkan";
+				shaderbinBuild = mediaDirectory + s + "Simul" + s + "shaderbin" + s + "vulkan";
 				if (Directory.Exists(shaderbinSource))
 				{
 					DirectoryCopy.Copy(shaderbinSource, shaderbinBuild, true, true);
@@ -110,7 +111,7 @@ namespace simul
 			string simul = assetsPath + s + "Simul";
 			// Copy media
 			string MediaSource = simul + s + "Media";
-			string MediaBuild = buildDirectory + s + "Simul" + s + "Media";
+			string MediaBuild = mediaDirectory + s + "Simul" + s + "Media";
 			DirectoryCopy.Copy(MediaSource, MediaBuild, true, false, false, false);
             Debug.Log("DirectoryCopy: " + MediaSource + "->" + MediaBuild);
 
