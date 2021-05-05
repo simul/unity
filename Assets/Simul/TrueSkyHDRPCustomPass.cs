@@ -21,7 +21,6 @@ namespace simul
 		{
 			return StaticGetOrAddView((System.IntPtr)view_ident);
 		}
-
 		protected override void Setup(ScriptableRenderContext src, CommandBuffer cmd)
 		{
 			ts = trueSKY.GetTrueSky();
@@ -80,14 +79,22 @@ namespace simul
 			//Fill-in UnityViewStruct
 			PrepareMatrices(camera);
 
-			unityViewStruct.nativeColourRenderBuffer = colour.rt.colorBuffer.GetNativeRenderBufferPtr();
-			unityViewStruct.nativeDepthRenderBuffer = depth.rt.depthBuffer.GetNativeRenderBufferPtr();
-			unityViewStruct.colourResourceState = colour.rt.antiAliasing > 1 ? ResourceState.ResolveSource : ResourceState.RenderTarget;
+            bool useCamerasRB = camera.camera.name.Equals("CubemapCamera1");
+
+            RenderBuffer rbColour = useCamerasRB ? camera.camera.targetTexture.colorBuffer : colour.rt.colorBuffer;
+            RenderBuffer rbDepth = useCamerasRB ? camera.camera.targetTexture.depthBuffer : depth.rt.depthBuffer;
+            bool msaa = useCamerasRB ? (camera.camera.targetTexture.antiAliasing > 1) : (colour.rt.antiAliasing > 1);
+
+            unityViewStruct.nativeColourRenderBuffer = rbColour.GetNativeRenderBufferPtr();
+            unityViewStruct.nativeDepthRenderBuffer = rbDepth.GetNativeRenderBufferPtr();
+            unityViewStruct.colourResourceState = msaa ? ResourceState.ResolveSource : ResourceState.RenderTarget;
 			unityViewStruct.depthResourceState = ResourceState.DepthWrite;
 
 			//Execute CmdBuffer
 			cbuf_view_id = InternalGetViewId();
 
+            if (!useCamerasRB) //Main view render
+            {
 			bool il2cppScripting = simul.trueSKY.GetTrueSky().UsingIL2CPP;
 			Marshal.StructureToPtr(unityViewStruct, unityViewStructPtr, !il2cppScripting);
 			PrepareTestMaterial();
@@ -110,10 +117,21 @@ namespace simul
 			}
 			else
 				return;
+            } 
+            else //Cubemap view render
+            {
+                unityViewStruct.colourResourceState = ResourceState.RenderTarget;
+                unityViewStruct.depthResourceState = ResourceState.DepthWrite;
 
-			//src.ExecuteCommandBuffer(cmd);
-		}
+                bool il2cppScripting = simul.trueSKY.GetTrueSky().UsingIL2CPP;
+                Marshal.StructureToPtr(unityViewStruct, unityViewStructPtr, !il2cppScripting);
 
+                if (injectionPoint == CustomPassInjectionPoint.BeforePreRefraction)
+                    cmd.IssuePluginEventAndData(UnityGetRenderEventFuncWithData(), GetTRUESKY_EVENT_ID() + cbuf_view_id, unityViewStructPtr);
+                else
+                    return;
+			}
+        }
 		protected override void Cleanup()
 		{
 			tsValid = false;
@@ -244,7 +262,21 @@ namespace simul
 				unityViewStruct.colourTexture = (System.IntPtr)0;
 
 				lastFrameCount = Time.renderedFrameCount;
-				/*_inscatterRT.renderTexture = inscatterRT;
+
+                trueSKY ts = trueSKY.GetTrueSky();
+
+                //
+                ts.InscatterTexture.renderTexture = ts.inscatterRT;
+				ts.LossTexture.renderTexture = ts.lossRT;
+				ts.CloudVisibilityTexture.renderTexture = ts.cloudVisibilityRT;
+				ts.CloudShadowTexture.renderTexture = ts.cloudShadowRT;
+	
+				StaticSetRenderTexture("inscatter2D", ts.InscatterTexture.GetNative());
+				StaticSetRenderTexture("Loss2D", ts.LossTexture.GetNative());
+				StaticSetRenderTexture("CloudVisibilityRT", ts.CloudVisibilityTexture.GetNative());
+				StaticSetRenderTexture("CloudShadowRT", ts.CloudShadowTexture.GetNative());
+
+              /*_inscatterRT.renderTexture = inscatterRT;
 				_cloudVisibilityRT.renderTexture = cloudVisibilityRT;
 				_cloudShadowRT.renderTexture = cloudShadowRT;
 
