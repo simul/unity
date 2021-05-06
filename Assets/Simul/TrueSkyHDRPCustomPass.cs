@@ -59,24 +59,15 @@ namespace simul
 			InternalExecute(renderContext, cmd, hdCamera, cullingResult, colour, depth);
 		}
 #endif
-		Material testMaterial=null;
-		Shader testQuadShader=null;
-		void PrepareTestMaterial()
-		{
-			if (testMaterial == null)
-			{
-				testQuadShader = Resources.Load("TestQuadShader", typeof(Shader)) as Shader;
-				if (testQuadShader != null)
-					testMaterial = new Material(testQuadShader);
-			}
-		}
+
 		private void InternalExecute(ScriptableRenderContext src, CommandBuffer cmd, HDCamera camera, CullingResults cullingResult, RTHandle colour, RTHandle depth)
 		{
 			//Don't draw to the scene view. This should never be removed!
 			if (camera.camera.cameraType == CameraType.SceneView)
 				return;
-			if(!camera.camera.CompareTag("trueSKY"))
-				return;
+			//if(!camera.camera.CompareTag("trueSKY"))
+			//	return;
+
 			//Fill-in UnityViewStruct
 			PrepareMatrices(camera);
 
@@ -98,23 +89,30 @@ namespace simul
             {
 				bool il2cppScripting = simul.trueSKY.GetTrueSky().UsingIL2CPP;
 				Marshal.StructureToPtr(unityViewStruct, unityViewStructPtr, !il2cppScripting);
+#if UNITY_PS5
 				PrepareTestMaterial();
-
+#endif
 				if (injectionPoint == CustomPassInjectionPoint.BeforePreRefraction)
 				{
+#if UNITY_PS5
 					// Draw quad on current rt. This SEEMS to be needed to force unity to activate its rendertarget/depth target. Sadly.
 					cmd.DrawProcedural(Matrix4x4.identity, testMaterial, 0, MeshTopology.Quads, 4);
+#endif
 					cmd.IssuePluginEventAndData(UnityGetRenderEventFuncWithData(), GetTRUESKY_EVENT_ID() + cbuf_view_id, unityViewStructPtr);
 				}
 				else if (injectionPoint == CustomPassInjectionPoint.BeforePostProcess)
 				{
+#if UNITY_PS5
 					cmd.DrawProcedural(Matrix4x4.identity, testMaterial, 0, MeshTopology.Quads, 4);
+#endif
 					cmd.IssuePluginEventAndData(UnityGetPostTranslucentFuncWithData(), GetTRUESKY_EVENT_ID() + cbuf_view_id, unityViewStructPtr);
 				}
 				else if (injectionPoint == CustomPassInjectionPoint.AfterPostProcess)
 				{
-					//cmd.DrawProcedural(Matrix4x4.identity, testMaterial, 0, MeshTopology.Quads, 4);
-					//cmd.IssuePluginEventAndData(UnityGetOverlayFuncWithData(), GetTRUESKY_EVENT_ID() + cbuf_view_id, unityViewStructPtr);
+#if UNITY_PS5
+					cmd.DrawProcedural(Matrix4x4.identity, testMaterial, 0, MeshTopology.Quads, 4);
+#endif
+					cmd.IssuePluginEventAndData(UnityGetOverlayFuncWithData(), GetTRUESKY_EVENT_ID() + cbuf_view_id, unityViewStructPtr);
 				}
 				else
 					return;
@@ -133,6 +131,20 @@ namespace simul
                     return;
 			}
         }
+
+#if UNITY_PS5
+		Material testMaterial=null;
+		Shader testQuadShader=null;
+		void PrepareTestMaterial()
+		{
+			if (testMaterial == null)
+			{
+				testQuadShader = Resources.Load("TestQuadShader", typeof(Shader)) as Shader;
+				if (testQuadShader != null)
+					testMaterial = new Material(testQuadShader);
+			}
+		}
+#endif
 		protected override void Cleanup()
 		{
 			tsValid = false;
