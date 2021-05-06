@@ -46,7 +46,12 @@ public class TrueSkyDirectionalLight : MonoBehaviour
 	{
 		if (mLightComponent && mTsInstance)
 		{
-			mLightComponent.cookie = mTsInstance.CloudShadowTexture.renderTexture;
+			if (mLightComponent.cookie == null)
+				mLightComponent.cookie = mTsInstance.CloudShadowTexture.renderTexture;
+#if USING_HDRP
+			if (mHDAdditionalLightData == null)
+				mHDAdditionalLightData = GetComponent<HDAdditionalLightData>();
+#endif
 			if (mLightComponent.cookie)
 			{
 				UpdateCookie();
