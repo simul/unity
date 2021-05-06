@@ -123,6 +123,7 @@ namespace simul
             if (dummyCam == null)
             {
                 GameObject aDummyCamObject  = new GameObject("CubemapCamera1", typeof(Camera));
+                aDummyCamObject.tag         = "trueSKY";
                 aDummyCamObject.hideFlags   = HideFlags.HideAndDontSave;
                 dummyCam                    = aDummyCamObject.GetComponent<Camera>();
                 dummyCam.enabled            = false;
@@ -225,6 +226,7 @@ namespace simul
                 cubemapRenderTexture            = new RenderTexture(textureSize, textureSize, 24, rtf, RenderTextureReadWrite.Linear);
                 renderTextureFormat             = cubemapRenderTexture.format;
                 cubemapRenderTexture.dimension  = UnityEngine.Rendering.TextureDimension.Cube;
+                cubemapRenderTexture.name       = "trueSKY CubemapRenderTexture";
                 cubemapRenderTexture.Create();
                 _initialized = false;
             }

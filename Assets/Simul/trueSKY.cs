@@ -709,21 +709,25 @@ namespace simul
 			if (!cloudShadowRT)
 			{
 				cloudShadowRT = new RenderTexture(256, 256, 16, RenderTextureFormat.ARGB32);
+				cloudShadowRT.name = "CloudShadowRT";
 				cloudShadowRT.Create();
 			}
 			if (!lossRT)
 			{
 				lossRT = new RenderTexture(256, 256, 16, RenderTextureFormat.ARGB32);
+				lossRT.name = "lossRT";
 				lossRT.Create();		
 			}
 			if (!inscatterRT)
 			{
 				inscatterRT = new RenderTexture(256, 256, 16, RenderTextureFormat.ARGB32);
+				inscatterRT.name = "inscatterRT";
 				inscatterRT.Create();			
 			}
 			if (!cloudVisibilityRT)
 			{
 				cloudVisibilityRT = new RenderTexture(256, 256, 16, RenderTextureFormat.ARGB32);
+				cloudVisibilityRT.name = "cloudVisibilityRT";
 				cloudVisibilityRT.Create();
 			}
 
