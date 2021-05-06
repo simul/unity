@@ -99,7 +99,7 @@ namespace simul
 				Marshal.StructureToPtr(unityViewStruct, unityViewStructPtr, !il2cppScripting);
 				PrepareTestMaterial();
 
-				if (injectionPoint == CustomPassInjectionPoint.BeforeTransparent)
+				if (injectionPoint == CustomPassInjectionPoint.BeforePreRefraction)
 				{
 					// Draw quad on current rt. This SEEMS to be needed to force unity to activate its rendertarget/depth target. Sadly.
 					cmd.DrawProcedural(Matrix4x4.identity, testMaterial, 0, MeshTopology.Quads, 4);
