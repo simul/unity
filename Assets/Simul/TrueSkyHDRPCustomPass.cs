@@ -75,7 +75,8 @@ namespace simul
 			//Don't draw to the scene view. This should never be removed!
 			if (camera.camera.cameraType == CameraType.SceneView)
 				return;
-
+			if(!camera.camera.CompareTag("trueSKY"))
+				return;
 			//Fill-in UnityViewStruct
 			PrepareMatrices(camera);
 

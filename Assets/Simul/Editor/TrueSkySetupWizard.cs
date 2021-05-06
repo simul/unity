@@ -368,6 +368,33 @@ namespace simul
 		{
 			TrueSkyCamera trueSkyCamera;
 
+			// Open tag manager
+			SerializedObject tagManager = new SerializedObject(AssetDatabase.LoadAllAssetsAtPath("ProjectSettings/TagManager.asset")[0]);
+			SerializedProperty tagsProp = tagManager.FindProperty("tags");
+
+			SerializedProperty layersProp = tagManager.FindProperty("layers");
+
+			// Adding a Tag
+			string ts_Tag = "trueSKY";
+
+			// First check if it is not already present
+			bool found = false;
+			for (int i = 0; i < tagsProp.arraySize; i++)
+			{
+				SerializedProperty t = tagsProp.GetArrayElementAtIndex(i);
+				if (t.stringValue.Equals(ts_Tag)) { found = true; break; }
+			}
+
+			// if not found, add it
+			if (!found)
+			{
+				tagsProp.InsertArrayElementAtIndex(0);
+				SerializedProperty n = tagsProp.GetArrayElementAtIndex(0);
+				n.stringValue = ts_Tag;
+			}
+			tagManager.ApplyModifiedProperties();
+
+
 			if (sequence == null)
 			{
 				// Build asset path and name (it has to be relative)
@@ -387,8 +414,9 @@ namespace simul
 				MainCam.gameObject.AddComponent<Camera>();
 				MainCam.tag = "MainCamera";
 				mainCamera = MainCam.GetComponent<Camera>();
+				mainCamera.tag = ts_Tag;
 			}
-			if (multipleCameras)    // if user has requested the script o be assigned to cameras
+			if (multipleCameras)    // if user has requested the script to be assigned to all cameras
 			{
 				Camera[] cams = new Camera[Camera.allCamerasCount];          // find all cameras
 				if (Camera.allCamerasCount >= 1)
@@ -398,7 +426,12 @@ namespace simul
 				{
 					trueSkyCamera = cams[i].gameObject.GetComponent<TrueSkyCamera>();
 					if (trueSkyCamera == null)
+					{
+#if !USING_HDRP
 						cams[i].gameObject.AddComponent<TrueSkyCamera>();
+#endif
+						cams[i].tag = ts_Tag;
+					}
 				}
 
 			}
