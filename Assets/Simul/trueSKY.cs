@@ -4372,7 +4372,9 @@ namespace simul
 					if (SystemInfo.graphicsDeviceType == GraphicsDeviceType.GameCoreXboxSeries 
 						|| SystemInfo.graphicsDeviceType == GraphicsDeviceType.GameCoreXboxOne)
 					{
+						StaticPushPath("ShaderBinaryPath", "");
 						StaticPushPath("ShaderBinaryPath", "D3D12");
+						StaticPushPath("ShaderPath", "");
 						StaticPushPath("ShaderPath", "D3D12");
                 }
 #endif
@@ -4398,7 +4400,9 @@ namespace simul
 					else if (SystemInfo.graphicsDeviceType == GraphicsDeviceType.GameCoreXboxSeries
 						|| SystemInfo.graphicsDeviceType == GraphicsDeviceType.GameCoreXboxOne)
 					{
+						StaticPushPath("ShaderBinaryPath", "");
 						StaticPushPath("ShaderBinaryPath", "D3D12");
+						StaticPushPath("ShaderPath", "");
 						StaticPushPath("ShaderPath", "D3D12");
 					}
 #endif
