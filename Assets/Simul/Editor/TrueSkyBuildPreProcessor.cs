@@ -36,25 +36,38 @@ namespace simul
 				DirectoryCopy.Copy(MediaSource, saDir, true, true, false, false);
 				Debug.Log("DirectoryCopy: " + MediaSource + "->" + saDir);
 			}
-#if UNITY_GAMECORE
-			if(target == BuildTarget.GameCoreScarlett)
+			if (target == BuildTarget.PS5)
 			{
-				string shaderbinSource = Environment.CurrentDirectory + s + "Assets/Plugins/GameCoreXboxSeries/shaderbin";
+				string shaderbinSource = trueSKY.GetShaderbinSourceDir("ps5");
 				string assetsPath = Environment.CurrentDirectory + s + "Assets";
-				string simulPath = assetsPath + s + "Simul";
-				string mediaPath = simulPath + s + "Media";
-
-				string stagingAreaPath;
-				string fixedPath = pathToBuiltProject;
-				int lastSep = fixedPath.LastIndexOf("/");
-				fixedPath = fixedPath.Remove(lastSep);
-				stagingAreaPath = fixedPath + "/Temp/StagingArea";
-
-				DirectoryCopy.Copy(shaderbinSource, stagingAreaPath, true, true, false, false);
-				Debug.Log("DirectoryCopy: " + shaderbinSource + "->" + stagingAreaPath);
-				DirectoryCopy.Copy(mediaPath, stagingAreaPath, true, true, false, false);
-				Debug.Log("DirectoryCopy: " + mediaPath + "->" + stagingAreaPath);
+				string simul = assetsPath + s + "Simul";
+				string MediaSource = simul + s + "Media";
+				string saDir = Application.streamingAssetsPath + s + "Simul" + s + "shaderbin" + s + "ps5";
+				DirectoryCopy.Copy(shaderbinSource, saDir, true, true, false, false);
+				Debug.Log("DirectoryCopy: " + shaderbinSource + "->" + saDir);
+				saDir = Application.streamingAssetsPath + s + "Simul" + s + "Media";
+				DirectoryCopy.Copy(MediaSource, saDir, true, true, false, false);
+				Debug.Log("DirectoryCopy: " + MediaSource + "->" + saDir);
 			}
+#if UNITY_GAMECORE
+			if(target == BuildTarget.GameCoreXboxSeries)
+            {
+				string shaderbinSource = Environment.CurrentDirectory + s + "Assets/Plugins/GameCoreXboxSeries/shaderbin";
+                string assetsPath = Environment.CurrentDirectory + s + "Assets";
+                string simulPath = assetsPath + s + "Simul";
+                string mediaPath = simulPath + s + "Media";
+
+                string stagingAreaPath;
+                string fixedPath = pathToBuiltProject;
+                int lastSep = fixedPath.LastIndexOf("/");
+                fixedPath = fixedPath.Remove(lastSep);
+                stagingAreaPath = fixedPath + "/Temp/StagingArea";
+
+                DirectoryCopy.Copy(shaderbinSource, stagingAreaPath, true, true, false, false);
+                Debug.Log("DirectoryCopy: " + shaderbinSource + "->" + stagingAreaPath);
+                DirectoryCopy.Copy(mediaPath, stagingAreaPath, true, true, false, false);
+                Debug.Log("DirectoryCopy: " + mediaPath + "->" + stagingAreaPath);
+            }
 			if (target == BuildTarget.GameCoreXboxOne)
 			{
 				string shaderbinSource = Environment.CurrentDirectory + s + "Assets/Plugins/GameCoreXboxOne/shaderbin";
