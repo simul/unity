@@ -452,7 +452,7 @@ namespace simul
 				{
 					TrueSkyMainPass.name = "trueSKY - Before Pre Refraction(Main Render)";
 					MainPassVolume = trueSky.gameObject.AddComponent<CustomPassVolume>();
-					MainPassVolume.injectionPoint = CustomPassInjectionPoint.BeforeTransparent;
+					MainPassVolume.injectionPoint = CustomPassInjectionPoint.BeforePreRefraction;
 					MainPassVolume.customPasses.Add(TrueSkyMainPass);
 
 					CustomPassVolume TranslucentVolume;
