@@ -20,6 +20,9 @@ namespace simul
 				{
 					_nativeTexturePtr = (System.IntPtr)0;
 				}
+				else if (renderTexture)
+					if(cachedRenderTexture.texelSize != renderTexture.texelSize)
+						_nativeTexturePtr = (System.IntPtr)0;
 				if (_nativeTexturePtr == (System.IntPtr)0 && renderTexture != null)
 				{
 					_nativeTexturePtr = renderTexture.GetNativeTexturePtr();
@@ -177,6 +180,7 @@ namespace simul
 #endif
                 RenderTexture rt = new RenderTexture(required_width, (int)camera.pixelHeight, 32, RenderTextureFormat.ARGBFloat);
 				depthTexture.renderTexture=rt;
+				depthTexture.renderTexture.name = "DepthTexture";
 				rt.Create();
 			}
 		}

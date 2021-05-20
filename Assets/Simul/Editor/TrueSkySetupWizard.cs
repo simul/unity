@@ -381,14 +381,42 @@ namespace simul
 				GameObject g = new GameObject("trueSky");
 				trueSky = g.AddComponent<trueSKY>();
 			}
+
+			// Open tag+Layer manager
+			SerializedObject tagLayerManager = new SerializedObject(AssetDatabase.LoadAllAssetsAtPath("ProjectSettings/TagManager.asset")[0]);
+			SerializedProperty layersProp = tagLayerManager.FindProperty("layers");
+
+			// Adding a Layer/Tag
+			string ts_layer = "trueSKY";
+			int ts_layer_index = trueSky.trueSKYLayerIndex;
+			// First check if it is not already present
+			bool found = false;
+
+			var newLayer = LayerMask.NameToLayer("trueSKY");
+			if (newLayer > -1)
+			{
+				found = true;
+			}
+
+			// if not found, add it
+			if (!found)
+			{
+				layersProp.InsertArrayElementAtIndex(ts_layer_index);
+				SerializedProperty n = layersProp.GetArrayElementAtIndex(ts_layer_index);
+				n.stringValue = ts_layer;
+			}
+			tagLayerManager.ApplyModifiedProperties();
+
+
 			if (createAMainCamera)      // if user has requested a main camera to be created (as none already)
 			{
 				GameObject MainCam = new GameObject("Main Camera");
 				MainCam.gameObject.AddComponent<Camera>();
 				MainCam.tag = "MainCamera";
 				mainCamera = MainCam.GetComponent<Camera>();
+				mainCamera.gameObject.layer = ts_layer_index;
 			}
-			if (multipleCameras)    // if user has requested the script o be assigned to cameras
+			if (multipleCameras)    // if user has requested the script to be assigned to all cameras
 			{
 				Camera[] cams = new Camera[Camera.allCamerasCount];          // find all cameras
 				if (Camera.allCamerasCount >= 1)
@@ -398,7 +426,12 @@ namespace simul
 				{
 					trueSkyCamera = cams[i].gameObject.GetComponent<TrueSkyCamera>();
 					if (trueSkyCamera == null)
+					{
+#if !USING_HDRP
 						cams[i].gameObject.AddComponent<TrueSkyCamera>();
+#endif
+						cams[i].gameObject.layer = ts_layer_index;
+					}
 				}
 
 			}
@@ -419,7 +452,7 @@ namespace simul
 				{
 					TrueSkyMainPass.name = "trueSKY - Before Pre Refraction(Main Render)";
 					MainPassVolume = trueSky.gameObject.AddComponent<CustomPassVolume>();
-					MainPassVolume.injectionPoint = CustomPassInjectionPoint.BeforeTransparent;
+					MainPassVolume.injectionPoint = CustomPassInjectionPoint.BeforePreRefraction;
 					MainPassVolume.customPasses.Add(TrueSkyMainPass);
 
 					CustomPassVolume TranslucentVolume;

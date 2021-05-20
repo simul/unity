@@ -361,7 +361,7 @@ namespace simul
 		public float CosmicBackgroundBrightness;       //!< Brightness multiplier for cosmic background.
 
 		public float CloudShadowRangeKm;
-		public float CloudShadowStrength;
+		public float CloudShadowResolution;
 
 		public int MaxPrecipitationParticles;
 		public float RainFallSpeedMS;
@@ -686,6 +686,7 @@ namespace simul
 		public int SimulVersionMinor = 0;
 		public int SimulVersionBuild = 0;
 
+
 		public int SimulVersion
         {
             get
@@ -709,21 +710,25 @@ namespace simul
 			if (!cloudShadowRT)
 			{
 				cloudShadowRT = new RenderTexture(256, 256, 16, RenderTextureFormat.ARGB32);
+				cloudShadowRT.name = "CloudShadowRT";
 				cloudShadowRT.Create();
 			}
 			if (!lossRT)
 			{
 				lossRT = new RenderTexture(256, 256, 16, RenderTextureFormat.ARGB32);
+				lossRT.name = "lossRT";
 				lossRT.Create();		
 			}
 			if (!inscatterRT)
 			{
 				inscatterRT = new RenderTexture(256, 256, 16, RenderTextureFormat.ARGB32);
+				inscatterRT.name = "inscatterRT";
 				inscatterRT.Create();			
 			}
 			if (!cloudVisibilityRT)
 			{
 				cloudVisibilityRT = new RenderTexture(256, 256, 16, RenderTextureFormat.ARGB32);
+				cloudVisibilityRT.name = "cloudVisibilityRT";
 				cloudVisibilityRT.Create();
 			}
 
@@ -1092,7 +1097,6 @@ namespace simul
 				ext.resourceState = 0;
 			}
 		}
-
 
 		public Aurorae aurorae = new Aurorae();
 
@@ -2331,7 +2335,9 @@ namespace simul
 		static public bool _showWaterTextures = false;
 		
 		bool _simulationTimeRain = false;
-	
+
+		public int trueSKYLayerIndex = 14;
+
 		int _MaxPrecipitationParticles = 100000;
 
 		[SerializeField]
@@ -3671,18 +3677,19 @@ namespace simul
 		}
 
 		[SerializeField]
-		float _cloudShadowStrength = 0.8f;
-		public float CloudShadowStrength
+		int _cloudShadowResolution = 256;
+		public int CloudShadowResolution
 		{
 			get
 			{
-				return _cloudShadowStrength;
+				return _cloudShadowResolution;
 			}
 			set
 			{
-				if (_cloudShadowStrength != value) try
+				if (_cloudShadowResolution != value) try
 					{
-						_cloudShadowStrength = value;
+						_cloudShadowResolution = value;
+						StaticSetRenderInt("cloudshadowresolution", _cloudShadowResolution);
 					}
 					catch (Exception exc)
 					{
@@ -3690,7 +3697,7 @@ namespace simul
 					}
 			}
 		}
-	
+
 		public RenderTextureHolder CloudShadowTexture
 		{
 			get
@@ -3935,7 +3942,7 @@ namespace simul
 				ERV.RainNearThreshold = _PrecipitationThresholdKm;
 				ERV.MaximumStarMagnitude = _maximumStarMagniute;
 
-				Marshal.StructureToPtr(ERV, ERVptr, true);
+				Marshal.StructureToPtr(ERV, ERVptr, !GetTrueSky().UsingIL2CPP);
 				StaticSetExternalRenderValues(ERVptr);
 				//StaticTriggerAction("Reset");
 			}
@@ -3956,7 +3963,7 @@ namespace simul
 			EDV.AutomaticRainbowPosition = Convert.ToUInt32(_AutomaticRainbowPosition);
 			EDV.CellNoiseWavelengthKm = _CellNoiseWavelengthKm;
 			EDV.CloudShadowRangeKm = _cloudShadowRangeKm;
-			EDV.CloudShadowStrength = _cloudShadowStrength;
+			//EDV.CloudShadowStrength = _cloudShadowStrength;
 			EDV.CosmicBackgroundBrightness = _backgroundBrightness;
 			EDV.CrepuscularRayStrength = _crepuscularRaysStrength;
 			EDV.DirectLight = _DirectLight;
@@ -4029,7 +4036,7 @@ namespace simul
 			EDV.AuroraIntensityMapSize = aurorae.AuroraIntensityMapSize;
 			EDV.AuroraTraceLength = aurorae.AuroraTraceLength;
 
-			Marshal.StructureToPtr(EDV, EDVptr, true);
+			Marshal.StructureToPtr(EDV, EDVptr, !GetTrueSky().UsingIL2CPP);
 			StaticSetExternalDynamicValues(EDVptr);
 		}
 		}
@@ -4120,7 +4127,7 @@ namespace simul
 						Moon.colour.z = moon.Colour.b;
 						Moon.albedo = (float)moon.Albedo;					
 						System.IntPtr Moonptr = Marshal.AllocHGlobal(Marshal.SizeOf(new ExternalMoon()));
-						Marshal.StructureToPtr(Moon, Moonptr, false); // TODO
+						Marshal.StructureToPtr(Moon, Moonptr, !GetTrueSky().UsingIL2CPP); 
 						StaticSetMoon(_moons.IndexOf(moon) + 1, Moonptr);
 					}
 					else
@@ -4271,6 +4278,25 @@ namespace simul
 			return pos;
 		}
 
+
+		public void setCloudShadowCentre(Vector3 pos)
+		{
+			if (!_initialized)
+				Init();
+
+			try
+			{
+				Vector3 position = UnityToTrueSkyPosition(pos);
+				StaticSetRenderFloat("cloudshadoworigin.X", position.x);
+				StaticSetRenderFloat("cloudshadoworigin.Y", position.y);
+				StaticSetRenderFloat("cloudshadoworigin.z", position.z);
+			}
+			catch (Exception exc)
+			{
+				UnityEngine.Debug.Log(exc.ToString());
+			}
+		}
+
 		/// <summary>
 		/// Returns the rotation of the sun as a Quaternion, for Directional Light objects.
 		/// </summary>
@@ -4388,7 +4414,9 @@ namespace simul
 					if (SystemInfo.graphicsDeviceType == GraphicsDeviceType.GameCoreXboxSeries 
 						|| SystemInfo.graphicsDeviceType == GraphicsDeviceType.GameCoreXboxOne)
 					{
+						StaticPushPath("ShaderBinaryPath", "");
 						StaticPushPath("ShaderBinaryPath", "D3D12");
+						StaticPushPath("ShaderPath", "");
 						StaticPushPath("ShaderPath", "D3D12");
                 }
 #endif
@@ -4414,7 +4442,9 @@ namespace simul
 					else if (SystemInfo.graphicsDeviceType == GraphicsDeviceType.GameCoreXboxSeries
 						|| SystemInfo.graphicsDeviceType == GraphicsDeviceType.GameCoreXboxOne)
 					{
+						StaticPushPath("ShaderBinaryPath", "");
 						StaticPushPath("ShaderBinaryPath", "D3D12");
+						StaticPushPath("ShaderPath", "");
 						StaticPushPath("ShaderPath", "D3D12");
 					}
 #endif
