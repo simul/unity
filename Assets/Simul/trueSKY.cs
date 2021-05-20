@@ -1955,7 +1955,27 @@ namespace simul
 					}
 			}
 		}
-
+		[SerializeField]
+		int _interpolationSubdivisions = 8;
+		public int InterpolationSubdivisions
+		{
+			get
+			{
+				return _interpolationSubdivisions;
+			}
+			set
+			{
+				if (_interpolationSubdivisions != value) try
+					{
+						_interpolationSubdivisions = Math.Max(1,Math.Min(value,64));
+						StaticSetRenderInt("interpolationsubdivisions", _interpolationSubdivisions);
+					}
+					catch (Exception exc)
+					{
+						UnityEngine.Debug.Log(exc.ToString());
+					}
+			}
+		}
 		[SerializeField]
 		bool _instantUpdate = true;
 		public bool InstantUpdate
