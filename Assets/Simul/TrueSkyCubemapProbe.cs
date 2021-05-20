@@ -123,7 +123,7 @@ namespace simul
             if (dummyCam == null)
             {
                 GameObject aDummyCamObject  = new GameObject("CubemapCamera1", typeof(Camera));
-                aDummyCamObject.tag         = "trueSKY";
+                aDummyCamObject.gameObject.layer = trueSKY.GetTrueSky().trueSKYLayerIndex;
                 aDummyCamObject.hideFlags   = HideFlags.HideAndDontSave;
                 dummyCam                    = aDummyCamObject.GetComponent<Camera>();
                 dummyCam.enabled            = false;

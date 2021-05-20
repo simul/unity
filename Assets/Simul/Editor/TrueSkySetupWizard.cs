@@ -368,33 +368,6 @@ namespace simul
 		{
 			TrueSkyCamera trueSkyCamera;
 
-			// Open tag manager
-			SerializedObject tagManager = new SerializedObject(AssetDatabase.LoadAllAssetsAtPath("ProjectSettings/TagManager.asset")[0]);
-			SerializedProperty tagsProp = tagManager.FindProperty("tags");
-
-			SerializedProperty layersProp = tagManager.FindProperty("layers");
-
-			// Adding a Tag
-			string ts_Tag = "trueSKY";
-
-			// First check if it is not already present
-			bool found = false;
-			for (int i = 0; i < tagsProp.arraySize; i++)
-			{
-				SerializedProperty t = tagsProp.GetArrayElementAtIndex(i);
-				if (t.stringValue.Equals(ts_Tag)) { found = true; break; }
-			}
-
-			// if not found, add it
-			if (!found)
-			{
-				tagsProp.InsertArrayElementAtIndex(0);
-				SerializedProperty n = tagsProp.GetArrayElementAtIndex(0);
-				n.stringValue = ts_Tag;
-			}
-			tagManager.ApplyModifiedProperties();
-
-
 			if (sequence == null)
 			{
 				// Build asset path and name (it has to be relative)
@@ -408,13 +381,40 @@ namespace simul
 				GameObject g = new GameObject("trueSky");
 				trueSky = g.AddComponent<trueSKY>();
 			}
+
+			// Open tag+Layer manager
+			SerializedObject tagLayerManager = new SerializedObject(AssetDatabase.LoadAllAssetsAtPath("ProjectSettings/TagManager.asset")[0]);
+			SerializedProperty layersProp = tagLayerManager.FindProperty("layers");
+
+			// Adding a Layer/Tag
+			string ts_layer = "trueSKY";
+			int ts_layer_index = trueSky.trueSKYLayerIndex;
+			// First check if it is not already present
+			bool found = false;
+
+			var newLayer = LayerMask.NameToLayer("trueSKY");
+			if (newLayer > -1)
+			{
+				found = true;
+			}
+
+			// if not found, add it
+			if (!found)
+			{
+				layersProp.InsertArrayElementAtIndex(ts_layer_index);
+				SerializedProperty n = layersProp.GetArrayElementAtIndex(ts_layer_index);
+				n.stringValue = ts_layer;
+			}
+			tagLayerManager.ApplyModifiedProperties();
+
+
 			if (createAMainCamera)      // if user has requested a main camera to be created (as none already)
 			{
 				GameObject MainCam = new GameObject("Main Camera");
 				MainCam.gameObject.AddComponent<Camera>();
 				MainCam.tag = "MainCamera";
 				mainCamera = MainCam.GetComponent<Camera>();
-				mainCamera.tag = ts_Tag;
+				mainCamera.gameObject.layer = ts_layer_index;
 			}
 			if (multipleCameras)    // if user has requested the script to be assigned to all cameras
 			{
@@ -430,7 +430,7 @@ namespace simul
 #if !USING_HDRP
 						cams[i].gameObject.AddComponent<TrueSkyCamera>();
 #endif
-						cams[i].tag = ts_Tag;
+						cams[i].gameObject.layer = ts_layer_index;
 					}
 				}
 
@@ -452,7 +452,7 @@ namespace simul
 				{
 					TrueSkyMainPass.name = "trueSKY - Before Pre Refraction(Main Render)";
 					MainPassVolume = trueSky.gameObject.AddComponent<CustomPassVolume>();
-					MainPassVolume.injectionPoint = CustomPassInjectionPoint.BeforeTransparent;
+					MainPassVolume.injectionPoint = CustomPassInjectionPoint.BeforePreRefraction;
 					MainPassVolume.customPasses.Add(TrueSkyMainPass);
 
 					CustomPassVolume TranslucentVolume;

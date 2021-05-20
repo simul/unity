@@ -65,7 +65,7 @@ namespace simul
 			//Don't draw to the scene view. This should never be removed!
 			if (camera.camera.cameraType == CameraType.SceneView)
 				return;
-			if(!camera.camera.CompareTag("trueSKY"))
+			if(camera.camera.gameObject.layer != trueSKY.GetTrueSky().trueSKYLayerIndex)
 				return;
 
 			//Fill-in UnityViewStruct
@@ -385,6 +385,10 @@ namespace simul
 			float metresPerUnit = ts.MetresPerUnit;
 
 			m = m.transpose;
+			if ((renderStyle & RenderStyle.UNITY_STYLE_DEFERRED) == RenderStyle.UNITY_STYLE_DEFERRED && flippedView)
+            {
+                m = m * Matrix4x4.Scale(new Vector3(1, -1, 1));
+            }
 
 			proj[offset + 00] = m.m00;
 			proj[offset + 01] = m.m01;
