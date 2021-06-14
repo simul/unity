@@ -28,8 +28,8 @@ namespace simul
 				private const string renderer_dll = @"TrueSkyPluginRender_MT";
 			#else
 				private const string renderer_dll = @"TrueSkyPluginRender_MT";
+			#endif
 		#endif
-#endif
 
 		[UnmanagedFunctionPointer(CallingConvention.StdCall)]
 		public delegate void TDebugOutputCallback(string str);
