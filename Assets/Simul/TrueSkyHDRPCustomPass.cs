@@ -61,7 +61,7 @@ namespace simul
             InternalExecute(renderContext, cmd, hdCamera, cullingResult, colour, depth);
         }
 #endif
-        
+
         private void InternalExecute(ScriptableRenderContext src, CommandBuffer cmd, HDCamera camera, CullingResults cullingResult, RTHandle colour, RTHandle depth)
         {
 			bool mainCamera = camera.camera.name.Equals("Main Camera");
@@ -70,6 +70,8 @@ namespace simul
             //Don't draw to the scene view. This should never be removed!
             if (camera.camera.cameraType == CameraType.SceneView)
                 return;
+			if(!camera.camera.CompareTag("trueSKY"))
+				return;
 
 			if (camera.camera.gameObject.layer != trueSKY.GetTrueSky().trueSKYLayerIndex && !mainCamera)
 				return;
@@ -108,14 +110,30 @@ namespace simul
 					cmd.DrawProcedural(Matrix4x4.identity, testMaterial, 0, MeshTopology.Quads, 4);
 #endif
                 if (injectionPoint == CustomPassInjectionPoint.BeforePreRefraction)
+				{
+#if UNITY_PS5
+					// Draw quad on current rt. This SEEMS to be needed to force unity to activate its rendertarget/depth target. Sadly.
+					cmd.DrawProcedural(Matrix4x4.identity, testMaterial, 0, MeshTopology.Quads, 4);
+#endif
                     cmd.IssuePluginEventAndData(UnityGetRenderEventFuncWithData(), GetTRUESKY_EVENT_ID() + cbuf_view_id, unityViewStructPtr);
+				}
                 else if (injectionPoint == CustomPassInjectionPoint.BeforePostProcess)
+				{
+#if UNITY_PS5
+					cmd.DrawProcedural(Matrix4x4.identity, testMaterial, 0, MeshTopology.Quads, 4);
+#endif
                     cmd.IssuePluginEventAndData(UnityGetPostTranslucentFuncWithData(), GetTRUESKY_EVENT_ID() + cbuf_view_id, unityViewStructPtr);
+				}
                 else if (injectionPoint == CustomPassInjectionPoint.AfterPostProcess)
+				{
+#if UNITY_PS5
+					cmd.DrawProcedural(Matrix4x4.identity, testMaterial, 0, MeshTopology.Quads, 4);
+#endif
                     cmd.IssuePluginEventAndData(UnityGetOverlayFuncWithData(), GetTRUESKY_EVENT_ID() + cbuf_view_id, unityViewStructPtr);
+				}
                 else
                     return;
-            } 
+			}
 			if(cubemapProbe) //Cubemap view render
             {
 				if (injectionPoint == CustomPassInjectionPoint.BeforePreRefraction)
@@ -321,7 +339,7 @@ namespace simul
                     unityRenderOptions = unityRenderOptions | UnityRenderOptions.NO_SEPARATION;
 
                 
-              
+
 
                 unityViewStruct.view_id = view_id;
                 unityViewStruct.framenumber = Time.renderedFrameCount;
@@ -347,10 +365,10 @@ namespace simul
 				ts.LossTexture.renderTexture = ts.lossRT;
 				ts.CloudVisibilityTexture.renderTexture = ts.cloudVisibilityRT;
 				ts.CloudShadowTexture.renderTexture = ts.cloudShadowRT;
-	
+
 				StaticSetRenderTexture("inscatter2D", ts.InscatterTexture.GetNative());
 				StaticSetRenderTexture("Loss2D", ts.LossTexture.GetNative());
-				StaticSetRenderTexture("CloudVisibilityRT", ts.CloudVisibilityTexture.GetNative());
+				StaticSetRenderTexture("CloudVisibilityRT", ts.CloudVisibilityTexture.GetNative()); 
 				StaticSetRenderTexture("CloudShadowRT", ts.CloudShadowTexture.GetNative());
 
 				/*_inscatterRT.renderTexture = inscatterRT;
@@ -449,6 +467,10 @@ namespace simul
             float metresPerUnit = ts.MetresPerUnit;
 
             m = m.transpose;
+			if ((renderStyle & RenderStyle.UNITY_STYLE_DEFERRED) == RenderStyle.UNITY_STYLE_DEFERRED && flippedView)
+            {
+                m = m * Matrix4x4.Scale(new Vector3(1, -1, 1));
+            }
 
             proj[offset + 00] = m.m00;
             proj[offset + 01] = m.m01;

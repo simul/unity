@@ -709,21 +709,25 @@ namespace simul
 			if (!cloudShadowRT)
 			{
 				cloudShadowRT = new RenderTexture(256, 256, 16, RenderTextureFormat.ARGB32);
+				cloudShadowRT.name = "CloudShadowRT";
 				cloudShadowRT.Create();
 			}
 			if (!lossRT)
 			{
 				lossRT = new RenderTexture(256, 256, 16, RenderTextureFormat.ARGB32);
+				lossRT.name = "lossRT";
 				lossRT.Create();		
 			}
 			if (!inscatterRT)
 			{
 				inscatterRT = new RenderTexture(256, 256, 16, RenderTextureFormat.ARGB32);
+				inscatterRT.name = "inscatterRT";
 				inscatterRT.Create();			
 			}
 			if (!cloudVisibilityRT)
 			{
 				cloudVisibilityRT = new RenderTexture(256, 256, 16, RenderTextureFormat.ARGB32);
+				cloudVisibilityRT.name = "cloudVisibilityRT";
 				cloudVisibilityRT.Create();
 			}
 
@@ -879,9 +883,9 @@ namespace simul
 			StaticRenderDeleteKeyframe(uid);
 		}
 
-		public uint GetSkyKeyframeByIndex(int index)
+		public uint GetSkyKeyframeByIndex(int layer, int index)
 		{
-			return StaticRenderGetKeyframeByIndex(0, index);
+			return StaticRenderGetKeyframeByIndex(layer, index);
 		}
 
 		public uint GetCloudKeyframeByIndex(int layer, int index)
@@ -890,7 +894,12 @@ namespace simul
 		}
 		public uint GetCloudKeyframerByIndex(int index)
 		{
+			if (SimulVersion < MakeSimulVersion(4, 2))
+			{
 			return GetCloudLayerUIDByIndex(index);
+		}
+			return 0;
+
 		}
 
 		public uint GetCloud2DKeyframeByIndex(int index)
@@ -2300,8 +2309,8 @@ namespace simul
 		RenderTextureHolder _lossRT = new RenderTextureHolder();
 		RenderTextureHolder _cloudVisibilityRT = new RenderTextureHolder();
 		
-		static public bool _showCloudCrossSections = false;		
-		static public bool _showRainTextures = false;		
+		static public bool _showCloudCrossSections = false;
+		static public bool _showRainTextures = false;
 		static public bool _showAuroraeTextures = false;
 		static public bool _showWaterTextures = false;
 		
@@ -3665,7 +3674,7 @@ namespace simul
 					}
 			}
 		}
-
+	
 		public RenderTextureHolder CloudShadowTexture
 		{
 			get
@@ -4078,7 +4087,7 @@ namespace simul
 				{
 					UpdateExternalDynamic();
 
-					foreach (var moon in _moons)
+				foreach(var moon in _moons)
 					{
 						if (moon.Render && !moon.DestroyMoon)
 						{
@@ -4094,15 +4103,15 @@ namespace simul
 							Moon.colour.x = moon.Colour.r;
 							Moon.colour.y = moon.Colour.g;
 							Moon.colour.z = moon.Colour.b;
-							Moon.albedo = (float)moon.Albedo;
+						Moon.albedo = (float)moon.Albedo;					
 							System.IntPtr Moonptr = Marshal.AllocHGlobal(Marshal.SizeOf(new ExternalMoon()));
 						Marshal.StructureToPtr(Moon, Moonptr, !GetTrueSky().UsingIL2CPP); 
 							StaticSetMoon(_moons.IndexOf(moon) + 1, Moonptr);
 						}
 						else
-						{
+					{ 
 							StaticSetMoon(_moons.IndexOf(moon) + 1, (System.IntPtr)null);
-							if (moon.DestroyMoon)
+						if(moon.DestroyMoon)
 								_moons.Remove(moon);
 						}
 					}
@@ -4138,7 +4147,7 @@ namespace simul
 				if (TimeProgressionScale != 0)
 					TrueSKYTime += (((TimeProgressionScale / (24.0F * 60.0F * 60.0F)) * TimeUnits) * Time.deltaTime);
 
-				StaticSetRenderFloat("Time", _trueSKYTime / TimeUnits);
+			StaticSetRenderFloat("Time", _trueSKYTime/TimeUnits);
 			}
 		}
 		public Vector3 getSunColour(Vector3 pos,int id=0)
@@ -4361,7 +4370,7 @@ namespace simul
 #endif
                     StaticPushPath("TexturePath", Application.dataPath + @"/Simul/Media/Textures");
 #if UNITY_GAMECORE
-					if (SystemInfo.graphicsDeviceType == GraphicsDeviceType.GameCoreScarlett 
+					if (SystemInfo.graphicsDeviceType == GraphicsDeviceType.GameCoreXboxSeries 
 						|| SystemInfo.graphicsDeviceType == GraphicsDeviceType.GameCoreXboxOne)
 					{
 						StaticPushPath("ShaderBinaryPath", "");
@@ -4389,7 +4398,7 @@ namespace simul
 						StaticPushPath("ShaderPath", Application.dataPath + @"/Simul/shaderbin/x86_64/vulkan");
 					}
 #if UNITY_GAMECORE
-					else if (SystemInfo.graphicsDeviceType == GraphicsDeviceType.GameCoreScarlett
+					else if (SystemInfo.graphicsDeviceType == GraphicsDeviceType.GameCoreXboxSeries
 						|| SystemInfo.graphicsDeviceType == GraphicsDeviceType.GameCoreXboxOne)
 					{
 						StaticPushPath("ShaderBinaryPath", "");

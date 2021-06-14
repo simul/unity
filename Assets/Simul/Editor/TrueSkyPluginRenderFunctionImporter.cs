@@ -15,20 +15,22 @@ namespace simul
 			#else
 				private const string renderer_dll = @"TrueSkyPluginRender_MT";
 			#endif
-			
-		#else
-			#if UNITY_PS4
+
+#else
+#if UNITY_PS4
 				private const string renderer_dll = @"TrueSkyPluginRender";
-			#elif UNITY_XBOXONE || UNITY_GAMECORE
+#elif UNITY_PS5
+				private const string renderer_dll = @"TrueSkyPluginRender";
+#elif UNITY_XBOXONE || UNITY_GAMECORE
 				private const string renderer_dll = @"TrueSkyPluginRender_MD";
-			#elif UNITY_IPHONE || UNITY_SWITCH
+#elif UNITY_IPHONE || UNITY_SWITCH
 				private const string renderer_dll = @"__Internal";
-			#elif _WIN32
+#elif _WIN32
 				private const string renderer_dll = @"TrueSkyPluginRender_MT";
-			#else
+#else
 				private const string renderer_dll = @"TrueSkyPluginRender_MT";
-			#endif
-		#endif
+#endif
+#endif
 
 		[UnmanagedFunctionPointer(CallingConvention.StdCall)]
 		public delegate void TDebugOutputCallback(string str);
@@ -183,7 +185,7 @@ namespace simul
 		[DllImport(renderer_dll)] public static extern IntPtr UnityGetExecuteDeferredFunc();
 		//[DllImport(renderer_dll)] public static extern void UnitySetGraphicsDevice(IntPtr device, int deviceType, int eventType);
 		//[DllImport(renderer_dll)] public static extern void UnitySetRenderFrameValues(int view_id, float[] viewMatrices4x4, float[] projMatrices4x4, float[] overlayProjMatrix4x4, IntPtr fullResDepthTexture2D, int4[] depthViewports, Viewport[] targetViewports, RenderStyle renderStyle, float exposure, float gamma, int framenumber, UnityRenderOptions unityRenderOptions, IntPtr colourTexture);
-
+		
 #if !UNITY_EDITOR && UNITY_SWITCH
 		[DllImport(renderer_dll)] public static extern void RegisterPlugin();
 #endif

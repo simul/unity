@@ -232,7 +232,7 @@ namespace simul
                 cubemapRenderTexture            = new RenderTexture(textureSize, textureSize, 24, rtf, RenderTextureReadWrite.Linear);
                 renderTextureFormat             = cubemapRenderTexture.format;
                 cubemapRenderTexture.dimension  = UnityEngine.Rendering.TextureDimension.Cube;
-				cubemapRenderTexture.name       = "trueSKY CubemapRenderTexture";
+                cubemapRenderTexture.name       = "trueSKY CubemapRenderTexture";
                 cubemapRenderTexture.Create();
                 _initialized = false;
             }

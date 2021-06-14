@@ -14,23 +14,23 @@ namespace simul
 				private const string renderer_dll = @"TrueSkyPluginRender_MT";
 			#else
 				private const string renderer_dll = @"TrueSkyPluginRender_MT";
-			#endif
-			
-		#else
-			#if UNITY_PS4
+#endif
+
+#else
+#if UNITY_PS4
 				private const string renderer_dll = @"TrueSkyPluginRender";
 			#elif UNITY_PS5
 				private const string renderer_dll = @"TrueSkyPluginRender";
 			#elif UNITY_XBOXONE || UNITY_GAMECORE
 				private const string renderer_dll = @"TrueSkyPluginRender_MD";
-			#elif UNITY_IPHONE || UNITY_SWITCH
+#elif UNITY_IPHONE || UNITY_SWITCH
 				private const string renderer_dll = @"__Internal";
-			#elif _WIN32
+#elif _WIN32
 				private const string renderer_dll = @"TrueSkyPluginRender_MT";
-			#else
+#else
 				private const string renderer_dll = @"TrueSkyPluginRender_MT";
-			#endif
-		#endif
+#endif
+#endif
 
 		[UnmanagedFunctionPointer(CallingConvention.StdCall)]
 		public delegate void TDebugOutputCallback(string str);

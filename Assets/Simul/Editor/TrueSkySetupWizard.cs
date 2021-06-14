@@ -368,6 +368,33 @@ namespace simul
 		{
 			TrueSkyCamera trueSkyCamera;
 
+			// Open tag manager
+			SerializedObject tagManager = new SerializedObject(AssetDatabase.LoadAllAssetsAtPath("ProjectSettings/TagManager.asset")[0]);
+			SerializedProperty tagsProp = tagManager.FindProperty("tags");
+
+			SerializedProperty layersProp = tagManager.FindProperty("layers");
+
+			// Adding a Tag
+			string ts_Tag = "trueSKY";
+
+			// First check if it is not already present
+			bool found = false;
+			for (int i = 0; i < tagsProp.arraySize; i++)
+			{
+				SerializedProperty t = tagsProp.GetArrayElementAtIndex(i);
+				if (t.stringValue.Equals(ts_Tag)) { found = true; break; }
+			}
+
+			// if not found, add it
+			if (!found)
+			{
+				tagsProp.InsertArrayElementAtIndex(0);
+				SerializedProperty n = tagsProp.GetArrayElementAtIndex(0);
+				n.stringValue = ts_Tag;
+			}
+			tagManager.ApplyModifiedProperties();
+
+
 			if (sequence == null)
 			{
 				// Build asset path and name (it has to be relative)
@@ -387,8 +414,9 @@ namespace simul
 				MainCam.gameObject.AddComponent<Camera>();
 				MainCam.tag = "MainCamera";
 				mainCamera = MainCam.GetComponent<Camera>();
+				mainCamera.tag = ts_Tag;
 			}
-			if (multipleCameras)    // if user has requested the script o be assigned to cameras
+			if (multipleCameras)    // if user has requested the script to be assigned to all cameras
 			{
 				Camera[] cams = new Camera[Camera.allCamerasCount];          // find all cameras
 				if (Camera.allCamerasCount >= 1)
@@ -398,7 +426,12 @@ namespace simul
 				{
 					trueSkyCamera = cams[i].gameObject.GetComponent<TrueSkyCamera>();
 					if (trueSkyCamera == null)
+					{
+#if !USING_HDRP
 						cams[i].gameObject.AddComponent<TrueSkyCamera>();
+#endif
+						cams[i].tag = ts_Tag;
+					}
 				}
 
 			}
@@ -412,21 +445,21 @@ namespace simul
 			else
 			{
 #if USING_HDRP
-				simul.TrueSkyHDRPCustomPass trueSKYPreRefraction = new simul.TrueSkyHDRPCustomPass();
-				simul.TrueSkyHDRPCustomPass trueSKYPrePostProcess = new simul.TrueSkyHDRPCustomPass();
-				CustomPassVolume trueSKYPassBeforePreRefraction = trueSky.gameObject.GetComponent<CustomPassVolume>();
-				if (trueSKYPassBeforePreRefraction == null)
+				simul.TrueSkyHDRPCustomPass TrueSkyMainPass = new simul.TrueSkyHDRPCustomPass();
+				simul.TrueSkyHDRPCustomPass TrueSkyTranslucentPass = new simul.TrueSkyHDRPCustomPass();
+				CustomPassVolume MainPassVolume = trueSky.gameObject.GetComponent<CustomPassVolume>();
+				if (MainPassVolume == null)
 				{
-					trueSKYPreRefraction.name = "trueSKY - Before Pre Refraction(Main Render)";
-					trueSKYPassBeforePreRefraction = trueSky.gameObject.AddComponent<CustomPassVolume>();
-					trueSKYPassBeforePreRefraction.injectionPoint = CustomPassInjectionPoint.BeforePreRefraction;
-					trueSKYPassBeforePreRefraction.customPasses.Add(trueSKYPreRefraction);
+					TrueSkyMainPass.name = "trueSKY - Before Pre Refraction(Main Render)";
+					MainPassVolume = trueSky.gameObject.AddComponent<CustomPassVolume>();
+					MainPassVolume.injectionPoint = CustomPassInjectionPoint.BeforePreRefraction;
+					MainPassVolume.customPasses.Add(TrueSkyMainPass);
 
-					CustomPassVolume trueSKYPassBeforePostProcess;
-					trueSKYPrePostProcess.name = "trueSKY - Before Post Process(Translucent Effects)";
-					trueSKYPassBeforePostProcess = trueSky.gameObject.AddComponent<CustomPassVolume>();
-					trueSKYPassBeforePostProcess.injectionPoint = CustomPassInjectionPoint.BeforePostProcess;
-					trueSKYPassBeforePostProcess.customPasses.Add(trueSKYPrePostProcess);
+					CustomPassVolume TranslucentVolume;
+					TrueSkyTranslucentPass.name = "trueSKY - Before Post Process(Translucent Effects)";
+					TranslucentVolume = trueSky.gameObject.AddComponent<CustomPassVolume>();
+					TranslucentVolume.injectionPoint = CustomPassInjectionPoint.BeforePostProcess;
+					TranslucentVolume.customPasses.Add(TrueSkyTranslucentPass);
 				}
 				if (UnityEngine.Rendering.GraphicsSettings.allConfiguredRenderPipelines.Length > 0)
 				{
@@ -483,10 +516,12 @@ namespace simul
 					mainCamera.backgroundColor = Color.black;
 				}
 			}
-			// Set the Near and Far clipping planes on the main camera.
-			mainCamera.nearClipPlane = 0.1f;
-			mainCamera.farClipPlane = 300000.0f;
-
+			if(mainCamera!=null)
+			{ 
+				// Set the Near and Far clipping planes on the main camera.
+				mainCamera.nearClipPlane = 0.1f;
+				mainCamera.farClipPlane = 300000.0f;
+			}
 			// Now the sequence must be assigned to the trueSKY object.
 			trueSky.sequence = sequence;
 			trueSky.TrueSKYTime = 12.0F;
