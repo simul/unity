@@ -95,6 +95,7 @@ namespace simul
 			public UnityRenderOptions unityRenderOptions;
 			public System.IntPtr colourTexture;
 			public System.IntPtr externalDepthTexture;
+			public int colourTextureArrayIndex; //For Texture2DArray or TextureCube, this the 'layer' index for trueSKY to render to. If the value is -1, trueSKY will ignore this value.
 		}
 
         protected bool UsingIL2CPP()

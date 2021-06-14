@@ -12,25 +12,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dcdfbea2e7338ed4ba21f9f27c8815df, type: 3}
   m_Name: TestLevelHDRP_sq
   m_EditorClassIdentifier: 
-  SequenceAsText: "\t\"cloudKeyframer 26\":\n\t{\n\t\t\"CloudClass\": \"0\"\n\t\t\"DayLoop\":
+  SequenceAsText: "\t\"cloudKeyframer 2\":\n\t{\n\t\t\"CloudClass\": \"0\"\n\t\t\"DayLoop\":
     \"true\"\n\t\t\"Enabled\": \"true\"\n\t\t\"ExplicitOffsets\": \"false\"\n\t\t\"GridHeight\":
     \"16\"\n\t\t\"GridWidth\": \"128\"\n\t\t\"LoopRange\": \"               1\"\n\t\t\"LoopStart\":
-    \"               0\"\n\t\t\"MapTexture\": \"\"\n\t\t\"Name\": \"Layer 26\"\n\t\t\"NoisePeriod\":
+    \"               0\"\n\t\t\"MapTexture\": \"\"\n\t\t\"Name\": \"Layer 2\"\n\t\t\"NoisePeriod\":
     \"               4\"\n\t\t\"NoisePhase\": \"               0\"\n\t\t\"NoiseResolution\":
-    \"8\"\n\t\t\"OverrideWind\": \"true\"\n\t\t\"PrecipitationThresholdKm\": \"0.2000000029802322\"\n\t\t\"Viscosity\":
+    \"8\"\n\t\t\"OverrideWind\": \"false\"\n\t\t\"PrecipitationThresholdKm\": \"0.2000000029802322\"\n\t\t\"Viscosity\":
     \"               0\"\n\t\t\"VorticityConfinement\": \"               0\"\n\t\t\"Wrap\":
-    \"true\"\n\t\t\"keyframes\":\n\t\t[\n\t\t{\n\t\t\t\"EdgeWorleyNoise\": \"0.300000011920929\"\n\t\t\t\"WorleyNoise\":
-    \"           0.125\"\n\t\t\t\"WorleyScale\": \"               3\"\n\t\t\t\"baseNoiseFactor\":
-    \"            0.75\"\n\t\t\t\"churn\": \"               1\"\n\t\t\t\"cloud_base_km\":
-    \"               3\"\n\t\t\t\"cloud_height_km\": \"               8\"\n\t\t\t\"cloud_width_km\":
-    \"             120\"\n\t\t\t\"cloudiness\": \"0.6000000238418579\"\n\t\t\t\"diffusivity\":
-    \"0.449999988079071\"\n\t\t\t\"distributionBaseLayer\": \"0.1299999952316284\"\n\t\t\t\"distributionTransition\":
-    \"0.2000000029802322\"\n\t\t\t\"edgeSharpness\": \"0.05999999865889549\"\n\t\t\t\"fractal_amplitude\":
-    \"               2\"\n\t\t\t\"maxDensityGm3\": \"             0.5\"\n\t\t\t\"octaves\":
-    \"5\"\n\t\t\t\"offsetKmx\": \"               0\"\n\t\t\t\"offsetKmy\": \"              
-    0\"\n\t\t\t\"origin\": \"0.7071067966408575,               0,               0,0.7071067657322372\"\n\t\t\t\"persistence\":
-    \"0.1000000014901161\"\n\t\t\t\"precipitation\": \"               0\"\n\t\t\t\"precipitationRegion.base_radial_km\":
-    \"            6378\"\n\t\t\t\"precipitationRegion.edge\": \"0.1000000014901161\"\n\t\t\t\"precipitationRegion.lockToClouds\":
+    \"true\"\n\t\t\"keyframes\":\n\t\t[\n\t\t{\n\t\t\t\"EdgeWorleyNoise\": \"              
+    0\"\n\t\t\t\"WorleyNoise\": \"               0\"\n\t\t\t\"WorleyScale\": \"              
+    9\"\n\t\t\t\"baseNoiseFactor\": \"             0.5\"\n\t\t\t\"churn\": \"              
+    1\"\n\t\t\t\"cloud_base_km\": \"               3\"\n\t\t\t\"cloud_height_km\":
+    \"               5\"\n\t\t\t\"cloud_width_km\": \"              50\"\n\t\t\t\"cloudiness\":
+    \"             0.5\"\n\t\t\t\"diffusivity\": \"0.009999999776482582\"\n\t\t\t\"distributionBaseLayer\":
+    \"0.239999994635582\"\n\t\t\t\"distributionTransition\": \"0.2000000029802322\"\n\t\t\t\"edgeSharpness\":
+    \"0.1000000014901161\"\n\t\t\t\"fractal_amplitude\": \"2.400000095367432\"\n\t\t\t\"maxDensityGm3\":
+    \"             0.5\"\n\t\t\t\"octaves\": \"3\"\n\t\t\t\"offsetKmx\": \"              
+    0\"\n\t\t\t\"offsetKmy\": \"               0\"\n\t\t\t\"origin\": \"0.7071067966408575,              
+    0,               0,0.7071067657322372\"\n\t\t\t\"persistence\": \"0.550000011920929\"\n\t\t\t\"precipitation\":
+    \"               0\"\n\t\t\t\"precipitationRegion.base_radial_km\": \"           
+    6378\"\n\t\t\t\"precipitationRegion.edge\": \"0.1000000014901161\"\n\t\t\t\"precipitationRegion.lockToClouds\":
     \"true\"\n\t\t\t\"precipitationRegion.rainCentreS\": \"               1\"\n\t\t\t\"precipitationRegion.rainCentreX\":
     \"               0\"\n\t\t\t\"precipitationRegion.rainCentreY\": \"              
     0\"\n\t\t\t\"precipitationRegion.rainCentreZ\": \"               0\"\n\t\t\t\"precipitationRegion.rainEffectStrength\":
@@ -38,8 +39,8 @@ MonoBehaviour:
     50\"\n\t\t\t\"precipitationRegion.regional\": \"false\"\n\t\t\t\"precipitation_base_km\":
     \"               0\"\n\t\t\t\"rain_to_snow\": \"               0\"\n\t\t\t\"scalekm\":
     \"             200,             200,              10\"\n\t\t\t\"simulation\":
-    \"               0\"\n\t\t\t\"time\": \"0.5180412530899048\"\n\t\t\t\"uid\":
-    \"21\"\n\t\t\t\"upperDensity\": \"0.8500000238418579\"\n\t\t\t\"volumeStates\":\n\t\t\t[\n\t\t\t]\n\t\t}\n\t\t]\n\t\t\"storms\":\n\t\t[\n\t\t]\n\t\t\"volumes\":\n\t\t[\n\t\t]\n\t}\n\t\"skyKeyframer\":\n\t{\n\t\t\"BackgroundTexture\":
+    \"               0\"\n\t\t\t\"time\": \"0.493630588054657\"\n\t\t\t\"uid\": \"29\"\n\t\t\t\"upperDensity\":
+    \"0.699999988079071\"\n\t\t\t\"volumeStates\":\n\t\t\t[\n\t\t\t]\n\t\t}\n\t\t]\n\t\t\"storms\":\n\t\t[\n\t\t]\n\t\t\"volumes\":\n\t\t[\n\t\t]\n\t}\n\t\"skyKeyframer\":\n\t{\n\t\t\"BackgroundTexture\":
     \"MilkyWayEdited.png\"\n\t\t\"BaseOzone\": \"0.05999999865889549,0.03999999910593033,0.009999999776482582,              
     0\"\n\t\t\"BrightnessPower\": \"0.05000000074505806\"\n\t\t\"ColourWavelengthsNm\":
     \"             630,             540,             450,4.590793898974533e-41\"\n\t\t\"DayLoop\":

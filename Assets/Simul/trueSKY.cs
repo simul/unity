@@ -3906,7 +3906,6 @@ namespace simul
 
 		public void UpdateExternalRender()
 		{
-
 			if (SimulVersion >= MakeSimulVersion(4, 2))
 			{
 				if (CheckSizeOfExternalRenderValues())
@@ -4037,6 +4036,8 @@ namespace simul
 			EDV.AuroraTraceLength = aurorae.AuroraTraceLength;
 
 			Marshal.StructureToPtr(EDV, EDVptr, !GetTrueSky().UsingIL2CPP);
+			bool il2cppScripting = UsingIL2CPP;
+			Marshal.StructureToPtr(EDV, EDVptr, !il2cppScripting);
 			StaticSetExternalDynamicValues(EDVptr);
 		}
 		}

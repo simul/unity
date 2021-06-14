@@ -86,7 +86,8 @@ namespace simul
 				unityViewStruct.renderStyle = renderStyle;
 				unityViewStruct.unityRenderOptions = UnityRenderOptions.DEFAULT;
 				unityViewStruct.colourTexture = Graphics.activeColorBuffer.GetNativeRenderBufferPtr();
-			}
+                unityViewStruct.colourTextureArrayIndex = -1;
+            }
 		}
 		UnityViewStruct unityViewStruct = new UnityViewStruct();
 		System.IntPtr unityViewStructPtr = Marshal.AllocHGlobal(Marshal.SizeOf(new UnityViewStruct()));

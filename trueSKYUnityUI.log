@@ -1,8 +1,0 @@
-Project directory: C:\Simul\Unity\2021
-Failed to set environment variable: 00000219372322B0
-Failed to set environment variable: 0000021B82F06F70
-Failed to set environment variable: 0000021B82481380
-Failed to set environment variable: 0000021B80439EB0
- QTDIR 
-C:\Simul\4.3\Simul\PlugIns\Qt\SequencerQtWidgets\CloudWindowWidget.cpp(37): warning B0001: WARNING: errno==22: Invalid argument
-
