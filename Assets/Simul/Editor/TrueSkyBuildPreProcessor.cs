@@ -36,6 +36,19 @@ namespace simul
 				DirectoryCopy.Copy(MediaSource, saDir, true, true, false, false);
 				Debug.Log("DirectoryCopy: " + MediaSource + "->" + saDir);
 			}
+			if (target == BuildTarget.PS5)
+			{
+				string shaderbinSource = trueSKY.GetShaderbinSourceDir("ps5");
+				string assetsPath = Environment.CurrentDirectory + s + "Assets";
+				string simul = assetsPath + s + "Simul";
+				string MediaSource = simul + s + "Media";
+				string saDir = Application.streamingAssetsPath + s + "Simul" + s + "shaderbin" + s + "ps5";
+				DirectoryCopy.Copy(shaderbinSource, saDir, true, true, false, false);
+				Debug.Log("DirectoryCopy: " + shaderbinSource + "->" + saDir);
+				saDir = Application.streamingAssetsPath + s + "Simul" + s + "Media";
+				DirectoryCopy.Copy(MediaSource, saDir, true, true, false, false);
+				Debug.Log("DirectoryCopy: " + MediaSource + "->" + saDir);
+			}
 #if UNITY_GAMECORE
 			if(target == BuildTarget.GameCoreScarlett)
 			{

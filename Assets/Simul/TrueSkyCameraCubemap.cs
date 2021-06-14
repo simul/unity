@@ -14,7 +14,7 @@ namespace simul
     public class TrueSkyCameraCubemap : TrueSkyCameraBase
     {
         private bool doFlipY = true;
-        // Seted from the TrueSkyCubemapProbe
+        // Set from the TrueSkyCubemapProbe
         public bool DoFlipY
         {
             get { return doFlipY; }
@@ -86,6 +86,7 @@ namespace simul
 				unityViewStruct.renderStyle = renderStyle;
 				unityViewStruct.unityRenderOptions = UnityRenderOptions.DEFAULT;
 				unityViewStruct.colourTexture = Graphics.activeColorBuffer.GetNativeRenderBufferPtr();
+                unityViewStruct.colourTextureArrayIndex = -1;
 			}
 		}
 		UnityViewStruct unityViewStruct = new UnityViewStruct();
@@ -119,6 +120,8 @@ namespace simul
             mainCommandBuffer.ClearRenderTarget(true, true, new Color(0.0F, 0.0F, 0.0F, 1.0F), 1.0F);
 			unityViewStruct.nativeColourRenderBuffer = (System.IntPtr)Graphics.activeColorBuffer.GetNativeRenderBufferPtr();
 			unityViewStruct.nativeDepthRenderBuffer = (System.IntPtr)Graphics.activeDepthBuffer.GetNativeRenderBufferPtr();
+            unityViewStruct.colourResourceState = ResourceState.RenderTarget;
+            unityViewStruct.depthResourceState = ResourceState.DepthWrite;
 
             bool il2cppScripting = UsingIL2CPP();
             Marshal.StructureToPtr(unityViewStruct, unityViewStructPtr, !il2cppScripting);

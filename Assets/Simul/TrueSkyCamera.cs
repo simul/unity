@@ -415,6 +415,7 @@ namespace simul
 				unityViewStruct.renderStyle=renderStyle;
 				unityViewStruct.unityRenderOptions=unityRenderOptions;
 				unityViewStruct.colourTexture= Graphics.activeColorBuffer.GetNativeRenderBufferPtr();
+				unityViewStruct.colourTextureArrayIndex = -1;
 
 				lastFrameCount = Time.renderedFrameCount;
 				
