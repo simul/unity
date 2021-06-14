@@ -7,6 +7,8 @@ using System.Runtime.InteropServices;
 using static simul.TrueSkyPluginRenderFunctionImporter;
 using static simul.TrueSkyCameraBase;
 
+delegate void PFN_RenderCubemapFace(int x);
+
 namespace simul
 {
     public class TrueSkyHDRPCustomPass : CustomPass
@@ -34,7 +36,7 @@ namespace simul
             depthTexture = new RenderTextureHolder();
 
             unityViewStruct = new UnityViewStruct();
-            unityViewStructPtr = Marshal.AllocHGlobal(Marshal.SizeOf(new UnityViewStruct()));
+			unityViewStructPtr = Marshal.AllocHGlobal(Marshal.SizeOf(typeof(UnityViewStruct)));
         }
 
 #if UNITY_2020_2_OR_NEWER
@@ -62,18 +64,31 @@ namespace simul
         
         private void InternalExecute(ScriptableRenderContext src, CommandBuffer cmd, HDCamera camera, CullingResults cullingResult, RTHandle colour, RTHandle depth)
         {
+			bool mainCamera = camera.camera.name.Equals("Main Camera");
+			bool cubemapProbe = camera.camera.name.Equals("TrueSkyCubemapProbe");
+
             //Don't draw to the scene view. This should never be removed!
             if (camera.camera.cameraType == CameraType.SceneView)
                 return;
 
+			if (camera.camera.gameObject.layer != trueSKY.GetTrueSky().trueSKYLayerIndex && !mainCamera)
+				return;
+
             //Fill-in UnityViewStruct
             PrepareMatrices(camera);
 
-            bool useCamerasRB = camera.camera.name.Equals("CubemapCamera1");
-
-            RenderBuffer rbColour = useCamerasRB ? camera.camera.targetTexture.colorBuffer : colour.rt.colorBuffer;
-            RenderBuffer rbDepth = useCamerasRB ? camera.camera.targetTexture.depthBuffer : depth.rt.depthBuffer;
-            bool msaa = useCamerasRB ? (camera.camera.targetTexture.antiAliasing > 1) : (colour.rt.antiAliasing > 1);
+			//Set up Render Targets
+			RenderBuffer rbColour = colour.rt.colorBuffer;
+			RenderBuffer rbDepth = depth.rt.depthBuffer;
+			bool msaa = (colour.rt.antiAliasing > 1);
+			if (cubemapProbe && colour.rt.width != colour.rt.height)
+			{
+				if (camera.camera.activeTexture == null)
+					return;
+				//Unity has set the wrong buffers from the CustomPass, and we should use the ones within the camera.
+				rbColour = camera.camera.activeTexture.colorBuffer;
+				rbDepth = camera.camera.activeTexture.depthBuffer;
+			}
 
             unityViewStruct.nativeColourRenderBuffer = rbColour.GetNativeRenderBufferPtr();
             unityViewStruct.nativeDepthRenderBuffer = rbDepth.GetNativeRenderBufferPtr();
@@ -83,11 +98,15 @@ namespace simul
             //Execute CmdBuffer
             cbuf_view_id = InternalGetViewId();
 
-            if (!useCamerasRB) //Main view render
+			if (mainCamera) //Main view render
             {
                 bool il2cppScripting = simul.trueSKY.GetTrueSky().UsingIL2CPP;
                 Marshal.StructureToPtr(unityViewStruct, unityViewStructPtr, !il2cppScripting);
-
+#if UNITY_PS5
+				PrepareTestMaterial();
+					// Draw quad on current rt. This SEEMS to be needed to force unity to activate its rendertarget/depth target. Sadly.
+					cmd.DrawProcedural(Matrix4x4.identity, testMaterial, 0, MeshTopology.Quads, 4);
+#endif
                 if (injectionPoint == CustomPassInjectionPoint.BeforePreRefraction)
                     cmd.IssuePluginEventAndData(UnityGetRenderEventFuncWithData(), GetTRUESKY_EVENT_ID() + cbuf_view_id, unityViewStructPtr);
                 else if (injectionPoint == CustomPassInjectionPoint.BeforePostProcess)
@@ -97,20 +116,96 @@ namespace simul
                 else
                     return;
             } 
-            else //Cubemap view render
+			if(cubemapProbe) //Cubemap view render
             {
-                unityViewStruct.colourResourceState = ResourceState.RenderTarget;
-                unityViewStruct.depthResourceState = ResourceState.DepthWrite;
+				if (injectionPoint == CustomPassInjectionPoint.BeforePreRefraction)
+				{
+					unityViewStruct.renderStyle |= RenderStyle.CUBEMAP_STYLE;
+					unityViewStruct.exposure = GameObject.FindObjectOfType<TrueSkyCubemapProbe>().exposure;
+					unityViewStruct.gamma = GameObject.FindObjectOfType<TrueSkyCubemapProbe>().gamma;
+
+					PFN_RenderCubemapFace RenderCubemapFace = _faceMask =>
+					{
+						UpdateViewMatricsForCubemapFace(camera, _faceMask, GameObject.FindObjectOfType<TrueSkyCubemapProbe>().flipProbeY);
+						unityViewStruct.colourTextureArrayIndex = (int)ToCubemapFace(_faceMask);
 
                 bool il2cppScripting = simul.trueSKY.GetTrueSky().UsingIL2CPP;
                 Marshal.StructureToPtr(unityViewStruct, unityViewStructPtr, !il2cppScripting);
 
-                if (injectionPoint == CustomPassInjectionPoint.BeforePreRefraction)
+						cmd.SetRenderTarget(rbColour, 0, ToCubemapFace(_faceMask));
+						cmd.ClearRenderTarget(true, true, Color.black);
                     cmd.IssuePluginEventAndData(UnityGetRenderEventFuncWithData(), GetTRUESKY_EVENT_ID() + cbuf_view_id, unityViewStructPtr);
+					};
+
+					int faceMask = GameObject.FindObjectOfType<TrueSkyCubemapProbe>().GetFaceMask();
+					if (faceMask == 63)
+					{
+						for (int i = 0; i < 6; i++)
+						{
+							int _faceMask = 1 << i;
+							RenderCubemapFace(_faceMask);
+						}
+					}
+					else
+					{
+						RenderCubemapFace(faceMask);
+					}
+				}
                 else
                     return;
             }
-            src.ExecuteCommandBuffer(cmd);
+		}
+
+#if UNITY_PS5
+		Material testMaterial=null;
+		Shader testQuadShader=null;
+		void PrepareTestMaterial()
+		{
+			if (testMaterial == null)
+			{
+				testQuadShader = Resources.Load("TestQuadShader", typeof(Shader)) as Shader;
+				if (testQuadShader != null)
+					testMaterial = new Material(testQuadShader);
+			}
+		}
+#endif
+		private void UpdateViewMatricsForCubemapFace(HDCamera camera, int faceMask, bool flipProbeY)
+		{
+			Vector3 positive_y = new Vector3(0.0f, 1.0f, 0.0f);
+			Vector3 positive_x = new Vector3(1.0f, 0.0f, 0.0f);
+			Matrix4x4 m = camera.camera.worldToCameraMatrix;
+			switch (faceMask)
+			{
+				case 1:
+						m *= Matrix4x4.Rotate(Quaternion.AngleAxis(270.0f, positive_y)); break;
+				case 2:
+						m *= Matrix4x4.Rotate(Quaternion.AngleAxis(090.0f, positive_y)); break;
+				case 4:
+						m *= Matrix4x4.Rotate(Quaternion.AngleAxis(090.0f, positive_x)); break;
+				case 8:
+						m *= Matrix4x4.Rotate(Quaternion.AngleAxis(270.0f, positive_x)); break;
+				case 16:
+						break;
+				case 32:
+						m *= Matrix4x4.Rotate(Quaternion.AngleAxis(180.0f, positive_y)); break;
+				default:
+					return;
+			}
+			ViewMatrixToTrueSkyFormat_HDRP(GetRenderStyle(camera.camera), m, viewMatrices);
+			unityViewStruct.viewMatrices4x4 = viewMatrices;
+
+			if (flipProbeY)
+			{
+				Matrix4x4 p = camera.camera.projectionMatrix;
+				p[1, 1] = -1.0f;
+
+				ProjMatrixToTrueSkyFormat_HDRP(GetRenderStyle(camera.camera), p, projMatrices);
+				unityViewStruct.projMatrices4x4 = projMatrices;
+			}
+		}
+		CubemapFace ToCubemapFace(int faceMask)
+		{
+			return (CubemapFace)Mathf.Log(faceMask, 2);
         }
 
         protected override void Cleanup()
@@ -241,8 +336,10 @@ namespace simul
                 unityViewStruct.renderStyle = renderStyle;
                 unityViewStruct.unityRenderOptions = unityRenderOptions;
                 unityViewStruct.colourTexture = (System.IntPtr)0;
+				unityViewStruct.colourTextureArrayIndex = -1;
 
                 lastFrameCount = Time.renderedFrameCount;
+
                 trueSKY ts = trueSKY.GetTrueSky();
 
                 //
@@ -256,8 +353,19 @@ namespace simul
 				StaticSetRenderTexture("CloudVisibilityRT", ts.CloudVisibilityTexture.GetNative());
 				StaticSetRenderTexture("CloudShadowRT", ts.CloudShadowTexture.GetNative());
 
-              /*
+				/*_inscatterRT.renderTexture = inscatterRT;
+				_cloudVisibilityRT.renderTexture = cloudVisibilityRT;
+				_cloudShadowRT.renderTexture = cloudShadowRT;
 
+				_lossRT.renderTexture = lossRT;
+				StaticSetRenderTexture("inscatter2D", _inscatterRT.GetNative());
+				StaticSetRenderTexture("Loss2D", _lossRT.GetNative());
+				StaticSetRenderTexture("CloudVisibilityRT", _cloudVisibilityRT.GetNative());
+				if (reflectionProbeTexture.renderTexture)
+				{
+					StaticSetRenderTexture("Cubemap", reflectionProbeTexture.GetNative());
+				}
+				StaticSetRenderTexture("CloudShadowRT", _cloudShadowRT.GetNative());
                 MatrixTransform(cubemapTransformMatrix);
                 StaticSetMatrix4x4("CubemapTransform", cubemapTransformMatrix);
 

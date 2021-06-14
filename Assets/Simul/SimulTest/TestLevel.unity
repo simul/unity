@@ -174,8 +174,8 @@ Camera:
     y: 0
     width: 1
     height: 1
-  near clip plane: 0.3
-  far clip plane: 1000
+  near clip plane: 0.1
+  far clip plane: 300000
   field of view: 60
   orthographic: 0
   orthographic size: 5
@@ -201,8 +201,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 81481144}
-  m_LocalRotation: {x: 0.049924973, y: -0.7296865, z: -0.053584833, w: -0.6798483}
-  m_LocalPosition: {x: 0, y: 1, z: -10}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -330,6 +330,7 @@ Light:
   m_UseColorTemperature: 0
   m_BoundingSphereOverride: {x: 0, y: 0, z: 0, w: 0}
   m_UseBoundingSphereOverride: 0
+  m_UseViewFrustumForShadowCasterCull: 1
   m_ShadowRadius: 0
   m_ShadowAngle: 0
 --- !u!4 &662832559
@@ -378,7 +379,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   SimulVersionMajor: 4
-  SimulVersionMinor: 2
+  SimulVersionMinor: 3
   SimulVersionBuild: 0
   _metresPerUnit: 1
   _renderInEditMode: 1
@@ -404,7 +405,7 @@ MonoBehaviour:
   _edgeNoiseWavelengthKm: 2.5
   _worleyTextureSize: 64
   _worleyWavelengthKm: 8.7
-  _trueSKYTime: 12
+  _trueSKYTime: 11.041238
   _timeProgressionScale: 0
   _timeUnits: 24
   _loop: 0
@@ -474,6 +475,8 @@ MonoBehaviour:
   _Extinction: 4
   _MieAsymmetry: 0.87
   _shadowTextureRes: 256
+  _cloudShadowStrength: 0.8
+  _cloudShadowRangeKm: 300
   _HDRP_RenderPipelineAsset: {fileID: 0}
   _LoadRenderPipelineAsset: 1
   _UsingIL2CPP: 0

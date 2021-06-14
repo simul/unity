@@ -3874,7 +3874,6 @@ namespace simul
 
 		public void UpdateExternalRender()
 		{
-
 			if (SimulVersion >= MakeSimulVersion(4, 2))
 			{
 				if (CheckSizeOfExternalRenderValues())
@@ -3910,7 +3909,7 @@ namespace simul
 				ERV.RainNearThreshold = _PrecipitationThresholdKm;
 				ERV.MaximumStarMagnitude = _maximumStarMagniute;
 
-				Marshal.StructureToPtr(ERV, ERVptr, true);
+				Marshal.StructureToPtr(ERV, ERVptr, !GetTrueSky().UsingIL2CPP);
 				StaticSetExternalRenderValues(ERVptr);
 				//StaticTriggerAction("Reset");
 			}
@@ -4004,7 +4003,9 @@ namespace simul
 			EDV.AuroraIntensityMapSize = aurorae.AuroraIntensityMapSize;
 			EDV.AuroraTraceLength = aurorae.AuroraTraceLength;
 
-			Marshal.StructureToPtr(EDV, EDVptr, true);
+			Marshal.StructureToPtr(EDV, EDVptr, !GetTrueSky().UsingIL2CPP);
+			bool il2cppScripting = UsingIL2CPP;
+			Marshal.StructureToPtr(EDV, EDVptr, !il2cppScripting);
 			StaticSetExternalDynamicValues(EDVptr);
 		}
 		}
@@ -4095,7 +4096,7 @@ namespace simul
 							Moon.colour.z = moon.Colour.b;
 							Moon.albedo = (float)moon.Albedo;
 							System.IntPtr Moonptr = Marshal.AllocHGlobal(Marshal.SizeOf(new ExternalMoon()));
-							Marshal.StructureToPtr(Moon, Moonptr, false); // TODO
+						Marshal.StructureToPtr(Moon, Moonptr, !GetTrueSky().UsingIL2CPP); 
 							StaticSetMoon(_moons.IndexOf(moon) + 1, Moonptr);
 						}
 						else
@@ -4346,6 +4347,8 @@ namespace simul
                 {
 #if UNITY_PS4
                     StaticPushPath("ShaderBinaryPath", Application.streamingAssetsPath + @"/Simul/shaderbin/ps4");
+#elif UNITY_PS5
+					StaticPushPath("ShaderBinaryPath", Application.streamingAssetsPath + @"/Simul/shaderbin/ps5");
 #elif UNITY_WSA || UNITY_STANDALONE_WIN
                    if (SystemInfo.graphicsDeviceType == GraphicsDeviceType.Direct3D11)
                         StaticPushPath("ShaderBinaryPath", Application.dataPath + @"/Simul/shaderbin/x86_64/d3d11");
@@ -4361,7 +4364,9 @@ namespace simul
 					if (SystemInfo.graphicsDeviceType == GraphicsDeviceType.GameCoreScarlett 
 						|| SystemInfo.graphicsDeviceType == GraphicsDeviceType.GameCoreXboxOne)
 					{
+						StaticPushPath("ShaderBinaryPath", "");
 						StaticPushPath("ShaderBinaryPath", "D3D12");
+						StaticPushPath("ShaderPath", "");
 						StaticPushPath("ShaderPath", "D3D12");
 					}
 #endif
@@ -4387,7 +4392,9 @@ namespace simul
 					else if (SystemInfo.graphicsDeviceType == GraphicsDeviceType.GameCoreScarlett
 						|| SystemInfo.graphicsDeviceType == GraphicsDeviceType.GameCoreXboxOne)
 					{
+						StaticPushPath("ShaderBinaryPath", "");
 						StaticPushPath("ShaderBinaryPath", "D3D12");
+						StaticPushPath("ShaderPath", "");
 						StaticPushPath("ShaderPath", "D3D12");
 					}
 #endif

@@ -1,8 +1,14 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+#if USING_HDRP
+using UnityEngine.Rendering.HighDefinition;
+#endif
+
+
 namespace simul
 {
+#if !USING_HDRP
     [ExecuteInEditMode]
     /// This probe component will update the material trueSKYSkybox, which can be used as the skybox for lighting.
     public class TrueSkyCubemapProbe : MonoBehaviour
@@ -123,6 +129,7 @@ namespace simul
             if (dummyCam == null)
             {
                 GameObject aDummyCamObject  = new GameObject("CubemapCamera1", typeof(Camera));
+				aDummyCamObject.gameObject.layer = trueSKY.GetTrueSky().trueSKYLayerIndex;
                 aDummyCamObject.hideFlags   = HideFlags.HideAndDontSave;
                 dummyCam                    = aDummyCamObject.GetComponent<Camera>();
                 dummyCam.enabled            = false;
@@ -225,9 +232,137 @@ namespace simul
                 cubemapRenderTexture            = new RenderTexture(textureSize, textureSize, 24, rtf, RenderTextureReadWrite.Linear);
                 renderTextureFormat             = cubemapRenderTexture.format;
                 cubemapRenderTexture.dimension  = UnityEngine.Rendering.TextureDimension.Cube;
+				cubemapRenderTexture.name       = "trueSKY CubemapRenderTexture";
                 cubemapRenderTexture.Create();
                 _initialized = false;
             }
         }
     }
+#else
+	[ExecuteInEditMode]
+	public class TrueSkyCubemapProbe : MonoBehaviour
+	{
+		private GameObject trueSkyCubemapProbe = null;
+		public HDCamera cubemapCamera = null;
+		public RenderTexture cubemapRenderTexture = null;
+
+		public int textureSize = 32;
+		public float exposure = 0.5F;
+		public float gamma = 0.5f;
+		public float updatePeriodSeconds = 0.5F;
+		private float _updatePeriodSeconds = 0.0F;
+		public bool skyOnly = true;
+		public bool flipProbeY = true;
+		private int faceMask = 63;
+		private bool _initialized = false;
+		public RenderTextureFormat renderTextureFormat = RenderTextureFormat.Default;
+		public int GetViewId() { return 10; }
+		public int GetFaceMask() { return faceMask; }
+		public RenderTexture GetRenderTexture() { return cubemapRenderTexture; }
+
+		void Start()
+		{
+			faceMask = 1;
+		}
+
+		void Update()
+		{
+#if !UNITY_GAMECORE
+#if !UNITY_SWITCH
+			if (UnityEngine.XR.XRSettings.enabled && !UnityEngine.XR.XRSettings.isDeviceActive)
+			{
+				return;
+			}
+#endif
+#endif
+			// Has the update frequency changed?
+			if (_updatePeriodSeconds != updatePeriodSeconds)
+			{
+				CancelInvoke();
+				_updatePeriodSeconds = updatePeriodSeconds;
+				// If nonzero, start the periodic updates.
+				if (_updatePeriodSeconds > 0.0F)
+				{
+					InvokeRepeating("UpdateCustom", 0.0F, _updatePeriodSeconds);
+				}
+			}
+			// If it's zero, update once per frame.
+			if (!Application.isPlaying || _updatePeriodSeconds <= 0.0F)
+			{
+				DoUpdate();
+			}
+		}
+
+		void UpdateCustom()
+		{
+			DoUpdate();
+		}
+
+		private void DoUpdate()
+		{
+			if (textureSize != 8 && textureSize != 16 && textureSize != 32 && textureSize != 64
+				&& textureSize != 128 && textureSize != 256 && textureSize != 512)
+				textureSize = Mathf.Clamp(Mathf.ClosestPowerOfTwo(textureSize), 8, 512);   
+
+			CreateTexture();
+
+			if (trueSkyCubemapProbe == null)
+			{
+				trueSkyCubemapProbe = new GameObject("TrueSkyCubemapProbe", typeof(HDCamera));
+				trueSkyCubemapProbe.AddComponent<Camera>();
+			}
+			trueSkyCubemapProbe.hideFlags = HideFlags.DontSave;
+			trueSkyCubemapProbe.gameObject.layer = trueSKY.GetTrueSky().trueSKYLayerIndex;
+
+			if (trueSkyCubemapProbe.GetComponent<Camera>() == null)
+				trueSkyCubemapProbe.AddComponent<Camera>();
+
+			Camera dummyCam				= trueSkyCubemapProbe.GetComponent<Camera>();
+			dummyCam.enabled			= true;
+			dummyCam.clearFlags			= CameraClearFlags.Color;
+			dummyCam.backgroundColor	= new Color(0, 0, 0, 0);
+			dummyCam.renderingPath		= RenderingPath.DeferredLighting;
+			dummyCam.depthTextureMode	|= DepthTextureMode.Depth;
+			dummyCam.fieldOfView		= 90.0f;
+			dummyCam.targetTexture		= cubemapRenderTexture;
+			dummyCam.nearClipPlane		= 0.1f;
+			dummyCam.farClipPlane		= 300000.0f;
+
+			if (skyOnly)
+				dummyCam.cullingMask = 0;
+
+			// Set the cube texture
+			Material trueSKYSkyboxMat = Resources.Load("trueSKYSkybox", typeof(Material)) as Material;
+			if (trueSKYSkyboxMat)
+			{
+				if (trueSKYSkyboxMat.GetTexture("_Cube") != cubemapRenderTexture)
+					trueSKYSkyboxMat.SetTexture("_Cube", cubemapRenderTexture);
+			}
+			else
+				UnityEngine.Debug.LogWarning("Can't find Material 'trueSKYSkybox' - it should be in Simul/Resources.");
+	
+			faceMask *= 2;
+			if (faceMask > 32)
+				faceMask = 1;
+		}
+		void CreateTexture()
+		{
+			if (cubemapRenderTexture == null
+				|| !cubemapRenderTexture.IsCreated()
+				|| cubemapRenderTexture.width != textureSize
+				|| cubemapRenderTexture.depth != 24
+				|| cubemapRenderTexture.format != renderTextureFormat
+				|| cubemapRenderTexture.dimension != UnityEngine.Rendering.TextureDimension.Cube
+			)
+			{
+				RenderTextureFormat rtf = renderTextureFormat;
+				cubemapRenderTexture = new RenderTexture(textureSize, textureSize, 24, rtf, RenderTextureReadWrite.Linear);
+				renderTextureFormat = cubemapRenderTexture.format;
+				cubemapRenderTexture.dimension = UnityEngine.Rendering.TextureDimension.Cube;
+				cubemapRenderTexture.name = "trueSKY CubemapRenderTexture";
+				cubemapRenderTexture.Create();
+			}
+		}
+	}
+#endif
 }
