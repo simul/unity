@@ -322,6 +322,7 @@ namespace simul
 		Camera mainCamera = null;
 		trueSKY trueSky = null;
 		GameObject lightGameObject = null;
+		GameObject cubeMapProbeObject = null;
 		TrueSkyDirectionalLight lightComponent;
 
 		public bool removeFog = true;
@@ -338,12 +339,12 @@ namespace simul
 			{
 				string projPath = UnityEngine.Application.dataPath;
 				string relativePath = UnityEngine.SceneManagement.SceneManager.GetActiveScene().path;
-				relativePath = relativePath.Remove(0, 7);    //remove Assets/
+				//relativePath = relativePath.Remove(0, 7);    //remove Assets/
 				string curScenPath = projPath + "/" + relativePath;
 				//UnityEngine.Debug.Log("Current scene path:" + curScenPath);     
 
 				// 1. Is there a sequence asset in the current scene's assets directory?
-				string dir = Path.GetDirectoryName(curScenPath);
+				string dir = Path.GetDirectoryName(relativePath);
 				// Find any sequence asset:
 				string[] assetFiles = Directory.GetFiles(dir, "*.asset");
 				foreach (string p in assetFiles)
@@ -368,33 +369,6 @@ namespace simul
 		{
 			TrueSkyCamera trueSkyCamera;
 
-			// Open tag manager
-			SerializedObject tagManager = new SerializedObject(AssetDatabase.LoadAllAssetsAtPath("ProjectSettings/TagManager.asset")[0]);
-			SerializedProperty tagsProp = tagManager.FindProperty("tags");
-
-			SerializedProperty layersProp = tagManager.FindProperty("layers");
-
-			// Adding a Tag
-			string ts_Tag = "trueSKY";
-
-			// First check if it is not already present
-			bool found = false;
-			for (int i = 0; i < tagsProp.arraySize; i++)
-			{
-				SerializedProperty t = tagsProp.GetArrayElementAtIndex(i);
-				if (t.stringValue.Equals(ts_Tag)) { found = true; break; }
-			}
-
-			// if not found, add it
-			if (!found)
-			{
-				tagsProp.InsertArrayElementAtIndex(0);
-				SerializedProperty n = tagsProp.GetArrayElementAtIndex(0);
-				n.stringValue = ts_Tag;
-			}
-			tagManager.ApplyModifiedProperties();
-
-
 			if (sequence == null)
 			{
 				// Build asset path and name (it has to be relative)
@@ -408,13 +382,40 @@ namespace simul
 				GameObject g = new GameObject("trueSky");
 				trueSky = g.AddComponent<trueSKY>();
 			}
+
+			// Open tag+Layer manager
+			SerializedObject tagLayerManager = new SerializedObject(AssetDatabase.LoadAllAssetsAtPath("ProjectSettings/TagManager.asset")[0]);
+			SerializedProperty layersProp = tagLayerManager.FindProperty("layers");
+
+			// Adding a Layer/Tag
+			string ts_layer = "trueSKY";
+			int ts_layer_index = trueSky.trueSKYLayerIndex;
+			// First check if it is not already present
+			bool found = false;
+
+			var newLayer = LayerMask.NameToLayer("trueSKY");
+			if (newLayer > -1)
+			{
+				found = true;
+			}
+
+			// if not found, add it
+			if (!found)
+			{
+				layersProp.InsertArrayElementAtIndex(ts_layer_index);
+				SerializedProperty n = layersProp.GetArrayElementAtIndex(ts_layer_index);
+				n.stringValue = ts_layer;
+			}
+			tagLayerManager.ApplyModifiedProperties();
+
+
 			if (createAMainCamera)      // if user has requested a main camera to be created (as none already)
 			{
 				GameObject MainCam = new GameObject("Main Camera");
 				MainCam.gameObject.AddComponent<Camera>();
 				MainCam.tag = "MainCamera";
 				mainCamera = MainCam.GetComponent<Camera>();
-				mainCamera.tag = ts_Tag;
+				mainCamera.gameObject.layer = ts_layer_index;
 			}
 			if (multipleCameras)    // if user has requested the script to be assigned to all cameras
 			{
@@ -430,7 +431,7 @@ namespace simul
 #if !USING_HDRP
 						cams[i].gameObject.AddComponent<TrueSkyCamera>();
 #endif
-						cams[i].tag = ts_Tag;
+						cams[i].gameObject.layer = ts_layer_index;
 					}
 				}
 
@@ -471,7 +472,7 @@ namespace simul
 						mainCamera.gameObject.AddComponent<TrueSkyCamera>();
 #endif
 			}
-			if (createCubemapProbe)
+			if (createCubemapProbe && cubeMapProbeObject == null)
 			{           // must be after trueSKY obj assigned, in case assigning probe to this instead of mainCam
 
 				UnityEngine.Object[] objects = FindObjectsOfType(typeof(TrueSkyCubemapProbe));

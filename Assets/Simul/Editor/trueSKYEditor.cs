@@ -741,6 +741,8 @@ namespace simul
 				{
 
 					trueSky.InterpolationMode = EditorGUILayout.Popup("Interpolation Mode", trueSky.InterpolationMode, interpolationOptions);
+					if(trueSky.InterpolationMode== 0)
+						trueSky.InterpolationSubdivisions = EditorGUILayout.IntSlider("Subdivisions per keyframe",  trueSky.InterpolationSubdivisions,1,32);
 					trueSky.InstantUpdate = EditorGUILayout.Toggle("Instant Update", trueSky.InstantUpdate);
 
 					if (trueSky.SimulVersion >= trueSky.MakeSimulVersion(4, 2))
@@ -764,7 +766,7 @@ namespace simul
 				if (shadows)
 				{
 					trueSky.CloudShadowRangeKm = EditorGUILayout.IntSlider("Shadow Range KM", trueSky.CloudShadowRangeKm, 100, (int)trueSky.MaxCloudDistanceKm);
-					trueSky.CloudShadowStrength = EditorGUILayout.Slider("Cloud Shadow Strength", trueSky.CloudShadowStrength, 0.0F, 1.0F);
+					trueSky.CloudShadowResolution = EditorGUILayout.IntSlider("Cloud Shadow Resolution", trueSky.CloudShadowResolution, 64, 1024);
 				}
 
 				// Water settings

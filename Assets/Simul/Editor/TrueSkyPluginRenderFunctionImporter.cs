@@ -26,7 +26,7 @@ namespace simul
 				private const string renderer_dll = @"__Internal";
 			#elif _WIN32
 				private const string renderer_dll = @"TrueSkyPluginRender_MT";
-			#else			
+			#else
 				private const string renderer_dll = @"TrueSkyPluginRender_MT";
 			#endif
 		#endif
