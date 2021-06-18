@@ -4,5 +4,8 @@
 EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
-  m_Scenes: []
+  m_Scenes:
+  - enabled: 1
+    path: Assets/Simul/SimulTest/TestLevelHDRP.unity
+    guid: 23bff638120367e4d88d48ff5c37850e
   m_configObjects: {}

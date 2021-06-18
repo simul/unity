@@ -240,42 +240,101 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!84 &892126768
-RenderTexture:
+--- !u!1 &970875427
+GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: trueSKY CubemapRenderTexture
-  m_ImageContentsHash:
-    serializedVersion: 2
-    Hash: 00000000000000000000000000000000
-  m_ForcedFallbackFormat: 4
-  m_DownscaleFallback: 0
-  m_IsAlphaChannelOptional: 0
-  serializedVersion: 3
-  m_Width: 32
-  m_Height: 32
-  m_AntiAliasing: 1
-  m_MipCount: -1
-  m_DepthFormat: 2
-  m_ColorFormat: 8
-  m_MipMap: 0
-  m_GenerateMips: 1
-  m_SRGB: 0
-  m_UseDynamicScale: 0
-  m_BindMS: 0
-  m_EnableCompatibleFormat: 1
-  m_TextureSettings:
-    serializedVersion: 2
-    m_FilterMode: 1
-    m_Aniso: 1
-    m_MipBias: 0
-    m_WrapU: 1
-    m_WrapV: 1
-    m_WrapW: 1
-  m_Dimension: 4
-  m_VolumeDepth: 1
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 970875431}
+  - component: {fileID: 970875430}
+  - component: {fileID: 970875429}
+  - component: {fileID: 970875428}
+  m_Layer: 0
+  m_Name: Sphere
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!135 &970875428
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 970875427}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.5
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!23 &970875429
+MeshRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 970875427}
+  m_Enabled: 1
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
+  m_RenderingLayerMask: 257
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 2100000, guid: ebb199ccfb1c3474bae40d842e4994e2, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
+--- !u!33 &970875430
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 970875427}
+  m_Mesh: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!4 &970875431
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 970875427}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 2}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 4
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1097562462
 GameObject:
   m_ObjectHideFlags: 0
@@ -680,14 +739,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 73661cd764129404b8091f5b746e6901, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cubemapRenderTexture: {fileID: 892126768}
   textureSize: 32
   exposure: 0.5
   gamma: 0.5
   updatePeriodSeconds: 0.5
   skyOnly: 1
-  flipProbeY: 1
   renderTextureFormat: 0
+  flipProbeY: 1
 --- !u!114 &1994398898
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -822,9 +880,9 @@ MonoBehaviour:
   lossRT: {fileID: 1763390111}
   cloudVisibilityRT: {fileID: 1286047399}
   trueSKYLayerIndex: 14
-  _changedAmortInEd: 0
-  _amortization: 2
-  _atmosphericsAmortization: 2
+  _changedAmortInEd: 1
+  _amortization: 1
+  _atmosphericsAmortization: 1
   _depthTemporalAlpha: 0.1
   _depthBlending: 1
   _cloudTint: {r: 1, g: 1, b: 1, a: 1}
@@ -856,7 +914,7 @@ MonoBehaviour:
   _WindSpeed: {x: 0, y: 0, z: 0}
   _IntegrationScheme: 0
   _LightingMode: 0
-  _MaxCloudDistanceKm: 300
+  _MaxCloudDistanceKm: 200
   _RenderGridXKm: 0.4
   _RenderGridZKm: 0.4
   _windowGridWidth: 512
@@ -874,7 +932,7 @@ MonoBehaviour:
   _cloudShadowResolution: 256
   _cloudShadowRangeKm: 300
   _HDRP_RenderPipelineAsset: {fileID: 11400000, guid: 6fd88a366de24f24d9eae1191df5e21e, type: 2}
-  _LoadRenderPipelineAsset: 0
+  _LoadRenderPipelineAsset: 1
   _UsingIL2CPP: 0
   updateERV: 0
 --- !u!4 &1994398901
