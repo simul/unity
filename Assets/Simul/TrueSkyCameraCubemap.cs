@@ -66,13 +66,7 @@ namespace simul
                 targetViewport[0].x = targetViewport[0].y = 0;
                 targetViewport[0].w = depthWidth;
                 targetViewport[0].h = depthHeight;
-            /*    UnitySetRenderFrameValues
-                (
-                    view_id, viewMatrices, projMatrices, cproj
-                    ,depthTexture.GetNative(), depthViewports, targetViewport
-                    ,renderStyle, exposure, gamma, Time.frameCount, UnityRenderOptions.DEFAULT
-                    ,Graphics.activeColorBuffer.GetNativeRenderBufferPtr()
-                );*/
+
 				unityViewStruct.view_id = view_id;
 				unityViewStruct.framenumber = Time.renderedFrameCount;
 				unityViewStruct.exposure = exposure;
@@ -91,15 +85,15 @@ namespace simul
 		}
 		UnityViewStruct unityViewStruct = new UnityViewStruct();
 		System.IntPtr unityViewStructPtr = Marshal.AllocHGlobal(Marshal.SizeOf(new UnityViewStruct()));
-		void OnPreRender()
+        void OnPreRender()
         {
             EnsureDepthTexture();
             Camera cam = GetComponent<Camera>();
             if (mainCommandBuffer == null)
             {
-                mainCommandBuffer             = new CommandBuffer();
-                mainCommandBuffer.name        = "render trueSKY";
-                cbuf_view_id    = -1;
+                mainCommandBuffer = new CommandBuffer();
+                mainCommandBuffer.name = "render trueSKY";
+                cbuf_view_id = -1;
             }
             if (cbuf_view_id != InternalGetViewId())
             {
@@ -107,8 +101,7 @@ namespace simul
             }
             PrepareMatrices();
 
-
-			CommandBuffer[] bufs = cam.GetCommandBuffers(CameraEvent.BeforeImageEffectsOpaque);
+            CommandBuffer[] bufs = cam.GetCommandBuffers(CameraEvent.BeforeImageEffectsOpaque);
             if (bufs.Length != 2)
             {
                 cam.RemoveCommandBuffers(CameraEvent.BeforeImageEffectsOpaque);
@@ -118,15 +111,33 @@ namespace simul
             cbuf_view_id = InternalGetViewId();
 
             mainCommandBuffer.ClearRenderTarget(true, true, new Color(0.0F, 0.0F, 0.0F, 1.0F), 1.0F);
-			unityViewStruct.nativeColourRenderBuffer = (System.IntPtr)Graphics.activeColorBuffer.GetNativeRenderBufferPtr();
-			unityViewStruct.nativeDepthRenderBuffer = (System.IntPtr)Graphics.activeDepthBuffer.GetNativeRenderBufferPtr();
+
+            int faceMask = FindObjectOfType<TrueSkyCubemapProbe>().GetFaceMask();
+            if (faceMask == 63) { faceMask = 1; }
+
+            if (prevFaceMask != faceMask)
+                prevFaceMask = faceMask;
+            else
+                return;
+
+            if (cam.activeTexture == null)
+                return;
+
+            unityViewStruct.nativeColourRenderBuffer = cam.activeTexture.colorBuffer.GetNativeRenderBufferPtr();
+            unityViewStruct.nativeDepthRenderBuffer = cam.activeTexture.depthBuffer.GetNativeRenderBufferPtr();
             unityViewStruct.colourResourceState = ResourceState.RenderTarget;
             unityViewStruct.depthResourceState = ResourceState.DepthWrite;
+            unityViewStruct.colourTextureArrayIndex = (int)ToCubemapFace(faceMask);
 
-            bool il2cppScripting = UsingIL2CPP();
-            Marshal.StructureToPtr(unityViewStruct, unityViewStructPtr, !il2cppScripting);
+            Marshal.StructureToPtr(unityViewStruct, unityViewStructPtr, !UsingIL2CPP());
             mainCommandBuffer.IssuePluginEventAndData(UnityGetRenderEventFuncWithData(), TRUESKY_EVENT_ID + cbuf_view_id, unityViewStructPtr);
-		}
+        }
+        private int prevFaceMask = 0;
+
+        CubemapFace ToCubemapFace(int faceMask)
+        {
+            return (CubemapFace)Mathf.Log(faceMask, 2);
+        }
 
         float[] cview = new float[16];
         float[] cproj = new float[16];

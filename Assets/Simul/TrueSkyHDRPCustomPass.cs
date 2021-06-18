@@ -132,8 +132,8 @@ namespace simul
 						bool il2cppScripting = simul.trueSKY.GetTrueSky().UsingIL2CPP;
 						Marshal.StructureToPtr(unityViewStruct, unityViewStructPtr, !il2cppScripting);
 
-						cmd.SetRenderTarget(rbColour, 0, ToCubemapFace(_faceMask));
-						cmd.ClearRenderTarget(true, true, Color.black);
+						cmd.SetRenderTarget(rbColour, 0, ToCubemapFace(_faceMask), 0);
+						cmd.ClearRenderTarget(true, true, new Color(0.0F, 0.0F, 0.0F, 1.0F), 1.0F);
 						cmd.IssuePluginEventAndData(UnityGetRenderEventFuncWithData(), GetTRUESKY_EVENT_ID() + cbuf_view_id, unityViewStructPtr);
 					};
 
