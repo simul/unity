@@ -249,6 +249,7 @@ namespace simul
 				unityViewStruct.nativeDepthRenderBuffer = activeTexture.depthBuffer.GetNativeRenderBufferPtr();
 				unityViewStruct.colourResourceState = activeTexture.antiAliasing > 1 ? ResourceState.ResolveSource : ResourceState.RenderTarget;
 				unityViewStruct.depthResourceState = ResourceState.DepthWrite;
+				unityViewStruct.colourTextureArrayIndex = 0;
 			}
 			else
 			{

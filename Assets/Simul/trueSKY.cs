@@ -282,7 +282,7 @@ namespace simul
 	public struct ExternalRenderValues //these values should be values that dont change at runtime, unless explicitly called
 	{
 
-		public static int static_version = 6; //Lighting Mode + Window Grid
+		public static int static_version = 7; //Lighting Mode + Window Grid + Realtime weather effects
 		public int version;
 
 		public float HighDetailProportion;         //!< For cloud volume update rate.
@@ -328,6 +328,7 @@ namespace simul
 		public int AtmosphericsAmortization;
 		public float RainNearThreshold;
 		public uint AutomaticSunPosition;
+		public uint RealTimeWeatherEffects;
 	};
 
 	[StructLayout(LayoutKind.Sequential, Pack = 1)]
@@ -685,6 +686,7 @@ namespace simul
 		public int SimulVersionMajor = 0;
 		public int SimulVersionMinor = 0;
 		public int SimulVersionBuild = 0;
+
 
 		public int SimulVersion
         {

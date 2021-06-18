@@ -39,14 +39,22 @@ namespace simul
 			unityViewStructPtr = Marshal.AllocHGlobal(Marshal.SizeOf(typeof(UnityViewStruct)));
         }
 
-        protected override void Execute(ScriptableRenderContext src, CommandBuffer cmd, HDCamera camera, CullingResults cullingResult)
+        protected override void Execute(ScriptableRenderContext renderContext, CommandBuffer cmd, HDCamera hdCamera, CullingResults cullingResult)
         {
+            RTHandle colour, depth;
+            GetCameraBuffers(out colour, out depth);
+
+            InternalExecute(renderContext, cmd, hdCamera, cullingResult, colour, depth);
+        }
+
+        protected void InternalExecute(ScriptableRenderContext src, CommandBuffer cmd, HDCamera camera, CullingResults cullingResult, RTHandle colour, RTHandle depth)
+        {
+            bool mainCamera = camera.camera.name.Equals("Main Camera");
+            bool cubemapProbe = camera.camera.name.Equals("TrueSkyCubemapProbe");
+
             //Don't draw to the scene view. This should never be removed!
             if (camera.camera.cameraType == CameraType.SceneView)
                 return;
-
-			if (camera.camera.gameObject.layer != trueSKY.GetTrueSky().trueSKYLayerIndex && !mainCamera)
-				return;
 
             //Fill-in UnityViewStruct
             PrepareMatrices(camera);
@@ -106,8 +114,8 @@ namespace simul
 						bool il2cppScripting = simul.trueSKY.GetTrueSky().UsingIL2CPP;
 						Marshal.StructureToPtr(unityViewStruct, unityViewStructPtr, !il2cppScripting);
 
-						cmd.SetRenderTarget(rbColour, 0, ToCubemapFace(_faceMask));
-						cmd.ClearRenderTarget(true, true, Color.black);
+						cmd.SetRenderTarget(rbColour, 0, ToCubemapFace(_faceMask), 0);
+						cmd.ClearRenderTarget(true, true, new Color(0.0F, 0.0F, 0.0F, 1.0F), 1.0F);
 						cmd.IssuePluginEventAndData(UnityGetRenderEventFuncWithData(), GetTRUESKY_EVENT_ID() + cbuf_view_id, unityViewStructPtr);
 					};
 
