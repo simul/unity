@@ -414,8 +414,8 @@ namespace simul
 				MainCam.gameObject.AddComponent<Camera>();
 				MainCam.tag = "MainCamera";
 				mainCamera = MainCam.GetComponent<Camera>();
-				mainCamera.gameObject.layer = ts_layer_index;
 			}
+
 			if (multipleCameras)    // if user has requested the script to be assigned to all cameras
 			{
 				Camera[] cams = new Camera[Camera.allCamerasCount];          // find all cameras
@@ -433,7 +433,6 @@ namespace simul
 						cams[i].gameObject.layer = ts_layer_index;
 					}
 				}
-
 			}
 			if (mainCamera == null)                     // if mainCamera still = null, inform user script wasn't assigned + how to assign it
 			{
@@ -470,6 +469,7 @@ namespace simul
 					if (trueSkyCamera == null)
 						mainCamera.gameObject.AddComponent<TrueSkyCamera>();
 #endif
+				mainCamera.gameObject.layer = ts_layer_index;
 			}
 			if (createCubemapProbe)
 			{           // must be after trueSKY obj assigned, in case assigning probe to this instead of mainCam
