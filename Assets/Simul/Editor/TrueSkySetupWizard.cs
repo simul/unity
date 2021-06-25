@@ -322,7 +322,6 @@ namespace simul
 		Camera mainCamera = null;
 		trueSKY trueSky = null;
 		GameObject lightGameObject = null;
-		GameObject cubeMapProbeObject = null;
 		TrueSkyDirectionalLight lightComponent;
 
 		public bool removeFog = true;
@@ -339,12 +338,12 @@ namespace simul
 			{
 				string projPath = UnityEngine.Application.dataPath;
 				string relativePath = UnityEngine.SceneManagement.SceneManager.GetActiveScene().path;
-				//relativePath = relativePath.Remove(0, 7);    //remove Assets/
+				relativePath = relativePath.Remove(0, 7);    //remove Assets/
 				string curScenPath = projPath + "/" + relativePath;
 				//UnityEngine.Debug.Log("Current scene path:" + curScenPath);     
 
 				// 1. Is there a sequence asset in the current scene's assets directory?
-				string dir = Path.GetDirectoryName(relativePath);
+				string dir = Path.GetDirectoryName(curScenPath);
 				// Find any sequence asset:
 				string[] assetFiles = Directory.GetFiles(dir, "*.asset");
 				foreach (string p in assetFiles)
@@ -415,8 +414,8 @@ namespace simul
 				MainCam.gameObject.AddComponent<Camera>();
 				MainCam.tag = "MainCamera";
 				mainCamera = MainCam.GetComponent<Camera>();
-				mainCamera.gameObject.layer = ts_layer_index;
 			}
+
 			if (multipleCameras)    // if user has requested the script to be assigned to all cameras
 			{
 				Camera[] cams = new Camera[Camera.allCamerasCount];          // find all cameras
@@ -434,7 +433,6 @@ namespace simul
 						cams[i].gameObject.layer = ts_layer_index;
 					}
 				}
-
 			}
 			if (mainCamera == null)                     // if mainCamera still = null, inform user script wasn't assigned + how to assign it
 			{
@@ -471,8 +469,9 @@ namespace simul
 					if (trueSkyCamera == null)
 						mainCamera.gameObject.AddComponent<TrueSkyCamera>();
 #endif
+				mainCamera.gameObject.layer = ts_layer_index;
 			}
-			if (createCubemapProbe && cubeMapProbeObject == null)
+			if (createCubemapProbe)
 			{           // must be after trueSKY obj assigned, in case assigning probe to this instead of mainCam
 
 				UnityEngine.Object[] objects = FindObjectsOfType(typeof(TrueSkyCubemapProbe));
