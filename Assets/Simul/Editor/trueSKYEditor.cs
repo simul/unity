@@ -287,6 +287,8 @@ namespace simul
 						else
 							EditorGUILayout.LabelField("Wind speed is set in the trueSKY Sequence asset in 4.1");
 
+						trueSky.RealTimeWeatherEffects = EditorGUILayout.Toggle("Real Time Weather Effects", trueSky.RealTimeWeatherEffects);
+
 						if (trueSky.SimulVersion >= trueSky.MakeSimulVersion(4, 3))
 							trueSky.MaxCloudDistanceKm = EditorGUILayout.Slider("Max Cloud Distance (km)", trueSky.MaxCloudDistanceKm, 100.0F, (trueSky.WindowWidthKm / 2));
 						else
@@ -383,8 +385,8 @@ namespace simul
 				{
 					
 					if (trueSky.SimulVersion >= trueSky.MakeSimulVersion(4, 2))
-					{
-						trueSky.SimulationTimeRain = EditorGUILayout.Toggle("Sim Time Rain", trueSky.SimulationTimeRain);
+					{ 
+						//trueSky.SimulationTimeRain = EditorGUILayout.Toggle("Sim Time Rain", trueSky.SimulationTimeRain); Now controlled with Real-Time Weather Effects
 						trueSky.MaxPrecipitationParticles = EditorGUILayout.IntField("Max Particles", trueSky.MaxPrecipitationParticles);
 						trueSky.PrecipitationRadiusMetres = EditorGUILayout.Slider("Radius (m)", trueSky.PrecipitationRadiusMetres, 0.5F, 100.0F);
 						trueSky.RainFallSpeedMS = EditorGUILayout.Slider("Rain fall speed (m/s)", trueSky.RainFallSpeedMS, 0.0F, 20.0F);
