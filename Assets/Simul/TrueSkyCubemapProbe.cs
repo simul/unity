@@ -32,9 +32,9 @@ namespace simul
 #if USING_HDRP
 		private HDAdditionalCameraData HDRPdummyCam = null;
 		private GameObject trueSkyCubemapProbe = null;
+#endif
 		private int faceMask = 63;
 		public int GetFaceMask() { return faceMask; }
-#endif
 
 
 		public RenderTexture GetRenderTexture()
@@ -51,11 +51,12 @@ namespace simul
 
 		void OnDisable()
 		{
+#if USING_HDRP
 			if (trueSkyCubemapProbe)
 			{
 				DestroyImmediate(trueSkyCubemapProbe);
 			}
-#if USING_HDRP
+
 			if (HDRPdummyCam)
 			{
 				DestroyImmediate(HDRPdummyCam);
