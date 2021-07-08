@@ -11,21 +11,31 @@ namespace simul
 	/// This probe component will update the material trueSKYSkybox, which can be used as the skybox for lighting.
 	public class TrueSkyCubemapProbe : MonoBehaviour
 	{
-		private Camera dummyCam                     = null;
-		private RenderTexture cubemapRenderTexture  = null;
-		public int textureSize                      = 32;
-		public float exposure                       = 1.0F;
-		public float gamma                          = 1.0F;//0.44F
-		public float updatePeriodSeconds            = 0.5F;
-		float _updatePeriodSeconds                  = 0.0F;
-		public bool skyOnly                         = true;
+		private Camera dummyCam = null;
 
-		bool _initialized                                   = false;
-		public RenderTextureFormat renderTextureFormat      = RenderTextureFormat.Default;
-		private TrueSkyCameraCubemap trueSkyCameraCubemap   = null;
-		int last_face                                       = -1;
+		private RenderTexture cubemapRenderTexture = null;
+		public int textureSize = 32;
+		public float exposure = 1.0F;
+		public float gamma = 1.0F;//0.44F
+		public float updatePeriodSeconds = 0.5F;
+		float _updatePeriodSeconds = 0.0F;
+		public bool skyOnly = true;
+
+		bool _initialized = false;
+		public RenderTextureFormat renderTextureFormat = RenderTextureFormat.Default;
+		private TrueSkyCameraCubemap trueSkyCameraCubemap = null;
+		int last_face = -1;
 		// Flips the projection matrix of the cubemap probe
-		public bool flipProbeY                              = true;
+		public bool flipProbeY = true;
+
+		// Variables solely for HDRP
+#if USING_HDRP
+		private HDAdditionalCameraData HDRPdummyCam = null;
+		private GameObject trueSkyCubemapProbe = null;
+		private int faceMask = 63;
+		public int GetFaceMask() { return faceMask; }
+#endif
+
 
 		public RenderTexture GetRenderTexture()
 		{
@@ -41,10 +51,19 @@ namespace simul
 
 		void OnDisable()
 		{
+			if (trueSkyCubemapProbe)
+			{
+				DestroyImmediate(trueSkyCubemapProbe);
+			}
+#if USING_HDRP
+			if (HDRPdummyCam)
+			{
+				DestroyImmediate(HDRPdummyCam);
+			}
+#endif
 			if (dummyCam)
 			{
 				DestroyImmediate(dummyCam);
-				dummyCam = null;
 			}
 			if (trueSkyCameraCubemap)
 			{
@@ -115,14 +134,11 @@ namespace simul
 
 		void DoUpdate()
 		{
-			if (trueSKY.GetTrueSky().HDRP_RenderPipelineAsset == null)
-			{
-				DoUpdateStandard();
-			}
-			else
-			{
-				DoUpdateHDRP();
-			}
+#if USING_HDRP
+			DoUpdateHDRP();
+#else
+			DoUpdateStandard();
+#endif
 		}
 
 		/// <summary>
@@ -136,7 +152,8 @@ namespace simul
 									
 			if (dummyCam == null)
 			{
-				GameObject aDummyCamObject       = new GameObject("CubemapCamera1", typeof(Camera));
+				GameObject aDummyCamObject = new GameObject("CubemapCamera1", typeof(Camera));
+				UnityEngine.Debug.LogWarning("DoUpdateStandard");
 				aDummyCamObject.gameObject.layer = trueSKY.GetTrueSky().trueSKYLayerIndex;
 				aDummyCamObject.hideFlags		 = HideFlags.HideAndDontSave;
 				dummyCam                         = aDummyCamObject.GetComponent<Camera>();
@@ -156,7 +173,7 @@ namespace simul
 			if (cubemapRenderTexture == null)
 				CreateTexture();
 			// Don't render if is not ready yet
-			if(!cubemapRenderTexture.IsCreated())
+			if (!cubemapRenderTexture.IsCreated())
 			{
 				CreateTexture();
 				return;
@@ -229,11 +246,8 @@ namespace simul
 				UnityEngine.Debug.LogWarning("Can't find Material 'trueSKYSkybox' - it should be in Simul/Resources.");
 		}
 
-		// Variables solely for HDRP
-		private GameObject trueSkyCubemapProbe = null;
-		private int faceMask = 63;
-		public int GetFaceMask() { return faceMask; }
 
+#if USING_HDRP
 		/// <summary>
 		/// This is the function that creates the cubemap images for HDRP
 		/// </summary>
@@ -247,27 +261,47 @@ namespace simul
 
 			if (trueSkyCubemapProbe == null)
 			{
-				trueSkyCubemapProbe = new GameObject("TrueSkyCubemapProbe", typeof(Camera));
+				foreach (var cam in FindObjectsOfType(typeof(Camera)) as Camera[])
+				{
+					if (cam.name == "TrueSkyCubemapProbe")
+					{
+						trueSkyCubemapProbe = cam.gameObject;
+						break;
+					}
+				}
+				if (trueSkyCubemapProbe == null)
+				{
+					trueSkyCubemapProbe = new GameObject("TrueSkyCubemapProbe", typeof(Camera));
+					trueSkyCubemapProbe.AddComponent<HDAdditionalCameraData>();
+					UnityEngine.Debug.LogWarning("DoUpdateHDRP");
+
+					trueSkyCubemapProbe.gameObject.layer = trueSKY.GetTrueSky().trueSKYLayerIndex;
+
+					if (trueSkyCubemapProbe.GetComponent<Camera>() == null)
+						trueSkyCubemapProbe.AddComponent<Camera>();
+				}
+				if(dummyCam == null)
+				{
+					dummyCam = trueSkyCubemapProbe.GetComponent<Camera>();
+					HDRPdummyCam = trueSkyCubemapProbe.GetComponent<HDAdditionalCameraData>();
+					trueSkyCubemapProbe.hideFlags = HideFlags.HideAndDontSave;
+					dummyCam.enabled = true;
+					dummyCam.clearFlags = CameraClearFlags.Color;
+					dummyCam.backgroundColor = new Color(0, 0, 0, 0);
+					dummyCam.renderingPath = RenderingPath.DeferredLighting;
+					dummyCam.depthTextureMode |= DepthTextureMode.Depth;
+					dummyCam.fieldOfView = 90.0f;
+					dummyCam.targetTexture = cubemapRenderTexture;
+					dummyCam.nearClipPlane = 0.1f;
+					dummyCam.farClipPlane = 300000.0f;
+				}
+
 			}
-			trueSkyCubemapProbe.hideFlags = HideFlags.HideAndDontSave;
-			trueSkyCubemapProbe.gameObject.layer = trueSKY.GetTrueSky().trueSKYLayerIndex;
-
-			if (trueSkyCubemapProbe.GetComponent<Camera>() == null)
-				trueSkyCubemapProbe.AddComponent<Camera>();
-
-			Camera dummyCam				= trueSkyCubemapProbe.GetComponent<Camera>();
-			dummyCam.enabled			= true;
-			dummyCam.clearFlags			= CameraClearFlags.Color;
-			dummyCam.backgroundColor	= new Color(0, 0, 0, 0);
-			dummyCam.renderingPath		= RenderingPath.DeferredLighting;
-			dummyCam.depthTextureMode	|= DepthTextureMode.Depth;
-			dummyCam.fieldOfView		= 90.0f;
-			dummyCam.targetTexture		= cubemapRenderTexture;
-			dummyCam.nearClipPlane		= 0.1f;
-			dummyCam.farClipPlane		= 300000.0f;
-
 			if (skyOnly)
+			{
 				dummyCam.cullingMask = 0;
+			}
+				
 
 			// Set the cube texture
 			Material trueSKYSkyboxMat = Resources.Load("trueSKYSkybox", typeof(Material)) as Material;
@@ -283,7 +317,7 @@ namespace simul
 			if (faceMask > 32)
 				faceMask = 1;
 		}
-
+#endif
 		void CreateTexture()
 		{
 			if (cubemapRenderTexture == null

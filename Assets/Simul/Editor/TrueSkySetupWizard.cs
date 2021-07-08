@@ -414,6 +414,9 @@ namespace simul
 				MainCam.gameObject.AddComponent<Camera>();
 				MainCam.tag = "MainCamera";
 				mainCamera = MainCam.GetComponent<Camera>();
+#if USING_HDRP
+				MainCam.AddComponent<HDAdditionalCameraData>();
+#endif
 			}
 
 			if (multipleCameras)    // if user has requested the script to be assigned to all cameras
@@ -513,8 +516,7 @@ namespace simul
 #if USING_HDRP
 				HDAdditionalCameraData mHDAdditionalCameraData = mainCamera.GetComponent<HDAdditionalCameraData>();
 
-
-				if (mHDAdditionalCameraData && mHDAdditionalCameraData.clearColorMode != HDAdditionalCameraData.ClearColorMode.Color)
+				if (mHDAdditionalCameraData)
 				{
 					mHDAdditionalCameraData.clearColorMode = HDAdditionalCameraData.ClearColorMode.Color;
 					mHDAdditionalCameraData.backgroundColorHDR = Color.black;
