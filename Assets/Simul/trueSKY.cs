@@ -69,15 +69,15 @@ namespace simul
 		public float optical_thickness_metres;
 		public float first_contact_metres;
 	};
-    public struct ExportLightningStrike
-    {
-        public int id;
-        public vec3 pos;
-        public vec3 endpos;
-        public float brightness;
-        public vec3 colour;
-        public int age;
-    };
+	public struct ExportLightningStrike
+	{
+		public int id;
+		public vec3 pos;
+		public vec3 endpos;
+		public float brightness;
+		public vec3 colour;
+		public int age;
+	};
 	[StructLayout(LayoutKind.Explicit)]
 	public struct Variant
 	{
@@ -183,12 +183,12 @@ namespace simul
 		public static void Init()
 		{
 #if !UNITY_EDITOR && UNITY_SWITCH
-            // For platforms that statically link trueSKY we need to register the plugin:
-            if (!_staticInitialized)
-            {
-                RegisterPlugin();
-                _staticInitialized = true;
-            }
+			// For platforms that statically link trueSKY we need to register the plugin:
+			if (!_staticInitialized)
+			{
+				RegisterPlugin();
+				_staticInitialized = true;
+			}
 #endif
 			if (_initialized)
 			{
@@ -262,12 +262,12 @@ namespace simul
 		}
 
 		public bool Valid()
-        {
+		{
 			return Base != 0.0f && Top != 0.0f && EmittedWavelength != 0.0f && Strength != 0.0f;
 		}
 
 		public vec4 ToVec4()
-        {
+		{
 			vec4 result;
 			result.x = Base;
 			result.y = Top;
@@ -275,7 +275,7 @@ namespace simul
 			result.w = Strength;
 
 			return result;
-        }
+		}
 	};
 
 	[StructLayout(LayoutKind.Sequential, Pack = 1)]
@@ -534,7 +534,7 @@ namespace simul
 	};
 
 	public class Aurorae
-    {
+	{
 		//Auroral Oval
 		public float GeomagneticNorthPoleLatitude;
 		public float GeomagneticNorthPoleLongitude;
@@ -629,20 +629,20 @@ namespace simul
 			vec4[] al_vec4_array = new vec4[GetAuroralLayerCount()];
 			int index = 0;
 			foreach(AuroralLayer al in AuroralLayers)
-            {
+			{
 				al_vec4_array[index] = al.ToVec4();
 				index++;
 			}
-            return al_vec4_array;
+			return al_vec4_array;
 		}
 
 		public int GetAuroralLayerCount()
-        {
+		{
 			return AuroralLayers.Count;
 		} 
 
 		public void SetDefaultAuroralLayers()
-        {
+		{
 			AuroralLayers.Clear();
 			AuroralLayers.Add(new AuroralLayer(85.0f, 105.0f, 427.8f, 30.0f));
 			AuroralLayers.Add(new AuroralLayer(85.0f, 105.0f, 670.0f, 18.0f));
@@ -689,22 +689,22 @@ namespace simul
 
 
 		public int SimulVersion
-        {
-            get
-            {
-                return MakeSimulVersion(SimulVersionMajor, SimulVersionMinor);
-            }
-        }
-        public int MakeSimulVersion(int major, int minor)
-        {
-            return (major << 8) + minor;
-        }
-        private static trueSKY trueSkySingleton = null;
+		{
+			get
+			{
+				return MakeSimulVersion(SimulVersionMajor, SimulVersionMinor);
+			}
+		}
+		public int MakeSimulVersion(int major, int minor)
+		{
+			return (major << 8) + minor;
+		}
+		private static trueSKY trueSkySingleton = null;
 
-        public trueSKY()
-        {
+		public trueSKY()
+		{
 
-        }
+		}
 
 		void OnEnable()
 		{
@@ -739,119 +739,131 @@ namespace simul
 			CloudShadowTexture.renderTexture = cloudShadowRT;
 		}
 
-        ~trueSKY()
-        {
-            if (this == trueSkySingleton)
-                trueSkySingleton = null;
-        }
-
-        /// <summary>
-        /// Get the trueSKY component in the scene.
-        /// </summary>
-        /// <returns></returns>
-        public static trueSKY GetTrueSky()
-        {
-            if (trueSkySingleton == null)
-                trueSkySingleton = GameObject.FindObjectOfType<trueSKY>();
-            return trueSkySingleton;
-        }
-        public void SetPointLight(int id, Vector3 pos, float min_radius, float max_radius, Vector3 irradiance)
-        {
-            Vector3 convertedPos = UnityToTrueSkyPosition(pos);             // convert from Unity format to trueSKY  
-
-            float[] p = { convertedPos.x, convertedPos.y, convertedPos.z };
-            float[] i = { irradiance.x, irradiance.z, irradiance.y };
-            StaticSetPointLight(id, p, min_radius, max_radius, i);
-        }
-        public LightingQueryResult LightingQuery(int id, Vector3 pos)
-        {
-            Vector3 convertedPos = UnityToTrueSkyPosition(pos);             // convert from Unity format to trueSKY
-
-            LightingQueryResult res = new LightingQueryResult();
-            IntPtr unmanagedPosPtr = Marshal.AllocHGlobal(12);
-            IntPtr unmanagedResultPtr = Marshal.AllocHGlobal(Marshal.SizeOf(typeof(LightingQueryResult)));
-            float[] p = { convertedPos.x, convertedPos.y, convertedPos.z };
-            Marshal.Copy(p, 0, unmanagedPosPtr, 3);
-            StaticLightingQuery(id, unmanagedPosPtr, unmanagedResultPtr);
-            res = (LightingQueryResult)Marshal.PtrToStructure(unmanagedResultPtr, typeof(LightingQueryResult));
-
-            // Call unmanaged code
-            Marshal.FreeHGlobal(unmanagedPosPtr);
-            Marshal.FreeHGlobal(unmanagedResultPtr);
-            return res;
-        }
-        public VolumeQueryResult GetCloudQuery(int id, Vector3 pos)
-        {
-            Vector3 convertedPos = UnityToTrueSkyPosition(pos);             // convert from Unity format to trueSKY
-
-            VolumeQueryResult res = new VolumeQueryResult();
-            IntPtr unmanagedPosPtr = Marshal.AllocHGlobal(12);
-            IntPtr unmanagedResultPtr = Marshal.AllocHGlobal(Marshal.SizeOf(typeof(VolumeQueryResult)));
-            float[] p = { convertedPos.x, convertedPos.y, convertedPos.z };
-            Marshal.Copy(p, 0, unmanagedPosPtr, 3);
-            StaticCloudPointQuery(id, unmanagedPosPtr, unmanagedResultPtr);
-            res = (VolumeQueryResult)Marshal.PtrToStructure(unmanagedResultPtr, typeof(VolumeQueryResult));
-
-            // Call unmanaged code
-            Marshal.FreeHGlobal(unmanagedPosPtr);
-            Marshal.FreeHGlobal(unmanagedResultPtr);
-            return res;
-        }
-        public LineQueryResult CloudLineQuery(int id, Vector3 startpos, Vector3 endpos)
-        {
-            Vector3 convertedStartPos = UnityToTrueSkyPosition(startpos);
-            Vector3 convertedEndPos = UnityToTrueSkyPosition(endpos);
-
-            LineQueryResult res = new LineQueryResult();
-            IntPtr unmanagedPosPtr1 = Marshal.AllocHGlobal(12);
-            IntPtr unmanagedPosPtr2 = Marshal.AllocHGlobal(12);
-            IntPtr unmanagedResultPtr = Marshal.AllocHGlobal(Marshal.SizeOf(typeof(LineQueryResult)));
-            // swap y and z because Unity
-            float[] p1 = { convertedStartPos.x, convertedStartPos.y, convertedStartPos.z };
-            float[] p2 = { convertedEndPos.x, convertedEndPos.y, convertedEndPos.z };
-            Marshal.Copy(p1, 0, unmanagedPosPtr1, 3);
-            Marshal.Copy(p2, 0, unmanagedPosPtr2, 3);
-            StaticCloudLineQuery(id, unmanagedPosPtr1, unmanagedPosPtr2, unmanagedResultPtr);
-            res = (LineQueryResult)Marshal.PtrToStructure(unmanagedResultPtr, typeof(LineQueryResult));
-            // Call unmanaged code
-            Marshal.FreeHGlobal(unmanagedPosPtr1);
-            Marshal.FreeHGlobal(unmanagedPosPtr2);
-            Marshal.FreeHGlobal(unmanagedResultPtr);
-            return res;
-        }
-        public float GetCloudAtPosition(Vector3 pos)
-        {
-            Vector3 convertedPos = UnityToTrueSkyPosition(pos);
-            float[] x = { convertedPos.x, convertedPos.y, convertedPos.z };
-            float ret = StaticGetRenderFloatAtPosition("Cloud", x);
-            return ret;
-        }
-        public float GetCloudShadowAtPosition(Vector3 pos)
-        {
-            Vector3 convertedPos = UnityToTrueSkyPosition(pos);
-            float[] x = { convertedPos.x, convertedPos.y, convertedPos.z };
-            float ret = StaticGetRenderFloatAtPosition("CloudShadow", x);
-            return ret;
-        }
-        public float GetPrecipitationAtPosition(Vector3 pos)
-        {
-            Vector3 convertedPos = UnityToTrueSkyPosition(pos);
-            float[] x = { convertedPos.x, convertedPos.y, convertedPos.z };
-            float ret = StaticGetRenderFloatAtPosition("Precipitation", x);
-            return ret;
-        }
-        // These are for keyframe editing:
-        // These are for keyframe editing:
-        public int GetNumSkyKeyframes()
-        {
-            return StaticRenderGetNumKeyframes(0);
-        }
-
-		public int GetNumCloudKeyframes(int layer = 1)
+		~trueSKY()
 		{
-			return StaticRenderGetNumKeyframes(layer);
+			if (this == trueSkySingleton)
+				trueSkySingleton = null;
 		}
 
+		/// <summary>
+		/// Get the trueSKY component in the scene.
+		/// </summary>
+		/// <returns></returns>
+		public static trueSKY GetTrueSky()
+		{
+			if (trueSkySingleton == null)
+				trueSkySingleton = GameObject.FindObjectOfType<trueSKY>();
+			return trueSkySingleton;
+		}
+		public void SetPointLight(int id, Vector3 pos, float min_radius, float max_radius, Vector3 irradiance)
+		{
+			Vector3 convertedPos = UnityToTrueSkyPosition(pos);             // convert from Unity format to trueSKY  
+
+			float[] p = { convertedPos.x, convertedPos.y, convertedPos.z };
+			float[] i = { irradiance.x, irradiance.z, irradiance.y };
+			StaticSetPointLight(id, p, min_radius, max_radius, i);
+		}
+		public LightingQueryResult LightingQuery(int id, Vector3 pos)
+		{
+			Vector3 convertedPos = UnityToTrueSkyPosition(pos);             // convert from Unity format to trueSKY
+
+			LightingQueryResult res = new LightingQueryResult();
+			IntPtr unmanagedPosPtr = Marshal.AllocHGlobal(12);
+			IntPtr unmanagedResultPtr = Marshal.AllocHGlobal(Marshal.SizeOf(typeof(LightingQueryResult)));
+			float[] p = { convertedPos.x, convertedPos.y, convertedPos.z };
+			Marshal.Copy(p, 0, unmanagedPosPtr, 3);
+			StaticLightingQuery(id, unmanagedPosPtr, unmanagedResultPtr);
+			res = (LightingQueryResult)Marshal.PtrToStructure(unmanagedResultPtr, typeof(LightingQueryResult));
+
+			// Call unmanaged code
+			Marshal.FreeHGlobal(unmanagedPosPtr);
+			Marshal.FreeHGlobal(unmanagedResultPtr);
+			return res;
+		}
+		public VolumeQueryResult GetCloudQuery(int id, Vector3 pos)
+		{
+			Vector3 convertedPos = UnityToTrueSkyPosition(pos);             // convert from Unity format to trueSKY
+
+			VolumeQueryResult res = new VolumeQueryResult();
+			IntPtr unmanagedPosPtr = Marshal.AllocHGlobal(12);
+			IntPtr unmanagedResultPtr = Marshal.AllocHGlobal(Marshal.SizeOf(typeof(VolumeQueryResult)));
+			float[] p = { convertedPos.x, convertedPos.y, convertedPos.z };
+			Marshal.Copy(p, 0, unmanagedPosPtr, 3);
+			StaticCloudPointQuery(id, unmanagedPosPtr, unmanagedResultPtr);
+			res = (VolumeQueryResult)Marshal.PtrToStructure(unmanagedResultPtr, typeof(VolumeQueryResult));
+
+			// Call unmanaged code
+			Marshal.FreeHGlobal(unmanagedPosPtr);
+			Marshal.FreeHGlobal(unmanagedResultPtr);
+			return res;
+		}
+		public LineQueryResult CloudLineQuery(int id, Vector3 startpos, Vector3 endpos)
+		{
+			Vector3 convertedStartPos = UnityToTrueSkyPosition(startpos);
+			Vector3 convertedEndPos = UnityToTrueSkyPosition(endpos);
+
+			LineQueryResult res = new LineQueryResult();
+			IntPtr unmanagedPosPtr1 = Marshal.AllocHGlobal(12);
+			IntPtr unmanagedPosPtr2 = Marshal.AllocHGlobal(12);
+			IntPtr unmanagedResultPtr = Marshal.AllocHGlobal(Marshal.SizeOf(typeof(LineQueryResult)));
+			// swap y and z because Unity
+			float[] p1 = { convertedStartPos.x, convertedStartPos.y, convertedStartPos.z };
+			float[] p2 = { convertedEndPos.x, convertedEndPos.y, convertedEndPos.z };
+			Marshal.Copy(p1, 0, unmanagedPosPtr1, 3);
+			Marshal.Copy(p2, 0, unmanagedPosPtr2, 3);
+			StaticCloudLineQuery(id, unmanagedPosPtr1, unmanagedPosPtr2, unmanagedResultPtr);
+			res = (LineQueryResult)Marshal.PtrToStructure(unmanagedResultPtr, typeof(LineQueryResult));
+			// Call unmanaged code
+			Marshal.FreeHGlobal(unmanagedPosPtr1);
+			Marshal.FreeHGlobal(unmanagedPosPtr2);
+			Marshal.FreeHGlobal(unmanagedResultPtr);
+			return res;
+		}
+		public float GetCloudAtPosition(Vector3 pos)
+		{
+			Vector3 convertedPos = UnityToTrueSkyPosition(pos);
+			float[] x = { convertedPos.x, convertedPos.y, convertedPos.z };
+			float ret = StaticGetRenderFloatAtPosition("Cloud", x);
+			return ret;
+		}
+		public float GetCloudShadowAtPosition(Vector3 pos)
+		{
+			Vector3 convertedPos = UnityToTrueSkyPosition(pos);
+			float[] x = { convertedPos.x, convertedPos.y, convertedPos.z };
+			float ret = StaticGetRenderFloatAtPosition("CloudShadow", x);
+			return ret;
+		}
+		public float GetPrecipitationAtPosition(Vector3 pos)
+		{
+			Vector3 convertedPos = UnityToTrueSkyPosition(pos);
+			float[] x = { convertedPos.x, convertedPos.y, convertedPos.z };
+			float ret = StaticGetRenderFloatAtPosition("Precipitation", x);
+			return ret;
+		}
+
+		// Simul versions < 4.2      | Simul versions >= 4.2. Layer is a UID
+		// Layer 0 = SkyKeyframe     | Layer/UID 0  = SkyKeyframe
+		// Layer 1 = CloudKeyframe   | Layer/UID 1+ = CloudKeyframe
+		// Layer 2 = Cloud2DKeyframe |
+
+		// These are for keyframe editing:
+
+		//Get Number of Keyframes
+		public int GetNumSkyKeyframes()
+		{
+			return StaticRenderGetNumKeyframes(0);
+		}
+		public int GetNumCloudKeyframes(int layer)
+		{
+			if (SimulVersion < MakeSimulVersion(4, 2))
+			{
+				return StaticRenderGetNumKeyframes(1);
+			}
+			else
+			{
+				return StaticRenderGetNumKeyframes((int)GetCloudLayerByIndex(layer));
+			}
+		}
 		public int GetNumCloud2DKeyframes()
 		{
 			if (SimulVersion < MakeSimulVersion(4, 2))
@@ -861,16 +873,22 @@ namespace simul
 			return -1;
 		}
 
+		//Insert Keyframes
 		public uint InsertSkyKeyframe(float t)
 		{
 			return StaticRenderInsertKeyframe(0, t);
 		}
-
-		public uint InsertCloudKeyframe(float t)
+		public uint InsertCloudKeyframe(float t, int layer)
 		{
-			return StaticRenderInsertKeyframe(1, t);
+			if (SimulVersion < MakeSimulVersion(4, 2))
+			{
+				return StaticRenderInsertKeyframe(1, t);
+			}
+			else
+			{ 
+				return StaticRenderInsertKeyframe((int)GetCloudLayerByIndex(layer), t);
+			}
 		}
-
 		public uint Insert2DCloudKeyframe(float t)
 		{
 			if (SimulVersion < MakeSimulVersion(4, 2))
@@ -880,30 +898,28 @@ namespace simul
 			return 0;
 		}
 
+		//Delete Keyframe
 		public void DeleteKeyframe(uint uid)
 		{
 			StaticRenderDeleteKeyframe(uid);
 		}
 
-		public uint GetSkyKeyframeByIndex(int layer, int index)
+		//Get Keyframe by index
+		public uint GetSkyKeyframeByIndex(int index)
 		{
-			return StaticRenderGetKeyframeByIndex(layer, index);
+			return StaticRenderGetKeyframeByIndex(0, index);
 		}
-
-		public uint GetCloudKeyframeByIndex(int layer, int index)
-		{
-			return StaticRenderGetKeyframeByIndex(layer, index);
-		}
-		public uint GetCloudKeyframerByIndex(int index)
+		public uint GetCloudKeyframeByIndex(int index, int layer)
 		{
 			if (SimulVersion < MakeSimulVersion(4, 2))
 			{
-				return GetCloudLayerUIDByIndex(index);
+				return StaticRenderGetKeyframeByIndex(1, index);
 			}
-			return 0;
-
+			else
+			{
+				return StaticRenderGetKeyframeByIndex((int)GetCloudLayerByIndex(layer), index);
+			}
 		}
-
 		public uint GetCloud2DKeyframeByIndex(int index)
 		{
 			if (SimulVersion < MakeSimulVersion(4, 2))
@@ -913,56 +929,86 @@ namespace simul
 			return 0;
 		}
 
-		public uint GetInterpolatedCloudKeyframe(int layer)
-		{
-			return GetInterpolatedCloudKeyframeUniqueId(layer);
-		}
+		//Get interpolated Keyframe
 		public uint GetInterpolatedSkyKeyframe()
 		{
 			return GetInterpolatedSkyKeyframeUniqueId();
 		}
+		public uint GetInterpolatedCloudKeyframe(int layer)
+		{
+			if (SimulVersion < MakeSimulVersion(4, 2))
+			{
+				return GetInterpolatedCloudKeyframeUniqueId(1);
+			}
+			else
+			{
+				return GetInterpolatedCloudKeyframeUniqueId((int)GetCloudLayerByIndex(layer));
+			}
+		}
+
+		//Get CloudLayer UID from Index
+		public uint GetCloudLayerByIndex(int index)
+		{
+			if (SimulVersion < MakeSimulVersion(4, 2))
+			{
+				return 1;
+			}
+			else
+			{
+				return GetCloudLayerUIDByIndex(index);
+			}
+		}
+
 		// Getting and changing properties of keyframes.
 		public void SetKeyframeValue(uint uid, string name, object value)
 		{
-			//UnityEngine.Debug.Log("trueSKY.SetKeyframeValue "+uid+" "+name+" "+value);
-			//UnityEngine.Debug.Log("type is "+value.GetType());
 			if (value.GetType() == typeof(double))
 			{
-				//UnityEngine.Debug.Log("it's a double");
 				double d = (double)value;
 				StaticRenderKeyframeSetFloat(uid, name, (float)d);
 			}
 			else if (value.GetType() == typeof(float) || value.GetType() == typeof(double))
 			{
-				//UnityEngine.Debug.Log("it's a float");
 				StaticRenderKeyframeSetFloat(uid, name, (float)value);
 			}
 			else if (value.GetType() == typeof(int))
 			{
-				//UnityEngine.Debug.Log("it's an int");
 				StaticRenderKeyframeSetInt(uid, name, (int)value);
 			}
 			else if (value.GetType() == typeof(bool))
 			{
-				//UnityEngine.Debug.Log("it's a bool");
 				StaticRenderKeyframeSetBool(uid, name, (bool)value);
 			}
 		}
-		public float GetKeyframeValueFloat(uint uid, string name)
+		public T GetKeyframeValue<T>(uint uid, string name)
 		{
-			if (StaticRenderKeyframeHasFloat(uid, name))
-				return StaticRenderKeyframeGetFloat(uid, name);
-			else
-				return 0.0f;
-		}
-		public int GetKeyframeValueInt(uint uid, string name)
-		{
-			if (StaticRenderKeyframeHasInt(uid, name))
-				return StaticRenderKeyframeGetInt(uid, name);
-			else
-				return 0;
+			T result = (T)Convert.ChangeType(0, typeof(T));
+
+			if (result.GetType() == typeof(double))
+			{
+				double value = (double)StaticRenderKeyframeGetFloat(uid, name);
+				result = (T)Convert.ChangeType(value, typeof(T));
+			}
+			else if (result.GetType() == typeof(float))
+			{
+				float value = StaticRenderKeyframeGetFloat(uid, name);
+				result = (T)Convert.ChangeType(value, typeof(T));
+			}
+			else if (result.GetType() == typeof(int))
+			{
+				int value = StaticRenderKeyframeGetInt(uid, name);
+				result = (T)Convert.ChangeType(value, typeof(T));
+			}
+			else if (result.GetType() == typeof(bool))
+			{
+				bool value = StaticRenderKeyframeGetBool(uid, name);
+				result = (T)Convert.ChangeType(value, typeof(T));
+			}
+
+			return result;
 		}
 
+		//Storms
 		public uint GetStormUidByIndex(int index)
 		{
 			return GetStormByIndex(index);
@@ -986,6 +1032,14 @@ namespace simul
 		public void SetStormInt(uint uid, string name, int value)
 		{
 			StaticRenderKeyframeSetInt(uid, name, value);
+		}
+		public bool GetStormBool(uint uid, string name)
+		{
+			return StaticRenderKeyframeGetBool(uid, name);
+		}
+		public void SetStormBool(uint uid, string name, bool value)
+		{
+			StaticRenderKeyframeSetBool(uid, name, value);
 		}
 		/// <summary>
 		/// Retrieve the active strike. end and start position in metres.
@@ -1628,8 +1682,8 @@ namespace simul
 			}
 		}
 
-		//! Set a floating-point property of the Sky layer.
-		void SetFloat(string str, float value)
+		//! Set a floating-point property of trueSKY.
+		public void SetFloat(string str, float value)
 		{
 			try
 			{
@@ -1643,7 +1697,7 @@ namespace simul
 				UnityEngine.Debug.LogError(exc.ToString());
 			}
 		}
-		//! Get a floating-point property of the 3D cloud layer.
+		//! Get a floating-point property of trueSKY.
 		public float GetFloat(string str)
 		{
 			float value = 0.0F;
@@ -1657,6 +1711,7 @@ namespace simul
 			}
 			return value;
 		}
+
 		//! Set a floating-point property of the Sky layer.
 		public void SetSkyFloat(string name, float value)
 		{
@@ -1676,10 +1731,11 @@ namespace simul
 			}
 			return value;
 		}
+
 		//! Set a floating-point property of the 3D cloud layer.
 		public void SetCloudFloat(string name, float value)
 		{
-			SetFloat("Clouds:" + name, value);
+			SetFloat("clouds:" + name, value);
 		}
 		//! Get a floating-point property of the 3D cloud layer.
 		public float GetCloudFloat(string name)
@@ -1701,7 +1757,6 @@ namespace simul
 		{
 			SetFloat("2DClouds:" + name, value);
 		}
-
 		//! Get a floating-point property of the 2D cloud layer.
 		public float Get2DCloudFloat(string name)
 		{
@@ -3867,7 +3922,7 @@ namespace simul
 
 		//Returns true sizes do not match.
 		private bool CheckSizeOfExternalRenderValues()
-        {
+		{
 			if (SimulVersion < MakeSimulVersion(4, 2))
 				return false; //4.1 does not supprt ERV
 			string str= "sizeof:ExternalRenderValues";
@@ -4053,7 +4108,7 @@ namespace simul
 
 			try
 			{
-                if (!_initialized)
+				if (!_initialized)
 					Init();
 				if (Application.isPlaying)
 				{
@@ -4394,17 +4449,17 @@ namespace simul
 				StaticEnableLogging("trueSKYUnityRender.log");
 #endif
 
-                // Push the shader and texture paths:
-                if(!Application.isEditor)
-                {
+				// Push the shader and texture paths:
+				if(!Application.isEditor)
+				{
 #if UNITY_PS4
-                    StaticPushPath("ShaderBinaryPath", Application.streamingAssetsPath + @"/Simul/shaderbin/ps4");
+					StaticPushPath("ShaderBinaryPath", Application.streamingAssetsPath + @"/Simul/shaderbin/ps4");
 #elif UNITY_PS5
 					StaticPushPath("ShaderBinaryPath", Application.streamingAssetsPath + @"/Simul/shaderbin/ps5");
 #elif UNITY_WSA || UNITY_STANDALONE_WIN
-                   if (SystemInfo.graphicsDeviceType == GraphicsDeviceType.Direct3D11)
-                        StaticPushPath("ShaderBinaryPath", Application.dataPath + @"/Simul/shaderbin/x86_64/d3d11");
-                    else if(SystemInfo.graphicsDeviceType==GraphicsDeviceType.Direct3D12)
+				   if (SystemInfo.graphicsDeviceType == GraphicsDeviceType.Direct3D11)
+						StaticPushPath("ShaderBinaryPath", Application.dataPath + @"/Simul/shaderbin/x86_64/d3d11");
+					else if(SystemInfo.graphicsDeviceType==GraphicsDeviceType.Direct3D12)
 						StaticPushPath("ShaderBinaryPath", Application.dataPath + @"/Simul/shaderbin/x86_64/d3d12");
 					else if(SystemInfo.graphicsDeviceType==GraphicsDeviceType.Vulkan)
 						StaticPushPath("ShaderBinaryPath", Application.dataPath + @"/Simul/shaderbin/x86_64/vulkan");
@@ -4420,22 +4475,22 @@ namespace simul
 						StaticPushPath("ShaderBinaryPath", "D3D12");
 						StaticPushPath("ShaderPath", "");
 						StaticPushPath("ShaderPath", "D3D12");
-                }
+				}
 #endif
 				}
-                else
-                {
+				else
+				{
 					if (SystemInfo.graphicsDeviceType == GraphicsDeviceType.Direct3D11)
-                    {
-                        StaticPushPath("ShaderBinaryPath", Application.dataPath + @"/Simul/shaderbin/x86_64/d3d11");
-                        StaticPushPath("ShaderPath", Application.dataPath + @"/Simul/shaderbin/x86_64/d3d11");
-                    }
+					{
+						StaticPushPath("ShaderBinaryPath", Application.dataPath + @"/Simul/shaderbin/x86_64/d3d11");
+						StaticPushPath("ShaderPath", Application.dataPath + @"/Simul/shaderbin/x86_64/d3d11");
+					}
 					else if (SystemInfo.graphicsDeviceType == GraphicsDeviceType.Direct3D12)
-                    {
-                        StaticPushPath("ShaderBinaryPath", Application.dataPath + @"/Simul/shaderbin/x86_64/d3d12");
-                        StaticPushPath("ShaderPath", Application.dataPath + @"/Simul/shaderbin/x86_64/d3d12");
-                    }
-                    else if (SystemInfo.graphicsDeviceType == GraphicsDeviceType.Vulkan)
+					{
+						StaticPushPath("ShaderBinaryPath", Application.dataPath + @"/Simul/shaderbin/x86_64/d3d12");
+						StaticPushPath("ShaderPath", Application.dataPath + @"/Simul/shaderbin/x86_64/d3d12");
+					}
+					else if (SystemInfo.graphicsDeviceType == GraphicsDeviceType.Vulkan)
 					{
 						StaticPushPath("ShaderBinaryPath", Application.dataPath + @"/Simul/shaderbin/x86_64/vulkan");
 						StaticPushPath("ShaderPath", Application.dataPath + @"/Simul/shaderbin/x86_64/vulkan");
@@ -4455,8 +4510,8 @@ namespace simul
 						StaticPushPath("ShaderBinaryPath", Application.dataPath + @"/Simul/shaderbin/x86_64");
 						StaticPushPath("ShaderPath", Application.dataPath + @"/Simul/shaderbin/x86_64");
 					}
-                    StaticPushPath("TexturePath", Application.dataPath + @"/Simul/Media/Textures");
-                }
+					StaticPushPath("TexturePath", Application.dataPath + @"/Simul/Media/Textures");
+				}
 
 				StaticInitInterface();
 				Reload();
@@ -4532,19 +4587,19 @@ namespace simul
 				_rendering_initialized = false;
 			}
 		}
-        /// <summary>
-        /// Sets the nights textures (background and moon)
-        /// </summary>
-        public void SetNightTextures()
-        {
-            if(_moonTexture)
-            {
-                StaticSetRenderTexture("Moon", _moonTexture.GetNativeTexturePtr());
-            }
-            if(_backgroundTexture)
-            {
-                StaticSetRenderTexture("Background", _backgroundTexture.GetNativeTexturePtr());
-            }
-        }
+		/// <summary>
+		/// Sets the nights textures (background and moon)
+		/// </summary>
+		public void SetNightTextures()
+		{
+			if(_moonTexture)
+			{
+				StaticSetRenderTexture("Moon", _moonTexture.GetNativeTexturePtr());
+			}
+			if(_backgroundTexture)
+			{
+				StaticSetRenderTexture("Background", _backgroundTexture.GetNativeTexturePtr());
+			}
+		}
 	}
 }
