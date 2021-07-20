@@ -15,7 +15,7 @@ namespace simul
 			#else
 				private const string renderer_dll = @"TrueSkyPluginRender_MT";
 			#endif
-			
+
 		#else
 			#if UNITY_PS4
 				private const string renderer_dll = @"TrueSkyPluginRender";
@@ -133,6 +133,13 @@ namespace simul
 		[DllImport(renderer_dll)] public static extern float StaticRenderKeyframeGetFloat(uint uid, string name);
 		[DllImport(renderer_dll)] public static extern int StaticRenderKeyframeGetInt(uint uid, string name);
 		[DllImport(renderer_dll)] public static extern bool StaticRenderKeyframeGetBool(uint uid, string name);
+		[DllImport(renderer_dll)] public static extern uint StaticRenderInsertKeyframe(int layer, float t);
+		[DllImport(renderer_dll)] public static extern void StaticRenderDeleteKeyframe(uint uid);
+		[DllImport(renderer_dll)] public static extern int StaticRenderGetNumKeyframes(int layer);
+		[DllImport(renderer_dll)] public static extern uint StaticRenderGetKeyframeByIndex(int layer, int index);
+		[DllImport(renderer_dll)] public static extern uint GetInterpolatedCloudKeyframeUniqueId(int layer);
+		[DllImport(renderer_dll)] public static extern uint GetInterpolatedSkyKeyframeUniqueId();
+		[DllImport(renderer_dll)] public static extern uint GetCloudLayerUIDByIndex(int index);
 		
 		//trueSKY Keyframers
 		[DllImport(renderer_dll)] public static extern void StaticRenderKeyframerSetFloat(uint uid, string name, float value);
@@ -141,13 +148,7 @@ namespace simul
 		[DllImport(renderer_dll)] public static extern int StaticRenderKeyframerGetInt(uint uid, string name);
 		[DllImport(renderer_dll)] public static extern uint StaticRenderCreateCloudKeyframer(string name);
 		[DllImport(renderer_dll)] public static extern uint StaticRenderDeleteCloudKeyframer(uint uid);
-		[DllImport(renderer_dll)] public static extern uint StaticRenderInsertKeyframe(int layer, float t);
-		[DllImport(renderer_dll)] public static extern void StaticRenderDeleteKeyframe(uint uid);
-		[DllImport(renderer_dll)] public static extern int StaticRenderGetNumKeyframes(int layer);
-		[DllImport(renderer_dll)] public static extern uint StaticRenderGetKeyframeByIndex(int layer, int index);
-		[DllImport(renderer_dll)] public static extern uint GetInterpolatedCloudKeyframeUniqueId(int layer);
-		[DllImport(renderer_dll)] public static extern uint GetInterpolatedSkyKeyframeUniqueId();
-		[DllImport(renderer_dll)] public static extern uint GetCloudLayerUIDByIndex(int index);
+
 
 		//trueSKY Other
 		[DllImport(renderer_dll)] public static extern int GetNumStorms();
