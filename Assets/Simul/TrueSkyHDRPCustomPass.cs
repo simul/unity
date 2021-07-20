@@ -64,14 +64,14 @@ namespace simul
 
 		private void InternalExecute(ScriptableRenderContext src, CommandBuffer cmd, HDCamera camera, CullingResults cullingResult, RTHandle colour, RTHandle depth)
 		{
-			bool mainCamera = camera.camera.name.Equals("Main Camera");
-			bool cubemapProbe = camera.camera.name.Equals("TrueSkyCubemapProbe");
+			bool mainCamera = camera.camera.tag.Equals("MainCamera"); //Do we want to force trueSKY to only render in Main Camera?
+			bool cubemapProbe = camera.camera.name.Equals("TrueSkyCubemapProbe"); //If we are hiding this then it might be ok. But using the set name isn't great.
 
 			//Don't draw to the scene view. This should never be removed!
 			if (camera.camera.cameraType == CameraType.SceneView)
 				return;
 
-			if (camera.camera.gameObject.layer != trueSKY.GetTrueSky().trueSKYLayerIndex && !mainCamera)
+			if (camera.camera.gameObject.layer != trueSKY.GetTrueSky().trueSKYLayerIndex && (cubemapProbe || mainCamera))
 				return;
 
 			//Fill-in UnityViewStruct
