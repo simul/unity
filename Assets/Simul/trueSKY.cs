@@ -1771,17 +1771,7 @@ namespace simul
 			}
 			return value;
 		}
-		//! Sets the storm centre in metres. This method will apply the Metres Per Unit modifier
-		public void SetStormCentre(float x, float y)
-		{
-			int num = GetNumStorms();
-			for (int i = 0; i < num; i++)
-			{
-				uint s = GetStormByIndex(i);
-				StaticRenderKeyframeSetFloat(s, "CentreKmx", (x * MetresPerUnit) / 1000.0F);
-				StaticRenderKeyframeSetFloat(s, "CentreKmy", (y * MetresPerUnit) / 1000.0F);
-			}
-		}
+
 		//! Set an int property of the Sky layer.
 		public void SetSkyInt(string name, int value)
 		{
@@ -1808,6 +1798,7 @@ namespace simul
 			}
 			return value;
 		}
+
 		//! Set an integer property of the 3D cloud layer.
 		public void SetCloudInt(string name, int value)
 		{
@@ -1847,7 +1838,6 @@ namespace simul
 				UnityEngine.Debug.Log(exc.ToString());
 			}
 		}
-
 		//! Get an integer property of the 2D cloud layer.
 		public int Get2DCloudInt(string name)
 		{
@@ -1861,6 +1851,18 @@ namespace simul
 				UnityEngine.Debug.Log(exc.ToString());
 			}
 			return value;
+		}
+
+		//! Sets the storm centre in metres. This method will apply the Metres Per Unit modifier
+		public void SetStormCentre(float x, float y)
+		{
+			int num = GetNumStorms();
+			for (int i = 0; i < num; i++)
+			{
+				uint s = GetStormByIndex(i);
+				StaticRenderKeyframeSetFloat(s, "CentreKmx", (x * MetresPerUnit) / 1000.0F);
+				StaticRenderKeyframeSetFloat(s, "CentreKmy", (y * MetresPerUnit) / 1000.0F);
+			}
 		}
 
 		[SerializeField]
@@ -2390,7 +2392,7 @@ namespace simul
 		static public bool _showAuroraeTextures = false;
 		static public bool _showWaterTextures = false;
 		
-		bool _simulationTimeRain = false;
+		//bool _simulationTimeRain = false;
 
 		public int trueSKYLayerIndex = 14;
 
@@ -2531,25 +2533,25 @@ namespace simul
 					}
 			}
 		}
-		public bool SimulationTimeRain
-		{
-			get
-			{
-				return _simulationTimeRain;
-			}
-			set
-			{
-				if (_simulationTimeRain != value) try
-					{
-						_simulationTimeRain = value;
-						StaticSetRenderBool("SimulationTimeRain", _simulationTimeRain);
-					}
-					catch (Exception exc)
-					{
-						UnityEngine.Debug.Log(exc.ToString());
-					}
-			}
-		}
+		//public bool SimulationTimeRain
+		//{
+		//	get
+		//	{
+		//		return _simulationTimeRain;
+		//	}
+		//	set
+		//	{
+		//		if (_simulationTimeRain != value) try
+		//			{
+		//				_simulationTimeRain = value;
+		//				StaticSetRenderBool("SimulationTimeRain", _simulationTimeRain);
+		//			}
+		//			catch (Exception exc)
+		//			{
+		//				UnityEngine.Debug.Log(exc.ToString());
+		//			}
+		//	}
+		//}
 		public int MaxPrecipitationParticles
 		{
 			get
@@ -3350,8 +3352,32 @@ namespace simul
 			}
 
 		}
+
+		bool _RealTimeWeatherEffects;
+		public bool RealTimeWeatherEffects
+		{
+			get
+			{
+				return _RealTimeWeatherEffects;
+			}
+			set
+			{
+				if (_RealTimeWeatherEffects != value) try
+					{
+						_RealTimeWeatherEffects = value;
+						updateERV = true;
+					}
+					catch (Exception exc)
+					{
+						UnityEngine.Debug.Log(exc.ToString());
+					}
+			}
+
+		}
+
+		
 		[SerializeField]
-		int _IntegrationScheme = 0;
+		int _IntegrationScheme = 2;
 		public int IntegrationScheme
 		{
 			get
@@ -3996,6 +4022,7 @@ namespace simul
 				ERV.ShadowTextureSize = _shadowTextureRes;
 				ERV.RainNearThreshold = _PrecipitationThresholdKm;
 				ERV.MaximumStarMagnitude = _maximumStarMagniute;
+				ERV.RealTimeWeatherEffects = Convert.ToUInt32(_RealTimeWeatherEffects);
 
 				Marshal.StructureToPtr(ERV, ERVptr, !GetTrueSky().UsingIL2CPP);
 				StaticSetExternalRenderValues(ERVptr);
@@ -4164,36 +4191,36 @@ namespace simul
 				}
 				if (SimulVersion >= MakeSimulVersion(4, 2))
 				{
-				UpdateExternalDynamic();
-
-				foreach(var moon in _moons)
-				{
-					if (moon.Render && !moon.DestroyMoon)
+					UpdateExternalDynamic();
+	
+					foreach(var moon in _moons)
 					{
-						ExternalMoon Moon = new ExternalMoon();
-						Moon.version = ExternalMoon.static_version;
-						Moon.orbit = moon.GetOrbit();
-						Moon.name = moon.Name;
-						Moon.radiusArcMinutes = (float)moon.RadiusArcMinutes;
-						Moon.render = true;
-						ExternalTexture tex = new ExternalTexture();
-						tex.version = ExternalTexture.static_version;
-						InitExternalTexture(ref tex, moon.MoonTexture);
-						Moon.colour.x = moon.Colour.r;
-						Moon.colour.y = moon.Colour.g;
-						Moon.colour.z = moon.Colour.b;
-						Moon.albedo = (float)moon.Albedo;					
-						System.IntPtr Moonptr = Marshal.AllocHGlobal(Marshal.SizeOf(new ExternalMoon()));
-						Marshal.StructureToPtr(Moon, Moonptr, !GetTrueSky().UsingIL2CPP); 
-						StaticSetMoon(_moons.IndexOf(moon) + 1, Moonptr);
+						if (moon.Render && !moon.DestroyMoon)
+						{
+							ExternalMoon Moon = new ExternalMoon();
+							Moon.version = ExternalMoon.static_version;
+							Moon.orbit = moon.GetOrbit();
+							Moon.name = moon.Name;
+							Moon.radiusArcMinutes = (float)moon.RadiusArcMinutes;
+							Moon.render = true;
+							ExternalTexture tex = new ExternalTexture();
+							tex.version = ExternalTexture.static_version;
+							InitExternalTexture(ref tex, moon.MoonTexture);
+							Moon.colour.x = moon.Colour.r;
+							Moon.colour.y = moon.Colour.g;
+							Moon.colour.z = moon.Colour.b;
+							Moon.albedo = (float)moon.Albedo;					
+							System.IntPtr Moonptr = Marshal.AllocHGlobal(Marshal.SizeOf(new ExternalMoon()));
+							Marshal.StructureToPtr(Moon, Moonptr, !GetTrueSky().UsingIL2CPP); 
+							StaticSetMoon(_moons.IndexOf(moon) + 1, Moonptr);
+						}
+						else
+						{ 
+							StaticSetMoon(_moons.IndexOf(moon) + 1, (System.IntPtr)null);
+							if(moon.DestroyMoon)
+								_moons.Remove(moon);
+						}
 					}
-					else
-					{ 
-						StaticSetMoon(_moons.IndexOf(moon) + 1, (System.IntPtr)null);
-						if(moon.DestroyMoon)
-							_moons.Remove(moon);
-					}
-				}
 				}
 			
 				StaticTick(0.0f);
@@ -4536,7 +4563,7 @@ namespace simul
 				StaticSetRenderBool("ShowCompositing", _showCompositing);
 				StaticSetRenderBool("ShowCloudCrossSections", _showCloudCrossSections);
 				StaticSetRenderBool("ShowRainTextures", _showRainTextures);
-				StaticSetRenderBool("SimulationTimeRain", _simulationTimeRain);
+				//StaticSetRenderBool("SimulationTimeRain", _simulationTimeRain);
 				StaticSetRenderBool("instantupdate", _instantUpdate);
 				StaticSetRenderFloat("Time", _trueSKYTime / TimeUnits);
 				//StaticSetRenderBool("gridrendering", _IntegrationScheme == 0);
