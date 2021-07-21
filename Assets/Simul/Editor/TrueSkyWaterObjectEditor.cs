@@ -35,7 +35,7 @@ namespace simul
 			{
 				GameObject g = new GameObject("Water Probe");
 				g.AddComponent<TrueSkyWaterProbe>();
-				g.transform.parent = Selection.GetTransforms(SelectionMode.TopLevel | SelectionMode.OnlyUserModifiable)[0];
+				g.transform.parent = Selection.GetTransforms(SelectionMode.TopLevel | SelectionMode.Editable)[0];
 				g.transform.localPosition = new Vector3(0.0f,0.0f,0.0f);
 			}
 			else

@@ -16,8 +16,6 @@ namespace simul
             {
                 case BuildTarget.PS4:
                     return "ps4";
-				case BuildTarget.PS5:
-					return "ps5";
                 case BuildTarget.StandaloneWindows:
                 case BuildTarget.StandaloneWindows64:
                     return "x86_64";
