@@ -30,8 +30,8 @@ namespace simul
 		//Be careful adding more than 6 due to UI spacing issues.
 		string[] currentIssues = {
 			"No Dynamic Lighting with Lightning Strikes in clouds",
-			"Rain Streaks are not compatible with Variable Grid integration scheme ",
-			"Cloud movement issues with Wind Speed and Progression Scale",
+			"Rain Streaks are not compatible with Variable Grid integration scheme",
+			"Using Manual cloud positioning can cause irregular cloud movement"
 		};
 
 		[MenuItem("GameObject/Remove trueSKY from Scene", false, 200000)]
