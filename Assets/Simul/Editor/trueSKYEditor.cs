@@ -969,10 +969,12 @@ namespace simul
 			{
 				buildPlayerOptions.target = BuildTarget.PS4;
 			}
+#if UNITY_PS5
 			else if (platform == "PS5")
 			{
 				buildPlayerOptions.target = BuildTarget.PS5;
 			}
+#endif
 			else
 			{
 				UnityEngine.Debug.LogError("Unknown platform:" + platform);
@@ -1035,6 +1037,7 @@ namespace simul
 
 				UnityEngine.Debug.Log("Exported: " + fileName);
 			}
+#if UNITY_PS5
 			else if (platform == "PS5")
 			{
 				string[] paths =
@@ -1046,6 +1049,7 @@ namespace simul
 
 				UnityEngine.Debug.Log("Exported: " + fileName);
 			}
+#endif
 			else
 			{
 				UnityEngine.Debug.Log("Unknown platform:" + platform);

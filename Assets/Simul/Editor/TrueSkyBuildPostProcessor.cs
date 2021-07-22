@@ -44,8 +44,9 @@ namespace simul
 #if UNITY_GAMECORE
                 target != BuildTarget.GameCoreScarlett  && target != BuildTarget.GameCoreXboxOne     &&
 #endif
+#if UNITY_PS5
 				target != BuildTarget.PS5 &&
-
+#endif
                 target != BuildTarget.Switch)
 			{
 				Debug.LogError("Trying to build for a non-supported platform! (" + target.ToString() + ")");
@@ -56,17 +57,19 @@ namespace simul
 			string buildDirectory = pathToBuiltProject.Replace(".exe", "_Data");
 			string mediaDirectory = buildDirectory;
 			String targetstr = "x86_64";
-            // Per-platform changes
-			if(target == BuildTarget.PS4)
+			// Per-platform changes
+			if (target == BuildTarget.PS4)
 			{
-                mediaDirectory += s + "Media" + s;
+				mediaDirectory += s + "Media" + s;
 				targetstr = "ps4";
 			}
+#if UNITY_PS5
 			if (target == BuildTarget.PS5)
 			{
 				mediaDirectory += s + "Media" ;
 				targetstr = "ps5";
 			}
+#endif
             if(target == BuildTarget.WSAPlayer)
             {
                 mediaDirectory += s + Application.productName + s + "Data";
