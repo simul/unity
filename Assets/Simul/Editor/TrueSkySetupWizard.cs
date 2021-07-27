@@ -31,7 +31,7 @@ namespace simul
 		string[] currentIssues = {
 			"No Dynamic Lighting with Lightning Strikes in clouds",
 			"Rain Streaks are not compatible with Variable Grid integration scheme ",
-			"Cloud movement issues with Wind Speed and Progression Scale",
+			"Using Manual cloud positioning can cause irregular cloud movement",
 		};
 
 		[MenuItem("GameObject/Remove trueSKY from Scene", false, 200000)]
@@ -414,6 +414,9 @@ namespace simul
 				MainCam.gameObject.AddComponent<Camera>();
 				MainCam.tag = "MainCamera";
 				mainCamera = MainCam.GetComponent<Camera>();
+#if USING_HDRP
+				MainCam.AddComponent<HDAdditionalCameraData>();
+#endif
 			}
 
 			if (multipleCameras)    // if user has requested the script to be assigned to all cameras
@@ -510,6 +513,15 @@ namespace simul
 			}
 			if (removeSkybox && mainCamera != null)
 			{
+#if USING_HDRP
+				HDAdditionalCameraData mHDAdditionalCameraData = mainCamera.GetComponent<HDAdditionalCameraData>();
+
+				if (mHDAdditionalCameraData)
+				{
+					mHDAdditionalCameraData.clearColorMode = HDAdditionalCameraData.ClearColorMode.Color;
+					mHDAdditionalCameraData.backgroundColorHDR = Color.black;
+				}
+#endif
 				if (mainCamera.clearFlags != CameraClearFlags.SolidColor)
 				{
 					mainCamera.clearFlags = CameraClearFlags.SolidColor;

@@ -71,7 +71,7 @@ namespace simul
 			if (camera.camera.cameraType == CameraType.SceneView)
 				return;
 
-			if (camera.camera.gameObject.layer != trueSKY.GetTrueSky().trueSKYLayerIndex && (cubemapProbe || mainCamera))
+			if (camera.camera.gameObject.layer != trueSKY.GetTrueSky().trueSKYLayerIndex && (mainCamera || cubemapProbe))
 				return;
 
 			//Fill-in UnityViewStruct
