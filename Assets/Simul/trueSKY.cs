@@ -362,7 +362,7 @@ namespace simul
 		public float CosmicBackgroundBrightness;       //!< Brightness multiplier for cosmic background.
 
 		public float CloudShadowRangeKm;
-		public float CloudShadowStrength;
+		public float CloudShadowResolution;
 
 		public int MaxPrecipitationParticles;
 		public float RainFallSpeedMS;
@@ -711,21 +711,25 @@ namespace simul
 			if (!cloudShadowRT)
 			{
 				cloudShadowRT = new RenderTexture(256, 256, 16, RenderTextureFormat.ARGB32);
+				cloudShadowRT.name = "CloudShadowRT";
 				cloudShadowRT.Create();
 			}
 			if (!lossRT)
 			{
 				lossRT = new RenderTexture(256, 256, 16, RenderTextureFormat.ARGB32);
+				lossRT.name = "lossRT";
 				lossRT.Create();		
 			}
 			if (!inscatterRT)
 			{
 				inscatterRT = new RenderTexture(256, 256, 16, RenderTextureFormat.ARGB32);
+				inscatterRT.name = "inscatterRT";
 				inscatterRT.Create();			
 			}
 			if (!cloudVisibilityRT)
 			{
 				cloudVisibilityRT = new RenderTexture(256, 256, 16, RenderTextureFormat.ARGB32);
+				cloudVisibilityRT.name = "cloudVisibilityRT";
 				cloudVisibilityRT.Create();
 			}
 
@@ -1767,17 +1771,7 @@ namespace simul
 			}
 			return value;
 		}
-		//! Sets the storm centre in metres. This method will apply the Metres Per Unit modifier
-		public void SetStormCentre(float x, float y)
-		{
-			int num = GetNumStorms();
-			for (int i = 0; i < num; i++)
-			{
-				uint s = GetStormByIndex(i);
-				StaticRenderKeyframeSetFloat(s, "CentreKmx", (x * MetresPerUnit) / 1000.0F);
-				StaticRenderKeyframeSetFloat(s, "CentreKmy", (y * MetresPerUnit) / 1000.0F);
-			}
-		}
+
 		//! Set an int property of the Sky layer.
 		public void SetSkyInt(string name, int value)
 		{
@@ -1804,6 +1798,7 @@ namespace simul
 			}
 			return value;
 		}
+
 		//! Set an integer property of the 3D cloud layer.
 		public void SetCloudInt(string name, int value)
 		{
@@ -1843,7 +1838,6 @@ namespace simul
 				UnityEngine.Debug.Log(exc.ToString());
 			}
 		}
-
 		//! Get an integer property of the 2D cloud layer.
 		public int Get2DCloudInt(string name)
 		{
@@ -1857,6 +1851,18 @@ namespace simul
 				UnityEngine.Debug.Log(exc.ToString());
 			}
 			return value;
+		}
+
+		//! Sets the storm centre in metres. This method will apply the Metres Per Unit modifier
+		public void SetStormCentre(float x, float y)
+		{
+			int num = GetNumStorms();
+			for (int i = 0; i < num; i++)
+			{
+				uint s = GetStormByIndex(i);
+				StaticRenderKeyframeSetFloat(s, "CentreKmx", (x * MetresPerUnit) / 1000.0F);
+				StaticRenderKeyframeSetFloat(s, "CentreKmy", (y * MetresPerUnit) / 1000.0F);
+			}
 		}
 
 		[SerializeField]
@@ -2011,7 +2017,27 @@ namespace simul
 					}
 			}
 		}
-
+		[SerializeField]
+		int _interpolationSubdivisions = 8;
+		public int InterpolationSubdivisions
+		{
+			get
+			{
+				return _interpolationSubdivisions;
+			}
+			set
+			{
+				if (_interpolationSubdivisions != value) try
+					{
+						_interpolationSubdivisions = Math.Max(1,Math.Min(value,64));
+						StaticSetRenderInt("interpolationsubdivisions", _interpolationSubdivisions);
+					}
+					catch (Exception exc)
+					{
+						UnityEngine.Debug.Log(exc.ToString());
+					}
+			}
+		}
 		[SerializeField]
 		bool _instantUpdate = true;
 		public bool InstantUpdate
@@ -2361,13 +2387,15 @@ namespace simul
 		RenderTextureHolder _lossRT = new RenderTextureHolder();
 		RenderTextureHolder _cloudVisibilityRT = new RenderTextureHolder();
 		
-		static public bool _showCloudCrossSections = false;		
-		static public bool _showRainTextures = false;		
+		static public bool _showCloudCrossSections = false;
+		static public bool _showRainTextures = false;
 		static public bool _showAuroraeTextures = false;
 		static public bool _showWaterTextures = false;
 		
-		bool _simulationTimeRain = false;
-	
+		//bool _simulationTimeRain = false;
+
+		public int trueSKYLayerIndex = 14;
+
 		int _MaxPrecipitationParticles = 100000;
 
 		[SerializeField]
@@ -2505,25 +2533,25 @@ namespace simul
 					}
 			}
 		}
-		public bool SimulationTimeRain
-		{
-			get
-			{
-				return _simulationTimeRain;
-			}
-			set
-			{
-				if (_simulationTimeRain != value) try
-					{
-						_simulationTimeRain = value;
-						StaticSetRenderBool("SimulationTimeRain", _simulationTimeRain);
-					}
-					catch (Exception exc)
-					{
-						UnityEngine.Debug.Log(exc.ToString());
-					}
-			}
-		}
+		//public bool SimulationTimeRain
+		//{
+		//	get
+		//	{
+		//		return _simulationTimeRain;
+		//	}
+		//	set
+		//	{
+		//		if (_simulationTimeRain != value) try
+		//			{
+		//				_simulationTimeRain = value;
+		//				StaticSetRenderBool("SimulationTimeRain", _simulationTimeRain);
+		//			}
+		//			catch (Exception exc)
+		//			{
+		//				UnityEngine.Debug.Log(exc.ToString());
+		//			}
+		//	}
+		//}
 		public int MaxPrecipitationParticles
 		{
 			get
@@ -3324,8 +3352,32 @@ namespace simul
 			}
 
 		}
+
+		bool _RealTimeWeatherEffects;
+		public bool RealTimeWeatherEffects
+		{
+			get
+			{
+				return _RealTimeWeatherEffects;
+			}
+			set
+			{
+				if (_RealTimeWeatherEffects != value) try
+					{
+						_RealTimeWeatherEffects = value;
+						updateERV = true;
+					}
+					catch (Exception exc)
+					{
+						UnityEngine.Debug.Log(exc.ToString());
+					}
+			}
+
+		}
+
+		
 		[SerializeField]
-		int _IntegrationScheme = 0;
+		int _IntegrationScheme = 2;
 		public int IntegrationScheme
 		{
 			get
@@ -3707,18 +3759,19 @@ namespace simul
 		}
 
 		[SerializeField]
-		float _cloudShadowStrength = 0.8f;
-		public float CloudShadowStrength
+		int _cloudShadowResolution = 256;
+		public int CloudShadowResolution
 		{
 			get
 			{
-				return _cloudShadowStrength;
+				return _cloudShadowResolution;
 			}
 			set
 			{
-				if (_cloudShadowStrength != value) try
+				if (_cloudShadowResolution != value) try
 					{
-						_cloudShadowStrength = value;
+						_cloudShadowResolution = value;
+						StaticSetRenderInt("cloudshadowresolution", _cloudShadowResolution);
 					}
 					catch (Exception exc)
 					{
@@ -3969,12 +4022,13 @@ namespace simul
 				ERV.ShadowTextureSize = _shadowTextureRes;
 				ERV.RainNearThreshold = _PrecipitationThresholdKm;
 				ERV.MaximumStarMagnitude = _maximumStarMagniute;
+				ERV.RealTimeWeatherEffects = Convert.ToUInt32(_RealTimeWeatherEffects);
 
 				Marshal.StructureToPtr(ERV, ERVptr, !GetTrueSky().UsingIL2CPP);
 				StaticSetExternalRenderValues(ERVptr);
 				//StaticTriggerAction("Reset");
 			}
-		}
+			}
 
 		public void UpdateExternalDynamic()
 		{
@@ -3991,7 +4045,7 @@ namespace simul
 			EDV.AutomaticRainbowPosition = Convert.ToUInt32(_AutomaticRainbowPosition);
 			EDV.CellNoiseWavelengthKm = _CellNoiseWavelengthKm;
 			EDV.CloudShadowRangeKm = _cloudShadowRangeKm;
-			EDV.CloudShadowStrength = _cloudShadowStrength;
+			//EDV.CloudShadowStrength = _cloudShadowStrength;
 			EDV.CosmicBackgroundBrightness = _backgroundBrightness;
 			EDV.CrepuscularRayStrength = _crepuscularRaysStrength;
 			EDV.DirectLight = _DirectLight;
@@ -4109,9 +4163,9 @@ namespace simul
 				{
 					if (SimulVersion >= MakeSimulVersion(4, 2))
 					{
-						UpdateExternalRender();
-						updateERV = false;
-					}
+					UpdateExternalRender();
+					updateERV = false;
+				}
 					else
 					{
 						StaticSetRenderBool("RenderSky", true);
@@ -4139,8 +4193,8 @@ namespace simul
 				if (SimulVersion >= MakeSimulVersion(4, 2))
 				{
 					UpdateExternalDynamic();
-
-					foreach (var moon in _moons)
+	
+					foreach(var moon in _moons)
 					{
 						if (moon.Render && !moon.DestroyMoon)
 						{
@@ -4156,15 +4210,15 @@ namespace simul
 							Moon.colour.x = moon.Colour.r;
 							Moon.colour.y = moon.Colour.g;
 							Moon.colour.z = moon.Colour.b;
-							Moon.albedo = (float)moon.Albedo;
+							Moon.albedo = (float)moon.Albedo;					
 							System.IntPtr Moonptr = Marshal.AllocHGlobal(Marshal.SizeOf(new ExternalMoon()));
-						Marshal.StructureToPtr(Moon, Moonptr, !GetTrueSky().UsingIL2CPP); 
+							Marshal.StructureToPtr(Moon, Moonptr, !GetTrueSky().UsingIL2CPP); 
 							StaticSetMoon(_moons.IndexOf(moon) + 1, Moonptr);
 						}
 						else
-						{
+						{ 
 							StaticSetMoon(_moons.IndexOf(moon) + 1, (System.IntPtr)null);
-							if (moon.DestroyMoon)
+							if(moon.DestroyMoon)
 								_moons.Remove(moon);
 						}
 					}
@@ -4200,8 +4254,8 @@ namespace simul
 				if (TimeProgressionScale != 0)
 					TrueSKYTime += (((TimeProgressionScale / (24.0F * 60.0F * 60.0F)) * TimeUnits) * Time.deltaTime);
 
-				StaticSetRenderFloat("Time", _trueSKYTime / TimeUnits);
-			}
+			StaticSetRenderFloat("Time", _trueSKYTime/TimeUnits);
+		}
 		}
 		public Vector3 getSunColour(Vector3 pos,int id=0)
 		{
@@ -4307,6 +4361,25 @@ namespace simul
 				UnityEngine.Debug.Log(exc.ToString());
 			}
 			return pos;
+		}
+
+
+		public void setCloudShadowCentre(Vector3 pos)
+		{
+			if (!_initialized)
+				Init();
+
+			try
+			{
+				Vector3 position = UnityToTrueSkyPosition(pos);
+				StaticSetRenderFloat("cloudshadoworigin.X", position.x);
+				StaticSetRenderFloat("cloudshadoworigin.Y", position.y);
+				StaticSetRenderFloat("cloudshadoworigin.z", position.z);
+			}
+			catch (Exception exc)
+			{
+				UnityEngine.Debug.Log(exc.ToString());
+			}
 		}
 
 		/// <summary>
@@ -4423,14 +4496,14 @@ namespace simul
 #endif
 					StaticPushPath("TexturePath", Application.dataPath + @"/Simul/Media/Textures");
 #if UNITY_GAMECORE
-					if (SystemInfo.graphicsDeviceType == GraphicsDeviceType.GameCoreScarlett 
+					if (SystemInfo.graphicsDeviceType == GraphicsDeviceType.GameCoreXboxSeries 
 						|| SystemInfo.graphicsDeviceType == GraphicsDeviceType.GameCoreXboxOne)
 					{
 						StaticPushPath("ShaderBinaryPath", "");
 						StaticPushPath("ShaderBinaryPath", "D3D12");
 						StaticPushPath("ShaderPath", "");
 						StaticPushPath("ShaderPath", "D3D12");
-					}
+				}
 #endif
 				}
 				else
@@ -4451,7 +4524,7 @@ namespace simul
 						StaticPushPath("ShaderPath", Application.dataPath + @"/Simul/shaderbin/x86_64/vulkan");
 					}
 #if UNITY_GAMECORE
-					else if (SystemInfo.graphicsDeviceType == GraphicsDeviceType.GameCoreScarlett
+					else if (SystemInfo.graphicsDeviceType == GraphicsDeviceType.GameCoreXboxSeries
 						|| SystemInfo.graphicsDeviceType == GraphicsDeviceType.GameCoreXboxOne)
 					{
 						StaticPushPath("ShaderBinaryPath", "");
@@ -4491,7 +4564,7 @@ namespace simul
 				StaticSetRenderBool("ShowCompositing", _showCompositing);
 				StaticSetRenderBool("ShowCloudCrossSections", _showCloudCrossSections);
 				StaticSetRenderBool("ShowRainTextures", _showRainTextures);
-				StaticSetRenderBool("SimulationTimeRain", _simulationTimeRain);
+				//StaticSetRenderBool("SimulationTimeRain", _simulationTimeRain);
 				StaticSetRenderBool("instantupdate", _instantUpdate);
 				StaticSetRenderFloat("Time", _trueSKYTime / TimeUnits);
 				//StaticSetRenderBool("gridrendering", _IntegrationScheme == 0);

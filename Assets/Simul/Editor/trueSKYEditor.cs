@@ -287,6 +287,8 @@ namespace simul
 						else
 							EditorGUILayout.LabelField("Wind speed is set in the trueSKY Sequence asset in 4.1");
 
+						trueSky.RealTimeWeatherEffects = EditorGUILayout.Toggle("Real Time Weather Effects", trueSky.RealTimeWeatherEffects);
+
 						if (trueSky.SimulVersion >= trueSky.MakeSimulVersion(4, 3))
 							trueSky.MaxCloudDistanceKm = EditorGUILayout.Slider("Max Cloud Distance (km)", trueSky.MaxCloudDistanceKm, 100.0F, (trueSky.WindowWidthKm / 2));
 						else
@@ -383,8 +385,8 @@ namespace simul
 				{
 					
 					if (trueSky.SimulVersion >= trueSky.MakeSimulVersion(4, 2))
-					{
-						trueSky.SimulationTimeRain = EditorGUILayout.Toggle("Sim Time Rain", trueSky.SimulationTimeRain);
+					{ 
+						//trueSky.SimulationTimeRain = EditorGUILayout.Toggle("Sim Time Rain", trueSky.SimulationTimeRain); Now controlled with Real-Time Weather Effects
 						trueSky.MaxPrecipitationParticles = EditorGUILayout.IntField("Max Particles", trueSky.MaxPrecipitationParticles);
 						trueSky.PrecipitationRadiusMetres = EditorGUILayout.Slider("Radius (m)", trueSky.PrecipitationRadiusMetres, 0.5F, 100.0F);
 						trueSky.RainFallSpeedMS = EditorGUILayout.Slider("Rain fall speed (m/s)", trueSky.RainFallSpeedMS, 0.0F, 20.0F);
@@ -741,6 +743,8 @@ namespace simul
 				{
 
 					trueSky.InterpolationMode = EditorGUILayout.Popup("Interpolation Mode", trueSky.InterpolationMode, interpolationOptions);
+					if(trueSky.InterpolationMode== 0)
+						trueSky.InterpolationSubdivisions = EditorGUILayout.IntSlider("Subdivisions per keyframe",  trueSky.InterpolationSubdivisions,1,32);
 					trueSky.InstantUpdate = EditorGUILayout.Toggle("Instant Update", trueSky.InstantUpdate);
 
 					if (trueSky.SimulVersion >= trueSky.MakeSimulVersion(4, 2))
@@ -764,7 +768,7 @@ namespace simul
 				if (shadows)
 				{
 					trueSky.CloudShadowRangeKm = EditorGUILayout.IntSlider("Shadow Range KM", trueSky.CloudShadowRangeKm, 100, (int)trueSky.MaxCloudDistanceKm);
-					trueSky.CloudShadowStrength = EditorGUILayout.Slider("Cloud Shadow Strength", trueSky.CloudShadowStrength, 0.0F, 1.0F);
+					trueSky.CloudShadowResolution = EditorGUILayout.IntSlider("Cloud Shadow Resolution", trueSky.CloudShadowResolution, 64, 1024);
 				}
 
 				// Water settings
@@ -954,7 +958,7 @@ namespace simul
 #if UNITY_GAMECORE
 			else if (platform == "GameCoreXboxSeries")
 			{
-				buildPlayerOptions.target = BuildTarget.GameCoreScarlett;
+				buildPlayerOptions.target = BuildTarget.GameCoreXboxSeries;
 			}
 			else if (platform == "GameCoreXboxOne")
 			{
@@ -965,10 +969,12 @@ namespace simul
 			{
 				buildPlayerOptions.target = BuildTarget.PS4;
 			}
+#if UNITY_PS5
 			else if (platform == "PS5")
 			{
 				buildPlayerOptions.target = BuildTarget.PS5;
 			}
+#endif
 			else
 			{
 				UnityEngine.Debug.LogError("Unknown platform:" + platform);
@@ -1031,6 +1037,7 @@ namespace simul
 
 				UnityEngine.Debug.Log("Exported: " + fileName);
 			}
+#if UNITY_PS5
 			else if (platform == "PS5")
 			{
 				string[] paths =
@@ -1042,6 +1049,7 @@ namespace simul
 
 				UnityEngine.Debug.Log("Exported: " + fileName);
 			}
+#endif
 			else
 			{
 				UnityEngine.Debug.Log("Unknown platform:" + platform);

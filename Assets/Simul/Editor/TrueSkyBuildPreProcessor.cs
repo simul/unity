@@ -36,6 +36,7 @@ namespace simul
 				DirectoryCopy.Copy(MediaSource, saDir, true, true, false, false);
 				Debug.Log("DirectoryCopy: " + MediaSource + "->" + saDir);
 			}
+#if UNITY_PS5
 			if (target == BuildTarget.PS5)
 			{
 				string shaderbinSource = trueSKY.GetShaderbinSourceDir("ps5");
@@ -49,6 +50,7 @@ namespace simul
 				DirectoryCopy.Copy(MediaSource, saDir, true, true, false, false);
 				Debug.Log("DirectoryCopy: " + MediaSource + "->" + saDir);
 			}
+#endif
 #if UNITY_GAMECORE
 			if(target == BuildTarget.GameCoreScarlett)
 			{
