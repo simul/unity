@@ -4147,6 +4147,7 @@ namespace simul
 						StaticSetRenderInt("MaximumCubemapResolution", _CubemapResolution);
 						StaticSetRenderBool("gridrendering", _IntegrationScheme == 0);
 						StaticSetRenderInt("CloudSteps", _CloudSteps);
+						StaticSetRenderFloat("CloudThresholdDistanceKm", _cloudThresholdDistanceKm);
 						StaticSetRenderFloat("depthsamplingpixelrange", _depthSamplingPixelRange);
 						StaticSetRenderInt("render:edgenoisetexturesize", _edgeNoiseTextureSize);
 						StaticSetRenderInt("godraysgrid.x", (int)_godRaysGrid.x);
