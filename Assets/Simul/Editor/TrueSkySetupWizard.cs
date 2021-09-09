@@ -30,8 +30,8 @@ namespace simul
 		//Be careful adding more than 6 due to UI spacing issues.
 		string[] currentIssues = {
 			"No Dynamic Lighting with Lightning Strikes in clouds",
-			"Rain Streaks are not compatible with Variable Grid integration scheme",
-			"Using Manual cloud positioning can cause irregular cloud movement"
+			"Rain Streaks are not compatible with Variable Grid integration scheme ",
+			"Using Manual cloud positioning can cause irregular cloud movement",
 		};
 
 		[MenuItem("GameObject/Remove trueSKY from Scene", false, 200000)]
@@ -130,6 +130,9 @@ namespace simul
 				}
 #if USING_HDRP
 				GUILayout.Label("trueSKY will configure for HDRP", textStyle);
+#endif
+#if USING_URP
+			GUILayout.Label("trueSKY does not currently support URP. Please make sure you are using either HDRP or standard", EditorStyles.boldLabel);
 #endif
 			}
 			if (stage == Stage.FIND_SEQUENCE)

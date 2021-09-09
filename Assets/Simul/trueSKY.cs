@@ -282,7 +282,7 @@ namespace simul
 	public struct ExternalRenderValues //these values should be values that dont change at runtime, unless explicitly called
 	{
 
-		public static int static_version = 7; //Lighting Mode + Window Grid + Realtime weather effects
+		public static int static_version = 8; //DoCloudRaytraceLighting
 		public int version;
 
 		public float HighDetailProportion;         //!< For cloud volume update rate.
@@ -329,6 +329,9 @@ namespace simul
 		public float RainNearThreshold;
 		public uint AutomaticSunPosition;
 		public uint RealTimeWeatherEffects;
+		
+		public uint	DoCloudRaytraceLighting;
+		public uint	RaysPerVoxel;
 	};
 
 	[StructLayout(LayoutKind.Sequential, Pack = 1)]
@@ -4163,9 +4166,9 @@ namespace simul
 				{
 					if (SimulVersion >= MakeSimulVersion(4, 2))
 					{
-					UpdateExternalRender();
-					updateERV = false;
-				}
+						UpdateExternalRender();
+						updateERV = false;
+					}
 					else
 					{
 						StaticSetRenderBool("RenderSky", true);
@@ -4174,6 +4177,7 @@ namespace simul
 						StaticSetRenderInt("MaximumCubemapResolution", _CubemapResolution);
 						StaticSetRenderBool("gridrendering", _IntegrationScheme == 0);
 						StaticSetRenderInt("CloudSteps", _CloudSteps);
+						StaticSetRenderFloat("CloudThresholdDistanceKm", _cloudThresholdDistanceKm);
 						StaticSetRenderFloat("depthsamplingpixelrange", _depthSamplingPixelRange);
 						StaticSetRenderInt("render:edgenoisetexturesize", _edgeNoiseTextureSize);
 						StaticSetRenderInt("godraysgrid.x", (int)_godRaysGrid.x);
@@ -4576,7 +4580,7 @@ namespace simul
 				StaticSetRenderInt("maxCpuProfileLevel", _maxCpuProfileLevel);
 				StaticSetRenderInt("maxGpuProfileLevel", _maxGpuProfileLevel);
 
-			//	StaticSetRenderFloat("minimumstarpixelsize", _minimumStarPixelSize);
+				//StaticSetRenderFloat("minimumstarpixelsize", _minimumStarPixelSize);
 				//StaticSetRenderFloat("render:crepuscularraysstrength", _crepuscularRaysStrength);
 				//StaticSetRenderFloat("depthsamplingpixelrange", _depthSamplingPixelRange);
 				StaticSetRenderFloat("maxsunradiance", _maxSunRadiance);
