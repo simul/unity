@@ -135,11 +135,16 @@ namespace simul
 
 		void DoUpdate()
 		{
-#if USING_HDRP
-			DoUpdateHDRP();
-#else
-			DoUpdateStandard();
-#endif
+			if (trueSKY.GetTrueSky().HDRP_RenderPipelineAsset != null)
+			{
+			#if USING_HDRP
+				DoUpdateHDRP();
+			#endif
+			}
+			else
+			{
+				DoUpdateStandard();
+			}
 		}
 
 		/// <summary>
@@ -156,7 +161,7 @@ namespace simul
 				GameObject aDummyCamObject = new GameObject("CubemapCamera1", typeof(Camera));
 				UnityEngine.Debug.LogWarning("DoUpdateStandard");
 				aDummyCamObject.gameObject.layer = trueSKY.GetTrueSky().trueSKYLayerIndex;
-				aDummyCamObject.hideFlags		 = HideFlags.HideAndDontSave;
+				aDummyCamObject.hideFlags        = HideFlags.HideAndDontSave;
 				dummyCam                         = aDummyCamObject.GetComponent<Camera>();
 				dummyCam.enabled                 = false;
 				dummyCam.backgroundColor         = new Color(0, 0, 0, 0);
