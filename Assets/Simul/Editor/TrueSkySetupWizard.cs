@@ -131,6 +131,9 @@ namespace simul
 #if USING_HDRP
 				GUILayout.Label("trueSKY will configure for HDRP", textStyle);
 #endif
+#if USING_URP
+			GUILayout.Label("trueSKY does not currently support URP. Please make sure you are using either HDRP or standard", EditorStyles.boldLabel);
+#endif
 			}
 			if (stage == Stage.FIND_SEQUENCE)
 			{
