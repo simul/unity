@@ -21,10 +21,15 @@ namespace simul
 					_nativeTexturePtr = (System.IntPtr)0;
 				}
 				else if (renderTexture)
-					if(cachedRenderTexture.texelSize != renderTexture.texelSize)
+				{
+					if (cachedRenderTexture.texelSize != renderTexture.texelSize)
 						_nativeTexturePtr = (System.IntPtr)0;
+				}
+
 				if (_nativeTexturePtr == (System.IntPtr)0 && renderTexture != null)
 				{
+					if (!renderTexture.IsCreated())
+						renderTexture.Create();
 					_nativeTexturePtr = renderTexture.GetNativeTexturePtr();
 					cachedRenderTexture = renderTexture;
 				}
