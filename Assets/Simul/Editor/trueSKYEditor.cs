@@ -871,7 +871,7 @@ namespace simul
 						"This allows a single project to have both standard and HDRP scenes.", GUILayout.Height(60.0f));
 					
 					trueSky.UsingIL2CPP = EditorGUILayout.Toggle("Use IL2CPP", trueSky.UsingIL2CPP);
-					EditorGUILayout.LabelField("Default enabled and locked for projects building with GameCore");
+					EditorGUILayout.LabelField("Default enabled and locked for projects building for Xbox or Playstation consoles.");
 				}
 			}
 			// trueSKY Advanced Mode
