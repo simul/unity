@@ -1000,56 +1000,33 @@ namespace simul
 			string p = CommandLineReader.GetCustomArgument("Platform");
 			UnityEngine.Debug.Log("ExportPackageCmdLine " + f + ", " + p);
 			ExportPackage(f, p);
+        }
+
+        static void ExportPackage(string fileName, string platform)
+        {
+            string path = "";
+
+			if (platform == "x64")
+			{
+				path = "x86_64"; //might be best to rename to correlate to Platform
+			}
+			else if (platform == "XboxOne" || platform == "GameCoreXboxSeries" || platform == "GameCoreXboxOne" || platform == "PS4" || platform == "PS5")
+			{
+				path = platform;
+			}
+            else
+            {
+                UnityEngine.Debug.Log("Unknown platform:" + platform);
+				return;
+            }
+			string[] paths =
+                   {
+                    "Assets/Simul/shaderbin/"+path,
+                    "Assets/Simul/Plugins/"+path
+					};
+     
+			AssetDatabase.ExportPackage(paths, fileName, ExportPackageOptions.Recurse | ExportPackageOptions.IncludeDependencies);
+			UnityEngine.Debug.Log("Exported: " + fileName);
 		}
-
-		static void ExportPackage(string fileName, string platform)
-		{
-			if (platform == "x64" || platform == "XboxOne")
-			{
-				AssetDatabase.ExportPackage("Assets/Simul", fileName, ExportPackageOptions.Recurse);
-
-				UnityEngine.Debug.Log("Exported: " + fileName);
-			}
-#if UNITY_GAMECORE
-			else if (platform == "GameCoreXboxSeries")
-			{
-				AssetDatabase.ExportPackage("Assets/Plugins/GameCoreXboxSeries", fileName, ExportPackageOptions.Recurse);
-
-				UnityEngine.Debug.Log("Exported: " + fileName);
-			}
-			else if (platform == "GameCoreXboxOne")
-			{
-				AssetDatabase.ExportPackage("Assets/Plugins/GameCoreXboxOne", fileName, ExportPackageOptions.Recurse);
-
-				UnityEngine.Debug.Log("Exported: " + fileName);
-			}
-#endif
-			else if (platform == "PS4")
-			{
-				string[] paths =
-				{
-					"Assets/Simul/shaderbin/ps4",
-					"Assets/Simul/Plugins/PS4"
-				};
-				AssetDatabase.ExportPackage(paths, fileName, ExportPackageOptions.Recurse | ExportPackageOptions.IncludeDependencies); //Include dependancies not tested with HDRP PlayStation
-
-				UnityEngine.Debug.Log("Exported: " + fileName);
-			}
-			else if (platform == "PS5")
-			{
-				string[] paths =
-				{
-					"Assets/Simul/shaderbin/ps5",
-					"Assets/Simul/Plugins/PS5"
-				};
-				AssetDatabase.ExportPackage(paths, fileName, ExportPackageOptions.Recurse | ExportPackageOptions.IncludeDependencies); //Include dependancies not tested with HDRP PlayStation
-
-				UnityEngine.Debug.Log("Exported: " + fileName);
-			}
-			else
-			{
-				UnityEngine.Debug.Log("Unknown platform:" + platform);
-			}
-		}
-	}
+    }
 }

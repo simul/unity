@@ -1011,6 +1011,55 @@ namespace simul
 			return result;
 		}
 
+		public void SetKeyframerValue(uint uid, string name, object value)
+		{
+			if (value.GetType() == typeof(double))
+			{
+				double d = (double)value;
+				StaticRenderKeyframerSetFloat(uid, name, (float)d);
+			}
+			else if (value.GetType() == typeof(float))
+			{
+				StaticRenderKeyframerSetFloat(uid, name, (float)value);
+			}
+			else if (value.GetType() == typeof(int))
+			{
+				StaticRenderKeyframerSetInt(uid, name, (int)value);
+			}
+		}
+
+		public T GetKeyframerValue<T>(uint uid, string name)
+		{
+			T result = (T)Convert.ChangeType(0, typeof(T));
+
+			if (result.GetType() == typeof(double))
+			{
+				double value = (double)StaticRenderKeyframerGetFloat(uid, name);
+				result = (T)Convert.ChangeType(value, typeof(T));
+			}
+			else if (result.GetType() == typeof(float))
+			{
+				float value = StaticRenderKeyframerGetFloat(uid, name);
+				result = (T)Convert.ChangeType(value, typeof(T));
+			}
+			else if (result.GetType() == typeof(int))
+			{
+				int value = StaticRenderKeyframerGetInt(uid, name);
+				result = (T)Convert.ChangeType(value, typeof(T));
+			}
+
+			return result;
+		}
+
+		public uint CreateCloudKeyframer(string name)
+		{
+			return StaticRenderCreateCloudKeyframer(name);
+		}
+
+		public void DeleteCloudKeyframer(uint uid)
+		{
+			StaticRenderDeleteCloudKeyframer(uid);
+		}
 		//Storms
 		public uint GetStormUidByIndex(int index)
 		{
@@ -1020,30 +1069,42 @@ namespace simul
 		{
 			return GetStormAtTime(time);
 		}
-		public float GetStormFloat(uint uid, string name)
+
+		public T GetStormValue<T>(uint uid, string name)
 		{
-			return StaticRenderKeyframeGetFloat(uid, name);
+			return GetKeyframeValue<T>(uid, name);
 		}
-		public void SetStormFloat(uint uid, string name, float value)
+		public void SetStormValue(uint uid, string name, object value)
 		{
-			StaticRenderKeyframeSetFloat(uid, name, value);
+			SetKeyframeValue(uid, name, value);
 		}
-		public int GetStormInt(uint uid, string name)
-		{
-			return StaticRenderKeyframeGetInt(uid, name);
-		}
-		public void SetStormInt(uint uid, string name, int value)
-		{
-			StaticRenderKeyframeSetInt(uid, name, value);
-		}
-		public bool GetStormBool(uint uid, string name)
-		{
-			return StaticRenderKeyframeGetBool(uid, name);
-		}
-		public void SetStormBool(uint uid, string name, bool value)
-		{
-			StaticRenderKeyframeSetBool(uid, name, value);
-		}
+
+
+
+		//public float GetStormFloat(uint uid, string name)
+		//{
+		//	return StaticRenderKeyframeGetFloat(uid, name);
+		//}
+		//public void SetStormFloat(uint uid, string name, float value)
+		//{
+		//	SetKeyframeValue(uid, name, value);
+		//}
+		//public int GetStormInt(uint uid, string name)
+		//{
+		//	return StaticRenderKeyframeGetInt(uid, name);
+		//}
+		//public void SetStormInt(uint uid, string name, int value)
+		//{
+		//	StaticRenderKeyframeSetInt(uid, name, value);
+		//}
+		//public bool GetStormBool(uint uid, string name)
+		//{
+		//	return StaticRenderKeyframeGetBool(uid, name);
+		//}
+		//public void SetStormBool(uint uid, string name, bool value)
+		//{
+		//	StaticRenderKeyframeSetBool(uid, name, value);
+		//}
 		/// <summary>
 		/// Retrieve the active strike. end and start position in metres.
 		/// </summary>
