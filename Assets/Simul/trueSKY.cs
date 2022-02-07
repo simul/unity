@@ -365,7 +365,7 @@ namespace simul
 		public float CosmicBackgroundBrightness;       //!< Brightness multiplier for cosmic background.
 
 		public float CloudShadowRangeKm;
-		public float CloudShadowResolution;
+		//public float CloudShadowResolution;
 
 		public int MaxPrecipitationParticles;
 		public float RainFallSpeedMS;
@@ -4053,7 +4053,9 @@ namespace simul
 			return wrong;
 		}
 
-		ExternalRenderValues ERV = new ExternalRenderValues();
+		System.IntPtr Moonptr = Marshal.AllocHGlobal(Marshal.SizeOf(new ExternalMoon()));
+
+        ExternalRenderValues ERV = new ExternalRenderValues();
 		System.IntPtr ERVptr = Marshal.AllocHGlobal(Marshal.SizeOf(new ExternalRenderValues()));
 
 		ExternalDynamicValues EDV = new ExternalDynamicValues();
@@ -4286,7 +4288,6 @@ namespace simul
 							Moon.colour.y = moon.Colour.g;
 							Moon.colour.z = moon.Colour.b;
 							Moon.albedo = (float)moon.Albedo;					
-							System.IntPtr Moonptr = Marshal.AllocHGlobal(Marshal.SizeOf(new ExternalMoon()));
 							Marshal.StructureToPtr(Moon, Moonptr, !GetTrueSky().UsingIL2CPP); 
 							StaticSetMoon(_moons.IndexOf(moon) + 1, Moonptr);
 						}
