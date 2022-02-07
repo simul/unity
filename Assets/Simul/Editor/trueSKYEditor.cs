@@ -333,7 +333,7 @@ namespace simul
 
 							trueSky.CellNoiseTextureSize = EditorGUILayout.IntSlider("Cell Noise Texture Size", trueSky.CellNoiseTextureSize, 32, 256);
 							trueSky.CellNoiseWavelengthKm = EditorGUILayout.Slider("Cell Noise Wavelength Km", trueSky.CellNoiseWavelengthKm, 0.01f, 50.0f);
-							trueSky.MaxFractalAmplitudeKm = EditorGUILayout.Slider("Max Fractal Amplitude Km", trueSky.MaxFractalAmplitudeKm, 0.01f, 20.0f);
+							trueSky.MaxFractalAmplitudeKm = EditorGUILayout.Slider("Max Fractal Amplitude Km", trueSky.MaxFractalAmplitudeKm, 0.01f, 10.0f);
 						}
 						else
 							EditorGUILayout.LabelField("Noise settings are set in the trueSKY Sequence asset in 4.1");
@@ -768,7 +768,7 @@ namespace simul
 				if (shadows)
 				{
 					trueSky.CloudShadowRangeKm = EditorGUILayout.IntSlider("Shadow Range KM", trueSky.CloudShadowRangeKm, 100, (int)trueSky.MaxCloudDistanceKm);
-					trueSky.CloudShadowResolution = EditorGUILayout.IntSlider("Cloud Shadow Resolution", trueSky.CloudShadowResolution, 64, 1024);
+					//trueSky.CloudShadowResolution = EditorGUILayout.IntSlider("Cloud Shadow Resolution", trueSky.CloudShadowResolution, 64, 1024);
 				}
 
 				// Water settings

@@ -1182,19 +1182,24 @@ namespace simul
 		{
 			Vector4 ts_dir = UnityToTrueSkyMatrix() * (new Vector4(u_dir.x, u_dir.y, u_dir.z, 0));
 			return new Vector3(ts_dir.x, ts_dir.z, ts_dir.y);
-		}
-		static public Matrix4x4 UnityToTrueSkyMatrix()
-		{
-			Matrix4x4 transform = trueSKY.GetTrueSky().transform.worldToLocalMatrix;
-			float metresPerUnit = trueSKY.GetTrueSky().MetresPerUnit;
-			Matrix4x4 scale = new Matrix4x4();
-			scale.SetTRS(new Vector3(0, 0, 0), new Quaternion(0, 0, 0, 1.0F), new Vector3(metresPerUnit, metresPerUnit, metresPerUnit));
-			transform = scale * transform;
-			return transform;
+        }
+        static public Matrix4x4 UnityToTrueSkyMatrix()
+        {
+            Matrix4x4 transform = trueSKY.GetTrueSky().transform.worldToLocalMatrix;
+            float metresPerUnit = trueSKY.GetTrueSky().MetresPerUnit;
+            Matrix4x4 scale = new Matrix4x4();
+            scale.SetTRS(new Vector3(0, 0, 0), new Quaternion(0, 0, 0, 1.0F), new Vector3(metresPerUnit, metresPerUnit, metresPerUnit));
+            transform = scale * transform;
+            return transform;
+        }
+
+		static public void SanitizeSize(ref int value, int minRes = 64, int maxRes = 2048)
+		{// Rounds the cube map size to nearest power of two.
+			value = Mathf.Clamp(Mathf.NextPowerOfTwo(value), minRes, maxRes);
 		}
 
-		#endregion
-		public List<FMoon> _moons = new List<FMoon>();
+	#endregion
+	public List<FMoon> _moons = new List<FMoon>();
 
 		public void AddNewMoon()
 		{
@@ -1645,8 +1650,9 @@ namespace simul
 			set
 			{
 				if (_edgeNoiseTextureSize != value)
-				{
-					_edgeNoiseTextureSize = value;
+                {
+                    _edgeNoiseTextureSize = value;
+					SanitizeSize(ref _edgeNoiseTextureSize, 32, 256);
 					updateERV = true;
 				}
 			}
@@ -1664,9 +1670,10 @@ namespace simul
 			set
 			{
 				if (_CellNoiseTextureSize != value)
-				{
-					_CellNoiseTextureSize = value;
-					StaticSetRenderInt("render:cellnoisetexturesize", _CellNoiseTextureSize);
+                {
+                    _CellNoiseTextureSize = value;
+					SanitizeSize(ref _CellNoiseTextureSize, 32);
+                    StaticSetRenderInt("render:cellnoisetexturesize", _CellNoiseTextureSize);
 				}
 			}
 		}
@@ -3378,9 +3385,9 @@ namespace simul
 			set
 			{
 				if (_CubemapResolution != value) try
-					{
-
-						_CubemapResolution = value;
+                    {
+                        _CubemapResolution = value;
+						SanitizeSize(ref _CubemapResolution);
 						updateERV = true;
 					}
 					catch (Exception exc)
@@ -3562,6 +3569,7 @@ namespace simul
 				if (_windowGridWidth != value) try
 					{
 						_windowGridWidth = value;
+						SanitizeSize(ref _windowGridWidth);
 						updateERV = true;
 						//StaticSetRenderFloat("render:rendergridzkm", _RenderGridZKm);
 					}
@@ -3583,8 +3591,9 @@ namespace simul
 			set
 			{
 				if (_windowGridHeight != value) try
-					{
-						_windowGridHeight = value;
+                    {
+                        _windowGridHeight = value;
+						SanitizeSize(ref _windowGridHeight, 8, 64);
 						updateERV = true;
 						//StaticSetRenderFloat("render:rendergridzkm", _RenderGridZKm);
 					}
@@ -3811,9 +3820,10 @@ namespace simul
 			set
 			{
 				if (_shadowTextureRes != value) try
-					{
-						_shadowTextureRes = value;
-						updateERV = true;
+                    {
+                        _shadowTextureRes = value;
+						SanitizeSize(ref _shadowTextureRes);
+                        updateERV = true;
 					}
 					catch (Exception exc)
 					{
@@ -3822,27 +3832,28 @@ namespace simul
 			}
 		}
 
-		[SerializeField]
-		int _cloudShadowResolution = 256;
-		public int CloudShadowResolution
-		{
-			get
-			{
-				return _cloudShadowResolution;
-			}
-			set
-			{
-				if (_cloudShadowResolution != value) try
-					{
-						_cloudShadowResolution = value;
-						StaticSetRenderInt("cloudshadowresolution", _cloudShadowResolution);
-					}
-					catch (Exception exc)
-					{
-						UnityEngine.Debug.Log(exc.ToString());
-					}
-			}
-		}
+		//[SerializeField]
+		//int _cloudShadowResolution = 256;
+		//public int CloudShadowResolution
+		//{
+		//	get
+		//	{
+		//		return _cloudShadowResolution;
+		//	}
+		//	set
+		//	{
+		//		if (_cloudShadowResolution != value) try
+  //                  {
+  //                      _cloudShadowResolution = value;
+		//				SanitizeSize(ref _cloudShadowResolution);
+  //                      StaticSetRenderInt("cloudshadowresolution", _cloudShadowResolution);
+		//			}
+		//			catch (Exception exc)
+		//			{
+		//				UnityEngine.Debug.Log(exc.ToString());
+		//			}
+		//	}
+		//}
 
 		public RenderTextureHolder CloudShadowTexture
 		{
