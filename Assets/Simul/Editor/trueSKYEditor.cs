@@ -172,12 +172,12 @@ namespace simul
 		//[SerializeField]
 		//static bool Textures = false; On the Camera
 		[SerializeField]
-        static bool buildOptions = false;
+		static bool buildOptions = false;
 
 		static bool usetrueSKYColour = true;
 
-        SortedSet<string> highlightConstellations = new SortedSet<string>();
-        static int hConsIndex = -1;
+		SortedSet<string> highlightConstellations = new SortedSet<string>();
+		static int hConsIndex = -1;
 
 		string[] renderOptions = new string[]
 			{
@@ -871,7 +871,7 @@ namespace simul
 						"This allows a single project to have both standard and HDRP scenes.", GUILayout.Height(60.0f));
 					
 					trueSky.UsingIL2CPP = EditorGUILayout.Toggle("Use IL2CPP", trueSky.UsingIL2CPP);
-					EditorGUILayout.LabelField("Default enabled and locked for projects building with GameCore");
+					EditorGUILayout.LabelField("Default enabled and locked for projects building for Xbox or PlayStation consoles.");
 				}
 			}
 			// trueSKY Advanced Mode
@@ -1000,33 +1000,35 @@ namespace simul
 			string p = CommandLineReader.GetCustomArgument("Platform");
 			UnityEngine.Debug.Log("ExportPackageCmdLine " + f + ", " + p);
 			ExportPackage(f, p);
-        }
+		}
 
-        static void ExportPackage(string fileName, string platform)
-        {
-            string path = "";
+		static void ExportPackage(string fileName, string platform)
+		{
+			List<string> paths = new List<string>();
+			ExportPackageOptions options = ExportPackageOptions.Recurse;
 
-			if (platform == "x64")
+			if (platform == "x64" || platform == "XboxOne")
 			{
-				path = "x86_64"; //might be best to rename to correlate to Platform
+				paths.Add("Assets/Simul");
 			}
-			else if (platform == "XboxOne" || platform == "GameCoreXboxSeries" || platform == "GameCoreXboxOne" || platform == "PS4" || platform == "PS5")
+			else if (platform == "GameCoreXboxSeries" || platform == "GameCoreXboxOne")
 			{
-				path = platform;
+				paths.Add("Assets/Plugins/" + platform);
 			}
-            else
-            {
-                UnityEngine.Debug.Log("Unknown platform:" + platform);
+			else if (platform == "PS4" || platform == "PS5")
+			{
+				paths.Add("Assets/Simul/shaderbin/" + platform);
+				paths.Add("Assets/Simul/Plugins/" + platform);
+				options |= ExportPackageOptions.IncludeDependencies;
+			}
+			else
+			{
+				UnityEngine.Debug.Log("Unknown platform:" + platform);
 				return;
-            }
-			string[] paths =
-                   {
-                    "Assets/Simul/shaderbin/"+path,
-                    "Assets/Simul/Plugins/"+path
-					};
-     
-			AssetDatabase.ExportPackage(paths, fileName, ExportPackageOptions.Recurse | ExportPackageOptions.IncludeDependencies);
+			}
+	 
+			AssetDatabase.ExportPackage(paths.ToArray(), fileName, options);
 			UnityEngine.Debug.Log("Exported: " + fileName);
 		}
-    }
+	}
 }
