@@ -172,12 +172,12 @@ namespace simul
 		//[SerializeField]
 		//static bool Textures = false; On the Camera
 		[SerializeField]
-        static bool buildOptions = false;
+		static bool buildOptions = false;
 
 		static bool usetrueSKYColour = true;
 
-        SortedSet<string> highlightConstellations = new SortedSet<string>();
-        static int hConsIndex = -1;
+		SortedSet<string> highlightConstellations = new SortedSet<string>();
+		static int hConsIndex = -1;
 
 		string[] renderOptions = new string[]
 			{
@@ -333,7 +333,7 @@ namespace simul
 
 							trueSky.CellNoiseTextureSize = EditorGUILayout.IntSlider("Cell Noise Texture Size", trueSky.CellNoiseTextureSize, 32, 256);
 							trueSky.CellNoiseWavelengthKm = EditorGUILayout.Slider("Cell Noise Wavelength Km", trueSky.CellNoiseWavelengthKm, 0.01f, 50.0f);
-							trueSky.MaxFractalAmplitudeKm = EditorGUILayout.Slider("Max Fractal Amplitude Km", trueSky.MaxFractalAmplitudeKm, 0.01f, 20.0f);
+							trueSky.MaxFractalAmplitudeKm = EditorGUILayout.Slider("Max Fractal Amplitude Km", trueSky.MaxFractalAmplitudeKm, 0.01f, 10.0f);
 						}
 						else
 							EditorGUILayout.LabelField("Noise settings are set in the trueSKY Sequence asset in 4.1");
@@ -768,7 +768,7 @@ namespace simul
 				if (shadows)
 				{
 					trueSky.CloudShadowRangeKm = EditorGUILayout.IntSlider("Shadow Range KM", trueSky.CloudShadowRangeKm, 100, (int)trueSky.MaxCloudDistanceKm);
-					trueSky.CloudShadowResolution = EditorGUILayout.IntSlider("Cloud Shadow Resolution", trueSky.CloudShadowResolution, 64, 1024);
+					//trueSky.CloudShadowResolution = EditorGUILayout.IntSlider("Cloud Shadow Resolution", trueSky.CloudShadowResolution, 64, 1024);
 				}
 
 				// Water settings
@@ -1004,52 +1004,31 @@ namespace simul
 
 		static void ExportPackage(string fileName, string platform)
 		{
+			List<string> paths = new List<string>();
+			ExportPackageOptions options = ExportPackageOptions.Recurse;
+
 			if (platform == "x64" || platform == "XboxOne")
 			{
-				AssetDatabase.ExportPackage("Assets/Simul", fileName, ExportPackageOptions.Recurse);
-
-				UnityEngine.Debug.Log("Exported: " + fileName);
+				paths.Add("Assets/Simul");
 			}
-#if UNITY_GAMECORE
-			else if (platform == "GameCoreXboxSeries")
+			else if (platform == "GameCoreXboxSeries" || platform == "GameCoreXboxOne")
 			{
-				AssetDatabase.ExportPackage("Assets/Plugins/GameCoreXboxSeries", fileName, ExportPackageOptions.Recurse);
-
-				UnityEngine.Debug.Log("Exported: " + fileName);
+				paths.Add("Assets/Plugins/" + platform);
 			}
-			else if (platform == "GameCoreXboxOne")
+			else if (platform == "PS4" || platform == "PS5")
 			{
-				AssetDatabase.ExportPackage("Assets/Plugins/GameCoreXboxOne", fileName, ExportPackageOptions.Recurse);
-
-				UnityEngine.Debug.Log("Exported: " + fileName);
-			}
-#endif
-			else if (platform == "PS4")
-			{
-				string[] paths =
-				{
-					"Assets/Simul/shaderbin/ps4",
-					"Assets/Simul/Plugins/PS4"
-				};
-				AssetDatabase.ExportPackage(paths, fileName, ExportPackageOptions.Recurse | ExportPackageOptions.IncludeDependencies); //Include dependancies not tested with HDRP PlayStation
-
-				UnityEngine.Debug.Log("Exported: " + fileName);
-			}
-			else if (platform == "PS5")
-			{
-				string[] paths =
-				{
-					"Assets/Simul/shaderbin/ps5",
-					"Assets/Simul/Plugins/PS5"
-				};
-				AssetDatabase.ExportPackage(paths, fileName, ExportPackageOptions.Recurse | ExportPackageOptions.IncludeDependencies); //Include dependancies not tested with HDRP PlayStation
-
-				UnityEngine.Debug.Log("Exported: " + fileName);
+				paths.Add("Assets/Simul/shaderbin/" + platform);
+				paths.Add("Assets/Simul/Plugins/" + platform);
+				options |= ExportPackageOptions.IncludeDependencies;
 			}
 			else
 			{
 				UnityEngine.Debug.Log("Unknown platform:" + platform);
+				return;
 			}
+	 
+			AssetDatabase.ExportPackage(paths.ToArray(), fileName, options);
+			UnityEngine.Debug.Log("Exported: " + fileName);
 		}
 	}
 }
