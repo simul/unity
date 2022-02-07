@@ -3927,7 +3927,7 @@ namespace simul
 		bool _UsingIL2CPP = false;
 		public bool UsingIL2CPP
 		{
-#if UNITY_GAMECORE
+#if UNITY_GAMECORE || UNITY_PS4 || UNITY_PS5
 			get { _UsingIL2CPP = true;  return _UsingIL2CPP; }
 			set { _UsingIL2CPP = true; }
 #else

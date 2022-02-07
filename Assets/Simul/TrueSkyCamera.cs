@@ -220,9 +220,9 @@ namespace simul
 			cbuf_view_id = InternalGetViewId();
 			//if (editorMode)
 			{
-				blitbuf.SetRenderTarget((RenderTexture)depthTexture.renderTexture);
+				/*blitbuf.SetRenderTarget((RenderTexture)depthTexture.renderTexture);
 				blitbuf.DrawProcedural(Matrix4x4.identity, depthMaterial, 0, MeshTopology.Triangles, 6);
-				blitbuf.SetRenderTarget(Graphics.activeColorBuffer);
+				blitbuf.SetRenderTarget(Graphics.activeColorBuffer);*/
 			}
 			if (lastFrameCount == Time.renderedFrameCount)
 			{
