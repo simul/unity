@@ -155,8 +155,10 @@ namespace simul
 			[SerializeField]
 			static bool auroraOther = false;
 
+        [SerializeField]
+        static bool interpolation = false;
 		[SerializeField]
-		static bool interpolation = false;
+		static bool skylight = false;
 		[SerializeField]
 		static bool shadows = false; //Partially on camera, need  a material funtion for Unity's Shadows
 		[SerializeField]
@@ -251,8 +253,7 @@ namespace simul
 				general = EditorGUILayout.Foldout(general, "trueSKY", outerFoldoutStyle);
 				if (general)
 				{
-					trueSky.MetresPerUnit = EditorGUILayout.FloatField("Metres per Unit", trueSky.MetresPerUnit, GUI.skin.GetStyle("LargeLabel"));
-					trueSky.Visible = EditorGUILayout.Toggle("Visible", trueSky.Visible);
+					trueSky.MetresPerUnit = EditorGUILayout.Slider("Metres per Unit", trueSky.MetresPerUnit, 0.0001f, 10.0f);
 					trueSky.RenderSky = EditorGUILayout.Toggle("Render Sky", trueSky.RenderSky);
 					trueSky.RenderInEditMode = EditorGUILayout.Toggle("Active In Editor", trueSky.RenderInEditMode);
 				}
@@ -296,11 +297,15 @@ namespace simul
 
 						trueSky.IntegrationScheme = EditorGUILayout.Popup("Integration Scheme", trueSky.IntegrationScheme, renderOptions);
 
-						if (trueSky.IntegrationScheme == 2 && trueSky.SimulVersion < trueSky.MakeSimulVersion(4, 3))
-						{
-							trueSky.IntegrationScheme = 0;
-							Debug.Log("Variable Grid is only supported in trueSKY 4.3+");
+                        if (trueSky.IntegrationScheme != 2)
+                        {
+							trueSky.CloudSteps = EditorGUILayout.IntSlider("Cloud Steps", trueSky.CloudSteps, 60, 500);
 						}
+						else if (trueSky.SimulVersion < trueSky.MakeSimulVersion(4, 3))
+                        {
+                            trueSky.IntegrationScheme = 0;
+							Debug.Log("Variable Grid is only supported in trueSKY 4.3+");
+						}                 
 						if (trueSky.IntegrationScheme == 0)
 						{
 							trueSky.RenderGridXKm = EditorGUILayout.Slider("Render Grid X (km)", trueSky.RenderGridXKm, 0.01F, 10.0F);
@@ -311,7 +316,7 @@ namespace simul
 						trueSky.WindowWidthKm = EditorGUILayout.IntSlider("Window Width (Km)", trueSky.WindowWidthKm, 200, 800);
 						trueSky.WindowHeightKm = EditorGUILayout.IntSlider("Window Height (Km)", trueSky.WindowHeightKm, 5, 20);
 
-						trueSky.CloudSteps = EditorGUILayout.IntSlider("Cloud Steps", trueSky.CloudSteps, 60, 500);
+
 						trueSky.Amortization = EditorGUILayout.IntSlider("Amortization", trueSky.Amortization, 1, 8);
 						trueSky.CloudThresholdDistanceKm = EditorGUILayout.Slider("Threshold Distance (km)", trueSky.CloudThresholdDistanceKm, 0.0F, 10.0F);
 						trueSky.DepthSamplingPixelRange = EditorGUILayout.Slider("Depth Sampling Range", trueSky.DepthSamplingPixelRange, 0.0f, 4.0f);
@@ -349,7 +354,7 @@ namespace simul
 						trueSky.DirectLight = EditorGUILayout.Slider("Direct Light", trueSky.DirectLight, 0.0F, 4.0F);
 						trueSky.IndirectLight = EditorGUILayout.Slider("Indirect Light", trueSky.IndirectLight, 0.0F, 4.0F);
 						trueSky.AmbientLight = EditorGUILayout.Slider("Ambient Light", trueSky.AmbientLight, 0.0F, 4.0F);
-						trueSky.Extinction = EditorGUILayout.Slider("Extinction (per km)", trueSky.Extinction, 0.0F, 12.0F);
+						trueSky.Extinction = EditorGUILayout.Slider("Extinction (per km)", trueSky.Extinction, 0.0F, 100.0F);
 						trueSky.MieAsymmetry = EditorGUILayout.Slider("Mie Asymmetry", trueSky.MieAsymmetry, 0.0F, 0.999F);
 
 						if (trueSky.IntegrationScheme == 2)
@@ -387,7 +392,7 @@ namespace simul
 					if (trueSky.SimulVersion >= trueSky.MakeSimulVersion(4, 2))
 					{ 
 						//trueSky.SimulationTimeRain = EditorGUILayout.Toggle("Sim Time Rain", trueSky.SimulationTimeRain); Now controlled with Real-Time Weather Effects
-						trueSky.MaxPrecipitationParticles = EditorGUILayout.IntField("Max Particles", trueSky.MaxPrecipitationParticles);
+						trueSky.MaxPrecipitationParticles = EditorGUILayout.IntSlider("Max Particles", trueSky.MaxPrecipitationParticles,0,1000000);
 						trueSky.PrecipitationRadiusMetres = EditorGUILayout.Slider("Radius (m)", trueSky.PrecipitationRadiusMetres, 0.5F, 100.0F);
 						trueSky.RainFallSpeedMS = EditorGUILayout.Slider("Rain fall speed (m/s)", trueSky.RainFallSpeedMS, 0.0F, 20.0F);
 						trueSky.SnowFallSpeedMS = EditorGUILayout.Slider("Snow fall speed (m/s)", trueSky.SnowFallSpeedMS, 0.0F, 20.0F);
@@ -396,9 +401,10 @@ namespace simul
 						trueSky.PrecipitationWindEffect = EditorGUILayout.Slider("WindEffect", trueSky.PrecipitationWindEffect, 0.0F, 1.0F);
 						trueSky.PrecipitationWaver = EditorGUILayout.Slider("Waver", trueSky.PrecipitationWaver, 0.0F, 5.0F);
 						trueSky.PrecipitationWaverTimescaleS = EditorGUILayout.Slider("WaverTimescaleS", trueSky.PrecipitationWaverTimescaleS, 0.1F, 60.0F);
-						trueSky.PrecipitationThresholdKm = EditorGUILayout.Slider("ThresholdKm", trueSky.PrecipitationThresholdKm, 0.5F, 20.0F);
+                        trueSky.PrecipitationThresholdKm = EditorGUILayout.Slider("Required Cloud Thickness (Km)", trueSky.PrecipitationThresholdKm, 0.01F, 5.0F);
+						trueSky.RainNearThreshold = EditorGUILayout.Slider("Rain Near Threshold (Km)", trueSky.RainNearThreshold, 0.1F, 10.0F);
 					}
-					else
+                    else
 						EditorGUILayout.LabelField("Precipitation Settings are set in the trueSKY Sequence asset in 4.1");
 				}
 
@@ -434,8 +440,8 @@ namespace simul
 					if (stars)
 					{
 						trueSky.backgroundTexture = (Texture)EditorGUILayout.ObjectField("Cosmic Background", trueSky.backgroundTexture, typeof(Texture), false);
-						trueSky.BackgroundBrightness = EditorGUILayout.FloatField("Cosmic Background Brightness", trueSky.BackgroundBrightness);
-						trueSky.StarBrightness = EditorGUILayout.FloatField("Star Brightness", trueSky.StarBrightness);
+						trueSky.BackgroundBrightness = EditorGUILayout.Slider("Cosmic Background Brightness", trueSky.BackgroundBrightness, 0.0f, 10.0f);
+						trueSky.StarBrightness = EditorGUILayout.Slider("Star Brightness", trueSky.StarBrightness, 0.0f, 10.0f);
 						trueSky.MinimumStarPixelSize = EditorGUILayout.Slider("Minimum Star Pixel Size", trueSky.MinimumStarPixelSize, 0.01f, 10.0f);
 						trueSky.MaximumStarMagnitude = EditorGUILayout.IntSlider("Maximum Star Magnitude", trueSky.MaximumStarMagnitude, 0, 10);
 					}
@@ -554,16 +560,16 @@ namespace simul
 									{
 										moon.Colour = EditorGUILayout.ColorField("Colour", moon.Colour);
 										moon.MoonTexture = (Texture)EditorGUILayout.ObjectField("Moon Texture", moon.MoonTexture, typeof(Texture), false);
-										moon.Albedo = EditorGUILayout.DoubleField("Albedo", moon.Albedo);
-										moon.ArgumentOfPericentre = EditorGUILayout.DoubleField("Argument Of Pericentre", moon.ArgumentOfPericentre);
-										moon.ArgumentOfPericentreRate = EditorGUILayout.DoubleField("Argument Of Pericentre Rate", moon.ArgumentOfPericentreRate);
-										moon.Eccentricity = EditorGUILayout.DoubleField("Eccentricity", moon.Eccentricity);
-										moon.Inclination = EditorGUILayout.DoubleField("Inclination", moon.Inclination);
+                                        moon.Albedo = EditorGUILayout.DoubleField("Albedo", moon.Albedo);
 										moon.LongitudeOfAscendingNode = EditorGUILayout.DoubleField("Longitude Of Ascending Node", moon.LongitudeOfAscendingNode);
-										moon.LongitudeOfAscendingNodeRate = EditorGUILayout.DoubleField("Longitude Of Ascending Node Rate", moon.LongitudeOfAscendingNodeRate);
+                                        moon.LongitudeOfAscendingNodeRate = EditorGUILayout.DoubleField("Longitude Of Ascending Node Rate", moon.LongitudeOfAscendingNodeRate);
+										moon.Inclination = EditorGUILayout.DoubleField("Inclination", moon.Inclination);
+										moon.ArgumentOfPericentre = EditorGUILayout.DoubleField("Argument Of Pericentre", moon.ArgumentOfPericentre);
+                                        moon.ArgumentOfPericentreRate = EditorGUILayout.DoubleField("Argument Of Pericentre Rate", moon.ArgumentOfPericentreRate);
+										moon.MeanDistance = EditorGUILayout.DoubleField("Mean Distance", moon.MeanDistance);
+										moon.Eccentricity = EditorGUILayout.DoubleField("Eccentricity", moon.Eccentricity);
 										moon.MeanAnomaly = EditorGUILayout.DoubleField("Mean Anomaly", moon.MeanAnomaly);
 										moon.MeanAnomalyRate = EditorGUILayout.DoubleField("Mean Anomaly Rate", moon.MeanAnomalyRate);
-										moon.MeanDistance = EditorGUILayout.DoubleField("Mean Distance", moon.MeanDistance);
 										moon.RadiusArcMinutes = EditorGUILayout.DoubleField("RadiusArcMinutes", moon.RadiusArcMinutes);
 									}
 									if (GUILayout.Button("Delete Moon"))
@@ -739,31 +745,26 @@ namespace simul
 				// Interpolation Settings
 				EditorGUILayout.Space();
 				interpolation = EditorGUILayout.Foldout(interpolation, "Interpolation", outerFoldoutStyle);
-				if (interpolation)
-				{
+                if (interpolation)
+                {
 
-					trueSky.InterpolationMode = EditorGUILayout.Popup("Interpolation Mode", trueSky.InterpolationMode, interpolationOptions);
-					if(trueSky.InterpolationMode== 0)
-						trueSky.InterpolationSubdivisions = EditorGUILayout.IntSlider("Subdivisions per keyframe",  trueSky.InterpolationSubdivisions,1,32);
-					trueSky.InstantUpdate = EditorGUILayout.Toggle("Instant Update", trueSky.InstantUpdate);
+                    trueSky.InterpolationMode = EditorGUILayout.Popup("Interpolation Mode", trueSky.InterpolationMode, interpolationOptions);
+                    if (trueSky.InterpolationMode == 0)
+                        trueSky.InterpolationSubdivisions = EditorGUILayout.IntSlider("Subdivisions per keyframe", trueSky.InterpolationSubdivisions, 1, 32);
+                    trueSky.InstantUpdate = EditorGUILayout.Toggle("Instant Update", trueSky.InstantUpdate);
 
-					if (trueSky.SimulVersion >= trueSky.MakeSimulVersion(4, 2))
-					{
-						trueSky.HighDetailProportion = EditorGUILayout.Slider("High Detail", trueSky.HighDetailProportion, 0.0F, 1.0F);
-						trueSky.MediumDetailProportion = EditorGUILayout.Slider("Medium Detail", trueSky.MediumDetailProportion, trueSky.HighDetailProportion, 1.0F);
+                    if (trueSky.SimulVersion >= trueSky.MakeSimulVersion(4, 2))
+                    {
+                        trueSky.HighDetailProportion = EditorGUILayout.Slider("High Detail", trueSky.HighDetailProportion, 0.0F, 1.0F);
+                        trueSky.MediumDetailProportion = EditorGUILayout.Slider("Medium Detail", trueSky.MediumDetailProportion, trueSky.HighDetailProportion, 1.0F);
 
-						trueSky.OriginLatitude = EditorGUILayout.Slider("Latitude", trueSky.OriginLatitude, -90.0F, 90.0F);
-						trueSky.OriginLongitude = EditorGUILayout.Slider("Longitude", trueSky.OriginLongitude, -180.0F, 180.0F);
-						trueSky.OriginHeading = EditorGUILayout.Slider("Heading", trueSky.OriginHeading, -180.0F, 180.0F);
-
-						trueSky.SkylightAllMips = EditorGUILayout.Toggle("Update All Skylight Mips", trueSky.SkylightAllMips);
-						trueSky.SkylightAllFaces = EditorGUILayout.Toggle("Update All Skylight Faces", trueSky.SkylightAllFaces);
-						trueSky.SkylightAmortization = EditorGUILayout.IntSlider("Skylight Amortization", trueSky.SkylightAmortization, 1, 8);
-					}
-
-				}
-				// Shadow Settings
-				EditorGUILayout.Space();
+                        trueSky.OriginLatitude = EditorGUILayout.Slider("Latitude", trueSky.OriginLatitude, -90.0F, 90.0F);
+                        trueSky.OriginLongitude = EditorGUILayout.Slider("Longitude", trueSky.OriginLongitude, -180.0F, 180.0F);
+                        trueSky.OriginHeading = EditorGUILayout.Slider("Heading", trueSky.OriginHeading, -180.0F, 180.0F);
+                    }
+                }
+                // Shadow Settings
+                EditorGUILayout.Space();
 				shadows = EditorGUILayout.Foldout(shadows, "Shadows", outerFoldoutStyle);
 				if (shadows)
 				{
@@ -811,7 +812,6 @@ namespace simul
 					EditorGUILayout.LabelField("Cloud Visibility", GUILayout.Width(100));
 					EditorGUILayout.EndHorizontal();
 					usetrueSKYColour = EditorGUILayout.Toggle("Use Style Colour on Script", usetrueSKYColour);
-					trueSky.RenderInEditMode = EditorGUILayout.Toggle("Render in Edit Mode", trueSky.RenderInEditMode);
 					string gv = SystemInfo.graphicsDeviceVersion;
 					EditorGUILayout.LabelField("Unity Renderer", gv);
 					if (!gv.Contains("Direct3D") && !gv.Contains("Vulkan"))
