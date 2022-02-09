@@ -4,7 +4,7 @@ using System.Collections;
 #if USING_HDRP
 using UnityEngine.Rendering.HighDefinition;
 #endif
-
+using static simul.TrueSkyPluginRenderFunctionImporter;
 namespace simul
 {
 	[ExecuteInEditMode]
@@ -27,6 +27,65 @@ namespace simul
 		int last_face = -1;
 		// Flips the projection matrix of the cubemap probe
 		public bool flipProbeY = true;
+
+		/*These three variables are only temporary to provide access to the default skylight 
+		 * created by the plugin that right now is used only for water reflections, a larger 
+		 * update will be required to rewrite camera rpobes for this purpose instead.
+		 */
+		[SerializeField]
+		bool _skylightAllMips = false;
+		public bool SkylightAllMips
+		{
+			get
+			{
+				return _skylightAllMips;
+			}
+			set
+			{
+				if (_skylightAllMips != value)
+				{
+					_skylightAllMips = value;
+					StaticSetRenderBool("defaultskylightallmips", value);
+				}
+			}
+		}
+
+		[SerializeField]
+		bool _skylightAllFaces = false;
+		public bool SkylightAllFaces
+		{
+			get
+			{
+				return _skylightAllFaces;
+			}
+			set
+			{
+				if (_skylightAllFaces != value)
+				{
+					_skylightAllFaces = value;
+					StaticSetRenderBool("defaultskylightallfaces", value);
+				}
+			}
+		}
+
+		[SerializeField]
+		int _skylightAmortization = 2;
+		public int SkylightAmortization
+		{
+			get
+			{
+				return _skylightAmortization;
+			}
+			set
+			{
+				if (_skylightAmortization != value)
+				{
+					_skylightAmortization = value;
+					StaticSetRenderInt("defaultskylightamortization", value);
+				}
+			}
+		}
+
 
 		// Variables solely for HDRP
 #if USING_HDRP
@@ -152,9 +211,7 @@ namespace simul
 		/// </summary>
 		void DoUpdateStandard()
 		{
-			if (textureSize != 8 && textureSize != 16 && textureSize != 32 && textureSize != 64
-				&& textureSize != 128 && textureSize != 256 && textureSize != 512)
-				textureSize = Mathf.Clamp(Mathf.ClosestPowerOfTwo(textureSize), 8, 512);   // if textureSize (inc. from inspector) isn't pow of 2 & between 8-512, then overwrite with default
+			textureSize = Mathf.Clamp(Mathf.ClosestPowerOfTwo(textureSize), 8, 512);
 									
 			if (dummyCam == null)
 			{
@@ -259,9 +316,7 @@ namespace simul
 		/// </summary>
 		private void DoUpdateHDRP()
 		{
-			if (textureSize != 8 && textureSize != 16 && textureSize != 32 && textureSize != 64
-				&& textureSize != 128 && textureSize != 256 && textureSize != 512)
-				textureSize = Mathf.Clamp(Mathf.ClosestPowerOfTwo(textureSize), 8, 512);   
+			textureSize = Mathf.Clamp(Mathf.ClosestPowerOfTwo(textureSize), 8, 512);   
 
 			CreateTexture();
 
