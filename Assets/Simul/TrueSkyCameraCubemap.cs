@@ -41,7 +41,8 @@ namespace simul
         Viewport[] targetViewport = new Viewport[3];
         void PrepareMatrices()
         {
-            RenderStyle renderStyle = GetRenderStyle() | RenderStyle.CUBEMAP_STYLE;
+            // We clear the screen for Unity cubemaps dll-side due to bugs in Unity's CommandBuffer implementation that prevent us from using its own ClearRenderTarget() command on certain platforms.
+            RenderStyle renderStyle = GetRenderStyle() | RenderStyle.CUBEMAP_STYLE|RenderStyle.CLEAR_SCREEN;
             view_id = InternalGetViewId();
             if (view_id >= 0)
 			{
@@ -92,7 +93,7 @@ namespace simul
             if (mainCommandBuffer == null)
             {
                 mainCommandBuffer = new CommandBuffer();
-                mainCommandBuffer.name = "render trueSKY";
+                mainCommandBuffer.name = "render trueSKY Cubemap";
                 cbuf_view_id = -1;
             }
             if (cbuf_view_id != InternalGetViewId())
@@ -109,8 +110,9 @@ namespace simul
             }
             mainCommandBuffer.Clear();
             cbuf_view_id = InternalGetViewId();
-
-            mainCommandBuffer.ClearRenderTarget(true, true, new Color(0.0F, 0.0F, 0.0F, 1.0F), 1.0F);
+			// Unity's broken native rendering interface means that we can't clear colour with this function, as on some platforms
+			// that leads to the clear happening AFTER the sky rendering that IssuePluginEventAndData is meant to call.
+            mainCommandBuffer.ClearRenderTarget(true,false, new Color(0.0F, 0.3F, 0.0F, 1.0F), 1.0F);
 
             int faceMask = FindObjectOfType<TrueSkyCubemapProbe>().GetFaceMask();
             if (faceMask == 63) { faceMask = 1; }

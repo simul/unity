@@ -102,6 +102,10 @@ namespace simul
 			, POST_TRANSLUCENT = 128
 			, VR_STYLE_SIDE_BY_SIDE = 256
 			, DEPTH_BLENDING = 512
+			, DONT_COMPOSITE = 1024
+			, CLEAR_SCREEN = 2048
+			, DRAW_OVERLAYS = 4096
+			, HIGH_DPI_AWARE = 16384
 	};
 	public enum UnityRenderOptions: uint
 	{

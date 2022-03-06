@@ -262,7 +262,7 @@ namespace simul
 				_initialized = false;
 			}
 
-			//int faceMask = 63;
+		
 			if (_initialized && last_face >= 0)
 			{
 				faceMask = 1 << last_face;
