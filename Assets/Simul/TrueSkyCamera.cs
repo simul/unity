@@ -165,6 +165,8 @@ namespace simul
 		}
 		UnityViewStruct unityViewStruct=new UnityViewStruct();
 		System.IntPtr unityViewStructPtr = Marshal.AllocHGlobal(Marshal.SizeOf(new UnityViewStruct()));
+		System.IntPtr postTransViewStructPtr = Marshal.AllocHGlobal(Marshal.SizeOf(new UnityViewStruct())); 
+		System.IntPtr overlayViewStructPtr = Marshal.AllocHGlobal(Marshal.SizeOf(new UnityViewStruct())); 
 		void OnPreRender()
 		{
 			if (!enabled || !gameObject.activeInHierarchy)
@@ -252,17 +254,18 @@ namespace simul
 			else
 			{
 				return;
-				/*unityViewStruct.nativeColourRenderBuffer = Graphics.activeColorBuffer.GetNativeRenderBufferPtr();
-				unityViewStruct.nativeDepthRenderBuffer = Graphics.activeDepthBuffer.GetNativeRenderBufferPtr();
-				unityViewStruct.colourResourceState = ResourceState.Common;
-				unityViewStruct.depthResourceState = ResourceState.Common;*/
 			}
 
 			bool il2cppScripting = UsingIL2CPP();
 			Marshal.StructureToPtr(unityViewStruct, unityViewStructPtr, !il2cppScripting);
 			mainCommandBuffer.IssuePluginEventAndData(UnityGetRenderEventFuncWithData(), TRUESKY_EVENT_ID + cbuf_view_id, unityViewStructPtr);
-			post_translucent_buf.IssuePluginEventAndData(UnityGetPostTranslucentFuncWithData(), TRUESKY_EVENT_ID + cbuf_view_id, unityViewStructPtr);
-			overlay_buf.IssuePluginEventAndData(UnityGetOverlayFuncWithData(), TRUESKY_EVENT_ID + cbuf_view_id, unityViewStructPtr);
+			var renderStyle= unityViewStruct.renderStyle;
+			unityViewStruct.renderStyle=renderStyle|RenderStyle.POST_TRANSLUCENT;
+			Marshal.StructureToPtr(unityViewStruct, postTransViewStructPtr, !il2cppScripting);
+			unityViewStruct.renderStyle = renderStyle | RenderStyle.UNITY_STYLE| RenderStyle.DRAW_OVERLAYS;
+			post_translucent_buf.IssuePluginEventAndData(UnityGetPostTranslucentFuncWithData(), TRUESKY_EVENT_ID + cbuf_view_id, postTransViewStructPtr);
+			Marshal.StructureToPtr(unityViewStruct, overlayViewStructPtr, !il2cppScripting);
+			//overlay_buf.IssuePluginEventAndData(UnityGetOverlayFuncWithData(), TRUESKY_EVENT_ID + cbuf_view_id, overlayStructPtr);
 
 		}
 		int duplicateFrames = 0;

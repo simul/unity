@@ -3,14 +3,12 @@
 using UnityEngine.PS4;
 #endif
 #if UNITY_PS5
-using static UnityEngine.InputSystem.PS5.DualSenseGamepad;
+using UnityEngine.PS5;
 #endif
-using System;
-using System.Collections;
 
 namespace simul
 {
-	public class GamePad : MonoBehaviour
+    public class GamePad : MonoBehaviour
 	{
 
 		public int playerId = -1;
@@ -55,7 +53,7 @@ namespace simul
 				Thumbsticks();
 
 				// Options button is on its own, so we'll do it here
-				if (Input.GetKey((KeyCode)Enum.Parse(typeof(KeyCode), "Joystick" + stickID + "Button7", true)))
+				if (Input.GetKey((KeyCode)System.Enum.Parse(typeof(KeyCode), "Joystick" + stickID + "Button7", true)))
 				{
 
 					// Reset the gyro orientation to default
@@ -111,12 +109,6 @@ namespace simul
 		void Thumbsticks()
 		{
 #if UNITY_PS5
-			UnityEngine.InputSystem.PS5.DualSenseGamepad pad = UnityEngine.InputSystem.PS5.DualSenseGamepad.GetBySlotIndex(0);
-			if(pad!=null)
-			{ 
-				leftStick=new Vector3(pad.leftStick.x.ReadValue(),pad.leftStick.y.ReadValue(),0);
-				rightstick = new Vector3(pad.rightStick.x.ReadValue(), pad.rightStick.y.ReadValue(), 0);
-			}
 #else
 			// Move the thumbsticks around
 			leftStick = new Vector3(Input.GetAxis("leftstick" + stickID + "horizontal"),
