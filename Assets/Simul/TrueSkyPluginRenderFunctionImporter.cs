@@ -18,9 +18,9 @@ namespace simul
 
 		#else
 			#if UNITY_PS4
-				private const string renderer_dll = @"TrueSkyPluginRenderd";
+				private const string renderer_dll = @"TrueSkyPluginRender";
 			#elif UNITY_PS5
-				private const string renderer_dll = @"TrueSkyPluginRenderd";
+				private const string renderer_dll = @"TrueSkyPluginRender";
 			#elif UNITY_XBOXONE || UNITY_GAMECORE
 				private const string renderer_dll = @"TrueSkyPluginRender_MD";
 			#elif UNITY_IPHONE || UNITY_SWITCH

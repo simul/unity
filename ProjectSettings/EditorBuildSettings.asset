@@ -8,4 +8,7 @@ EditorBuildSettings:
   - enabled: 0
     path: 
     guid: 00000000000000000000000000000000
+  - enabled: 1
+    path: Assets/Simul/Demo/1.unity
+    guid: 1683d0a117548d14592f26bfa56966fa
   m_configObjects: {}
