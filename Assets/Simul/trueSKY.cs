@@ -236,7 +236,7 @@ namespace simul
 
 	public struct ExternalMoon
 	{
-		public static int static_version = 4; //adding Colour and albedo
+		public static int static_version = 5; //Remove unused data relating to mesh
 		public int version;
 		public Orbit orbit;
 		public float radiusArcMinutes;
@@ -244,8 +244,6 @@ namespace simul
 		public bool illuminated;
 		public ExternalTexture texture;
 		public bool render;
-		public vec3 direction;
-		public Quaternion orientation;
 		public vec3 colour;
 		public float albedo;
 	};
@@ -280,65 +278,71 @@ namespace simul
 
 			return result;
 		}
-	};
+    };
 
-	[StructLayout(LayoutKind.Sequential, Pack = 1)]
-	public struct ExternalRenderValues //these values should be values that dont change at runtime, unless explicitly called
-	{
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    public struct ExternalRenderValues //these values dont change at runtime, unless explicitly called
+    {
 
-		public static int static_version = 8; //DoCloudRaytraceLighting
+        public static int static_version = 10;  //HighDetailRange and Multiplier
 		public int version;
 
-		public float HighDetailProportion;         //!< For cloud volume update rate.
-		public float MediumDetailProportion;           //!< For medium cloud volume update rate.
+        public float HighDetailProportion;         //!< For cloud volume update rate.
+        public float MediumDetailProportion;           //!< For medium cloud volume update rate.
 
-		public uint RenderSky;                      //!< Disable sky rendering, used primarily for when you only want water.
+        public uint RenderSky;                      //!< Disable sky rendering, used primarily for when you only want water.
 
-		public int MaximumCubemapResolution;       //!< Resolution to draw full-detail cloud buffers
+        public int MaximumCubemapResolution;       //!< Resolution to draw full-detail cloud buffers
 
-		public int ShadowTextureSize;
+        public int ShadowTextureSize;
 
-		public uint Godrays_x;                     //Need converting to uint3
-		public uint Godrays_y;
-		public uint Godrays_z;
+        public uint Godrays_x;                     //Need converting to uint3
+        public uint Godrays_y;
+        public uint Godrays_z;
 
-		public float PrecipitationRadiusMetres;
+        public float PrecipitationRadiusMetres;
 
-		public int EdgeNoiseTextureSize;
-		public int WorleyTextureSize;
+        public int EdgeNoiseTextureSize;
+        public int WorleyTextureSize;
 
-		public float RenderGridXKm;                    //!< Minimum grid width for raytracing.
-		public float RenderGridZKm;                    //!< Minimum grid height for raytracing.
+        public float RenderGridXKm;                    //!< Minimum grid width for raytracing.
+        public float RenderGridZKm;                    //!< Minimum grid height for raytracing.
 
-		public int WindowGridWidth;
-		public int WindowGridHeight;
+        public int WindowGridWidth;
+        public int WindowGridHeight;
 
-		public int WindowWidthKm;
-		public int WindowHeightKm;
+        public int WindowWidthKm;
+        public int WindowHeightKm;
 
-		public int DefaultNumSlices;
-		public int DefaultAmortization;
+        public int DefaultNumSlices;
+        public int DefaultAmortization;
 
-		public float CloudThresholdDistanceKm;
-		public float CloudDepthTemporalAlpha;
-		public float DepthSamplingPixelRange;
+        public float CloudThresholdDistanceKm;
+        public float CloudDepthTemporalAlpha;
+        public float DepthSamplingPixelRange;
 
-		public int MaximumStarMagnitude;           //!< Largest magnitude of star to draw. Larger magnitudes are dimmer.
+        public int MaximumStarMagnitude;           //!< Largest magnitude of star to draw. Larger magnitudes are dimmer.
 
-		public int IntegrationScheme;
-		public int LightingMode;
+        public int IntegrationScheme;
+        public int LightingMode;
 
-		public int MaxFramesBetweenViewUpdates;
-		public int AtmosphericsAmortization;
-		public float RainNearThreshold;
+        public int MaxFramesBetweenViewUpdates;
+        public int AtmosphericsAmortization;
+        public float RainNearThreshold;
+		public float VirgaNearThresholdKm;
 		public uint AutomaticSunPosition;
-		public uint RealTimeWeatherEffects;
-		
-		public uint	DoCloudRaytraceLighting;
-		public uint	RaysPerVoxel;
+        public uint RealTimeWeatherEffects;
+
+        public uint DoCloudRaytraceLighting;
+        public uint RaysPerVoxel;
+		public uint MaxRayRecursionDepth;
+
+		public uint HighDetailMultiplier;          //Multiplier for number of grid steps. 
+		public float HighDetailRangeKm;                //Range at which to apply increased grid steps.
+
 	};
 
-	[StructLayout(LayoutKind.Sequential, Pack = 1)]
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
 	public struct ExternalDynamicValues
 	{
 		public static int static_version = 2;
@@ -532,10 +536,6 @@ namespace simul
 		/** Radius of the Moon. Will affect lighting as more light is reflected*/
 		public double RadiusArcMinutes;
 
-		// For tracking
-		//UStaticMeshComponent *CurrentMeshComponent=nullptr;
-		//FVector Direction;
-		//FQuat Orientation;
 		public bool Render;
 		public bool DestroyMoon;
 	};
