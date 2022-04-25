@@ -1,4 +1,4 @@
-#if UNITY_EDITOR
+#if SIMUL_DEFINE_RENDER_PIPELINE_MACROS //UNITY_EDITOR
 using System;
 using System.IO;
 using System.Linq;

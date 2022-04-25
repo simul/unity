@@ -88,31 +88,29 @@ namespace simul
 			var cam = GetComponent<Camera>();
 			if (cam.stereoEnabled && cam.stereoTargetEye == StereoTargetEyeMask.Both)
 			{
-#if UNITY_SWITCH
-                return 0;
-#elif UNITY_GAMECORE
-                return 0;
+#if UNITY_SWITCH || UNITY_GAMECORE
+				return 0;
 #else
-                return UnityEngine.XR.XRSettings.eyeTextureDesc.width;
+				return UnityEngine.XR.XRSettings.eyeTextureDesc.width;
 #endif
-            }
-            else
-            {
-                return base.GetRequiredDepthTextureWidth();
-            }
+			}
+			else
+			{
+				return base.GetRequiredDepthTextureWidth();
+			}
 		}
 
-        void OnEnable()
-        {
-        }
+		void OnEnable()
+		{
+		}
 
-        public bool IsPPStak
-        {
-            get
-            {
-                return System.Type.GetType("UnityEngine.PostProcessing.PostProcessingBehaviour") != null || SystemInfo.graphicsDeviceType == GraphicsDeviceType.Vulkan;
+		public bool IsPPStak
+		{
+			get
+			{
+				return System.Type.GetType("UnityEngine.PostProcessing.PostProcessingBehaviour") != null || SystemInfo.graphicsDeviceType == GraphicsDeviceType.Vulkan;
 			}
-        }
+		}
 
 		public bool editorMode
 		{
@@ -122,26 +120,26 @@ namespace simul
 			}
 		}
 
-        private void Start()
-        {
-            var probes = FindObjectsOfType<TrueSkyCubemapProbe>();
-            if(probes.Length <= 0)
-            {
-                Debug.LogWarning("Could not find a TrueSkyCubemapProbe object");
-            }
-            else
-            {
-                for (int i = 0; i < probes.Length; i++) 
-                {
-                    // We will ignore disabled probes:
-                    if(probes[i].enabled && probes[i].isActiveAndEnabled)
-                    {
-                        reflectionProbeTexture.renderTexture = probes[i].GetRenderTexture();
-                        break;
-                    }
-                }
-            }
-        }
+		private void Start()
+		{
+			var probes = FindObjectsOfType<TrueSkyCubemapProbe>();
+			if(probes.Length <= 0)
+			{
+				Debug.LogWarning("Could not find a TrueSkyCubemapProbe object");
+			}
+			else
+			{
+				for (int i = 0; i < probes.Length; i++) 
+				{
+					// We will ignore disabled probes:
+					if(probes[i].enabled && probes[i].isActiveAndEnabled)
+					{
+						reflectionProbeTexture.renderTexture = probes[i].GetRenderTexture();
+						break;
+					}
+				}
+			}
+		}
 
 		void OnDestroy()
 		{
@@ -160,7 +158,7 @@ namespace simul
 			RemoveBuffer("trueSKY depth");
 			RemoveBuffer("trueSKY overlay");
 			RemoveBuffer("trueSKY post translucent");
-            RemoveBuffer("trueSKY depth blit");
+			RemoveBuffer("trueSKY depth blit");
 			RemoveBuffer("trueSKY deferred contexts");
 		}
 		UnityViewStruct unityViewStruct=new UnityViewStruct();
@@ -313,13 +311,13 @@ namespace simul
 
 				ProjMatrixToTrueSkyFormat(RenderStyle.UNITY_STYLE, p, overlayProjMatrix);
 
-                // Query depth size
-                int depthWidth      = cam.pixelWidth;
-                int depthHeight     = cam.pixelHeight; 
+				// Query depth size
+				int depthWidth      = cam.pixelWidth;
+				int depthHeight     = cam.pixelHeight; 
 
 				depthViewports[0].x = depthViewports[0].y = 0;
-                depthViewports[0].z = depthWidth;
-                depthViewports[0].w = depthHeight;
+				depthViewports[0].z = depthWidth;
+				depthViewports[0].w = depthHeight;
 
 				// There are now three viewports. 1 and 2 are for left and right eyes in VR.
 				targetViewports[0].x = targetViewports[0].y = 0;
@@ -338,67 +336,67 @@ namespace simul
 
 #if !UNITY_GAMECORE
 #if !UNITY_SWITCH
-                // If we are doing XR we need to setup the additional viewports
-                if ((renderStyle & RenderStyle.VR_STYLE) == RenderStyle.VR_STYLE)
+				// If we are doing XR we need to setup the additional viewports
+				if ((renderStyle & RenderStyle.VR_STYLE) == RenderStyle.VR_STYLE)
 				{
-                    if (UnityEngine.XR.XRSettings.stereoRenderingMode == UnityEngine.XR.XRSettings.StereoRenderingMode.SinglePass)
-                    {
-                        int fullEyeWidth = UnityEngine.XR.XRSettings.eyeTextureDesc.width;
-                        int halfEyeWidth = fullEyeWidth / 2;
-                        int eyeHeight = UnityEngine.XR.XRSettings.eyeTextureDesc.height;
+					if (UnityEngine.XR.XRSettings.stereoRenderingMode == UnityEngine.XR.XRSettings.StereoRenderingMode.SinglePass)
+					{
+						int fullEyeWidth = UnityEngine.XR.XRSettings.eyeTextureDesc.width;
+						int halfEyeWidth = fullEyeWidth / 2;
+						int eyeHeight = UnityEngine.XR.XRSettings.eyeTextureDesc.height;
 
-                        // This is the viewport that we reset to (default vp):
-                        // it must cover all the texture
-                        depthViewports[0].x = targetViewports[0].x = 0;
-                        depthViewports[0].y = targetViewports[0].y = 0;
-                        depthViewports[0].z = targetViewports[0].w = fullEyeWidth;
-                        depthViewports[0].w = targetViewports[0].h = eyeHeight;
+						// This is the viewport that we reset to (default vp):
+						// it must cover all the texture
+						depthViewports[0].x = targetViewports[0].x = 0;
+						depthViewports[0].y = targetViewports[0].y = 0;
+						depthViewports[0].z = targetViewports[0].w = fullEyeWidth;
+						depthViewports[0].w = targetViewports[0].h = eyeHeight;
 
-                        // Left eye viewports
-                        depthViewports[1].x = targetViewports[1].x = 0;
-                        depthViewports[1].y = targetViewports[1].y = 0;
-                        depthViewports[1].z = targetViewports[1].w = halfEyeWidth;
-                        depthViewports[1].w = targetViewports[1].h = eyeHeight;
+						// Left eye viewports
+						depthViewports[1].x = targetViewports[1].x = 0;
+						depthViewports[1].y = targetViewports[1].y = 0;
+						depthViewports[1].z = targetViewports[1].w = halfEyeWidth;
+						depthViewports[1].w = targetViewports[1].h = eyeHeight;
 
-                        // Right eye viewports
-                        depthViewports[2].x = targetViewports[2].x = halfEyeWidth;
-                        depthViewports[2].y = targetViewports[2].y = 0;
-                        depthViewports[2].z = targetViewports[2].w = halfEyeWidth;
-                        depthViewports[2].w = targetViewports[2].h = eyeHeight;
-                    }
-                    else if(UnityEngine.XR.XRSettings.stereoRenderingMode == UnityEngine.XR.XRSettings.StereoRenderingMode.MultiPass
-                    || UnityEngine.XR.XRSettings.stereoRenderingMode == UnityEngine.XR.XRSettings.StereoRenderingMode.SinglePassInstanced)
-                    {
-                        int fullEyeWidth = UnityEngine.XR.XRSettings.eyeTextureDesc.width;
-                        int eyeHeight = UnityEngine.XR.XRSettings.eyeTextureDesc.height;
+						// Right eye viewports
+						depthViewports[2].x = targetViewports[2].x = halfEyeWidth;
+						depthViewports[2].y = targetViewports[2].y = 0;
+						depthViewports[2].z = targetViewports[2].w = halfEyeWidth;
+						depthViewports[2].w = targetViewports[2].h = eyeHeight;
+					}
+					else if(UnityEngine.XR.XRSettings.stereoRenderingMode == UnityEngine.XR.XRSettings.StereoRenderingMode.MultiPass
+					|| UnityEngine.XR.XRSettings.stereoRenderingMode == UnityEngine.XR.XRSettings.StereoRenderingMode.SinglePassInstanced)
+					{
+						int fullEyeWidth = UnityEngine.XR.XRSettings.eyeTextureDesc.width;
+						int eyeHeight = UnityEngine.XR.XRSettings.eyeTextureDesc.height;
 
-                        // This is the viewport that we reset to (default vp):
-                        // it must cover all the texture
-                        depthViewports[0].x = targetViewports[0].x = 0;
-                        depthViewports[0].y = targetViewports[0].y = 0;
-                        depthViewports[0].z = targetViewports[0].w = fullEyeWidth * 2;
-                        depthViewports[0].w = targetViewports[0].h = eyeHeight;
+						// This is the viewport that we reset to (default vp):
+						// it must cover all the texture
+						depthViewports[0].x = targetViewports[0].x = 0;
+						depthViewports[0].y = targetViewports[0].y = 0;
+						depthViewports[0].z = targetViewports[0].w = fullEyeWidth * 2;
+						depthViewports[0].w = targetViewports[0].h = eyeHeight;
 
-                        // Left eye viewports
-                        depthViewports[1].x = targetViewports[1].x = 0;
-                        depthViewports[1].y = targetViewports[1].y = 0;
-                        depthViewports[1].z = targetViewports[1].w = fullEyeWidth;
-                        depthViewports[1].w = targetViewports[1].h = eyeHeight;
+						// Left eye viewports
+						depthViewports[1].x = targetViewports[1].x = 0;
+						depthViewports[1].y = targetViewports[1].y = 0;
+						depthViewports[1].z = targetViewports[1].w = fullEyeWidth;
+						depthViewports[1].w = targetViewports[1].h = eyeHeight;
 
-                        // Right eye viewports
-                        depthViewports[2].x = targetViewports[2].x = fullEyeWidth;
-                        depthViewports[2].y = targetViewports[2].y = 0;
-                        depthViewports[2].z = targetViewports[2].w = fullEyeWidth;
-                        depthViewports[2].w = targetViewports[2].h = eyeHeight;
-                    }
+						// Right eye viewports
+						depthViewports[2].x = targetViewports[2].x = fullEyeWidth;
+						depthViewports[2].y = targetViewports[2].y = 0;
+						depthViewports[2].z = targetViewports[2].w = fullEyeWidth;
+						depthViewports[2].w = targetViewports[2].h = eyeHeight;
+					}
 				}
 #endif
 #endif
 				UnityRenderOptions unityRenderOptions = UnityRenderOptions.DEFAULT;
 				if (FlipOverlays)
 					unityRenderOptions = unityRenderOptions | UnityRenderOptions.FLIP_OVERLAYS;
-                if (ShareBuffersForVR)
-                    unityRenderOptions = unityRenderOptions | UnityRenderOptions.NO_SEPARATION;
+				if (ShareBuffersForVR)
+					unityRenderOptions = unityRenderOptions | UnityRenderOptions.NO_SEPARATION;
 
 
 				unityViewStruct.view_id= view_id;
@@ -454,9 +452,9 @@ namespace simul
 		{
 			RenderStyle renderStyle = GetRenderStyle();
 			depthMaterial           = null;
-            Camera cam              = GetComponent<Camera>();
-            bool toTexture          = cam.allowHDR || cam.allowMSAA || cam.renderingPath == RenderingPath.DeferredShading;
-            if (!toTexture && (renderStyle & RenderStyle.UNITY_STYLE_DEFERRED) != RenderStyle.UNITY_STYLE_DEFERRED)
+			Camera cam              = GetComponent<Camera>();
+			bool toTexture          = cam.allowHDR || cam.allowMSAA || cam.renderingPath == RenderingPath.DeferredShading;
+			if (!toTexture && (renderStyle & RenderStyle.UNITY_STYLE_DEFERRED) != RenderStyle.UNITY_STYLE_DEFERRED)
 			{
 				if(_flippedDepthMaterial==null)
 				{

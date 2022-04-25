@@ -186,7 +186,7 @@ namespace simul
 
 		public static void Init()
 		{
-#if !UNITY_EDITOR && UNITY_SWITCH
+#if !UNITY_EDITOR && SIMUL_STATIC_PLUGIN
 			// For platforms that statically link trueSKY we need to register the plugin:
 			if (!_staticInitialized)
 			{
@@ -3940,7 +3940,7 @@ namespace simul
 		bool _UsingIL2CPP = false;
 		public bool UsingIL2CPP
 		{
-#if UNITY_GAMECORE || UNITY_PS4 || UNITY_PS5
+#if UNITY_GAMECORE || UNITY_PS4 || UNITY_PS5 || UNITY_SWITCH
 			get { _UsingIL2CPP = true;  return _UsingIL2CPP; }
 			set { _UsingIL2CPP = true; }
 #else
@@ -4498,6 +4498,9 @@ namespace simul
 					StaticPushPath("ShaderBinaryPath", Application.streamingAssetsPath + @"/Simul/shaderbin/ps4");
 #elif UNITY_PS5
 					StaticPushPath("ShaderBinaryPath", Application.streamingAssetsPath + @"/Simul/shaderbin/ps5");
+#elif UNITY_SWITCH
+					StaticPushPath("ShaderBinaryPath", Application.streamingAssetsPath + @"/Simul/shaderbin/nx");
+					StaticPushPath("TexturePath", Application.streamingAssetsPath + @"/Simul/Media/Textures");
 #elif UNITY_WSA || UNITY_STANDALONE_WIN
 				   if (SystemInfo.graphicsDeviceType == GraphicsDeviceType.Direct3D11)
 						StaticPushPath("ShaderBinaryPath", Application.dataPath + @"/Simul/shaderbin/x86_64/d3d11");
@@ -4517,7 +4520,7 @@ namespace simul
 						StaticPushPath("ShaderBinaryPath", "D3D12");
 						StaticPushPath("ShaderPath", "");
 						StaticPushPath("ShaderPath", "D3D12");
-				}
+					}
 #endif
 				}
 				else

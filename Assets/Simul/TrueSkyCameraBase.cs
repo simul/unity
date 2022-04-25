@@ -89,12 +89,12 @@ namespace simul
 			public int framenumber;
 			public float exposure;
 			public float gamma;
-            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 48)] public float[] viewMatrices4x4;
-            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 48)] public float[] projMatrices4x4;
-            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 16)] public float[] overlayProjMatrix4x4;
+			[MarshalAs(UnmanagedType.ByValArray, SizeConst = 48)] public float[] viewMatrices4x4;
+			[MarshalAs(UnmanagedType.ByValArray, SizeConst = 48)] public float[] projMatrices4x4;
+			[MarshalAs(UnmanagedType.ByValArray, SizeConst = 16)] public float[] overlayProjMatrix4x4;
 			public System.IntPtr depthTexture;
-            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 3)] public int4[] depthViewports;
-            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 3)] public Viewport[] targetViewports;
+			[MarshalAs(UnmanagedType.ByValArray, SizeConst = 3)] public int4[] depthViewports;
+			[MarshalAs(UnmanagedType.ByValArray, SizeConst = 3)] public Viewport[] targetViewports;
 			public RenderStyle renderStyle;
 			public UnityRenderOptions unityRenderOptions;
 			public System.IntPtr colourTexture;
@@ -102,53 +102,53 @@ namespace simul
 			public int colourTextureArrayIndex; //For Texture2DArray or TextureCube, this the 'layer' index for trueSKY to render to. If the value is -1, trueSKY will ignore this value.
 		}
 
-        protected bool UsingIL2CPP()
-        {
-            return simul.trueSKY.GetTrueSky().UsingIL2CPP;
-        }
+		protected bool UsingIL2CPP()
+		{
+			return simul.trueSKY.GetTrueSky().UsingIL2CPP;
+		}
 
-        protected int view_ident;
-        protected int view_id=-1;
+		protected int view_ident;
+		protected int view_id=-1;
 		protected static int last_view_ident = 0;
 
-        protected float[] viewMatrices = new float[48];
-        protected float[] projMatrices = new float[48];
-        protected  int4[] depthViewports = new int4[3];
-        public TrueSkyCameraBase ()
+		protected float[] viewMatrices = new float[48];
+		protected float[] projMatrices = new float[48];
+		protected  int4[] depthViewports = new int4[3];
+		public TrueSkyCameraBase ()
 		{
-            view_ident = last_view_ident + 1;
+			view_ident = last_view_ident + 1;
 			last_view_ident++;
-        }
-        ~TrueSkyCameraBase()
-        {
-            StaticRemoveView(view_id);
-        }
+		}
+		~TrueSkyCameraBase()
+		{
+			StaticRemoveView(view_id);
+		}
 		protected void RemoveBuffer(string name)
 		{
 			Camera cam=GetComponent<Camera>();
 			CommandBuffer[] opaque=cam.GetCommandBuffers(CameraEvent.BeforeImageEffectsOpaque);
 			CommandBuffer[] after=cam.GetCommandBuffers(CameraEvent.AfterEverything);
-            CommandBuffer[] afterF = cam.GetCommandBuffers(CameraEvent.AfterForwardAlpha);
+			CommandBuffer[] afterF = cam.GetCommandBuffers(CameraEvent.AfterForwardAlpha);
 			CommandBuffer[] bufs = new CommandBuffer[opaque.Length + afterF.Length + after.Length];
 			opaque.CopyTo(bufs, 0);
 			after.CopyTo(bufs, opaque.Length);
-            afterF.CopyTo(bufs, opaque.Length + after.Length);
+			afterF.CopyTo(bufs, opaque.Length + after.Length);
 			for (int i =0;i<bufs.Length; i=i+1)
 			{
 				CommandBuffer b=bufs[i];
 				if(b.name==name)
 				{
 					cam.RemoveCommandBuffer(CameraEvent.AfterEverything,b);
-                    cam.RemoveCommandBuffer(CameraEvent.AfterForwardAlpha, b);
+					cam.RemoveCommandBuffer(CameraEvent.AfterForwardAlpha, b);
 					cam.RemoveCommandBuffer(CameraEvent.BeforeImageEffectsOpaque,b);
 					return;
 				}
 			}
 		}
 		protected static Mutex mut  = new Mutex ();
-        public bool flippedView     = true;
-        public float exposure       = 0.5F;
-        public float gamma          = 0.5F;
+		public bool flippedView     = true;
+		public float exposure       = 0.5F;
+		public float gamma          = 0.5F;
 		static protected Texture2D _dummyTexture;
 		protected RenderTextureHolder depthTexture      = new RenderTextureHolder();
 		protected RenderTextureHolder unityDepthTexture = new RenderTextureHolder();
@@ -165,12 +165,12 @@ namespace simul
 		protected virtual int InternalGetViewId()
 		{
 			return StaticGetOrAddView((System.IntPtr)view_ident);
-        }
+		}
 		protected virtual int GetRequiredDepthTextureWidth()
-        {
-            var cam = GetComponent<Camera>();
-            int w =cam.pixelWidth;
-            return w;
+		{
+			var cam = GetComponent<Camera>();
+			int w =cam.pixelWidth;
+			return w;
 		}
 		protected virtual void EnsureDepthTexture()
 		{
@@ -181,9 +181,9 @@ namespace simul
 			{
 				Camera camera = GetComponent<Camera>();
 #if TRUESKY_LOGGING
-                UnityEngine.Debug.Log ("EnsureDepthTexture resized texture for "+view_id +" to "+required_width+","+camera.pixelHeight); 
+				UnityEngine.Debug.Log ("EnsureDepthTexture resized texture for "+view_id +" to "+required_width+","+camera.pixelHeight); 
 #endif
-                RenderTexture rt = new RenderTexture(required_width, (int)camera.pixelHeight, 32, RenderTextureFormat.ARGBFloat);
+				RenderTexture rt = new RenderTexture(required_width, (int)camera.pixelHeight, 32, RenderTextureFormat.ARGBFloat);
 				depthTexture.renderTexture=rt;
 				depthTexture.renderTexture.name = "DepthTexture";
 				rt.Create();
@@ -202,8 +202,8 @@ namespace simul
 			{
 				view_id = InternalGetViewId();
 				EnsureDepthTexture();
-                // Unity can't Blit without a source texture, so we create a small, unused dummy texture.
-                if (_dummyTexture == null) 
+				// Unity can't Blit without a source texture, so we create a small, unused dummy texture.
+				if (_dummyTexture == null) 
 					_dummyTexture=new Texture2D(1,1,TextureFormat.Alpha8,false);
 			}
 			finally
@@ -241,11 +241,11 @@ namespace simul
 		//protected float[] projMatrix = new float[16];
 		protected float[] overlayProjMatrix = new float[16];
 		protected void ProjMatrixToTrueSkyFormat(RenderStyle renderStyle, Matrix4x4 m,float[] proj, int offset = 0)
-        {
-            offset *= 16;
-            float metresPerUnit = trueSKY.GetTrueSky().MetresPerUnit;
+		{
+			offset *= 16;
+			float metresPerUnit = trueSKY.GetTrueSky().MetresPerUnit;
 
-            proj[offset+00] = m.m00;
+			proj[offset+00] = m.m00;
 			proj[offset+04] = m.m01;
 			proj[offset+08] = m.m02;
 			proj[offset+012] = m.m03* metresPerUnit;
@@ -267,10 +267,10 @@ namespace simul
 		}
 		static public void ViewMatrixToTrueSkyFormat(RenderStyle renderStyle,Matrix4x4 m,float[] view,int offset=0,bool swap_yz=true)
 		{
-		    // transform?
+			// transform?
 			if (trueSKY.GetTrueSky() == null)
 				return;
-            offset *= 16;
+			offset *= 16;
 			float metresPerUnit = trueSKY.GetTrueSky().MetresPerUnit;
 			Matrix4x4 transform = trueSKY.GetTrueSky().transform.worldToLocalMatrix.inverse;
 			m=m*transform;
@@ -339,7 +339,7 @@ namespace simul
 			view[offset+09] = z.m21;
 			view[offset+10] = z.m22;
 			view[offset+11] = z.m23;
-			 		   
+					   
 			view[offset+12] = z.m30;
 			view[offset+13] = z.m31;
 			view[offset+14] = z.m32;
@@ -348,7 +348,7 @@ namespace simul
 		public virtual RenderStyle GetRenderStyle()
 		{
 			RenderStyle renderStyle = RenderStyle.UNITY_STYLE_DEFERRED;
-            var cam = GetComponent<Camera>();
+			var cam = GetComponent<Camera>();
 			if (cam.actualRenderingPath != RenderingPath.DeferredLighting
 				&&cam.actualRenderingPath!=RenderingPath.DeferredShading)
 			{

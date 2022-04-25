@@ -155,10 +155,10 @@ namespace simul
 			[SerializeField]
 			static bool auroraOther = false;
 
-        [SerializeField]
-        static bool interpolation = false;
 		[SerializeField]
-		static bool skylight = false;
+		static bool interpolation = false;
+		//[SerializeField]
+		//static bool skylight = false;
 		[SerializeField]
 		static bool shadows = false; //Partially on camera, need  a material funtion for Unity's Shadows
 		[SerializeField]
@@ -297,13 +297,13 @@ namespace simul
 
 						trueSky.IntegrationScheme = EditorGUILayout.Popup("Integration Scheme", trueSky.IntegrationScheme, renderOptions);
 
-                        if (trueSky.IntegrationScheme != 2)
-                        {
+						if (trueSky.IntegrationScheme != 2)
+						{
 							trueSky.CloudSteps = EditorGUILayout.IntSlider("Cloud Steps", trueSky.CloudSteps, 60, 500);
 						}
 						else if (trueSky.SimulVersion < trueSky.MakeSimulVersion(4, 3))
-                        {
-                            trueSky.IntegrationScheme = 0;
+						{
+							trueSky.IntegrationScheme = 0;
 							Debug.Log("Variable Grid is only supported in trueSKY 4.3+");
 						}                 
 						if (trueSky.IntegrationScheme == 0)
@@ -401,10 +401,10 @@ namespace simul
 						trueSky.PrecipitationWindEffect = EditorGUILayout.Slider("WindEffect", trueSky.PrecipitationWindEffect, 0.0F, 1.0F);
 						trueSky.PrecipitationWaver = EditorGUILayout.Slider("Waver", trueSky.PrecipitationWaver, 0.0F, 5.0F);
 						trueSky.PrecipitationWaverTimescaleS = EditorGUILayout.Slider("WaverTimescaleS", trueSky.PrecipitationWaverTimescaleS, 0.1F, 60.0F);
-                        trueSky.PrecipitationThresholdKm = EditorGUILayout.Slider("Required Cloud Thickness (Km)", trueSky.PrecipitationThresholdKm, 0.01F, 5.0F);
+						trueSky.PrecipitationThresholdKm = EditorGUILayout.Slider("Required Cloud Thickness (Km)", trueSky.PrecipitationThresholdKm, 0.01F, 5.0F);
 						trueSky.RainNearThreshold = EditorGUILayout.Slider("Rain Near Threshold (Km)", trueSky.RainNearThreshold, 0.1F, 10.0F);
 					}
-                    else
+					else
 						EditorGUILayout.LabelField("Precipitation Settings are set in the trueSKY Sequence asset in 4.1");
 				}
 
@@ -560,12 +560,12 @@ namespace simul
 									{
 										moon.Colour = EditorGUILayout.ColorField("Colour", moon.Colour);
 										moon.MoonTexture = (Texture)EditorGUILayout.ObjectField("Moon Texture", moon.MoonTexture, typeof(Texture), false);
-                                        moon.Albedo = EditorGUILayout.DoubleField("Albedo", moon.Albedo);
+										moon.Albedo = EditorGUILayout.DoubleField("Albedo", moon.Albedo);
 										moon.LongitudeOfAscendingNode = EditorGUILayout.DoubleField("Longitude Of Ascending Node", moon.LongitudeOfAscendingNode);
-                                        moon.LongitudeOfAscendingNodeRate = EditorGUILayout.DoubleField("Longitude Of Ascending Node Rate", moon.LongitudeOfAscendingNodeRate);
+										moon.LongitudeOfAscendingNodeRate = EditorGUILayout.DoubleField("Longitude Of Ascending Node Rate", moon.LongitudeOfAscendingNodeRate);
 										moon.Inclination = EditorGUILayout.DoubleField("Inclination", moon.Inclination);
 										moon.ArgumentOfPericentre = EditorGUILayout.DoubleField("Argument Of Pericentre", moon.ArgumentOfPericentre);
-                                        moon.ArgumentOfPericentreRate = EditorGUILayout.DoubleField("Argument Of Pericentre Rate", moon.ArgumentOfPericentreRate);
+										moon.ArgumentOfPericentreRate = EditorGUILayout.DoubleField("Argument Of Pericentre Rate", moon.ArgumentOfPericentreRate);
 										moon.MeanDistance = EditorGUILayout.DoubleField("Mean Distance", moon.MeanDistance);
 										moon.Eccentricity = EditorGUILayout.DoubleField("Eccentricity", moon.Eccentricity);
 										moon.MeanAnomaly = EditorGUILayout.DoubleField("Mean Anomaly", moon.MeanAnomaly);
@@ -745,26 +745,26 @@ namespace simul
 				// Interpolation Settings
 				EditorGUILayout.Space();
 				interpolation = EditorGUILayout.Foldout(interpolation, "Interpolation", outerFoldoutStyle);
-                if (interpolation)
-                {
+				if (interpolation)
+				{
 
-                    trueSky.InterpolationMode = EditorGUILayout.Popup("Interpolation Mode", trueSky.InterpolationMode, interpolationOptions);
-                    if (trueSky.InterpolationMode == 0)
-                        trueSky.InterpolationSubdivisions = EditorGUILayout.IntSlider("Subdivisions per keyframe", trueSky.InterpolationSubdivisions, 1, 32);
-                    trueSky.InstantUpdate = EditorGUILayout.Toggle("Instant Update", trueSky.InstantUpdate);
+					trueSky.InterpolationMode = EditorGUILayout.Popup("Interpolation Mode", trueSky.InterpolationMode, interpolationOptions);
+					if (trueSky.InterpolationMode == 0)
+						trueSky.InterpolationSubdivisions = EditorGUILayout.IntSlider("Subdivisions per keyframe", trueSky.InterpolationSubdivisions, 1, 32);
+					trueSky.InstantUpdate = EditorGUILayout.Toggle("Instant Update", trueSky.InstantUpdate);
 
-                    if (trueSky.SimulVersion >= trueSky.MakeSimulVersion(4, 2))
-                    {
-                        trueSky.HighDetailProportion = EditorGUILayout.Slider("High Detail", trueSky.HighDetailProportion, 0.0F, 1.0F);
-                        trueSky.MediumDetailProportion = EditorGUILayout.Slider("Medium Detail", trueSky.MediumDetailProportion, trueSky.HighDetailProportion, 1.0F);
+					if (trueSky.SimulVersion >= trueSky.MakeSimulVersion(4, 2))
+					{
+						trueSky.HighDetailProportion = EditorGUILayout.Slider("High Detail", trueSky.HighDetailProportion, 0.0F, 1.0F);
+						trueSky.MediumDetailProportion = EditorGUILayout.Slider("Medium Detail", trueSky.MediumDetailProportion, trueSky.HighDetailProportion, 1.0F);
 
-                        trueSky.OriginLatitude = EditorGUILayout.Slider("Latitude", trueSky.OriginLatitude, -90.0F, 90.0F);
-                        trueSky.OriginLongitude = EditorGUILayout.Slider("Longitude", trueSky.OriginLongitude, -180.0F, 180.0F);
-                        trueSky.OriginHeading = EditorGUILayout.Slider("Heading", trueSky.OriginHeading, -180.0F, 180.0F);
-                    }
-                }
-                // Shadow Settings
-                EditorGUILayout.Space();
+						trueSky.OriginLatitude = EditorGUILayout.Slider("Latitude", trueSky.OriginLatitude, -90.0F, 90.0F);
+						trueSky.OriginLongitude = EditorGUILayout.Slider("Longitude", trueSky.OriginLongitude, -180.0F, 180.0F);
+						trueSky.OriginHeading = EditorGUILayout.Slider("Heading", trueSky.OriginHeading, -180.0F, 180.0F);
+					}
+				}
+				// Shadow Settings
+				EditorGUILayout.Space();
 				shadows = EditorGUILayout.Foldout(shadows, "Shadows", outerFoldoutStyle);
 				if (shadows)
 				{
@@ -871,7 +871,7 @@ namespace simul
 						"This allows a single project to have both standard and HDRP scenes.", GUILayout.Height(60.0f));
 					
 					trueSky.UsingIL2CPP = EditorGUILayout.Toggle("Use IL2CPP", trueSky.UsingIL2CPP);
-					EditorGUILayout.LabelField("Default enabled and locked for projects building for Xbox or PlayStation consoles.");
+					EditorGUILayout.LabelField("Default enabled and locked for projects building for Xbox, PlayStation or Switch consoles.");
 				}
 			}
 			// trueSKY Advanced Mode
