@@ -4500,7 +4500,7 @@ namespace simul
 					StaticPushPath("ShaderBinaryPath", Application.streamingAssetsPath + @"/Simul/shaderbin/ps5");
 #elif UNITY_SWITCH
 					StaticPushPath("ShaderBinaryPath", Application.streamingAssetsPath + @"/Simul/shaderbin/nx");
-					StaticPushPath("TexturePath", Application.streamingAssetsPath + @"/Simul/Media/Textures");
+					StaticPushPath("TexturePath", Application.streamingAssetsPath + @"/Simul/Media/textures");
 #elif UNITY_WSA || UNITY_STANDALONE_WIN
 				   if (SystemInfo.graphicsDeviceType == GraphicsDeviceType.Direct3D11)
 						StaticPushPath("ShaderBinaryPath", Application.dataPath + @"/Simul/shaderbin/x86_64/d3d11");
