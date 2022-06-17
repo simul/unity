@@ -263,7 +263,7 @@ namespace simul
 			unityViewStruct.renderStyle = renderStyle | RenderStyle.UNITY_STYLE| RenderStyle.DRAW_OVERLAYS;
 			post_translucent_buf.IssuePluginEventAndData(UnityGetPostTranslucentFuncWithData(), TRUESKY_EVENT_ID + cbuf_view_id, postTransViewStructPtr);
 			Marshal.StructureToPtr(unityViewStruct, overlayViewStructPtr, !il2cppScripting);
-			//overlay_buf.IssuePluginEventAndData(UnityGetOverlayFuncWithData(), TRUESKY_EVENT_ID + cbuf_view_id, overlayStructPtr);
+			overlay_buf.IssuePluginEventAndData(UnityGetOverlayFuncWithData(), TRUESKY_EVENT_ID + cbuf_view_id, overlayViewStructPtr);
 
 		}
 		int duplicateFrames = 0;

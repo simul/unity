@@ -1969,9 +1969,6 @@ namespace simul
 						_trueSKYTime = value;
 						Math.Round(_trueSKYTime, 2);
 						StaticSetRenderFloat("Time", value / _timeUnits);
-						// What if, having changed this value, we now ask for a light colour before the next Update?
-						// so we force it:
-						StaticTick(0.0f);
 					}
 					catch (Exception exc)
 					{
@@ -2148,7 +2145,6 @@ namespace simul
 		{
 			_trueSKYTime = value * _timeUnits;
 			StaticSetRenderFloat("JumpToTime", value);
-			StaticTick(0.0f);
 		}
 
 		[SerializeField]
@@ -3874,17 +3870,59 @@ namespace simul
 
 		[SerializeField]
 		int _cloudShadowRangeKm = 300;
-		public int CloudShadowRangeKm
+        public int CloudShadowRangeKm
+        {
+            get
+            {
+                return _cloudShadowRangeKm;
+            }
+            set
+            {
+                if (_cloudShadowRangeKm != value) try
+                    {
+                        _cloudShadowRangeKm = value;
+                    }
+                    catch (Exception exc)
+                    {
+                        UnityEngine.Debug.Log(exc.ToString());
+                    }
+            }
+        }
+
+		[SerializeField]
+		int _highDetailMultiplier = 4;
+        public int HighDetailMultiplier
+        {
+            get
+            {
+                return _highDetailMultiplier;
+            }
+            set
+            {
+                if (_highDetailMultiplier != value) try
+                    {
+                        _highDetailMultiplier = value;
+                    }
+                    catch (Exception exc)
+                    {
+                        UnityEngine.Debug.Log(exc.ToString());
+                    }
+            }
+        }
+
+		[SerializeField]
+		float _highDetailRangeKm = 100.0f;
+		public float HighDetailRangeKm
 		{
 			get
 			{
-				return _cloudShadowRangeKm;
+				return _highDetailRangeKm;
 			}
 			set
 			{
-				if (_cloudShadowRangeKm != value) try
+				if (_highDetailRangeKm != value) try
 					{
-						_cloudShadowRangeKm = value;
+						_highDetailRangeKm = value;
 					}
 					catch (Exception exc)
 					{
@@ -3892,6 +3930,7 @@ namespace simul
 					}
 			}
 		}
+
 
 
 		[SerializeField]
@@ -4041,6 +4080,8 @@ namespace simul
 				ERV.RainNearThreshold = _RainNearThreshold;
 				ERV.MaximumStarMagnitude = _maximumStarMagniute;
 				ERV.RealTimeWeatherEffects = Convert.ToUInt32(_RealTimeWeatherEffects);
+				ERV.HighDetailMultiplier = (uint)_highDetailMultiplier;
+				ERV.HighDetailRangeKm = _highDetailRangeKm;
 
 				Marshal.StructureToPtr(ERV, ERVptr, !GetTrueSky().UsingIL2CPP);
 				StaticSetExternalRenderValues(ERVptr);
@@ -4237,8 +4278,6 @@ namespace simul
 						}
 					}
 				}
-			
-				StaticTick(0.0f);
 			}
 			catch (Exception exc)
 			{
