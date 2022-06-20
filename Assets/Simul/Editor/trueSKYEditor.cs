@@ -291,9 +291,11 @@ namespace simul
 						trueSky.RealTimeWeatherEffects = EditorGUILayout.Toggle("Real Time Weather Effects", trueSky.RealTimeWeatherEffects);
 
 						if (trueSky.SimulVersion >= trueSky.MakeSimulVersion(4, 3))
-							trueSky.MaxCloudDistanceKm = EditorGUILayout.Slider("Max Cloud Distance (km)", trueSky.MaxCloudDistanceKm, 100.0F, (trueSky.WindowWidthKm / 2));
-						else
-							trueSky.MaxCloudDistanceKm = EditorGUILayout.Slider("Max Cloud Distance (km)", trueSky.MaxCloudDistanceKm, 100.0F, 1000.0F);
+                        {
+							trueSky.MaxCloudDistanceKm = EditorGUILayout.Slider("Max Cloud Distance (km)", trueSky.MaxCloudDistanceKm, 100.0F, (trueSky.WindowWidthKm / 2));						
+                        }
+                        else
+                            trueSky.MaxCloudDistanceKm = EditorGUILayout.Slider("Max Cloud Distance (km)", trueSky.MaxCloudDistanceKm, 100.0F, 1000.0F);
 
 						trueSky.IntegrationScheme = EditorGUILayout.Popup("Integration Scheme", trueSky.IntegrationScheme, renderOptions);
 
@@ -301,13 +303,24 @@ namespace simul
 						{
 							trueSky.CloudSteps = EditorGUILayout.IntSlider("Cloud Steps", trueSky.CloudSteps, 60, 500);
 						}
-						else if (trueSky.SimulVersion < trueSky.MakeSimulVersion(4, 3))
+						else
 						{
-							trueSky.IntegrationScheme = 0;
-							Debug.Log("Variable Grid is only supported in trueSKY 4.3+");
-						}                 
-						if (trueSky.IntegrationScheme == 0)
+
+							if (trueSky.SimulVersion < trueSky.MakeSimulVersion(4, 3))
+							{
+								trueSky.IntegrationScheme = 0;
+								Debug.Log("Variable Grid is only supported in trueSKY 4.3+");
+							}
+							else
+							{
+								trueSky.HighDetailMultiplier = EditorGUILayout.IntSlider("High Detail Multiplier", trueSky.HighDetailMultiplier, 1, 4);
+								trueSky.HighDetailRangeKm = EditorGUILayout.Slider("High Detail Range Km", trueSky.HighDetailRangeKm, 10.0f, (trueSky.WindowWidthKm / 2));
+							}
+						}
+
+                        if (trueSky.IntegrationScheme == 0)
 						{
+
 							trueSky.RenderGridXKm = EditorGUILayout.Slider("Render Grid X (km)", trueSky.RenderGridXKm, 0.01F, 10.0F);
 							trueSky.RenderGridZKm = EditorGUILayout.Slider("Render Grid Z (km)", trueSky.RenderGridZKm, 0.01F, 10.0F);
 						}
