@@ -200,15 +200,19 @@ namespace simul
 			CommandBuffer[] bufs = cam.GetCommandBuffers(CameraEvent.BeforeImageEffectsOpaque);
 			//if(editorMode)
 				PrepareDepthMaterial();
-			int requiredNumber = 5;
+			bool do_overlays=true;
+			bool do_post_trans=true;
+			int requiredNumber = 2+(do_overlays?1:0) + (do_post_trans ? 1 : 0)+(editorMode?1:0);
 			if (bufs.Length != requiredNumber)
 			{
 				RemoveCommandBuffers();
-				//if(editorMode)
+				if(editorMode)
 					cam.AddCommandBuffer(CameraEvent.BeforeImageEffectsOpaque, blitbuf);
 				cam.AddCommandBuffer(CameraEvent.BeforeImageEffectsOpaque, mainCommandBuffer);
-				cam.AddCommandBuffer(CameraEvent.AfterForwardAlpha, post_translucent_buf);
-				cam.AddCommandBuffer(CameraEvent.AfterEverything, overlay_buf);
+				if (do_post_trans)
+					cam.AddCommandBuffer(CameraEvent.AfterForwardAlpha, post_translucent_buf);
+				if(do_overlays)
+					cam.AddCommandBuffer(CameraEvent.AfterEverything, overlay_buf);
 				//if (editorMode)
 				cam.AddCommandBuffer(CameraEvent.AfterEverything, deferred_buf); 
 			}

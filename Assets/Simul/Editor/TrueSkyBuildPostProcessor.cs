@@ -75,6 +75,11 @@ namespace simul
 			}
 			if(target == BuildTarget.Switch)
 			{
+				string nrsSourcePath = Environment.CurrentDirectory + s + "Assets"+s+"Simul"+s+"Plugins"+s+"Switch";
+				string nrsTargetPath = mediaDirectory + s+ "program0.ncd"+s+"data" + s+"Plugins";
+				Debug.Log("NRS from "+nrsSourcePath+" to "+nrsTargetPath);
+				DirectoryCopy.Copy(nrsSourcePath, nrsTargetPath, true, true);
+				//C:\Simul\Unity\2021\build_nx\2021.nspd\program0.ncd\data\Plugins
 				return;
 			}
 
