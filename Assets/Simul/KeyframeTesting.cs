@@ -13,7 +13,7 @@ public class KeyframeTesting : MonoBehaviour
 	// Update is called once per frame
 	void Update()
 	{
-		trueSky = simul.trueSKY.GetTrueSky();
+		/*trueSky = simul.trueSKY.GetTrueSky();
 		if (!trueSky)
 			return;
 
@@ -46,7 +46,7 @@ public class KeyframeTesting : MonoBehaviour
 		{
 			float value = 0.5f * Mathf.Sin(Time.time) + 0.5f;
 			trueSky.SetKeyframeValue(cloudKf00, "cloudiness", value);
-		}
+		}*/
 
 	}
 }

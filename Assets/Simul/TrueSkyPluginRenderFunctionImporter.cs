@@ -21,9 +21,11 @@ namespace simul
 				private const string renderer_dll = @"TrueSkyPluginRender";
 			#elif UNITY_PS5
 				private const string renderer_dll = @"TrueSkyPluginRender";
+			#elif UNITY_SWITCH
+				private const string renderer_dll = @"TrueSkyPluginRender";
 			#elif UNITY_XBOXONE || UNITY_GAMECORE
 				private const string renderer_dll = @"TrueSkyPluginRender_MD";
-			#elif UNITY_IPHONE || UNITY_SWITCH
+			#elif UNITY_IPHONE
 				private const string renderer_dll = @"__Internal";
 			#elif _WIN32
 				private const string renderer_dll = @"TrueSkyPluginRender_MT";
@@ -170,7 +172,6 @@ namespace simul
 		[DllImport(renderer_dll)] public static extern void StaticSetCloudKeyframePosition(uint uid, float[] LatLongHeadingDeg);
 		[DllImport(renderer_dll)] public static extern int StaticSpawnLightning2(IntPtr startpos, IntPtr endpos, float magnitude, IntPtr colour);
 		[DllImport(renderer_dll)] public static extern void GetSimulVersion(IntPtr major, IntPtr minor, IntPtr build);
-		[DllImport(renderer_dll)] public static extern int StaticTick(float deltaTime);
 
 		//Unity
 		//[DllImport(renderer_dll)] public static extern void UnityPluginLoad(IntPtr unityInterfaces);
@@ -187,7 +188,7 @@ namespace simul
 		//[DllImport(renderer_dll)] public static extern void UnitySetGraphicsDevice(IntPtr device, int deviceType, int eventType);
 		//[DllImport(renderer_dll)] public static extern void UnitySetRenderFrameValues(int view_id, float[] viewMatrices4x4, float[] projMatrices4x4, float[] overlayProjMatrix4x4, IntPtr fullResDepthTexture2D, int4[] depthViewports, Viewport[] targetViewports, RenderStyle renderStyle, float exposure, float gamma, int framenumber, UnityRenderOptions unityRenderOptions, IntPtr colourTexture);
 		
-		#if !UNITY_EDITOR && UNITY_SWITCH
+		#if !UNITY_EDITOR && SIMUL_STATIC_PLUGIN
 		[DllImport(renderer_dll)] public static extern void RegisterPlugin();
 		#endif
 

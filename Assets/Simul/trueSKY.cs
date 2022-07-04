@@ -186,7 +186,7 @@ namespace simul
 
 		public static void Init()
 		{
-#if !UNITY_EDITOR && UNITY_SWITCH
+#if !UNITY_EDITOR && SIMUL_STATIC_PLUGIN
 			// For platforms that statically link trueSKY we need to register the plugin:
 			if (!_staticInitialized)
 			{
@@ -1969,9 +1969,6 @@ namespace simul
 						_trueSKYTime = value;
 						Math.Round(_trueSKYTime, 2);
 						StaticSetRenderFloat("Time", value / _timeUnits);
-						// What if, having changed this value, we now ask for a light colour before the next Update?
-						// so we force it:
-						StaticTick(0.0f);
 					}
 					catch (Exception exc)
 					{
@@ -2148,7 +2145,6 @@ namespace simul
 		{
 			_trueSKYTime = value * _timeUnits;
 			StaticSetRenderFloat("JumpToTime", value);
-			StaticTick(0.0f);
 		}
 
 		[SerializeField]
@@ -2770,17 +2766,39 @@ namespace simul
 
 		[SerializeField]
 		float _RainNearThreshold = 3.0f;
-		public float RainNearThreshold
+        public float RainNearThreshold
+        {
+            get
+            {
+                return _RainNearThreshold;
+            }
+            set
+            {
+                if (RainNearThreshold != value) try
+                    {
+                        _RainNearThreshold = value;
+                        updateERV = true;
+                    }
+                    catch (Exception exc)
+                    {
+                        UnityEngine.Debug.Log(exc.ToString());
+                    }
+            }
+        }
+
+		[SerializeField]
+		float _VirgaNearThreshold = 20.0f;
+		public float VirgaNearThreshold
 		{
 			get
 			{
-				return _RainNearThreshold;
+				return _VirgaNearThreshold;
 			}
 			set
 			{
-				if (RainNearThreshold != value) try
+				if (VirgaNearThreshold != value) try
 					{
-						_RainNearThreshold = value;
+						_VirgaNearThreshold = value;
 						updateERV = true;
 					}
 					catch (Exception exc)
@@ -3260,7 +3278,7 @@ namespace simul
 				return;
 			try
 			{
-				StaticSetSequenceTxt(_sequence.SequenceAsText);
+				StaticSetSequence2(_sequence.SequenceAsText);
 				StaticTriggerAction("Reset");
 			}
 			catch (Exception exc)
@@ -3874,17 +3892,61 @@ namespace simul
 
 		[SerializeField]
 		int _cloudShadowRangeKm = 300;
-		public int CloudShadowRangeKm
+        public int CloudShadowRangeKm
+        {
+            get
+            {
+                return _cloudShadowRangeKm;
+            }
+            set
+            {
+                if (_cloudShadowRangeKm != value) try
+                    {
+                        _cloudShadowRangeKm = value;
+                    }
+                    catch (Exception exc)
+                    {
+                        UnityEngine.Debug.Log(exc.ToString());
+                    }
+            }
+        }
+
+		[SerializeField]
+		int _highDetailMultiplier = 4;
+        public int HighDetailMultiplier
+        {
+            get
+            {
+                return _highDetailMultiplier;
+            }
+            set
+            {
+                if (_highDetailMultiplier != value) try
+                    {
+						updateERV = true;
+						_highDetailMultiplier = value;
+                    }
+                    catch (Exception exc)
+                    {
+                        UnityEngine.Debug.Log(exc.ToString());
+                    }
+            }
+        }
+
+		[SerializeField]
+		float _highDetailRangeKm = 100.0f;
+		public float HighDetailRangeKm
 		{
 			get
 			{
-				return _cloudShadowRangeKm;
+				return _highDetailRangeKm;
 			}
 			set
 			{
-				if (_cloudShadowRangeKm != value) try
+				if (_highDetailRangeKm != value) try
 					{
-						_cloudShadowRangeKm = value;
+						updateERV = true;
+						_highDetailRangeKm = value;
 					}
 					catch (Exception exc)
 					{
@@ -3892,6 +3954,7 @@ namespace simul
 					}
 			}
 		}
+
 
 
 		[SerializeField]
@@ -3940,7 +4003,7 @@ namespace simul
 		bool _UsingIL2CPP = false;
 		public bool UsingIL2CPP
 		{
-#if UNITY_GAMECORE || UNITY_PS4 || UNITY_PS5
+#if UNITY_GAMECORE || UNITY_PS4 || UNITY_PS5 || UNITY_SWITCH
 			get { _UsingIL2CPP = true;  return _UsingIL2CPP; }
 			set { _UsingIL2CPP = true; }
 #else
@@ -4038,9 +4101,12 @@ namespace simul
 				ERV.MaxFramesBetweenViewUpdates = 100;
 				ERV.PrecipitationRadiusMetres = _PrecipitationRadiusMetres;
 				ERV.ShadowTextureSize = _shadowTextureRes;
-				ERV.RainNearThreshold = _RainNearThreshold;
-				ERV.MaximumStarMagnitude = _maximumStarMagniute;
+                ERV.RainNearThreshold = _RainNearThreshold;
+				ERV.VirgaNearThresholdKm = _VirgaNearThreshold;
+                ERV.MaximumStarMagnitude = _maximumStarMagniute;
 				ERV.RealTimeWeatherEffects = Convert.ToUInt32(_RealTimeWeatherEffects);
+				ERV.HighDetailMultiplier = (uint)_highDetailMultiplier;
+				ERV.HighDetailRangeKm = _highDetailRangeKm;
 
 				Marshal.StructureToPtr(ERV, ERVptr, !GetTrueSky().UsingIL2CPP);
 				StaticSetExternalRenderValues(ERVptr);
@@ -4237,8 +4303,6 @@ namespace simul
 						}
 					}
 				}
-			
-				StaticTick(0.0f);
 			}
 			catch (Exception exc)
 			{
@@ -4498,6 +4562,9 @@ namespace simul
 					StaticPushPath("ShaderBinaryPath", Application.streamingAssetsPath + @"/Simul/shaderbin/ps4");
 #elif UNITY_PS5
 					StaticPushPath("ShaderBinaryPath", Application.streamingAssetsPath + @"/Simul/shaderbin/ps5");
+#elif UNITY_SWITCH
+					StaticPushPath("ShaderBinaryPath", Application.streamingAssetsPath + @"/Simul/shaderbin/nx");
+					StaticPushPath("TexturePath", Application.streamingAssetsPath + @"/Simul/Media/textures");
 #elif UNITY_WSA || UNITY_STANDALONE_WIN
 				   if (SystemInfo.graphicsDeviceType == GraphicsDeviceType.Direct3D11)
 						StaticPushPath("ShaderBinaryPath", Application.dataPath + @"/Simul/shaderbin/x86_64/d3d11");
@@ -4517,7 +4584,7 @@ namespace simul
 						StaticPushPath("ShaderBinaryPath", "D3D12");
 						StaticPushPath("ShaderPath", "");
 						StaticPushPath("ShaderPath", "D3D12");
-				}
+					}
 #endif
 				}
 				else
