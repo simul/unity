@@ -13,12 +13,25 @@ namespace simul
 {
 	public class TrueSkyHDRPCustomPass : CustomPass
 	{
+		public TrueSkyHDRPCustomPass()
+		{
+			view_ident = last_view_ident + 1;
+			last_view_ident++;
+		}
+		~TrueSkyHDRPCustomPass()
+		{
+			StaticRemoveView(view_id);
+		}
+
 		UnityViewStruct unityViewStruct;
 		System.IntPtr unityViewStructPtr;
 
 		int lastFrameCount = -1;
 		protected int cbuf_view_id = -1;
 		protected int view_ident = 0;
+		protected int view_id = -1;
+		protected static int last_view_ident = 0;
+
 		protected int InternalGetViewId()
 		{
 			return StaticGetOrAddView((System.IntPtr)view_ident);
