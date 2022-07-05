@@ -2,12 +2,13 @@
 #if UNITY_PS4
 using UnityEngine.PS4;
 #endif
-using System;
-using System.Collections;
+#if UNITY_PS5
+using UnityEngine.PS5;
+#endif
 
 namespace simul
 {
-	public class GamePad : MonoBehaviour
+    public class GamePad : MonoBehaviour
 	{
 
 		public int playerId = -1;
@@ -41,30 +42,33 @@ namespace simul
 
 		void Update()
 		{
-            if(Application.isConsolePlatform)
-            {
 #if UNITY_PS4
-			    if (PS4Input.PadIsConnected(playerId))
-			    {
-			    	// Set the gamepad to the start values for the player
-			    	if (!hasSetupGamepad)
-			    		ToggleGamePad(true);
+			if (PS4Input.PadIsConnected(playerId))
+			{
+				// Set the gamepad to the start values for the player
+				if (!hasSetupGamepad)
+					ToggleGamePad(true);
 
-			    	// Handle each part individually
-			    	Thumbsticks();
+				// Handle each part individually
+				Thumbsticks();
 
-			    	// Options button is on its own, so we'll do it here
-			    	if (Input.GetKey((KeyCode)Enum.Parse(typeof(KeyCode), "Joystick" + stickID + "Button7", true)))
-			    	{
+				// Options button is on its own, so we'll do it here
+				if (Input.GetKey((KeyCode)System.Enum.Parse(typeof(KeyCode), "Joystick" + stickID + "Button7", true)))
+				{
 
-			    		// Reset the gyro orientation to default
-			    		PS4Input.PadResetOrientation(playerId);
-			    	}
-			    }
-#endif
-            }
+					// Reset the gyro orientation to default
+					PS4Input.PadResetOrientation(playerId);
+				}
+			}
+#elif UNITY_PS5
+			Thumbsticks();
+#else
+			if (Application.isConsolePlatform)
+			{
+			}
 			else if (hasSetupGamepad)
 				ToggleGamePad(false);
+#endif
 		}
 
 		// Toggle the gamepad between connected and disconnected states
@@ -81,9 +85,11 @@ namespace simul
 			else
 			{
 				// Hide the touches
-				touches[0].gameObject.SetActive(false);
-				touches[1].gameObject.SetActive(false);
-
+				if(touches!=null&&touches.Length>=2)
+				{ 
+					touches[0].gameObject.SetActive(false);
+					touches[1].gameObject.SetActive(false);
+				}
 				hasSetupGamepad = false;
 			}
 		}
@@ -102,6 +108,8 @@ namespace simul
 		public Vector3 rightstick;
 		void Thumbsticks()
 		{
+#if UNITY_PS5
+#else
 			// Move the thumbsticks around
 			leftStick = new Vector3(Input.GetAxis("leftstick" + stickID + "horizontal"),
 																		  Input.GetAxis("leftstick" + stickID + "vertical"),
@@ -110,6 +118,7 @@ namespace simul
 			rightstick = new Vector3(Input.GetAxis("rightstick" + stickID + "horizontal"),
 																		  Input.GetAxis("rightstick" + stickID + "vertical"),
 																		   0);
+#endif
 		}
 
 		// Make the Cross, Circle, Triangle and Square buttons light up when pressed

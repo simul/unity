@@ -102,6 +102,10 @@ namespace simul
 			, POST_TRANSLUCENT = 128
 			, VR_STYLE_SIDE_BY_SIDE = 256
 			, DEPTH_BLENDING = 512
+			, DONT_COMPOSITE = 1024
+			, CLEAR_SCREEN = 2048
+			, DRAW_OVERLAYS = 4096
+			, HIGH_DPI_AWARE = 16384
 	};
 	public enum UnityRenderOptions: uint
 	{
@@ -182,7 +186,7 @@ namespace simul
 
 		public static void Init()
 		{
-#if !UNITY_EDITOR && UNITY_SWITCH
+#if !UNITY_EDITOR && SIMUL_STATIC_PLUGIN
 			// For platforms that statically link trueSKY we need to register the plugin:
 			if (!_staticInitialized)
 			{
@@ -232,7 +236,7 @@ namespace simul
 
 	public struct ExternalMoon
 	{
-		public static int static_version = 4; //adding Colour and albedo
+		public static int static_version = 5; //Remove unused data relating to mesh
 		public int version;
 		public Orbit orbit;
 		public float radiusArcMinutes;
@@ -240,8 +244,6 @@ namespace simul
 		public bool illuminated;
 		public ExternalTexture texture;
 		public bool render;
-		public vec3 direction;
-		public Quaternion orientation;
 		public vec3 colour;
 		public float albedo;
 	};
@@ -276,65 +278,71 @@ namespace simul
 
 			return result;
 		}
-	};
+    };
 
-	[StructLayout(LayoutKind.Sequential, Pack = 1)]
-	public struct ExternalRenderValues //these values should be values that dont change at runtime, unless explicitly called
-	{
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    public struct ExternalRenderValues //these values dont change at runtime, unless explicitly called
+    {
 
-		public static int static_version = 8; //DoCloudRaytraceLighting
+        public static int static_version = 10;  //HighDetailRange and Multiplier
 		public int version;
 
-		public float HighDetailProportion;         //!< For cloud volume update rate.
-		public float MediumDetailProportion;           //!< For medium cloud volume update rate.
+        public float HighDetailProportion;         //!< For cloud volume update rate.
+        public float MediumDetailProportion;           //!< For medium cloud volume update rate.
 
-		public uint RenderSky;                      //!< Disable sky rendering, used primarily for when you only want water.
+        public uint RenderSky;                      //!< Disable sky rendering, used primarily for when you only want water.
 
-		public int MaximumCubemapResolution;       //!< Resolution to draw full-detail cloud buffers
+        public int MaximumCubemapResolution;       //!< Resolution to draw full-detail cloud buffers
 
-		public int ShadowTextureSize;
+        public int ShadowTextureSize;
 
-		public uint Godrays_x;                     //Need converting to uint3
-		public uint Godrays_y;
-		public uint Godrays_z;
+        public uint Godrays_x;                     //Need converting to uint3
+        public uint Godrays_y;
+        public uint Godrays_z;
 
-		public float PrecipitationRadiusMetres;
+        public float PrecipitationRadiusMetres;
 
-		public int EdgeNoiseTextureSize;
-		public int WorleyTextureSize;
+        public int EdgeNoiseTextureSize;
+        public int WorleyTextureSize;
 
-		public float RenderGridXKm;                    //!< Minimum grid width for raytracing.
-		public float RenderGridZKm;                    //!< Minimum grid height for raytracing.
+        public float RenderGridXKm;                    //!< Minimum grid width for raytracing.
+        public float RenderGridZKm;                    //!< Minimum grid height for raytracing.
 
-		public int WindowGridWidth;
-		public int WindowGridHeight;
+        public int WindowGridWidth;
+        public int WindowGridHeight;
 
-		public int WindowWidthKm;
-		public int WindowHeightKm;
+        public int WindowWidthKm;
+        public int WindowHeightKm;
 
-		public int DefaultNumSlices;
-		public int DefaultAmortization;
+        public int DefaultNumSlices;
+        public int DefaultAmortization;
 
-		public float CloudThresholdDistanceKm;
-		public float CloudDepthTemporalAlpha;
-		public float DepthSamplingPixelRange;
+        public float CloudThresholdDistanceKm;
+        public float CloudDepthTemporalAlpha;
+        public float DepthSamplingPixelRange;
 
-		public int MaximumStarMagnitude;           //!< Largest magnitude of star to draw. Larger magnitudes are dimmer.
+        public int MaximumStarMagnitude;           //!< Largest magnitude of star to draw. Larger magnitudes are dimmer.
 
-		public int IntegrationScheme;
-		public int LightingMode;
+        public int IntegrationScheme;
+        public int LightingMode;
 
-		public int MaxFramesBetweenViewUpdates;
-		public int AtmosphericsAmortization;
-		public float RainNearThreshold;
+        public int MaxFramesBetweenViewUpdates;
+        public int AtmosphericsAmortization;
+        public float RainNearThreshold;
+		public float VirgaNearThresholdKm;
 		public uint AutomaticSunPosition;
-		public uint RealTimeWeatherEffects;
-		
-		public uint	DoCloudRaytraceLighting;
-		public uint	RaysPerVoxel;
+        public uint RealTimeWeatherEffects;
+
+        public uint DoCloudRaytraceLighting;
+        public uint RaysPerVoxel;
+		public uint MaxRayRecursionDepth;
+
+		public uint HighDetailMultiplier;          //Multiplier for number of grid steps. 
+		public float HighDetailRangeKm;                //Range at which to apply increased grid steps.
+
 	};
 
-	[StructLayout(LayoutKind.Sequential, Pack = 1)]
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
 	public struct ExternalDynamicValues
 	{
 		public static int static_version = 2;
@@ -528,10 +536,6 @@ namespace simul
 		/** Radius of the Moon. Will affect lighting as more light is reflected*/
 		public double RadiusArcMinutes;
 
-		// For tracking
-		//UStaticMeshComponent *CurrentMeshComponent=nullptr;
-		//FVector Direction;
-		//FQuat Orientation;
 		public bool Render;
 		public bool DestroyMoon;
 	};
@@ -1011,6 +1015,55 @@ namespace simul
 			return result;
 		}
 
+		public void SetKeyframerValue(uint uid, string name, object value)
+		{
+			if (value.GetType() == typeof(double))
+			{
+				double d = (double)value;
+				StaticRenderKeyframerSetFloat(uid, name, (float)d);
+			}
+			else if (value.GetType() == typeof(float))
+			{
+				StaticRenderKeyframerSetFloat(uid, name, (float)value);
+			}
+			else if (value.GetType() == typeof(int))
+			{
+				StaticRenderKeyframerSetInt(uid, name, (int)value);
+			}
+		}
+
+		public T GetKeyframerValue<T>(uint uid, string name)
+		{
+			T result = (T)Convert.ChangeType(0, typeof(T));
+
+			if (result.GetType() == typeof(double))
+			{
+				double value = (double)StaticRenderKeyframerGetFloat(uid, name);
+				result = (T)Convert.ChangeType(value, typeof(T));
+			}
+			else if (result.GetType() == typeof(float))
+			{
+				float value = StaticRenderKeyframerGetFloat(uid, name);
+				result = (T)Convert.ChangeType(value, typeof(T));
+			}
+			else if (result.GetType() == typeof(int))
+			{
+				int value = StaticRenderKeyframerGetInt(uid, name);
+				result = (T)Convert.ChangeType(value, typeof(T));
+			}
+
+			return result;
+		}
+
+		public uint CreateCloudKeyframer(string name)
+		{
+			return StaticRenderCreateCloudKeyframer(name);
+		}
+
+		public void DeleteCloudKeyframer(uint uid)
+		{
+			StaticRenderDeleteCloudKeyframer(uid);
+		}
 		//Storms
 		public uint GetStormUidByIndex(int index)
 		{
@@ -1020,30 +1073,42 @@ namespace simul
 		{
 			return GetStormAtTime(time);
 		}
-		public float GetStormFloat(uint uid, string name)
+
+		public T GetStormValue<T>(uint uid, string name)
 		{
-			return StaticRenderKeyframeGetFloat(uid, name);
+			return GetKeyframeValue<T>(uid, name);
 		}
-		public void SetStormFloat(uint uid, string name, float value)
+		public void SetStormValue(uint uid, string name, object value)
 		{
-			StaticRenderKeyframeSetFloat(uid, name, value);
+			SetKeyframeValue(uid, name, value);
 		}
-		public int GetStormInt(uint uid, string name)
-		{
-			return StaticRenderKeyframeGetInt(uid, name);
-		}
-		public void SetStormInt(uint uid, string name, int value)
-		{
-			StaticRenderKeyframeSetInt(uid, name, value);
-		}
-		public bool GetStormBool(uint uid, string name)
-		{
-			return StaticRenderKeyframeGetBool(uid, name);
-		}
-		public void SetStormBool(uint uid, string name, bool value)
-		{
-			StaticRenderKeyframeSetBool(uid, name, value);
-		}
+
+
+
+		//public float GetStormFloat(uint uid, string name)
+		//{
+		//	return StaticRenderKeyframeGetFloat(uid, name);
+		//}
+		//public void SetStormFloat(uint uid, string name, float value)
+		//{
+		//	SetKeyframeValue(uid, name, value);
+		//}
+		//public int GetStormInt(uint uid, string name)
+		//{
+		//	return StaticRenderKeyframeGetInt(uid, name);
+		//}
+		//public void SetStormInt(uint uid, string name, int value)
+		//{
+		//	StaticRenderKeyframeSetInt(uid, name, value);
+		//}
+		//public bool GetStormBool(uint uid, string name)
+		//{
+		//	return StaticRenderKeyframeGetBool(uid, name);
+		//}
+		//public void SetStormBool(uint uid, string name, bool value)
+		//{
+		//	StaticRenderKeyframeSetBool(uid, name, value);
+		//}
 		/// <summary>
 		/// Retrieve the active strike. end and start position in metres.
 		/// </summary>
@@ -1121,28 +1186,36 @@ namespace simul
 		{
 			Vector4 ts_dir = UnityToTrueSkyMatrix() * (new Vector4(u_dir.x, u_dir.y, u_dir.z, 0));
 			return new Vector3(ts_dir.x, ts_dir.z, ts_dir.y);
-		}
-		static public Matrix4x4 UnityToTrueSkyMatrix()
-		{
-			Matrix4x4 transform = trueSKY.GetTrueSky().transform.worldToLocalMatrix;
-			float metresPerUnit = trueSKY.GetTrueSky().MetresPerUnit;
-			Matrix4x4 scale = new Matrix4x4();
-			scale.SetTRS(new Vector3(0, 0, 0), new Quaternion(0, 0, 0, 1.0F), new Vector3(metresPerUnit, metresPerUnit, metresPerUnit));
-			transform = scale * transform;
-			return transform;
+        }
+        static public Matrix4x4 UnityToTrueSkyMatrix()
+        {
+            Matrix4x4 transform = trueSKY.GetTrueSky().transform.worldToLocalMatrix;
+            float metresPerUnit = trueSKY.GetTrueSky().MetresPerUnit;
+            Matrix4x4 scale = new Matrix4x4();
+            scale.SetTRS(new Vector3(0, 0, 0), new Quaternion(0, 0, 0, 1.0F), new Vector3(metresPerUnit, metresPerUnit, metresPerUnit));
+            transform = scale * transform;
+            return transform;
+        }
+
+		static public void SanitizeSize(ref int value, int minRes = 64, int maxRes = 2048)
+		{// Rounds the cube map size to nearest power of two.
+			value = Mathf.Clamp(Mathf.NextPowerOfTwo(value), minRes, maxRes);
 		}
 
-		#endregion
-		public List<FMoon> _moons = new List<FMoon>();
+	#endregion
+	public List<FMoon> _moons = new List<FMoon>();
 
 		public void AddNewMoon()
 		{
-			FMoon _temp;
-			_temp = new FMoon();
-			_moons.Add(_temp);
+			if (_moons.Count < 10)
+            {
+				FMoon _temp;
+				_temp = new FMoon();
+                _moons.Add(_temp);
+			}
 		}
 
-		public static void InitExternalTexture(ref ExternalTexture ext, Texture tex)
+            public static void InitExternalTexture(ref ExternalTexture ext, Texture tex)
 		{
 			if (tex != null)
 			{
@@ -1584,8 +1657,9 @@ namespace simul
 			set
 			{
 				if (_edgeNoiseTextureSize != value)
-				{
-					_edgeNoiseTextureSize = value;
+                {
+                    _edgeNoiseTextureSize = value;
+					SanitizeSize(ref _edgeNoiseTextureSize, 32, 256);
 					updateERV = true;
 				}
 			}
@@ -1603,9 +1677,10 @@ namespace simul
 			set
 			{
 				if (_CellNoiseTextureSize != value)
-				{
-					_CellNoiseTextureSize = value;
-					StaticSetRenderInt("render:cellnoisetexturesize", _CellNoiseTextureSize);
+                {
+                    _CellNoiseTextureSize = value;
+					SanitizeSize(ref _CellNoiseTextureSize, 32);
+                    StaticSetRenderInt("render:cellnoisetexturesize", _CellNoiseTextureSize);
 				}
 			}
 		}
@@ -1894,9 +1969,6 @@ namespace simul
 						_trueSKYTime = value;
 						Math.Round(_trueSKYTime, 2);
 						StaticSetRenderFloat("Time", value / _timeUnits);
-						// What if, having changed this value, we now ask for a light colour before the next Update?
-						// so we force it:
-						StaticTick(0.0f);
 					}
 					catch (Exception exc)
 					{
@@ -2073,7 +2145,6 @@ namespace simul
 		{
 			_trueSKYTime = value * _timeUnits;
 			StaticSetRenderFloat("JumpToTime", value);
-			StaticTick(0.0f);
 		}
 
 		[SerializeField]
@@ -2185,64 +2256,6 @@ namespace simul
 					_Variant[0].Vec3.z = _OriginHeading;
 					StaticSetRender("render:originlatlongheadingdeg", 1, _Variant);
 				}
-			}
-		}
-
-		/*These three variables are only temporary to provide access to the default skylight 
-		 * created by the plugin that right now is used only for water reflections, a larger 
-		 * update will be required to rewrite camera rpobes for this purpose instead.
-		 */
-		[SerializeField]
-		bool _skylightAllMips = false;
-		public bool SkylightAllMips
-		{
-			get
-			{
-				return _skylightAllMips;
-			}
-			set
-			{
-				if (_skylightAllMips != value)
-				{
-					_skylightAllMips = value;
-					StaticSetRenderBool("defaultskylightallmips", value);
-				}
-			}
-		}
-
-		[SerializeField]
-		bool _skylightAllFaces = false;
-		public bool SkylightAllFaces
-		{
-			get
-			{
-				return _skylightAllFaces;
-			}
-			set
-			{
-				if (_skylightAllFaces != value) 
-					{
-						_skylightAllFaces = value;
-						StaticSetRenderBool("defaultskylightallfaces", value);
-					}
-			}
-		}
-
-		[SerializeField]
-		int _skylightAmortization = 2;
-		public int SkylightAmortization
-		{
-			get
-			{
-				return _skylightAmortization;
-			}
-			set
-			{
-				if (_skylightAmortization != value)
-					{
-						_skylightAmortization = value;
-						StaticSetRenderInt("defaultskylightamortization", value);
-					}
 			}
 		}
 
@@ -2402,14 +2415,6 @@ namespace simul
 		int _MaxPrecipitationParticles = 100000;
 
 		[SerializeField]
-		bool _changedAmortInEd = false;
-		public bool ChangeAmortInEd
-		{
-			get { return _changedAmortInEd; }
-			set { _changedAmortInEd = value; }
-		}
-
-		[SerializeField]
 		int _amortization = 2;
 		[SerializeField]
 		int _atmosphericsAmortization = 2;
@@ -2428,10 +2433,6 @@ namespace simul
 					{
 						_depthTemporalAlpha = value;
 						updateERV = true;
-						if (!Application.isPlaying)
-						{
-							ChangeAmortInEd = true;
-						}
 					}
 					catch (Exception exc)
 					{
@@ -2452,13 +2453,11 @@ namespace simul
 			set
 			{
 				if (_amortization != value) try
-					{
-						_amortization = value;
-						StaticSetRenderInt("Amortization", _amortization);
-						if (!Application.isPlaying)
-						{
-							ChangeAmortInEd = true;
-						}
+                    {
+                        _amortization = value;
+						updateERV = true;
+                        if (SimulVersion < MakeSimulVersion(4, 2))
+							StaticSetRenderInt("Amortization", _amortization);
 					}
 					catch (Exception exc)
 					{
@@ -2504,15 +2503,13 @@ namespace simul
 			set
 			{
 				if (_atmosphericsAmortization != value) try
-					{
-						_atmosphericsAmortization = value;
-						StaticSetRenderInt("AtmosphericsAmortization", _atmosphericsAmortization);
-						if (!Application.isPlaying)
-						{
-							ChangeAmortInEd = true;
-						}
+                    {
+                        _atmosphericsAmortization = value;
+                        updateERV = true;
+						if (SimulVersion < MakeSimulVersion(4, 2))
+							StaticSetRenderInt("AtmosphericsAmortization", _atmosphericsAmortization);
 					}
-					catch (Exception exc)
+                    catch (Exception exc)
 					{
 						UnityEngine.Debug.Log(exc.ToString());
 					}
@@ -2759,6 +2756,49 @@ namespace simul
 				if (_PrecipitationThresholdKm != value) try
 					{
 						_PrecipitationThresholdKm = value;
+					}
+					catch (Exception exc)
+					{
+						UnityEngine.Debug.Log(exc.ToString());
+					}
+			}
+		}
+
+		[SerializeField]
+		float _RainNearThreshold = 3.0f;
+        public float RainNearThreshold
+        {
+            get
+            {
+                return _RainNearThreshold;
+            }
+            set
+            {
+                if (RainNearThreshold != value) try
+                    {
+                        _RainNearThreshold = value;
+                        updateERV = true;
+                    }
+                    catch (Exception exc)
+                    {
+                        UnityEngine.Debug.Log(exc.ToString());
+                    }
+            }
+        }
+
+		[SerializeField]
+		float _VirgaNearThreshold = 20.0f;
+		public float VirgaNearThreshold
+		{
+			get
+			{
+				return _VirgaNearThreshold;
+			}
+			set
+			{
+				if (VirgaNearThreshold != value) try
+					{
+						_VirgaNearThreshold = value;
 						updateERV = true;
 					}
 					catch (Exception exc)
@@ -3238,30 +3278,12 @@ namespace simul
 				return;
 			try
 			{
-				StaticSetSequenceTxt(_sequence.SequenceAsText);
+				StaticSetSequence2(_sequence.SequenceAsText);
 				StaticTriggerAction("Reset");
 			}
 			catch (Exception exc)
 			{
 				UnityEngine.Debug.Log(exc.ToString());
-			}
-		}
-
-		[SerializeField]
-		bool _Visible = true;
-
-		public bool Visible
-		{
-			get
-			{
-				return _Visible;
-			}
-			set
-			{
-				if (_Visible != value)
-				{
-					_Visible = value;
-				}
 			}
 		}
 
@@ -3317,9 +3339,9 @@ namespace simul
 			set
 			{
 				if (_CubemapResolution != value) try
-					{
-
-						_CubemapResolution = value;
+                    {
+                        _CubemapResolution = value;
+						SanitizeSize(ref _CubemapResolution);
 						updateERV = true;
 					}
 					catch (Exception exc)
@@ -3423,7 +3445,7 @@ namespace simul
 		}
 
 		[SerializeField]
-		float _MaxCloudDistanceKm = 300.0f;
+		float _MaxCloudDistanceKm = 400.0f;
 		public float MaxCloudDistanceKm
 		{
 			get
@@ -3501,6 +3523,7 @@ namespace simul
 				if (_windowGridWidth != value) try
 					{
 						_windowGridWidth = value;
+						SanitizeSize(ref _windowGridWidth);
 						updateERV = true;
 						//StaticSetRenderFloat("render:rendergridzkm", _RenderGridZKm);
 					}
@@ -3522,8 +3545,9 @@ namespace simul
 			set
 			{
 				if (_windowGridHeight != value) try
-					{
-						_windowGridHeight = value;
+                    {
+                        _windowGridHeight = value;
+						SanitizeSize(ref _windowGridHeight, 8, 64);
 						updateERV = true;
 						//StaticSetRenderFloat("render:rendergridzkm", _RenderGridZKm);
 					}
@@ -3536,7 +3560,7 @@ namespace simul
 
 
 		[SerializeField]
-		int _windowWidthKm = 400;
+		int _windowWidthKm = 800;
 		public int WindowWidthKm
 		{
 			get
@@ -3597,7 +3621,8 @@ namespace simul
 				if (_MaxFractalAmplitudeKm != value) try
 					{
 						_MaxFractalAmplitudeKm = value;
-						//StaticSetRenderFloat("render:maxfractalamplitudekm", _MaxFractalAmplitudeKm);
+						if (SimulVersion < MakeSimulVersion(4, 2))
+							StaticSetRenderFloat("render:maxfractalamplitudekm", _MaxFractalAmplitudeKm);
 					}
 					catch (Exception exc)
 					{
@@ -3640,11 +3665,12 @@ namespace simul
 			set
 			{
 				if (_DirectLight != value) try
-					{
-						_DirectLight = value;
-						//StaticSetRenderFloat("render:directlight", _DirectLight);
+                    {
+                        _DirectLight = value;
+						if (SimulVersion < MakeSimulVersion(4, 2))
+							StaticSetRenderFloat("render:directlight", _DirectLight);
 					}
-					catch (Exception exc)
+                    catch (Exception exc)
 					{
 						UnityEngine.Debug.Log(exc.ToString());
 					}
@@ -3662,9 +3688,10 @@ namespace simul
 			set
 			{
 				if (_IndirectLight != value) try
-					{
-						_IndirectLight = value;
-						StaticSetRenderFloat("render:indirectlight", _IndirectLight);
+                    {
+                        _IndirectLight = value;
+						if (SimulVersion < MakeSimulVersion(4, 2))
+							StaticSetRenderFloat("render:indirectlight", _IndirectLight);
 					}
 					catch (Exception exc)
 					{
@@ -3684,9 +3711,10 @@ namespace simul
 			set
 			{
 				if (_AmbientLight != value) try
-					{
-						_AmbientLight = value;
-						StaticSetRenderFloat("render:ambientlight", _AmbientLight);
+                    {
+                        _AmbientLight = value;
+                        if (SimulVersion < MakeSimulVersion(4, 2))
+							StaticSetRenderFloat("render:ambientlight", _AmbientLight);
 					}
 					catch (Exception exc)
 					{
@@ -3708,7 +3736,8 @@ namespace simul
 				if (_Extinction != value) try
 					{
 						_Extinction = value;
-						StaticSetRenderFloat("render:extinction", _Extinction);
+						if(SimulVersion < MakeSimulVersion(4,2))
+							StaticSetRenderFloat("render:extinction", _Extinction);
 					}
 					catch (Exception exc)
 					{
@@ -3750,9 +3779,10 @@ namespace simul
 			set
 			{
 				if (_shadowTextureRes != value) try
-					{
-						_shadowTextureRes = value;
-						updateERV = true;
+                    {
+                        _shadowTextureRes = value;
+						SanitizeSize(ref _shadowTextureRes);
+                        updateERV = true;
 					}
 					catch (Exception exc)
 					{
@@ -3761,27 +3791,28 @@ namespace simul
 			}
 		}
 
-		[SerializeField]
-		int _cloudShadowResolution = 256;
-		public int CloudShadowResolution
-		{
-			get
-			{
-				return _cloudShadowResolution;
-			}
-			set
-			{
-				if (_cloudShadowResolution != value) try
-					{
-						_cloudShadowResolution = value;
-						StaticSetRenderInt("cloudshadowresolution", _cloudShadowResolution);
-					}
-					catch (Exception exc)
-					{
-						UnityEngine.Debug.Log(exc.ToString());
-					}
-			}
-		}
+		//[SerializeField]
+		//int _cloudShadowResolution = 256;
+		//public int CloudShadowResolution
+		//{
+		//	get
+		//	{
+		//		return _cloudShadowResolution;
+		//	}
+		//	set
+		//	{
+		//		if (_cloudShadowResolution != value) try
+  //                  {
+  //                      _cloudShadowResolution = value;
+		//				SanitizeSize(ref _cloudShadowResolution);
+  //                      StaticSetRenderInt("cloudshadowresolution", _cloudShadowResolution);
+		//			}
+		//			catch (Exception exc)
+		//			{
+		//				UnityEngine.Debug.Log(exc.ToString());
+		//			}
+		//	}
+		//}
 
 		public RenderTextureHolder CloudShadowTexture
 		{
@@ -3861,17 +3892,61 @@ namespace simul
 
 		[SerializeField]
 		int _cloudShadowRangeKm = 300;
-		public int CloudShadowRangeKm
+        public int CloudShadowRangeKm
+        {
+            get
+            {
+                return _cloudShadowRangeKm;
+            }
+            set
+            {
+                if (_cloudShadowRangeKm != value) try
+                    {
+                        _cloudShadowRangeKm = value;
+                    }
+                    catch (Exception exc)
+                    {
+                        UnityEngine.Debug.Log(exc.ToString());
+                    }
+            }
+        }
+
+		[SerializeField]
+		int _highDetailMultiplier = 1;
+        public int HighDetailMultiplier
+        {
+            get
+            {
+                return _highDetailMultiplier;
+            }
+            set
+            {
+                if (_highDetailMultiplier != value) try
+                    {
+						updateERV = true;
+						_highDetailMultiplier = value;
+                    }
+                    catch (Exception exc)
+                    {
+                        UnityEngine.Debug.Log(exc.ToString());
+                    }
+            }
+        }
+
+		[SerializeField]
+		float _highDetailRangeKm = 100.0f;
+		public float HighDetailRangeKm
 		{
 			get
 			{
-				return _cloudShadowRangeKm;
+				return _highDetailRangeKm;
 			}
 			set
 			{
-				if (_cloudShadowRangeKm != value) try
+				if (_highDetailRangeKm != value) try
 					{
-						_cloudShadowRangeKm = value;
+						updateERV = true;
+						_highDetailRangeKm = value;
 					}
 					catch (Exception exc)
 					{
@@ -3879,6 +3954,7 @@ namespace simul
 					}
 			}
 		}
+
 
 
 		[SerializeField]
@@ -3927,7 +4003,7 @@ namespace simul
 		bool _UsingIL2CPP = false;
 		public bool UsingIL2CPP
 		{
-#if UNITY_GAMECORE || UNITY_PS4 || UNITY_PS5
+#if UNITY_GAMECORE || UNITY_PS4 || UNITY_PS5 || UNITY_SWITCH
 			get { _UsingIL2CPP = true;  return _UsingIL2CPP; }
 			set { _UsingIL2CPP = true; }
 #else
@@ -3981,7 +4057,9 @@ namespace simul
 			return wrong;
 		}
 
-		ExternalRenderValues ERV = new ExternalRenderValues();
+		System.IntPtr Moonptr = Marshal.AllocHGlobal(Marshal.SizeOf(new ExternalMoon()));
+
+        ExternalRenderValues ERV = new ExternalRenderValues();
 		System.IntPtr ERVptr = Marshal.AllocHGlobal(Marshal.SizeOf(new ExternalRenderValues()));
 
 		ExternalDynamicValues EDV = new ExternalDynamicValues();
@@ -4023,15 +4101,18 @@ namespace simul
 				ERV.MaxFramesBetweenViewUpdates = 100;
 				ERV.PrecipitationRadiusMetres = _PrecipitationRadiusMetres;
 				ERV.ShadowTextureSize = _shadowTextureRes;
-				ERV.RainNearThreshold = _PrecipitationThresholdKm;
-				ERV.MaximumStarMagnitude = _maximumStarMagniute;
+                ERV.RainNearThreshold = _RainNearThreshold;
+				ERV.VirgaNearThresholdKm = _VirgaNearThreshold;
+                ERV.MaximumStarMagnitude = _maximumStarMagniute;
 				ERV.RealTimeWeatherEffects = Convert.ToUInt32(_RealTimeWeatherEffects);
+				ERV.HighDetailMultiplier = (uint)_highDetailMultiplier;
+				ERV.HighDetailRangeKm = _highDetailRangeKm;
 
 				Marshal.StructureToPtr(ERV, ERVptr, !GetTrueSky().UsingIL2CPP);
 				StaticSetExternalRenderValues(ERVptr);
 				//StaticTriggerAction("Reset");
 			}
-			}
+		}
 
 		public void UpdateExternalDynamic()
 		{
@@ -4122,8 +4203,6 @@ namespace simul
 			EDV.AuroraTraceLength = aurorae.AuroraTraceLength;
 
 			Marshal.StructureToPtr(EDV, EDVptr, !GetTrueSky().UsingIL2CPP);
-			bool il2cppScripting = UsingIL2CPP;
-			Marshal.StructureToPtr(EDV, EDVptr, !il2cppScripting);
 			StaticSetExternalDynamicValues(EDVptr);
 		}
 		}
@@ -4135,7 +4214,6 @@ namespace simul
 		{
 			if (GraphicsSettings.renderPipelineAsset != HDRP_RenderPipelineAsset && LoadRenderPipelineAsset)
 				GraphicsSettings.renderPipelineAsset = HDRP_RenderPipelineAsset;
-
 			try
 			{
 				if (!_initialized)
@@ -4171,7 +4249,7 @@ namespace simul
 					}
 					else
 					{
-						StaticSetRenderBool("RenderSky", true);
+						StaticSetRenderBool("RenderSky", _renderSky);
 						StaticSetRenderFloat("render:rendergridxkm", _RenderGridXKm);
 						StaticSetRenderFloat("render:rendergridzkm", _RenderGridZKm);
 						StaticSetRenderInt("MaximumCubemapResolution", _CubemapResolution);
@@ -4214,7 +4292,6 @@ namespace simul
 							Moon.colour.y = moon.Colour.g;
 							Moon.colour.z = moon.Colour.b;
 							Moon.albedo = (float)moon.Albedo;					
-							System.IntPtr Moonptr = Marshal.AllocHGlobal(Marshal.SizeOf(new ExternalMoon()));
 							Marshal.StructureToPtr(Moon, Moonptr, !GetTrueSky().UsingIL2CPP); 
 							StaticSetMoon(_moons.IndexOf(moon) + 1, Moonptr);
 						}
@@ -4226,8 +4303,6 @@ namespace simul
 						}
 					}
 				}
-			
-				StaticTick(0.0f);
 			}
 			catch (Exception exc)
 			{
@@ -4487,6 +4562,9 @@ namespace simul
 					StaticPushPath("ShaderBinaryPath", Application.streamingAssetsPath + @"/Simul/shaderbin/ps4");
 #elif UNITY_PS5
 					StaticPushPath("ShaderBinaryPath", Application.streamingAssetsPath + @"/Simul/shaderbin/ps5");
+#elif UNITY_SWITCH
+					StaticPushPath("ShaderBinaryPath", Application.streamingAssetsPath + @"/Simul/shaderbin/nx");
+					StaticPushPath("TexturePath", Application.streamingAssetsPath + @"/Simul/Media/textures");
 #elif UNITY_WSA || UNITY_STANDALONE_WIN
 				   if (SystemInfo.graphicsDeviceType == GraphicsDeviceType.Direct3D11)
 						StaticPushPath("ShaderBinaryPath", Application.dataPath + @"/Simul/shaderbin/x86_64/d3d11");
@@ -4506,7 +4584,7 @@ namespace simul
 						StaticPushPath("ShaderBinaryPath", "D3D12");
 						StaticPushPath("ShaderPath", "");
 						StaticPushPath("ShaderPath", "D3D12");
-				}
+					}
 #endif
 				}
 				else

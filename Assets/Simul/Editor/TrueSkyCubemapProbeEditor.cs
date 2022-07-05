@@ -23,6 +23,13 @@ namespace simul
             t.skyOnly = EditorGUILayout.Toggle("Only sky", t.skyOnly);
             t.flipProbeY = EditorGUILayout.Toggle("Flip Probe Y", t.flipProbeY);
 
+            //skylight settings
+            EditorGUILayout.Space();
+            t.SkylightAllMips = EditorGUILayout.Toggle("Update All Skylight Mips", t.SkylightAllMips);
+            t.SkylightAllFaces = EditorGUILayout.Toggle("Update All Skylight Faces", t.SkylightAllFaces);
+            t.SkylightAmortization = EditorGUILayout.IntSlider("Skylight Amortization", t.SkylightAmortization, 1, 8);
+
+
             //t.renderTextureFormat = EditorGUILayout;
             GUILayout.Label(t.GetRenderTexture(), GUILayout.ExpandWidth(true));
             GUILayout.Label("View Id " + t.GetViewId());

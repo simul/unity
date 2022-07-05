@@ -251,7 +251,12 @@ namespace simul
 
 				// View and projection: non-stereo rendering
 				Matrix4x4 m = cam.worldToCameraMatrix;
-				bool toTexture = cam.allowHDR || cam.allowMSAA || cam.renderingPath == RenderingPath.DeferredShading || cam.targetTexture;
+				bool toTexture = (HDROutputSettings.main.active && cam.allowHDR)
+								|| (QualitySettings.antiAliasing > 0 && cam.allowMSAA)
+								|| cam.actualRenderingPath == RenderingPath.DeferredShading
+								|| cam.actualRenderingPath == RenderingPath.DeferredLighting
+								|| cam.targetTexture;
+
 				Matrix4x4 p = GL.GetGPUProjectionMatrix(cam.projectionMatrix, toTexture);
 
 				ViewMatrixToTrueSkyFormat_HDRP(renderStyle, m, viewMatrices);
