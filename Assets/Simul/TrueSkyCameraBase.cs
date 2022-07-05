@@ -146,7 +146,7 @@ namespace simul
 			}
 		}
 		protected static Mutex mut  = new Mutex ();
-		public bool flippedView     = true;
+		public bool flippedView     = false;
 		public float exposure       = 0.5F;
 		public float gamma          = 0.5F;
 		static protected Texture2D _dummyTexture;
@@ -245,7 +245,12 @@ namespace simul
 			offset *= 16;
 			float metresPerUnit = trueSKY.GetTrueSky().MetresPerUnit;
 
-			proj[offset+00] = m.m00;
+            if ((renderStyle & RenderStyle.UNITY_STYLE_DEFERRED) == RenderStyle.UNITY_STYLE_DEFERRED && flippedView)
+            {
+               m = m * Matrix4x4.Scale(new Vector3(1, -1, 1));
+            }
+
+            proj[offset+00] = m.m00;
 			proj[offset+04] = m.m01;
 			proj[offset+08] = m.m02;
 			proj[offset+012] = m.m03* metresPerUnit;

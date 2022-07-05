@@ -403,9 +403,13 @@ namespace simul
 				{
 					
 					if (trueSky.SimulVersion >= trueSky.MakeSimulVersion(4, 2))
-					{ 
-						//trueSky.SimulationTimeRain = EditorGUILayout.Toggle("Sim Time Rain", trueSky.SimulationTimeRain); Now controlled with Real-Time Weather Effects
-						trueSky.MaxPrecipitationParticles = EditorGUILayout.IntSlider("Max Particles", trueSky.MaxPrecipitationParticles,0,1000000);
+					{
+						if (trueSky.SimulVersion >= trueSky.MakeSimulVersion(4, 3))
+						{
+							trueSky.VirgaNearThreshold = EditorGUILayout.Slider("Virga (Rain Streak) Near Threshold (Km)", trueSky.VirgaNearThreshold, 0.1F, 100.0F);
+						}
+                        //trueSky.SimulationTimeRain = EditorGUILayout.Toggle("Sim Time Rain", trueSky.SimulationTimeRain); Now controlled with Real-Time Weather Effects
+                        trueSky.MaxPrecipitationParticles = EditorGUILayout.IntSlider("Max Particles", trueSky.MaxPrecipitationParticles,0,1000000);
 						trueSky.PrecipitationRadiusMetres = EditorGUILayout.Slider("Radius (m)", trueSky.PrecipitationRadiusMetres, 0.5F, 100.0F);
 						trueSky.RainFallSpeedMS = EditorGUILayout.Slider("Rain fall speed (m/s)", trueSky.RainFallSpeedMS, 0.0F, 20.0F);
 						trueSky.SnowFallSpeedMS = EditorGUILayout.Slider("Snow fall speed (m/s)", trueSky.SnowFallSpeedMS, 0.0F, 20.0F);

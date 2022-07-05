@@ -200,7 +200,7 @@ namespace simul
 			CommandBuffer[] bufs = cam.GetCommandBuffers(CameraEvent.BeforeImageEffectsOpaque);
 			//if(editorMode)
 				PrepareDepthMaterial();
-			bool do_overlays=true;
+			bool do_overlays=false;
 			bool do_post_trans=true;
 			int requiredNumber = 2+(do_overlays?1:0) + (do_post_trans ? 1 : 0)+(editorMode?1:0);
 			if (bufs.Length != requiredNumber)
@@ -212,7 +212,7 @@ namespace simul
 				if (do_post_trans)
 					cam.AddCommandBuffer(CameraEvent.AfterForwardAlpha, post_translucent_buf);
 				if(do_overlays)
-					cam.AddCommandBuffer(CameraEvent.AfterEverything, overlay_buf);
+					cam.AddCommandBuffer(CameraEvent.AfterForwardAlpha, overlay_buf);
 				//if (editorMode)
 				cam.AddCommandBuffer(CameraEvent.AfterEverything, deferred_buf); 
 			}
@@ -253,9 +253,16 @@ namespace simul
 				unityViewStruct.depthResourceState = ResourceState.DepthWrite;
 				unityViewStruct.colourTextureArrayIndex = 0;
 			}
-			else
-			{
-				return;
+            else
+            {
+				unityViewStruct.externalDepthTexture = depthTexture.renderTexture.GetNativeTexturePtr();
+				unityViewStruct.colourTexture = Graphics.activeColorBuffer.GetNativeRenderBufferPtr();
+				unityViewStruct.depthResourceState = ResourceState.DepthWrite;
+                unityViewStruct.colourResourceState = ResourceState.ResolveSource;
+				unityViewStruct.colourTextureArrayIndex = 0;
+				//unityViewStruct.colourTexture = cam.
+				//unityViewStruct.colourTexture = cam.activeTexture.GetNativeTexturePtr();
+				//return;
 			}
 
 			bool il2cppScripting = UsingIL2CPP();
@@ -292,7 +299,12 @@ namespace simul
 
 				// View and projection: non-stereo rendering
 				Matrix4x4 m = cam.worldToCameraMatrix;
-				bool toTexture = cam.allowHDR || cam.allowMSAA || cam.renderingPath == RenderingPath.DeferredShading || cam.targetTexture;
+				bool toTexture = cam.allowHDR
+								|| (QualitySettings.antiAliasing > 0 && cam.allowMSAA)
+								|| cam.actualRenderingPath == RenderingPath.DeferredShading
+								|| cam.actualRenderingPath == RenderingPath.DeferredLighting;
+								//|| (activeTexture != null);
+
 				Matrix4x4 p = GL.GetGPUProjectionMatrix(cam.projectionMatrix, toTexture);
 
 				ViewMatrixToTrueSkyFormat(renderStyle, m, viewMatrices);
@@ -415,7 +427,6 @@ namespace simul
 				unityViewStruct.targetViewports=targetViewports;
 				unityViewStruct.renderStyle=renderStyle;
 				unityViewStruct.unityRenderOptions=unityRenderOptions;
-				unityViewStruct.colourTexture= Graphics.activeColorBuffer.GetNativeRenderBufferPtr();
 				unityViewStruct.colourTextureArrayIndex = -1;
 
 				lastFrameCount = Time.renderedFrameCount;
@@ -456,31 +467,21 @@ namespace simul
 		{
 			RenderStyle renderStyle = GetRenderStyle();
 			depthMaterial           = null;
-			Camera cam              = GetComponent<Camera>();
-			bool toTexture          = cam.allowHDR || cam.allowMSAA || cam.renderingPath == RenderingPath.DeferredShading;
-			if (!toTexture && (renderStyle & RenderStyle.UNITY_STYLE_DEFERRED) != RenderStyle.UNITY_STYLE_DEFERRED)
-			{
-				if(_flippedDepthMaterial==null)
-				{
-					_flippedShader=Resources.Load("FlippedDepthShader",typeof(Shader)) as Shader;
-					if(_flippedShader!=null)
-						_flippedDepthMaterial=new Material(_flippedShader);
-					else
-						UnityEngine.Debug.LogError("Shader not found: trueSKY needs flippedDepthShader.shader, located in the Assets/Simul/Resources directory");
-				}
-				depthMaterial = _flippedDepthMaterial;
-			}
+            Camera cam = GetComponent<Camera>();
+			//SystemInfo.SupportsRenderTextureFormat(RenderTextureFormat.DefaultHDR)
+			bool toTexture = (HDROutputSettings.main.active && cam.allowHDR)
+								|| (QualitySettings.antiAliasing > 0 && cam.allowMSAA)
+								|| cam.actualRenderingPath == RenderingPath.DeferredShading
+								|| cam.actualRenderingPath == RenderingPath.DeferredLighting
+								|| cam.targetTexture;
+
+			if (!toTexture)
+            {
+				
+            }
 			else
 			{
-				if(_deferredDepthMaterial==null)
-				{
-					_deferredShader=Resources.Load("DeferredDepthShader",typeof(Shader)) as Shader;
-					if(_deferredShader!=null)
-						_deferredDepthMaterial=new Material(_deferredShader);
-					else
-						UnityEngine.Debug.LogError("Shader not found: trueSKY needs DeferredDepthShader.shader, located in the Assets/Simul/Resources directory");
-				}
-				depthMaterial = _deferredDepthMaterial;
+
 			}
 		}
 	}

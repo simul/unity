@@ -2766,17 +2766,39 @@ namespace simul
 
 		[SerializeField]
 		float _RainNearThreshold = 3.0f;
-		public float RainNearThreshold
+        public float RainNearThreshold
+        {
+            get
+            {
+                return _RainNearThreshold;
+            }
+            set
+            {
+                if (RainNearThreshold != value) try
+                    {
+                        _RainNearThreshold = value;
+                        updateERV = true;
+                    }
+                    catch (Exception exc)
+                    {
+                        UnityEngine.Debug.Log(exc.ToString());
+                    }
+            }
+        }
+
+		[SerializeField]
+		float _VirgaNearThreshold = 20.0f;
+		public float VirgaNearThreshold
 		{
 			get
 			{
-				return _RainNearThreshold;
+				return _VirgaNearThreshold;
 			}
 			set
 			{
-				if (RainNearThreshold != value) try
+				if (VirgaNearThreshold != value) try
 					{
-						_RainNearThreshold = value;
+						_VirgaNearThreshold = value;
 						updateERV = true;
 					}
 					catch (Exception exc)
@@ -3256,7 +3278,7 @@ namespace simul
 				return;
 			try
 			{
-				StaticSetSequenceTxt(_sequence.SequenceAsText);
+				StaticSetSequence2(_sequence.SequenceAsText);
 				StaticTriggerAction("Reset");
 			}
 			catch (Exception exc)
@@ -3423,7 +3445,7 @@ namespace simul
 		}
 
 		[SerializeField]
-		float _MaxCloudDistanceKm = 300.0f;
+		float _MaxCloudDistanceKm = 400.0f;
 		public float MaxCloudDistanceKm
 		{
 			get
@@ -3538,7 +3560,7 @@ namespace simul
 
 
 		[SerializeField]
-		int _windowWidthKm = 400;
+		int _windowWidthKm = 800;
 		public int WindowWidthKm
 		{
 			get
@@ -3890,7 +3912,7 @@ namespace simul
         }
 
 		[SerializeField]
-		int _highDetailMultiplier = 4;
+		int _highDetailMultiplier = 1;
         public int HighDetailMultiplier
         {
             get
@@ -3901,7 +3923,8 @@ namespace simul
             {
                 if (_highDetailMultiplier != value) try
                     {
-                        _highDetailMultiplier = value;
+						updateERV = true;
+						_highDetailMultiplier = value;
                     }
                     catch (Exception exc)
                     {
@@ -3922,6 +3945,7 @@ namespace simul
 			{
 				if (_highDetailRangeKm != value) try
 					{
+						updateERV = true;
 						_highDetailRangeKm = value;
 					}
 					catch (Exception exc)
@@ -4077,8 +4101,9 @@ namespace simul
 				ERV.MaxFramesBetweenViewUpdates = 100;
 				ERV.PrecipitationRadiusMetres = _PrecipitationRadiusMetres;
 				ERV.ShadowTextureSize = _shadowTextureRes;
-				ERV.RainNearThreshold = _RainNearThreshold;
-				ERV.MaximumStarMagnitude = _maximumStarMagniute;
+                ERV.RainNearThreshold = _RainNearThreshold;
+				ERV.VirgaNearThresholdKm = _VirgaNearThreshold;
+                ERV.MaximumStarMagnitude = _maximumStarMagniute;
 				ERV.RealTimeWeatherEffects = Convert.ToUInt32(_RealTimeWeatherEffects);
 				ERV.HighDetailMultiplier = (uint)_highDetailMultiplier;
 				ERV.HighDetailRangeKm = _highDetailRangeKm;
