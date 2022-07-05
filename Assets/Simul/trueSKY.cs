@@ -3445,7 +3445,7 @@ namespace simul
 		}
 
 		[SerializeField]
-		float _MaxCloudDistanceKm = 300.0f;
+		float _MaxCloudDistanceKm = 400.0f;
 		public float MaxCloudDistanceKm
 		{
 			get
@@ -3560,7 +3560,7 @@ namespace simul
 
 
 		[SerializeField]
-		int _windowWidthKm = 400;
+		int _windowWidthKm = 800;
 		public int WindowWidthKm
 		{
 			get
@@ -3912,7 +3912,7 @@ namespace simul
         }
 
 		[SerializeField]
-		int _highDetailMultiplier = 4;
+		int _highDetailMultiplier = 1;
         public int HighDetailMultiplier
         {
             get
