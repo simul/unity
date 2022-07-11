@@ -253,12 +253,12 @@ namespace simul
 				unityViewStruct.depthResourceState = ResourceState.DepthWrite;
 				unityViewStruct.colourTextureArrayIndex = 0;
 			}
-            else
-            {
+			else
+			{
 				unityViewStruct.externalDepthTexture = depthTexture.renderTexture.GetNativeTexturePtr();
 				unityViewStruct.colourTexture = Graphics.activeColorBuffer.GetNativeRenderBufferPtr();
 				unityViewStruct.depthResourceState = ResourceState.DepthWrite;
-                unityViewStruct.colourResourceState = ResourceState.ResolveSource;
+				unityViewStruct.colourResourceState = ResourceState.ResolveSource;
 				unityViewStruct.colourTextureArrayIndex = 0;
 				//unityViewStruct.colourTexture = cam.
 				//unityViewStruct.colourTexture = cam.activeTexture.GetNativeTexturePtr();
@@ -467,7 +467,7 @@ namespace simul
 		{
 			RenderStyle renderStyle = GetRenderStyle();
 			depthMaterial           = null;
-            Camera cam = GetComponent<Camera>();
+			Camera cam = GetComponent<Camera>();
 			//SystemInfo.SupportsRenderTextureFormat(RenderTextureFormat.DefaultHDR)
 			bool toTexture = (HDROutputSettings.main.active && cam.allowHDR)
 								|| (QualitySettings.antiAliasing > 0 && cam.allowMSAA)
@@ -476,9 +476,9 @@ namespace simul
 								|| cam.targetTexture;
 
 			if (!toTexture)
-            {
+			{
 				
-            }
+			}
 			else
 			{
 
