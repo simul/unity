@@ -422,7 +422,7 @@ namespace simul
 #endif
 #endif
 			RenderStyle r = GetBaseRenderStyle(cam);
-			if (trueSKY.GetTrueSky().DepthBlending)
+			if (trueSKY.GetTrueSky() && trueSKY.GetTrueSky().DepthBlending)
 			{
 				r = r | RenderStyle.DEPTH_BLENDING;
 			}

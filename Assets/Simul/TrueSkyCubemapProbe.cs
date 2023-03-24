@@ -194,7 +194,7 @@ namespace simul
 
 		void DoUpdate()
 		{
-			if (trueSKY.GetTrueSky().HDRP_RenderPipelineAsset != null)
+			if (trueSKY.GetTrueSky() && trueSKY.GetTrueSky().HDRP_RenderPipelineAsset != null)
 			{
 			#if USING_HDRP
 				DoUpdateHDRP();

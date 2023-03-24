@@ -62,7 +62,7 @@ namespace simul
 #endif
 #endif
 			RenderStyle r = base.GetRenderStyle();
-			if (trueSKY.GetTrueSky().DepthBlending)
+			if (trueSKY.GetTrueSky() && trueSKY.GetTrueSky().DepthBlending)
 			{
 				r = r | RenderStyle.DEPTH_BLENDING;
 			}
@@ -172,6 +172,8 @@ namespace simul
 				UnityEngine.Debug.Log("Failed to draw");
 				return;
 			}
+			if (trueSKY.GetTrueSky()==null)
+				return;
 			GetComponent<Camera>().depthTextureMode |= DepthTextureMode.Depth;
 			PreRender();
 			Camera cam = GetComponent<Camera>();
