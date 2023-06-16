@@ -292,7 +292,8 @@ namespace simul
 
 						if (trueSky.SimulVersion >= trueSky.MakeSimulVersion(4, 3))
                         {
-							trueSky.MaxCloudDistanceKm = EditorGUILayout.Slider("Max Cloud Distance (km)", trueSky.MaxCloudDistanceKm, 100.0F, (trueSky.WindowWidthKm / 2));						
+							trueSky.MaxCloudDistanceKm = EditorGUILayout.Slider("Max Cloud Distance (km)", trueSky.MaxCloudDistanceKm, 100.0F, (trueSky.WindowWidthKm / 2));
+                            trueSky.NearCloudExtinctionPerKm = EditorGUILayout.Slider("Near Cloud Extinction Per Km", trueSky.NearCloudExtinctionPerKm, 0.0f, 100.0f);
                         }
                         else
                             trueSky.MaxCloudDistanceKm = EditorGUILayout.Slider("Max Cloud Distance (km)", trueSky.MaxCloudDistanceKm, 100.0F, 1000.0F);

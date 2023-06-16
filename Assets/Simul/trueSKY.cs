@@ -345,8 +345,8 @@ namespace simul
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
 	public struct ExternalDynamicValues
 	{
-		public static int static_version = 2;
-		public int version;
+        public static int static_version = 3; //NearCloudExtinctionPerKm
+        public int version;
 
 		public float time;
 
@@ -441,7 +441,10 @@ namespace simul
 		public float OriginLongitude_Dusk2;
 		public int AuroraIntensityMapSize;
 		public int AuroraTraceLength;
-	};
+
+        public float NearCloudExtinctionPerKm;
+		public int padi;
+    };
 
 	public class FMoon
 	{
@@ -2493,8 +2496,26 @@ namespace simul
 			}
 		}
 
+        [SerializeField]
+        float _nearCloudExtinctionPerKm = 4.0f;
+        public float NearCloudExtinctionPerKm
+        {
+            get
+            {
+                return _nearCloudExtinctionPerKm;
+            }
+            set
+            {
+                if (_nearCloudExtinctionPerKm != value)
+                {
+                    _nearCloudExtinctionPerKm = value;
+                }
+            }
+        }
+        
 
-		public int AtmosphericsAmortization
+
+        public int AtmosphericsAmortization
 		{
 			get
 			{
@@ -4201,6 +4222,7 @@ namespace simul
 			EDV.OriginLongitude_Dusk2 = aurorae.OriginLongitude_Dusk2;
 			EDV.AuroraIntensityMapSize = aurorae.AuroraIntensityMapSize;
 			EDV.AuroraTraceLength = aurorae.AuroraTraceLength;
+			EDV.NearCloudExtinctionPerKm = _nearCloudExtinctionPerKm;
 
 			Marshal.StructureToPtr(EDV, EDVptr, !GetTrueSky().UsingIL2CPP);
 			StaticSetExternalDynamicValues(EDVptr);
