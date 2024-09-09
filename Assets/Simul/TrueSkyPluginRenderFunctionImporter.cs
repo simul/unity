@@ -68,7 +68,7 @@ namespace simul
 		[DllImport(renderer_dll)] public static extern void StaticCopySkylight3(IntPtr skylight);
 		[DllImport(renderer_dll)] public static extern void StaticProbeSkylight(IntPtr pContext, int cube_id, int mip_size, int face_index, int x, int y, int w, int h, float[] targetValues);
 		[DllImport(renderer_dll)] public static extern int StaticSetRenderTexture(string name, IntPtr texture);
-		[DllImport(renderer_dll)] public static extern int StaticSetRenderTexture2(string name, IntPtr texture);
+		[DllImport(renderer_dll)] public static extern int StaticSetRenderTexture2(string name, ExternalTexture texture);
 		[DllImport(renderer_dll)] public static extern int StaticSetCloudPlacementTexture(int index, IntPtr placement_tex, float[] origin_km, float[] extents_km);
 		[DllImport(renderer_dll)] public static extern void StaticPushPath(string name, string path);
 		[DllImport(renderer_dll)] public static extern int StaticPopPath(string name);
