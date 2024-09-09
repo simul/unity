@@ -437,15 +437,15 @@ namespace simul
 				ts.LossTexture.renderTexture = ts.lossRT;
 				ts.CloudVisibilityTexture.renderTexture = ts.cloudVisibilityRT;
 				ts.CloudShadowTexture.renderTexture = ts.cloudShadowRT;
-	
-				StaticSetRenderTexture("inscatter2D", ts.InscatterTexture.GetNative());
-				StaticSetRenderTexture("Loss2D", ts.LossTexture.GetNative());
-				StaticSetRenderTexture("CloudVisibilityRT", ts.CloudVisibilityTexture.GetNative());
-				StaticSetRenderTexture("CloudShadowRT", ts.CloudShadowTexture.GetNative());
+
+                StaticSetRenderTexture2("inscatter2D", ts.InscatterTexture.renderTextureExt);
+				StaticSetRenderTexture2("Loss2D", ts.LossTexture.renderTextureExt);
+				StaticSetRenderTexture2("CloudVisibilityRT", ts.CloudVisibilityTexture.renderTextureExt);
+				StaticSetRenderTexture2("CloudShadowRT", ts.CloudShadowTexture.renderTextureExt);
 
 				if (reflectionProbeTexture.renderTexture)
 				{
-					StaticSetRenderTexture("Cubemap", reflectionProbeTexture.GetNative());
+					//StaticSetRenderTexture2("Cubemap", reflectionProbeTexture.GetNative());
 				}
 				
 				MatrixTransform(cubemapTransformMatrix);
@@ -453,7 +453,7 @@ namespace simul
 
 				if (RainDepthCamera != null)
 					_rainDepthRT.renderTexture = RainDepthCamera.targetTexture;
-				StaticSetRenderTexture("RainDepthTexture", _rainDepthRT.GetNative());
+               //StaticSetRenderTexture2("RainDepthTexture", _rainDepthRT.GetNative());
 				if (RainDepthCamera != null)
 				{
 					ViewMatrixToTrueSkyFormat(RenderStyle.UNITY_STYLE, RainDepthCamera.matrix, rainDepthMatrix, 0, true);

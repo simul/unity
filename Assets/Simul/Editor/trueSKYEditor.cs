@@ -317,7 +317,18 @@ namespace simul
 								trueSky.HighDetailMultiplier = EditorGUILayout.IntSlider("High Detail Multiplier", trueSky.HighDetailMultiplier, 1, 4);
 								trueSky.HighDetailRangeKm = EditorGUILayout.Slider("High Detail Range Km", trueSky.HighDetailRangeKm, 10.0f, (trueSky.WindowWidthKm / 2));
 							}
-						}
+
+                            if (trueSky.SimulVersion >= trueSky.MakeSimulVersion(4, 4))
+							{
+								trueSky.PrecipitationGridDivisorX				= EditorGUILayout.IntSlider("Precipitation Grid Divisor X", trueSky.PrecipitationGridDivisorX, 1, 16);
+                                trueSky.PrecipitationGridDivisorZ				= EditorGUILayout.IntSlider("Precipitation Grid Divisor Z", trueSky.PrecipitationGridDivisorZ, 1, 16);
+								trueSky.SignedDistanceFieldDivisorX				= EditorGUILayout.IntSlider("Signed Distance Field Divisor X", trueSky.SignedDistanceFieldDivisorX, 1, 16);
+								trueSky.SignedDistanceFieldDivisorZ				= EditorGUILayout.IntSlider("Signed Distance Field Divisor Z", trueSky.SignedDistanceFieldDivisorZ, 1, 16);
+								trueSky.SignedDistanceFieldIntersectLimitKm		= EditorGUILayout.Slider("Distance Field Intersect Limit Km", trueSky.SignedDistanceFieldIntersectLimitKm, 1, 10);
+								trueSky.BlendRate								= EditorGUILayout.Slider("Blend Rate", trueSky.BlendRate, 0.05f, 1.0f);
+                            }
+
+                        }
 
                         if (trueSky.IntegrationScheme == 0)
 						{
@@ -327,8 +338,8 @@ namespace simul
 						}
 						trueSky.WindowGridWidth = EditorGUILayout.IntSlider("Window Grid Width", trueSky.WindowGridWidth, 64, 1024);
 						trueSky.WindowGridHeight = EditorGUILayout.IntSlider("Window Grid Height", trueSky.WindowGridHeight, 8, 64);
-						trueSky.WindowWidthKm = EditorGUILayout.IntSlider("Window Width (Km)", trueSky.WindowWidthKm, 200, 800);
-						trueSky.WindowHeightKm = EditorGUILayout.IntSlider("Window Height (Km)", trueSky.WindowHeightKm, 5, 20);
+						trueSky.WindowWidthKm = EditorGUILayout.IntSlider("Window Width (Km)", trueSky.WindowWidthKm, 200, 200);
+						trueSky.WindowHeightKm = EditorGUILayout.IntSlider("Window Height (Km)", trueSky.WindowHeightKm, 5, 40);
 
 
 						trueSky.Amortization = EditorGUILayout.IntSlider("Amortization", trueSky.Amortization, 1, 8);

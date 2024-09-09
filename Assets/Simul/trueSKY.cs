@@ -114,8 +114,84 @@ namespace simul
 		, NO_SEPARATION = 2      //! Faster
 	};
 
+    public enum ResourceState : uint
+    {
+			COMMON	= 0,
+			VERTEX_AND_CONSTANT_BUFFER	= 0x1,
+			INDEX_BUFFER	= 0x2,
+			RENDER_TARGET	= 0x4,
+			UNORDERED_ACCESS	= 0x8,
+			DEPTH_WRITE	= 0x10,
+			DEPTH_READ	= 0x20,
+			NON_PIXEL_SHADER_RESOURCE	= 0x40,
+			PIXEL_SHADER_RESOURCE	= 0x80,
+			STREAM_OUT	= 0x100,
+			INDIRECT_ARGUMENT	= 0x200,
+			COPY_DEST	= 0x400,
+			COPY_SOURCE	= 0x800,
+			RESOLVE_DEST	= 0x1000,
+			RESOLVE_SOURCE	= 0x2000,
+			GENERAL_READ	= ((((( 0x1 | 0x2 )  | 0x40 )  | 0x80 )  | 0x200 )  | 0x800 ),
+			SHADER_RESOURCE	= ( 0x40 | 0x80 ),
+			UNKNOWN=0xFFFF
+		};
+    //! A cross-platform equivalent to the OpenGL and DirectX pixel formats
+   public enum PixelFormat : byte
+    {
+        UNKNOWN
+        , RGBA_32_FLOAT
+        , RGBA_32_UINT
+        , RGBA_32_INT
+        , RGBA_16_FLOAT
+        , RGBA_16_UINT
+        , RGBA_16_INT
+        , RGBA_16_SNORM
+        , RGBA_16_UNORM
+        , RGBA_8_UINT
+        , RGBA_8_INT
+        , RGBA_8_SNORM
+        , RGBA_8_UNORM
+        , RGBA_8_UNORM_COMPRESSED
+        , RGBA_8_UNORM_SRGB
+        , BGRA_8_UNORM
 
-	class SimulImports
+        , RGB_32_FLOAT
+        , RGB_32_UINT
+        , RGB_16_FLOAT
+        , RGB_10_A2_UINT
+        , RGB_10_A2_INT
+        , RGB_11_11_10_FLOAT
+        , RGB_8_UNORM
+        , RGB_8_SNORM
+
+        , RG_32_FLOAT
+        , RG_32_UINT
+        , RG_16_FLOAT
+        , RG_16_UINT
+        , RG_16_INT
+        , RG_8_UNORM
+        , RG_8_SNORM
+
+        , R_32_FLOAT
+        , R_32_FLOAT_X_8
+        , LUM_32_FLOAT
+        , INT_32_FLOAT
+        , R_32_UINT
+        , R_32_INT
+        // depth formats:
+        , D_32_FLOAT// DXGI_FORMAT_D32_FLOAT or GL_DEPTH_COMPONENT32F
+        , D_32_UINT
+        , D_32_FLOAT_S_8_UINT
+        , D_24_UNORM_S_8_UINT
+        , D_16_UNORM
+
+        , R_16_FLOAT
+        , R_8_UNORM
+        , R_8_SNORM
+
+        , RGB10_A2_UNORM
+    };
+    class SimulImports
 	{
 		static bool _initialized = false;
 #if SIMUL_DEBUG_CALLBACK
@@ -220,8 +296,8 @@ namespace simul
 		public double MeanAnomaly;
 		public double MeanAnomalyRate;
 	};
-
-	public struct ExternalTexture
+  
+    public struct ExternalTexture
 	{
 		public static int static_version = 3;
 		public int version;
@@ -229,7 +305,7 @@ namespace simul
 		public int width;
 		public int height;
 		public int depth;
-		public int pixelFormat;
+		public simul.PixelFormat pixelFormat;
 		public uint numSamples;
 		public uint resourceState;
 	};
@@ -284,8 +360,8 @@ namespace simul
     public struct ExternalRenderValues //these values dont change at runtime, unless explicitly called
     {
 
-        public static int static_version = 10;  //HighDetailRange and Multiplier
-		public int version;
+        public static int static_version = 12; //BlendRate
+        public int version;
 
         public float HighDetailProportion;         //!< For cloud volume update rate.
         public float MediumDetailProportion;           //!< For medium cloud volume update rate.
@@ -340,7 +416,16 @@ namespace simul
 		public uint HighDetailMultiplier;          //Multiplier for number of grid steps. 
 		public float HighDetailRangeKm;                //Range at which to apply increased grid steps.
 
-	};
+        public int PrecipitationGridDivisorX;      //!< Divisor for the precipitation grid
+        public int PrecipitationGridDivisorZ;      //!< Divisor for the precipitation grid
+
+        public int SignedDistanceFieldDivisorX;            //!< Divisor for the Signed Distance Field
+        public int SignedDistanceFieldDivisorZ;            //!< Divisor for the Signed Distance Field
+        public float SignedDistanceFieldIntersectLimitKm;  //!< The greatest distance in km from a cloud that is considered to be an intersect in the raytrace.
+
+        public float BlendRate;    //!< The Rate which the clouds update in relation to the previous position
+
+    };
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
 	public struct ExternalDynamicValues
@@ -1215,20 +1300,6 @@ namespace simul
 				FMoon _temp;
 				_temp = new FMoon();
                 _moons.Add(_temp);
-			}
-		}
-
-            public static void InitExternalTexture(ref ExternalTexture ext, Texture tex)
-		{
-			if (tex != null)
-			{
-				ext.texturePtr = tex.GetNativeTexturePtr();
-				ext.width = tex.width;
-				ext.height = tex.height;
-				ext.depth = 0;
-				ext.pixelFormat = 0;
-				ext.numSamples = 0;
-				ext.resourceState = 0;
 			}
 		}
 
@@ -3976,9 +4047,140 @@ namespace simul
 			}
 		}
 
+        [SerializeField]
+        int _precipitationGridDivisorX = 2;
+        public int PrecipitationGridDivisorX
+        {
+            get
+            {
+                return _precipitationGridDivisorX;
+            }
+            set
+            {
+                if (_precipitationGridDivisorX != value) try
+                    {
+                        updateERV = true;
+                        _precipitationGridDivisorX = value;
+                    }
+                    catch (Exception exc)
+                    {
+                        UnityEngine.Debug.Log(exc.ToString());
+                    }
+            }
+        }
+
+        [SerializeField]
+        int _precipitationGridDivisorZ = 2;
+        public int PrecipitationGridDivisorZ
+        {
+            get
+            {
+                return _precipitationGridDivisorZ;
+            }
+            set
+            {
+                if (_precipitationGridDivisorZ != value) try
+                    {
+                        updateERV = true;
+                        _precipitationGridDivisorZ = value;
+                    }
+                    catch (Exception exc)
+                    {
+                        UnityEngine.Debug.Log(exc.ToString());
+                    }
+            }
+        }
+
+        [SerializeField]
+        int _signedDistanceFieldDivisorX = 2;
+        public int SignedDistanceFieldDivisorX
+        {
+            get
+            {
+                return _signedDistanceFieldDivisorX;
+            }
+            set
+            {
+                if (_signedDistanceFieldDivisorX != value) try
+                    {
+                        updateERV = true;
+                        _signedDistanceFieldDivisorX = value;
+                    }
+                    catch (Exception exc)
+                    {
+                        UnityEngine.Debug.Log(exc.ToString());
+                    }
+            }
+        }
+
+        [SerializeField]
+        int _signedDistanceFieldDivisorZ = 2;
+        public int SignedDistanceFieldDivisorZ
+        {
+            get
+            {
+                return _signedDistanceFieldDivisorZ;
+            }
+            set
+            {
+                if (_signedDistanceFieldDivisorZ != value) try
+                    {
+                        updateERV = true;
+                        _signedDistanceFieldDivisorZ = value;
+                    }
+                    catch (Exception exc)
+                    {
+                        UnityEngine.Debug.Log(exc.ToString());
+                    }
+            }
+        }
+
+        [SerializeField]
+        float _signedDistanceFieldIntersectLimitKm = 3.0f;
+        public float SignedDistanceFieldIntersectLimitKm
+        {
+            get
+            {
+                return _signedDistanceFieldIntersectLimitKm;
+            }
+            set
+            {
+                if (_signedDistanceFieldIntersectLimitKm != value) try
+                    {
+                        updateERV = true;
+                        _signedDistanceFieldIntersectLimitKm = value;
+                    }
+                    catch (Exception exc)
+                    {
+                        UnityEngine.Debug.Log(exc.ToString());
+                    }
+            }
+        }
+
+        [SerializeField]
+        float _blendRate = 0.8f;
+        public float BlendRate
+        {
+            get
+            {
+                return _blendRate;
+            }
+            set
+            {
+                if (_blendRate != value) try
+                    {
+                        updateERV = true;
+                        _blendRate = value;
+                    }
+                    catch (Exception exc)
+                    {
+                        UnityEngine.Debug.Log(exc.ToString());
+                    }
+            }
+        }
 
 
-		[SerializeField]
+        [SerializeField]
 		RenderPipelineAsset _HDRP_RenderPipelineAsset = null;
 		public RenderPipelineAsset HDRP_RenderPipelineAsset
 		{
@@ -4128,8 +4330,15 @@ namespace simul
 				ERV.RealTimeWeatherEffects = Convert.ToUInt32(_RealTimeWeatherEffects);
 				ERV.HighDetailMultiplier = (uint)_highDetailMultiplier;
 				ERV.HighDetailRangeKm = _highDetailRangeKm;
+                ERV.PrecipitationGridDivisorX = _precipitationGridDivisorX;
+                ERV.PrecipitationGridDivisorZ = _precipitationGridDivisorZ;
+                ERV.SignedDistanceFieldDivisorX = _signedDistanceFieldDivisorX;
+				ERV.SignedDistanceFieldDivisorZ = _signedDistanceFieldDivisorZ;
+				ERV.SignedDistanceFieldIntersectLimitKm = _signedDistanceFieldIntersectLimitKm;
+				ERV.BlendRate = _blendRate;
 
-				Marshal.StructureToPtr(ERV, ERVptr, !GetTrueSky().UsingIL2CPP);
+
+                Marshal.StructureToPtr(ERV, ERVptr, !GetTrueSky().UsingIL2CPP);
 				StaticSetExternalRenderValues(ERVptr);
 				//StaticTriggerAction("Reset");
 			}

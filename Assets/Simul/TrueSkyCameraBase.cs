@@ -5,6 +5,7 @@ using System.Runtime.InteropServices;
 using UnityEngine.Rendering;
 
 using static simul.TrueSkyPluginRenderFunctionImporter;
+using UnityEngine.Experimental.Rendering;
 
 namespace simul
 {
@@ -14,6 +15,7 @@ namespace simul
 		public class RenderTextureHolder
 		{
 			public RenderTexture renderTexture = null;
+			public ExternalTexture renderTextureExt = new ExternalTexture();
 			public System.IntPtr GetNative()
 			{
 				if (cachedRenderTexture != renderTexture)
@@ -26,13 +28,15 @@ namespace simul
 						_nativeTexturePtr = (System.IntPtr)0;
 				}
 
-				if (_nativeTexturePtr == (System.IntPtr)0 && renderTexture != null)
+				if (_nativeTexturePtr == (System.IntPtr)0 && renderTexture != null && renderTextureExt.texturePtr != null)
 				{
 					if (!renderTexture.IsCreated())
 						renderTexture.Create();
 					_nativeTexturePtr = renderTexture.GetNativeTexturePtr();
 					cachedRenderTexture = renderTexture;
-				}
+					InitExternalTexture(ref renderTextureExt, renderTexture);
+
+                }
 				return _nativeTexturePtr;
 			}
 
@@ -40,9 +44,65 @@ namespace simul
 			protected System.IntPtr _nativeTexturePtr = (System.IntPtr)0;
 		};
 
+		public static PixelFormat ToSimulPixelFormat(GraphicsFormat UnityFormat)
+		{
+            switch (UnityFormat)
+            {
+                case GraphicsFormat.R16_SFloat:
+                    return PixelFormat.R_16_FLOAT;
+                case GraphicsFormat.R32G32B32A32_SFloat:
+                    return PixelFormat.RGBA_32_FLOAT;
+                case GraphicsFormat.R32G32B32_SFloat:
+                    return PixelFormat.RGB_32_FLOAT;
+				case GraphicsFormat.B10G11R11_UFloatPack32: //flipped
+                    return PixelFormat.RGB_11_11_10_FLOAT;
+                case GraphicsFormat.R32G32_SFloat:
+                    return PixelFormat.RG_32_FLOAT;
+				case GraphicsFormat.R16G16_SFloat:
+                    return PixelFormat.RG_16_FLOAT;
+				case GraphicsFormat.R32_SFloat:
+                    return PixelFormat.R_32_FLOAT;
+                case GraphicsFormat.R8G8B8A8_SInt:
+                    return PixelFormat.RGBA_8_UNORM;
+                case GraphicsFormat.R32_UInt:
+                    return PixelFormat.R_32_UINT;
+                case GraphicsFormat.R32G32B32A32_UInt:
+                    return PixelFormat.RGBA_32_UINT;
+                case GraphicsFormat.R8G8B8A8_UNorm:
+                    return PixelFormat.BGRA_8_UNORM;
+                default:
+                    UnityEngine.Debug.LogWarning("Unknown PixelFormat");
+                    return PixelFormat.UNKNOWN;
+            };
+			//DepthState
+            /*                case GraphicsFormat.DepthAuto:
+            if (api == simul::GraphicsDeviceType::GraphicsDeviceVulkan)
+                return PixelFormat.D_32_FLOAT_S_8_UINT;
+            else
+                return PixelFormat.D_32_FLOAT;
+                case PF_D24:
+                return PixelFormat.D_24_UNORM_S_8_UINT;
+			
+			*/
+            }
 
-		//! An event ID that will hopefully be sufficiently unique to trueSKY - if not, change this.
-		protected const int TRUESKY_EVENT_ID = 13476;
+        public static void InitExternalTexture(ref ExternalTexture ext, Texture tex)
+        {
+            if (tex != null)
+            {
+                ext.texturePtr = tex.GetNativeTexturePtr();
+                ext.width = tex.width;
+                ext.height = tex.height;
+				ext.depth = 1;
+                ext.pixelFormat = ToSimulPixelFormat(tex.graphicsFormat);
+                ext.numSamples = 0;
+                ext.resourceState = 0;
+            }
+        }
+
+
+        //! An event ID that will hopefully be sufficiently unique to trueSKY - if not, change this.
+        protected const int TRUESKY_EVENT_ID = 13476;
 		public static int GetTRUESKY_EVENT_ID()
 		{
 			return TRUESKY_EVENT_ID;
@@ -78,7 +138,8 @@ namespace simul
 			VideoEncodeWrite = 0x800000
 		};
 
-		[StructLayout(LayoutKind.Sequential, Pack = 1)]
+
+        [StructLayout(LayoutKind.Sequential, Pack = 1)]
 		public struct UnityViewStruct
 		{
 			public System.IntPtr nativeColourRenderBuffer;
@@ -151,8 +212,8 @@ namespace simul
 		public float gamma          = 0.5F;
 		static protected Texture2D _dummyTexture;
 		protected RenderTextureHolder depthTexture      = new RenderTextureHolder();
-		protected RenderTextureHolder unityDepthTexture = new RenderTextureHolder();
-		static protected Material _flippedDepthMaterial = null;
+		protected ExternalTexture DepthTextureET = new ExternalTexture();
+        static protected Material _flippedDepthMaterial = null;
 		static protected Material _deferredDepthMaterial= null;
 		static protected Shader _flippedShader  = null;
 		static protected Shader _deferredShader = null;
@@ -183,7 +244,7 @@ namespace simul
 #if TRUESKY_LOGGING
 				UnityEngine.Debug.Log ("EnsureDepthTexture resized texture for "+view_id +" to "+required_width+","+camera.pixelHeight); 
 #endif
-				RenderTexture rt = new RenderTexture(required_width, (int)camera.pixelHeight, 32, RenderTextureFormat.ARGBFloat);
+                RenderTexture rt = new RenderTexture(required_width, (int)camera.pixelHeight, 32, RenderTextureFormat.ARGBFloat);
 				depthTexture.renderTexture=rt;
 				depthTexture.renderTexture.name = "DepthTexture";
 				rt.Create();
