@@ -204,7 +204,7 @@ namespace simul
 				default:
 					return;
 			}
-			ViewMatrixToTrueSkyFormat_HDRP(GetRenderStyle(camera.camera), m, viewMatrices);
+			ViewMatrixToTrueSkyFormat_HDRP(m, viewMatrices);
 			unityViewStruct.viewMatrices4x4 = viewMatrices;
 
 			if (flipProbeY)
@@ -259,7 +259,7 @@ namespace simul
 
 				Matrix4x4 p = GL.GetGPUProjectionMatrix(cam.projectionMatrix, toTexture);
 
-				ViewMatrixToTrueSkyFormat_HDRP(renderStyle, m, viewMatrices);
+				ViewMatrixToTrueSkyFormat_HDRP(m, viewMatrices);
 				ProjMatrixToTrueSkyFormat_HDRP(renderStyle, p, projMatrices);
 
 				if ((renderStyle & RenderStyle.VR_STYLE) == RenderStyle.VR_STYLE)
@@ -267,8 +267,8 @@ namespace simul
 					// View matrix: left & right eyes
 					Matrix4x4 l = cam.GetStereoViewMatrix(Camera.StereoscopicEye.Left);
 					Matrix4x4 r = cam.GetStereoViewMatrix(Camera.StereoscopicEye.Right);
-					ViewMatrixToTrueSkyFormat_HDRP(renderStyle, l, viewMatrices, 1);
-					ViewMatrixToTrueSkyFormat_HDRP(renderStyle, r, viewMatrices, 2);
+					ViewMatrixToTrueSkyFormat_HDRP(l, viewMatrices, 1);
+					ViewMatrixToTrueSkyFormat_HDRP(r, viewMatrices, 2);
 
 					// Projection matrix: left & right eyes
 					Matrix4x4 pl = GL.GetGPUProjectionMatrix(cam.GetStereoProjectionMatrix(Camera.StereoscopicEye.Left), true);
@@ -392,7 +392,7 @@ namespace simul
 				StaticSetRenderTexture("RainDepthTexture", _rainDepthRT.GetNative());
 				if (RainDepthCamera != null)
 				{
-					ViewMatrixToTrueSkyFormat(RenderStyle.UNITY_STYLE, RainDepthCamera.matrix, rainDepthMatrix, 0, true);
+					ViewMatrixToTrueSkyFormat(RainDepthCamera.matrix, rainDepthMatrix, 0, true);
 					rainDepthTextureScale = 1.0F;// DepthCamera.farClipPlane;
 					StaticSetMatrix4x4("RainDepthTransform", rainDepthMatrix);
 					StaticSetMatrix4x4("RainDepthProjection", rainDepthProjection);

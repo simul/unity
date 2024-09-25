@@ -105,7 +105,11 @@ namespace simul
 			, DONT_COMPOSITE = 1024
 			, CLEAR_SCREEN = 2048
 			, DRAW_OVERLAYS = 4096
-			, HIGH_DPI_AWARE = 16384
+            , DRAW_GLOBAL_VIEW_UI = 8192
+            , HIGH_DPI_AWARE = 16384
+			, DRAW_SEQUENCER_UI = 32768
+			, DRAW_PROPERTIES_UI =  65536 
+
 	};
 	public enum UnityRenderOptions: uint
 	{
@@ -302,15 +306,15 @@ namespace simul
 		public static int static_version = 3;
 		public int version;
 		public IntPtr texturePtr;
-		public int width;
-		public int height;
-		public int depth;
+		public uint width;
+		public uint height;
+		public uint depth;
 		public simul.PixelFormat pixelFormat;
 		public uint numSamples;
 		public uint resourceState;
 	};
 
-	public struct ExternalMoon
+    public struct ExternalMoon
 	{
 		public static int static_version = 5; //Remove unused data relating to mesh
 		public int version;
@@ -827,11 +831,18 @@ namespace simul
 				cloudVisibilityRT.name = "cloudVisibilityRT";
 				cloudVisibilityRT.Create();
 			}
+            if (!globalViewRT)
+            {
+                globalViewRT = new RenderTexture(256, 256, 16, RenderTextureFormat.ARGB32);
+                globalViewRT.name = "globalViewRT";
+                globalViewRT.Create();
+            }
 
-			LossTexture.renderTexture = lossRT;
+            LossTexture.renderTexture = lossRT;
 			InscatterTexture.renderTexture = inscatterRT;
 			CloudVisibilityTexture.renderTexture = cloudVisibilityRT;
 			CloudShadowTexture.renderTexture = cloudShadowRT;
+			GlobalViewTexture.renderTexture = globalViewRT;
 		}
 
 		~trueSKY()
@@ -2471,11 +2482,13 @@ namespace simul
 		public RenderTexture inscatterRT;
 		public RenderTexture lossRT;
 		public RenderTexture cloudVisibilityRT;
+		public RenderTexture globalViewRT;
 
 		RenderTextureHolder _cloudShadowRT = new RenderTextureHolder();	
 		RenderTextureHolder _inscatterRT = new RenderTextureHolder();
 		RenderTextureHolder _lossRT = new RenderTextureHolder();
 		RenderTextureHolder _cloudVisibilityRT = new RenderTextureHolder();
+		RenderTextureHolder _globalViewTexture = new RenderTextureHolder();
 		
 		static public bool _showCloudCrossSections = false;
 		static public bool _showRainTextures = false;
@@ -3883,30 +3896,50 @@ namespace simul
 			}
 		}
 
-		//[SerializeField]
-		//int _cloudShadowResolution = 256;
-		//public int CloudShadowResolution
-		//{
-		//	get
-		//	{
-		//		return _cloudShadowResolution;
-		//	}
-		//	set
-		//	{
-		//		if (_cloudShadowResolution != value) try
-  //                  {
-  //                      _cloudShadowResolution = value;
-		//				SanitizeSize(ref _cloudShadowResolution);
-  //                      StaticSetRenderInt("cloudshadowresolution", _cloudShadowResolution);
-		//			}
-		//			catch (Exception exc)
-		//			{
-		//				UnityEngine.Debug.Log(exc.ToString());
-		//			}
-		//	}
-		//}
+        //[SerializeField]
+        //int _cloudShadowResolution = 256;
+        //public int CloudShadowResolution
+        //{
+        //	get
+        //	{
+        //		return _cloudShadowResolution;
+        //	}
+        //	set
+        //	{
+        //		if (_cloudShadowResolution != value) try
+        //                  {
+        //                      _cloudShadowResolution = value;
+        //				SanitizeSize(ref _cloudShadowResolution);
+        //                      StaticSetRenderInt("cloudshadowresolution", _cloudShadowResolution);
+        //			}
+        //			catch (Exception exc)
+        //			{
+        //				UnityEngine.Debug.Log(exc.ToString());
+        //			}
+        //	}
+        //}
 
-		public RenderTextureHolder CloudShadowTexture
+
+        public RenderTextureHolder GlobalViewTexture
+        {
+            get
+            {
+                return _globalViewTexture;
+            }
+            set
+            {
+                if (_globalViewTexture != null) try
+                    {
+                        _globalViewTexture = value;
+                    }
+                    catch (Exception exc)
+                    {
+                        UnityEngine.Debug.Log(exc.ToString());
+                    }
+            }
+        }
+
+        public RenderTextureHolder CloudShadowTexture
 		{
 			get
 			{
@@ -4534,7 +4567,34 @@ namespace simul
 						}
 					}
 				}
-			}
+				if (SimulVersion >= MakeSimulVersion(4, 4))
+				{
+     //               UnityViewStruct unityViewStruct = new UnityViewStruct();
+     //               System.IntPtr UIViewStructPtr = Marshal.AllocHGlobal(Marshal.SizeOf(new UnityViewStruct()));
+					//unityViewStruct.colourTexture = _globalViewTexture.GetNative();
+					//uint texWidth = _globalViewTexture.externalTexture.width;
+					//uint texHeight = _globalViewTexture.externalTexture.height;
+     //               unityViewStruct.renderStyle = RenderStyle.UNITY_STYLE | RenderStyle.DRAW_GLOBAL_VIEW_UI | RenderStyle.CLEAR_SCREEN;
+
+					//if(_globalViewTexture.renderTexture)
+					//	unityViewStruct.nativeColourRenderBuffer = _globalViewTexture.renderTexture.colorBuffer.GetNativeRenderBufferPtr();
+     //               unityViewStruct.gamma = 1.0f;
+					//unityViewStruct.exposure = 1.0f;
+     //               Viewport[] targetViewports = new Viewport[3];
+     //               targetViewports[0].x = 0;
+     //               targetViewports[0].y = 0;
+     //               targetViewports[0].w = (int)texWidth;
+     //               targetViewports[0].h = (int)texHeight;
+                   
+     //               unityViewStruct.targetViewports= targetViewports;
+
+     //               Marshal.StructureToPtr(unityViewStruct, UIViewStructPtr, !GetTrueSky().UsingIL2CPP);
+     //               StaticUnityRenderUI(UIViewStructPtr);
+
+                }
+
+
+            }
 			catch (Exception exc)
 			{
 				UnityEngine.Debug.Log(exc.ToString());

@@ -15,33 +15,41 @@ namespace simul
 		public class RenderTextureHolder
 		{
 			public RenderTexture renderTexture = null;
-			public ExternalTexture renderTextureExt = new ExternalTexture();
+			public ExternalTexture externalTexture = new ExternalTexture();
 			public System.IntPtr GetNative()
 			{
 				if (cachedRenderTexture != renderTexture)
 				{
-					_nativeTexturePtr = (System.IntPtr)0;
+                    externalTexture.texturePtr = (System.IntPtr)0;
 				}
 				else if (renderTexture)
 				{
 					if (cachedRenderTexture.texelSize != renderTexture.texelSize)
-						_nativeTexturePtr = (System.IntPtr)0;
+                        externalTexture.texturePtr = (System.IntPtr)0;
 				}
-
-				if (_nativeTexturePtr == (System.IntPtr)0 && renderTexture != null && renderTextureExt.texturePtr != null)
+				if ((externalTexture.texturePtr == (System.IntPtr)0 && renderTexture != null))
 				{
 					if (!renderTexture.IsCreated())
 						renderTexture.Create();
-					_nativeTexturePtr = renderTexture.GetNativeTexturePtr();
+                    externalTexture.texturePtr = renderTexture.GetNativeTexturePtr();
 					cachedRenderTexture = renderTexture;
-					InitExternalTexture(ref renderTextureExt, renderTexture);
-
                 }
-				return _nativeTexturePtr;
+				return externalTexture.texturePtr;
 			}
+			public System.IntPtr GetExternalTexturePtr()
+			{
+				if (_nativeExternalTexturePtr == (System.IntPtr)0 && externalTexture.texturePtr != null)
+				{
+                    InitExternalTexture(ref externalTexture, renderTexture);
+                    _nativeExternalTexturePtr = Marshal.AllocHGlobal(Marshal.SizeOf(new ExternalRenderValues()));
+                }
+				return _nativeExternalTexturePtr;
+
+            }
 
 			protected RenderTexture cachedRenderTexture = null;
 			protected System.IntPtr _nativeTexturePtr = (System.IntPtr)0;
+			protected System.IntPtr _nativeExternalTexturePtr = (System.IntPtr)0;
 		};
 
 		public static PixelFormat ToSimulPixelFormat(GraphicsFormat UnityFormat)
@@ -70,6 +78,8 @@ namespace simul
                     return PixelFormat.RGBA_32_UINT;
                 case GraphicsFormat.R8G8B8A8_UNorm:
                     return PixelFormat.BGRA_8_UNORM;
+				case GraphicsFormat.R8G8B8A8_SRGB:
+                    return PixelFormat.RGBA_8_SNORM;
                 default:
                     UnityEngine.Debug.LogWarning("Unknown PixelFormat");
                     return PixelFormat.UNKNOWN;
@@ -90,9 +100,9 @@ namespace simul
         {
             if (tex != null)
             {
-                ext.texturePtr = tex.GetNativeTexturePtr();
-                ext.width = tex.width;
-                ext.height = tex.height;
+				ext.texturePtr = tex.GetNativeTexturePtr();
+                ext.width = (uint)tex.width;
+                ext.height = (uint)tex.height;
 				ext.depth = 1;
                 ext.pixelFormat = ToSimulPixelFormat(tex.graphicsFormat);
                 ext.numSamples = 0;
@@ -331,7 +341,7 @@ namespace simul
 			proj[offset+11] = m.m32;
 			proj[offset+15] = m.m33 * metresPerUnit;
 		}
-		static public void ViewMatrixToTrueSkyFormat(RenderStyle renderStyle,Matrix4x4 m,float[] view,int offset=0,bool swap_yz=true)
+		static public void ViewMatrixToTrueSkyFormat(Matrix4x4 m,float[] view,int offset=0,bool swap_yz=true)
 		{
 			// transform?
 			if (trueSKY.GetTrueSky() == null)

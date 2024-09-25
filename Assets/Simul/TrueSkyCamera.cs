@@ -6,6 +6,7 @@ using UnityEngine.Rendering;
 using System.Collections.Generic;
 
 using static simul.TrueSkyPluginRenderFunctionImporter;
+using static simul.TrueSkyCameraBase;
 
 namespace simul
 {
@@ -32,6 +33,7 @@ namespace simul
 		protected RenderTextureHolder reflectionProbeTexture = new RenderTextureHolder();
 		protected CommandBuffer overlay_buf 				= null;
 		protected CommandBuffer post_translucent_buf		= null;
+		protected CommandBuffer ui_buf						= null;
 		/// Blitbuf is now only for in-editor use.
 		protected CommandBuffer blitbuf = null;
 		protected CommandBuffer deferred_buf = null; 
@@ -165,6 +167,7 @@ namespace simul
 		System.IntPtr unityViewStructPtr = Marshal.AllocHGlobal(Marshal.SizeOf(new UnityViewStruct()));
 		System.IntPtr postTransViewStructPtr = Marshal.AllocHGlobal(Marshal.SizeOf(new UnityViewStruct())); 
 		System.IntPtr overlayViewStructPtr = Marshal.AllocHGlobal(Marshal.SizeOf(new UnityViewStruct())); 
+		System.IntPtr EditorUIStructPtr = Marshal.AllocHGlobal(Marshal.SizeOf(new UnityViewStruct())); 
 		void OnPreRender()
 		{
 			if (!enabled || !gameObject.activeInHierarchy)
@@ -189,7 +192,10 @@ namespace simul
 				deferred_buf = new CommandBuffer();
 				deferred_buf.name = "trueSKY deferred contexts";
 				blitbuf = new CommandBuffer();
-				blitbuf.name = "trueSKY depth blit";
+                blitbuf.name = "trueSKY depth blit";
+                ui_buf = new CommandBuffer();
+                ui_buf.name = "trueSKY UI";
+				
 
 				cbuf_view_id = -1;
 			}
@@ -217,13 +223,16 @@ namespace simul
 					cam.AddCommandBuffer(CameraEvent.AfterForwardAlpha, overlay_buf);
 				//if (editorMode)
 				cam.AddCommandBuffer(CameraEvent.AfterEverything, deferred_buf); 
+
+				cam.AddCommandBuffer(CameraEvent.AfterEverything, ui_buf); 
 			}
 			mainCommandBuffer.Clear();
 			blitbuf.Clear();
 			overlay_buf.Clear();
 			post_translucent_buf.Clear();
 			deferred_buf.Clear();
-			cbuf_view_id = InternalGetViewId();
+			ui_buf.Clear();
+            cbuf_view_id = InternalGetViewId();
 			//if (editorMode)
 			{
 				/*blitbuf.SetRenderTarget((RenderTexture)depthTexture.renderTexture);
@@ -278,7 +287,23 @@ namespace simul
 			Marshal.StructureToPtr(unityViewStruct, overlayViewStructPtr, !il2cppScripting);
 			overlay_buf.IssuePluginEventAndData(UnityGetOverlayFuncWithData(), TRUESKY_EVENT_ID + cbuf_view_id, overlayViewStructPtr);
 
-		}
+
+
+            trueSKY ts = trueSKY.GetTrueSky();
+            uint texWidth = ts.GlobalViewTexture.externalTexture.width;
+            uint texHeight = ts.GlobalViewTexture.externalTexture.height;
+            unityViewStruct.targetViewports[0].x = 0;
+            unityViewStruct.targetViewports[0].y = 0;
+            unityViewStruct.targetViewports[0].w = (int)texWidth;
+            unityViewStruct.targetViewports[0].h = (int)texHeight;
+			if(ts.GlobalViewTexture.renderTexture)
+				unityViewStruct.nativeColourRenderBuffer = ts.GlobalViewTexture.renderTexture.colorBuffer.GetNativeRenderBufferPtr();
+
+            unityViewStruct.renderStyle = RenderStyle.UNITY_STYLE | RenderStyle.DRAW_GLOBAL_VIEW_UI | RenderStyle.CLEAR_SCREEN;
+            Marshal.StructureToPtr(unityViewStruct, EditorUIStructPtr, !il2cppScripting);
+            ui_buf.IssuePluginEventAndData(UnityGetEditorUIFuncWithData(), TRUESKY_EVENT_ID + cbuf_view_id, EditorUIStructPtr);
+
+        }
 		int duplicateFrames = 0;
 		int localFrameCount = 0;
 		void OnPostRender()
@@ -309,7 +334,7 @@ namespace simul
 
 				Matrix4x4 p = GL.GetGPUProjectionMatrix(cam.projectionMatrix, toTexture);
 
-				ViewMatrixToTrueSkyFormat(renderStyle, m, viewMatrices);
+				ViewMatrixToTrueSkyFormat(m, viewMatrices);
 				ProjMatrixToTrueSkyFormat(renderStyle, p, projMatrices);
 
 				if ((renderStyle & RenderStyle.VR_STYLE) == RenderStyle.VR_STYLE)
@@ -317,8 +342,8 @@ namespace simul
 					// View matrix: left & right eyes
 					Matrix4x4 l = cam.GetStereoViewMatrix(Camera.StereoscopicEye.Left);
 					Matrix4x4 r = cam.GetStereoViewMatrix(Camera.StereoscopicEye.Right);
-					ViewMatrixToTrueSkyFormat(renderStyle, l, viewMatrices, 1);
-					ViewMatrixToTrueSkyFormat(renderStyle, r, viewMatrices, 2);
+					ViewMatrixToTrueSkyFormat(l, viewMatrices, 1);
+					ViewMatrixToTrueSkyFormat(r, viewMatrices, 2);
 
 					// Projection matrix: left & right eyes
 					Matrix4x4 pl = GL.GetGPUProjectionMatrix(cam.GetStereoProjectionMatrix(Camera.StereoscopicEye.Left), true);
@@ -432,18 +457,31 @@ namespace simul
 				unityViewStruct.colourTextureArrayIndex = -1;
 
 				lastFrameCount = Time.renderedFrameCount;
-				
+				//InitExternalTexture(ref ts.InscatterTexture.externalTexture, ts.inscatterRT);
 				ts.InscatterTexture.renderTexture = ts.inscatterRT;
-				ts.LossTexture.renderTexture = ts.lossRT;
-				ts.CloudVisibilityTexture.renderTexture = ts.cloudVisibilityRT;
-				ts.CloudShadowTexture.renderTexture = ts.cloudShadowRT;
+               // InitExternalTexture(ref ts.InscatterTexture.externalTexture, ts.inscatterRT);
+                ts.LossTexture.renderTexture = ts.lossRT;
+               // InitExternalTexture(ref ts.LossTexture.externalTexture, ts.inscatterRT);
+                ts.CloudVisibilityTexture.renderTexture = ts.cloudVisibilityRT;
+               // InitExternalTexture(ref ts.CloudVisibilityTexture.externalTexture, ts.inscatterRT);
+                ts.CloudShadowTexture.renderTexture = ts.cloudShadowRT;
+				// InitExternalTexture(ref ts.CloudShadowTexture.externalTexture, ts.inscatterRT);
+				ts.GlobalViewTexture.renderTexture = ts.globalViewRT;
 
-                StaticSetRenderTexture2("inscatter2D", ts.InscatterTexture.renderTextureExt);
-				StaticSetRenderTexture2("Loss2D", ts.LossTexture.renderTextureExt);
-				StaticSetRenderTexture2("CloudVisibilityRT", ts.CloudVisibilityTexture.renderTextureExt);
-				StaticSetRenderTexture2("CloudShadowRT", ts.CloudShadowTexture.renderTextureExt);
 
-				if (reflectionProbeTexture.renderTexture)
+
+                Marshal.StructureToPtr(ts.InscatterTexture.externalTexture, ts.InscatterTexture.GetExternalTexturePtr(), !trueSKY.GetTrueSky().UsingIL2CPP);
+                StaticSetRenderTexture2("inscatter2D", ts.InscatterTexture.GetExternalTexturePtr());
+                Marshal.StructureToPtr(ts.LossTexture.externalTexture, ts.LossTexture.GetExternalTexturePtr(), !trueSKY.GetTrueSky().UsingIL2CPP);
+                StaticSetRenderTexture2("Loss2D", ts.LossTexture.GetExternalTexturePtr());
+                Marshal.StructureToPtr(ts.CloudVisibilityTexture.externalTexture, ts.CloudVisibilityTexture.GetExternalTexturePtr(), !trueSKY.GetTrueSky().UsingIL2CPP);
+                StaticSetRenderTexture2("CloudVisibilityRT", ts.CloudVisibilityTexture.GetExternalTexturePtr());
+                Marshal.StructureToPtr(ts.CloudShadowTexture.externalTexture, ts.CloudShadowTexture.GetExternalTexturePtr(), !trueSKY.GetTrueSky().UsingIL2CPP);
+                StaticSetRenderTexture2("CloudShadowRT", ts.CloudShadowTexture.GetExternalTexturePtr());  
+				//Marshal.StructureToPtr(ts.GlobalViewTexture.externalTexture, ts.GlobalViewTexture.GetExternalTexturePtr(), !trueSKY.GetTrueSky().UsingIL2CPP);
+               // StaticSetRenderTexture2("GlobalViewRT", ts.GlobalViewTexture.GetExternalTexturePtr());
+
+                if (reflectionProbeTexture.renderTexture)
 				{
 					//StaticSetRenderTexture2("Cubemap", reflectionProbeTexture.GetNative());
 				}
@@ -456,7 +494,7 @@ namespace simul
                //StaticSetRenderTexture2("RainDepthTexture", _rainDepthRT.GetNative());
 				if (RainDepthCamera != null)
 				{
-					ViewMatrixToTrueSkyFormat(RenderStyle.UNITY_STYLE, RainDepthCamera.matrix, rainDepthMatrix, 0, true);
+					ViewMatrixToTrueSkyFormat(RainDepthCamera.matrix, rainDepthMatrix, 0, true);
 					rainDepthTextureScale = 1.0F;// DepthCamera.farClipPlane;
 					StaticSetMatrix4x4("RainDepthTransform", rainDepthMatrix);
 					StaticSetMatrix4x4("RainDepthProjection", rainDepthProjection);

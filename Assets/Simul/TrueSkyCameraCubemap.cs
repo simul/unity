@@ -54,7 +54,7 @@ namespace simul
                 {
                     p[1, 1] = -1.0f;
                 }
-                ViewMatrixToTrueSkyFormat(renderStyle, m, viewMatrices);
+                ViewMatrixToTrueSkyFormat(m, viewMatrices);
                 ProjMatrixToTrueSkyFormat(renderStyle, p, projMatrices);
 				// Query depth size
 				int depthWidth = cam.pixelWidth;
@@ -146,7 +146,7 @@ namespace simul
         public float[] ViewMatrixToTrueSkyCubemapFormat(RenderStyle renderStyle)
         {
             Matrix4x4 m = GetComponent<Camera>().worldToCameraMatrix;
-            ViewMatrixToTrueSkyFormat(renderStyle, m, cview);
+            ViewMatrixToTrueSkyFormat(m, cview);
             return cview;
         }
 
