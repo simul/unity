@@ -161,6 +161,7 @@ namespace simul
 			RemoveBuffer("trueSKY overlay");
 			RemoveBuffer("trueSKY post translucent");
 			RemoveBuffer("trueSKY depth blit");
+			RemoveBuffer("trueSKY UI");
 			RemoveBuffer("trueSKY deferred contexts");
 		}
 		UnityViewStruct unityViewStruct=new UnityViewStruct();
@@ -210,7 +211,8 @@ namespace simul
 				PrepareDepthMaterial();
 			bool do_overlays=false;
 			bool do_post_trans=true;
-			int requiredNumber = 2+(do_overlays?1:0) + (do_post_trans ? 1 : 0)+(editorMode?1:0);
+			bool do_editor_UI=true;
+			int requiredNumber = 2+(do_overlays?1:0) + (do_post_trans ? 1 : 0)+(editorMode?1:0)+ (do_editor_UI ? 1 : 0);
 			if (bufs.Length != requiredNumber)
 			{
 				RemoveCommandBuffers();
@@ -223,8 +225,8 @@ namespace simul
 					cam.AddCommandBuffer(CameraEvent.AfterForwardAlpha, overlay_buf);
 				//if (editorMode)
 				cam.AddCommandBuffer(CameraEvent.AfterEverything, deferred_buf); 
-
-				cam.AddCommandBuffer(CameraEvent.AfterEverything, ui_buf); 
+				if(do_editor_UI)
+					cam.AddCommandBuffer(CameraEvent.AfterEverything, ui_buf); 
 			}
 			mainCommandBuffer.Clear();
 			blitbuf.Clear();
@@ -275,8 +277,8 @@ namespace simul
 				//unityViewStruct.colourTexture = cam.activeTexture.GetNativeTexturePtr();
 				//return;
 			}
-
-			bool il2cppScripting = UsingIL2CPP();
+            trueSKY ts = trueSKY.GetTrueSky();
+            bool il2cppScripting = UsingIL2CPP();
 			Marshal.StructureToPtr(unityViewStruct, unityViewStructPtr, !il2cppScripting);
 			mainCommandBuffer.IssuePluginEventAndData(UnityGetRenderEventFuncWithData(), TRUESKY_EVENT_ID + cbuf_view_id, unityViewStructPtr);
 			var renderStyle= unityViewStruct.renderStyle;
@@ -289,19 +291,26 @@ namespace simul
 
 
 
-            trueSKY ts = trueSKY.GetTrueSky();
-            uint texWidth = ts.GlobalViewTexture.externalTexture.width;
-            uint texHeight = ts.GlobalViewTexture.externalTexture.height;
-            unityViewStruct.targetViewports[0].x = 0;
-            unityViewStruct.targetViewports[0].y = 0;
-            unityViewStruct.targetViewports[0].w = (int)texWidth;
-            unityViewStruct.targetViewports[0].h = (int)texHeight;
-			if(ts.GlobalViewTexture.renderTexture)
-				unityViewStruct.nativeColourRenderBuffer = ts.GlobalViewTexture.renderTexture.colorBuffer.GetNativeRenderBufferPtr();
 
-            unityViewStruct.renderStyle = RenderStyle.UNITY_STYLE | RenderStyle.DRAW_GLOBAL_VIEW_UI | RenderStyle.CLEAR_SCREEN;
-            Marshal.StructureToPtr(unityViewStruct, EditorUIStructPtr, !il2cppScripting);
-            ui_buf.IssuePluginEventAndData(UnityGetEditorUIFuncWithData(), TRUESKY_EVENT_ID + cbuf_view_id, EditorUIStructPtr);
+			if (ts.GlobalViewTexture.renderTexture)
+			{            
+                unityViewStruct.nativeColourRenderBuffer = ts.GlobalViewTexture.renderTexture.colorBuffer.GetNativeRenderBufferPtr();
+                unityViewStruct.nativeDepthRenderBuffer = (System.IntPtr)0;
+                unityViewStruct.colourResourceState = ResourceState.RenderTarget;
+                unityViewStruct.gamma = 1.0f;
+				unityViewStruct.exposure = 1.0f;
+				unityViewStruct.framenumber = UIFramenumber;
+
+                unityViewStruct.targetViewports[0].x = 0;
+                unityViewStruct.targetViewports[0].y = 0;
+                unityViewStruct.targetViewports[0].w = ts.GlobalViewTexture.renderTexture.width;
+                unityViewStruct.targetViewports[0].h = ts.GlobalViewTexture.renderTexture.height;
+                unityViewStruct.renderStyle = RenderStyle.UNITY_STYLE | RenderStyle.DRAW_PROPERTIES_UI | RenderStyle.CLEAR_SCREEN;
+				Marshal.StructureToPtr(unityViewStruct, EditorUIStructPtr, !il2cppScripting);
+				//ui_buf.IssuePluginEventAndData(UnityGetEditorUIFuncWithData(), TRUESKY_EVENT_ID + cbuf_view_id + 5, EditorUIStructPtr);
+				UIFramenumber++;
+
+            }
 
         }
 		int duplicateFrames = 0;
@@ -457,16 +466,16 @@ namespace simul
 				unityViewStruct.colourTextureArrayIndex = -1;
 
 				lastFrameCount = Time.renderedFrameCount;
-				//InitExternalTexture(ref ts.InscatterTexture.externalTexture, ts.inscatterRT);
+				InitExternalTexture(ref ts.InscatterTexture.externalTexture, ts.inscatterRT);
 				ts.InscatterTexture.renderTexture = ts.inscatterRT;
-               // InitExternalTexture(ref ts.InscatterTexture.externalTexture, ts.inscatterRT);
+                InitExternalTexture(ref ts.InscatterTexture.externalTexture, ts.inscatterRT);
                 ts.LossTexture.renderTexture = ts.lossRT;
-               // InitExternalTexture(ref ts.LossTexture.externalTexture, ts.inscatterRT);
+                InitExternalTexture(ref ts.LossTexture.externalTexture, ts.inscatterRT);
                 ts.CloudVisibilityTexture.renderTexture = ts.cloudVisibilityRT;
-               // InitExternalTexture(ref ts.CloudVisibilityTexture.externalTexture, ts.inscatterRT);
+                InitExternalTexture(ref ts.CloudVisibilityTexture.externalTexture, ts.inscatterRT);
                 ts.CloudShadowTexture.renderTexture = ts.cloudShadowRT;
-				// InitExternalTexture(ref ts.CloudShadowTexture.externalTexture, ts.inscatterRT);
-				ts.GlobalViewTexture.renderTexture = ts.globalViewRT;
+				//InitExternalTexture(ref ts.CloudShadowTexture.externalTexture, ts.inscatterRT);
+				//ts.GlobalViewTexture.renderTexture = ts.globalViewRT;
 
 
 

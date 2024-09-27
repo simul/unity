@@ -32,16 +32,17 @@ namespace simul
 					if (!renderTexture.IsCreated())
 						renderTexture.Create();
                     externalTexture.texturePtr = renderTexture.GetNativeTexturePtr();
-					cachedRenderTexture = renderTexture;
+                    InitExternalTexture(ref externalTexture, renderTexture);
+                    cachedRenderTexture = renderTexture;
                 }
 				return externalTexture.texturePtr;
 			}
 			public System.IntPtr GetExternalTexturePtr()
-			{
-				if (_nativeExternalTexturePtr == (System.IntPtr)0 && externalTexture.texturePtr != null)
-				{
+			{ 
+				if ((renderTexture != null && _nativeExternalTexturePtr == (System.IntPtr)0)|| externalTexture.texturePtr == (System.IntPtr)0 || externalTexture.texturePtr != renderTexture.GetNativeTexturePtr() || externalTexture.width != renderTexture.width || externalTexture.height != renderTexture.height)// && externalTexture.texturePtr == (System.IntPtr)0)
+                {
                     InitExternalTexture(ref externalTexture, renderTexture);
-                    _nativeExternalTexturePtr = Marshal.AllocHGlobal(Marshal.SizeOf(new ExternalRenderValues()));
+                    Marshal.StructureToPtr(externalTexture, _nativeExternalTexturePtr, !simul.trueSKY.GetTrueSky().UsingIL2CPP);
                 }
 				return _nativeExternalTexturePtr;
 
@@ -49,8 +50,8 @@ namespace simul
 
 			protected RenderTexture cachedRenderTexture = null;
 			protected System.IntPtr _nativeTexturePtr = (System.IntPtr)0;
-			protected System.IntPtr _nativeExternalTexturePtr = (System.IntPtr)0;
-		};
+			protected System.IntPtr _nativeExternalTexturePtr = Marshal.AllocHGlobal(Marshal.SizeOf(new ExternalTexture()));
+        };
 
 		public static PixelFormat ToSimulPixelFormat(GraphicsFormat UnityFormat)
 		{
@@ -229,7 +230,8 @@ namespace simul
 		static protected Shader _deferredShader = null;
 		protected CommandBuffer mainCommandBuffer  = null;
 		protected int cbuf_view_id              = -1;
-		public int GetViewId()
+        protected int UIFramenumber = 0;
+        public int GetViewId()
 		{
 			return view_id;
 		}
