@@ -111,3 +111,16 @@ The following packages were updated:
   com.unity.test-framework from version 1.1.24 to 1.1.29
   com.unity.timeline from version 1.5.5 to 1.6.4
   com.unity.xr.legacyinputhelpers from version 2.1.7 to 2.1.8
+
+=== Fri Sep 27 11:18:45 2024
+
+Packages were changed.
+Update Mode: updateDependencies
+
+The following packages were updated:
+  com.unity.collab-proxy from version 1.15.12 to 1.15.18
+  com.unity.ide.rider from version 3.0.12 to 3.0.14
+  com.unity.ide.visualstudio from version 2.0.14 to 2.0.15
+  com.unity.purchasing from version 4.1.2 to 4.1.5
+  com.unity.test-framework from version 1.1.29 to 1.1.31
+  com.unity.xr.legacyinputhelpers from version 2.1.8 to 2.1.9

@@ -466,14 +466,17 @@ namespace simul
 				unityViewStruct.colourTextureArrayIndex = -1;
 
 				lastFrameCount = Time.renderedFrameCount;
-				InitExternalTexture(ref ts.InscatterTexture.externalTexture, ts.inscatterRT);
-				ts.InscatterTexture.renderTexture = ts.inscatterRT;
-                InitExternalTexture(ref ts.InscatterTexture.externalTexture, ts.inscatterRT);
-                ts.LossTexture.renderTexture = ts.lossRT;
-                InitExternalTexture(ref ts.LossTexture.externalTexture, ts.inscatterRT);
-                ts.CloudVisibilityTexture.renderTexture = ts.cloudVisibilityRT;
-                InitExternalTexture(ref ts.CloudVisibilityTexture.externalTexture, ts.inscatterRT);
-                ts.CloudShadowTexture.renderTexture = ts.cloudShadowRT;
+				ts.InscatterTexture.SetRenderTexture(ts.inscatterRT);
+				ts.LossTexture.SetRenderTexture(ts.lossRT);
+				ts.CloudVisibilityTexture.SetRenderTexture(ts.cloudVisibilityRT);
+				ts.CloudShadowTexture.SetRenderTexture(ts.cloudShadowRT);
+
+                //InitExternalTexture(ref ts.InscatterTexture.externalTexture, ts.inscatterRT);
+                //ts.LossTexture.renderTexture = ts.lossRT;
+                //InitExternalTexture(ref ts.LossTexture.externalTexture, ts.inscatterRT);
+                //ts.CloudVisibilityTexture.renderTexture = ts.cloudVisibilityRT;
+                //InitExternalTexture(ref ts.CloudVisibilityTexture.externalTexture, ts.inscatterRT);
+                //ts.CloudShadowTexture.renderTexture = ts.cloudShadowRT;
 				//InitExternalTexture(ref ts.CloudShadowTexture.externalTexture, ts.inscatterRT);
 				//ts.GlobalViewTexture.renderTexture = ts.globalViewRT;
 

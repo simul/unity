@@ -105,7 +105,7 @@ namespace simul
 
 			unityViewStruct.nativeColourRenderBuffer = rbColour.GetNativeRenderBufferPtr();
 			unityViewStruct.nativeDepthRenderBuffer = rbDepth.GetNativeRenderBufferPtr();
-			unityViewStruct.colourResourceState = msaa ? ResourceState.ResolveSource : ResourceState.RenderTarget;
+			unityViewStruct.colourResourceState = (msaa ? ResourceState.ResolveSource : ResourceState.RenderTarget);
 			unityViewStruct.depthResourceState = ResourceState.DepthWrite;
 			
 			//Execute CmdBuffer
@@ -126,7 +126,9 @@ namespace simul
 					cmd.IssuePluginEventAndData(UnityGetPostTranslucentFuncWithData(), GetTRUESKY_EVENT_ID() + cbuf_view_id, unityViewStructPtr);
 				else if (injectionPoint == CustomPassInjectionPoint.AfterPostProcess)
 					cmd.IssuePluginEventAndData(UnityGetOverlayFuncWithData(), GetTRUESKY_EVENT_ID() + cbuf_view_id, unityViewStructPtr);
-				else
+                //else if (injectionPoint == CustomPassInjectionPoint.AfterOpaqueDepthAndNormal)
+                //    cmd.IssuePluginEventAndData(UnityGetEditorUIFuncWithData(), GetTRUESKY_EVENT_ID() + cbuf_view_id, unityViewStructPtr);
+                else
 					return;
 			}
 			if(cubemapProbe) //Cubemap view render
@@ -204,7 +206,7 @@ namespace simul
 				default:
 					return;
 			}
-			ViewMatrixToTrueSkyFormat_HDRP(m, viewMatrices);
+			ViewMatrixToTrueSkyFormat_HDRP(GetRenderStyle(camera.camera), m, viewMatrices);
 			unityViewStruct.viewMatrices4x4 = viewMatrices;
 
 			if (flipProbeY)
@@ -259,7 +261,7 @@ namespace simul
 
 				Matrix4x4 p = GL.GetGPUProjectionMatrix(cam.projectionMatrix, toTexture);
 
-				ViewMatrixToTrueSkyFormat_HDRP(m, viewMatrices);
+				ViewMatrixToTrueSkyFormat_HDRP(GetRenderStyle(camera.camera), m, viewMatrices);
 				ProjMatrixToTrueSkyFormat_HDRP(renderStyle, p, projMatrices);
 
 				if ((renderStyle & RenderStyle.VR_STYLE) == RenderStyle.VR_STYLE)
@@ -267,8 +269,8 @@ namespace simul
 					// View matrix: left & right eyes
 					Matrix4x4 l = cam.GetStereoViewMatrix(Camera.StereoscopicEye.Left);
 					Matrix4x4 r = cam.GetStereoViewMatrix(Camera.StereoscopicEye.Right);
-					ViewMatrixToTrueSkyFormat_HDRP(l, viewMatrices, 1);
-					ViewMatrixToTrueSkyFormat_HDRP(r, viewMatrices, 2);
+					ViewMatrixToTrueSkyFormat_HDRP(GetRenderStyle(camera.camera), l, viewMatrices, 1);
+					ViewMatrixToTrueSkyFormat_HDRP(GetRenderStyle(camera.camera), r, viewMatrices, 2);
 
 					// Projection matrix: left & right eyes
 					Matrix4x4 pl = GL.GetGPUProjectionMatrix(cam.GetStereoProjectionMatrix(Camera.StereoscopicEye.Left), true);
@@ -360,18 +362,37 @@ namespace simul
 
 				trueSKY ts = trueSKY.GetTrueSky();
 
-				//
-				ts.InscatterTexture.renderTexture = ts.inscatterRT;
-				ts.LossTexture.renderTexture = ts.lossRT;
-				ts.CloudVisibilityTexture.renderTexture = ts.cloudVisibilityRT;
-				ts.CloudShadowTexture.renderTexture = ts.cloudShadowRT;
+                //
 
-				StaticSetRenderTexture("inscatter2D", ts.InscatterTexture.GetNative());
-				StaticSetRenderTexture("Loss2D", ts.LossTexture.GetNative());
-				StaticSetRenderTexture("CloudVisibilityRT", ts.CloudVisibilityTexture.GetNative()); 
-				StaticSetRenderTexture("CloudShadowRT", ts.CloudShadowTexture.GetNative());
+                ts.InscatterTexture.SetRenderTexture(ts.inscatterRT);
+                ts.LossTexture.SetRenderTexture(ts.lossRT);
+                ts.CloudVisibilityTexture.SetRenderTexture(ts.cloudVisibilityRT);
+                ts.CloudShadowTexture.SetRenderTexture(ts.cloudShadowRT);
 
-				/*_inscatterRT.renderTexture = inscatterRT;
+                //InitExternalTexture(ref ts.InscatterTexture.externalTexture, ts.inscatterRT);
+                //ts.LossTexture.renderTexture = ts.lossRT;
+                //InitExternalTexture(ref ts.LossTexture.externalTexture, ts.inscatterRT);
+                //ts.CloudVisibilityTexture.renderTexture = ts.cloudVisibilityRT;
+                //InitExternalTexture(ref ts.CloudVisibilityTexture.externalTexture, ts.inscatterRT);
+                //ts.CloudShadowTexture.renderTexture = ts.cloudShadowRT;
+                //InitExternalTexture(ref ts.CloudShadowTexture.externalTexture, ts.inscatterRT);
+                //ts.GlobalViewTexture.renderTexture = ts.globalViewRT;
+
+                //InitExternalTexture(ref ts.CloudShadowTexture.externalTexture, ts.inscatterRT);
+                //ts.GlobalViewTexture.renderTexture = ts.globalViewRT;
+
+
+
+                Marshal.StructureToPtr(ts.InscatterTexture.externalTexture, ts.InscatterTexture.GetExternalTexturePtr(), !trueSKY.GetTrueSky().UsingIL2CPP);
+                StaticSetRenderTexture2("inscatter2D", ts.InscatterTexture.GetExternalTexturePtr());
+                Marshal.StructureToPtr(ts.LossTexture.externalTexture, ts.LossTexture.GetExternalTexturePtr(), !trueSKY.GetTrueSky().UsingIL2CPP);
+                StaticSetRenderTexture2("Loss2D", ts.LossTexture.GetExternalTexturePtr());
+                Marshal.StructureToPtr(ts.CloudVisibilityTexture.externalTexture, ts.CloudVisibilityTexture.GetExternalTexturePtr(), !trueSKY.GetTrueSky().UsingIL2CPP);
+                StaticSetRenderTexture2("CloudVisibilityRT", ts.CloudVisibilityTexture.GetExternalTexturePtr());
+                Marshal.StructureToPtr(ts.CloudShadowTexture.externalTexture, ts.CloudShadowTexture.GetExternalTexturePtr(), !trueSKY.GetTrueSky().UsingIL2CPP);
+                StaticSetRenderTexture2("CloudShadowRT", ts.CloudShadowTexture.GetExternalTexturePtr());
+
+                /*_inscatterRT.renderTexture = inscatterRT;
 				_cloudVisibilityRT.renderTexture = cloudVisibilityRT;
 				_cloudShadowRT.renderTexture = cloudShadowRT;
 
@@ -398,7 +419,7 @@ namespace simul
 					StaticSetMatrix4x4("RainDepthProjection", rainDepthProjection);
 					StaticSetRenderFloat("RainDepthTextureScale", rainDepthTextureScale);
 				}*/
-			}
+            }
 		}
 
 		public RenderStyle GetBaseRenderStyle(Camera cam)

@@ -19,7 +19,7 @@ namespace simul
 		public float gamma = 1.0F;//0.44F
 		public float updatePeriodSeconds = 0.5F;
 		float _updatePeriodSeconds = 0.0F;
-		public bool skyOnly = true;
+		public bool skyOnly = false;
 
 		bool _initialized = false;
 		public RenderTextureFormat renderTextureFormat = RenderTextureFormat.Default;
@@ -216,7 +216,7 @@ namespace simul
 			if (dummyCam == null)
 			{
 				GameObject aDummyCamObject = new GameObject("CubemapCamera1", typeof(Camera));
-				UnityEngine.Debug.LogWarning("DoUpdateStandard");
+				//UnityEngine.Debug.LogWarning("DoUpdateStandard");
 				aDummyCamObject.gameObject.layer = trueSKY.GetTrueSky().trueSKYLayerIndex;
 				aDummyCamObject.hideFlags        = HideFlags.HideAndDontSave;
 				dummyCam                         = aDummyCamObject.GetComponent<Camera>();
@@ -394,8 +394,9 @@ namespace simul
 				renderTextureFormat             = cubemapRenderTexture.format;
 				cubemapRenderTexture.dimension  = UnityEngine.Rendering.TextureDimension.Cube;
 				cubemapRenderTexture.name       = "trueSKY CubemapRenderTexture";
-				cubemapRenderTexture.Create();
-				_initialized = false;
+
+                cubemapRenderTexture.Create();
+                _initialized = false;
 			}
 		}
 	}

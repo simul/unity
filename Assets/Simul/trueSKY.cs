@@ -14,6 +14,7 @@ using UnityEngine.Rendering;
 
 using static simul.TrueSkyPluginRenderFunctionImporter;
 using static simul.TrueSkyCameraBase;
+using UnityEditor;
 
 namespace simul
 {
@@ -120,27 +121,36 @@ namespace simul
 
     public enum ResourceState : uint
     {
-			COMMON	= 0,
-			VERTEX_AND_CONSTANT_BUFFER	= 0x1,
-			INDEX_BUFFER	= 0x2,
-			RENDER_TARGET	= 0x4,
-			UNORDERED_ACCESS	= 0x8,
-			DEPTH_WRITE	= 0x10,
-			DEPTH_READ	= 0x20,
-			NON_PIXEL_SHADER_RESOURCE	= 0x40,
-			PIXEL_SHADER_RESOURCE	= 0x80,
-			STREAM_OUT	= 0x100,
-			INDIRECT_ARGUMENT	= 0x200,
-			COPY_DEST	= 0x400,
-			COPY_SOURCE	= 0x800,
-			RESOLVE_DEST	= 0x1000,
-			RESOLVE_SOURCE	= 0x2000,
-			GENERAL_READ	= ((((( 0x1 | 0x2 )  | 0x40 )  | 0x80 )  | 0x200 )  | 0x800 ),
-			SHADER_RESOURCE	= ( 0x40 | 0x80 ),
-			UNKNOWN=0xFFFF
-		};
+        Common = 0,
+        VertexAndConstantBuffer = 0x1,
+        IndexBuffer = 0x2,
+        RenderTarget = 0x4,
+        UnorderedAccess = 0x8,
+        DepthWrite = 0x10,
+        DepthRead = 0x20,
+        NonPixelShaderResource = 0x40,
+        PixelShaderResource = 0x80,
+        StreamOut = 0x100,
+        IndirectArgument = 0x200,
+        CopyDest = 0x400,
+        CopySource = 0x800,
+        ResolveDest = 0x1000,
+        ResolveSource = 0x2000,
+        RaytracingAccelerationStructure = 0x400000,
+        ShadingRateSource = 0x1000000,
+        GenericRead = (((((0x1 | 0x2) | 0x40) | 0x80) | 0x200) | 0x800),
+        shaderResource = (0x40 | 0x80),
+        Present = 0,
+        Predication = 0x200,
+        VideoDecodeRead = 0x10000,
+        VideoDecodeWrite = 0x20000,
+        VideoProcessRead = 0x40000,
+        VideoProcessWrite = 0x80000,
+        VideoEncodeRead = 0x200000,
+        VideoEncodeWrite = 0x800000
+    };
     //! A cross-platform equivalent to the OpenGL and DirectX pixel formats
-   public enum PixelFormat : byte
+    public enum PixelFormat : byte
     {
         UNKNOWN
         , RGBA_32_FLOAT
@@ -221,8 +231,9 @@ namespace simul
 		{
 		}
 
+
 #if !UNITY_WSA
-		private static Assembly SimulResolveEventHandler(object sender, System.ResolveEventArgs args)
+        private static Assembly SimulResolveEventHandler(object sender, System.ResolveEventArgs args)
 		{
 			UnityEngine.Debug.LogWarning("Resolving " + args.Name);
 #if _WIN32
@@ -800,7 +811,63 @@ namespace simul
 		}
 		private static trueSKY trueSkySingleton = null;
 
-		public trueSKY()
+
+
+        void UpdateDefines()
+        {
+
+            if (SimulVersion == MakeSimulVersion(4,3))
+            {
+                AddDefine("USING_TRUESKY_4_3");
+                
+            }
+            else if (SimulVersion == MakeSimulVersion(4, 4))
+            {
+                AddDefine("USING_TRUESKY_4_4");             
+            }
+        }
+
+        static void AddDefine(string define)
+        {
+            var definesList = GetDefines();
+            if (!definesList.Contains(define))
+            {
+                definesList.Add(define);
+                SetDefines(definesList);
+            }
+        }
+
+        /// <summary>
+        /// Remove a custom define
+        /// </summary>
+        /// <param name="_define"></param>
+        /// <param name="_buildTargetGroup"></param>
+        public static void RemoveDefine(string define)
+        {
+            var definesList = GetDefines();
+            if (definesList.Contains(define))
+            {
+                definesList.Remove(define);
+                SetDefines(definesList);
+            }
+        }
+
+        public static List<string> GetDefines()
+        {
+            var target = EditorUserBuildSettings.activeBuildTarget;
+            var buildTargetGroup = BuildPipeline.GetBuildTargetGroup(target);
+            var defines = PlayerSettings.GetScriptingDefineSymbolsForGroup(buildTargetGroup);
+            return defines.Split(';').ToList();
+        }
+
+        public static void SetDefines(List<string> definesList)
+        {
+            var target = EditorUserBuildSettings.activeBuildTarget;
+            var buildTargetGroup = BuildPipeline.GetBuildTargetGroup(target);
+            var defines = string.Join(";", definesList.ToArray());
+            PlayerSettings.SetScriptingDefineSymbolsForGroup(buildTargetGroup, defines);
+        }
+        public trueSKY()
 		{
 
 		}
@@ -809,33 +876,54 @@ namespace simul
 		{
 			if (!cloudShadowRT)
 			{
-				cloudShadowRT = new RenderTexture(256, 256, 16, RenderTextureFormat.ARGB32);
-				cloudShadowRT.name = "CloudShadowRT";
-				cloudShadowRT.Create();
+                cloudShadowRT = Resources.Load<RenderTexture>("cloudShadowRT");
+
+				if (!cloudShadowRT)
+				{
+					cloudShadowRT = new RenderTexture(256, 256, 16, RenderTextureFormat.ARGB32);
+					cloudShadowRT.name = "CloudShadowRT_32";
+					cloudShadowRT.Create();
+				}
 			}
 			if (!lossRT)
-			{
-				lossRT = new RenderTexture(256, 256, 16, RenderTextureFormat.ARGB32);
-				lossRT.name = "lossRT";
-				lossRT.Create();		
+            {
+                lossRT = Resources.Load<RenderTexture>("lossRT");
+                if (!lossRT)
+				{ 
+					lossRT = new RenderTexture(256, 256, 16, RenderTextureFormat.ARGB32);
+					lossRT.name = "lossRT_32";
+					lossRT.Create();
+				}
 			}
 			if (!inscatterRT)
-			{
-				inscatterRT = new RenderTexture(256, 256, 16, RenderTextureFormat.ARGB32);
-				inscatterRT.name = "inscatterRT";
-				inscatterRT.Create();			
+            {
+                inscatterRT = Resources.Load<RenderTexture>("inscatterRT");
+                if (!inscatterRT)
+				{
+					inscatterRT = new RenderTexture(256, 256, 16, RenderTextureFormat.ARGB32);
+					inscatterRT.name = "inscatterRT_32";
+					inscatterRT.Create();
+				}
 			}
 			if (!cloudVisibilityRT)
-			{
-				cloudVisibilityRT = new RenderTexture(256, 256, 16, RenderTextureFormat.ARGB32);
-				cloudVisibilityRT.name = "cloudVisibilityRT";
-				cloudVisibilityRT.Create();
+            {
+                cloudVisibilityRT = Resources.Load<RenderTexture>("cloudVisibilityRT");
+                if (!cloudVisibilityRT)
+				{
+					cloudVisibilityRT = new RenderTexture(256, 256, 16, RenderTextureFormat.ARGB32);
+					cloudVisibilityRT.name = "cloudVisibilityRT_32";
+					cloudVisibilityRT.Create();
+				}
 			}
             if (!globalViewRT)
             {
-                globalViewRT = new RenderTexture(256, 256, 16, RenderTextureFormat.ARGB32);
-                globalViewRT.name = "globalViewRT";
-                globalViewRT.Create();
+                globalViewRT = Resources.Load<RenderTexture>("globalViewRT");
+                if (!globalViewRT)
+				{
+					globalViewRT = new RenderTexture(256, 256, 16, RenderTextureFormat.ARGB32);
+					globalViewRT.name = "globalViewRT_32";
+					globalViewRT.Create();
+				}
             }
 
             LossTexture.renderTexture = lossRT;
@@ -4569,29 +4657,29 @@ namespace simul
 				}
 				if (SimulVersion >= MakeSimulVersion(4, 4))
 				{
-     //               UnityViewStruct unityViewStruct = new UnityViewStruct();
-     //               System.IntPtr UIViewStructPtr = Marshal.AllocHGlobal(Marshal.SizeOf(new UnityViewStruct()));
-					//unityViewStruct.colourTexture = _globalViewTexture.GetNative();
-					//uint texWidth = _globalViewTexture.externalTexture.width;
-					//uint texHeight = _globalViewTexture.externalTexture.height;
-     //               unityViewStruct.renderStyle = RenderStyle.UNITY_STYLE | RenderStyle.DRAW_GLOBAL_VIEW_UI | RenderStyle.CLEAR_SCREEN;
+					UnityViewStruct unityViewStruct = new UnityViewStruct();
+					System.IntPtr UIViewStructPtr = Marshal.AllocHGlobal(Marshal.SizeOf(new UnityViewStruct()));
+					unityViewStruct.colourTexture = _globalViewTexture.GetNative();
+					uint texWidth = _globalViewTexture.externalTexture.width;
+					uint texHeight = _globalViewTexture.externalTexture.height;
+					unityViewStruct.renderStyle = RenderStyle.UNITY_STYLE | RenderStyle.DRAW_GLOBAL_VIEW_UI | RenderStyle.CLEAR_SCREEN;
 
-					//if(_globalViewTexture.renderTexture)
-					//	unityViewStruct.nativeColourRenderBuffer = _globalViewTexture.renderTexture.colorBuffer.GetNativeRenderBufferPtr();
-     //               unityViewStruct.gamma = 1.0f;
-					//unityViewStruct.exposure = 1.0f;
-     //               Viewport[] targetViewports = new Viewport[3];
-     //               targetViewports[0].x = 0;
-     //               targetViewports[0].y = 0;
-     //               targetViewports[0].w = (int)texWidth;
-     //               targetViewports[0].h = (int)texHeight;
-                   
-     //               unityViewStruct.targetViewports= targetViewports;
+					if (_globalViewTexture.renderTexture)
+						unityViewStruct.colourTexture = _globalViewTexture.renderTexture.GetNativeTexturePtr();
+					unityViewStruct.gamma = 1.0f;
+					unityViewStruct.exposure = 1.0f;
+					Viewport[] targetViewports = new Viewport[3];
+					targetViewports[0].x = 0;
+					targetViewports[0].y = 0;
+					targetViewports[0].w = (int)texWidth;
+					targetViewports[0].h = (int)texHeight;
 
-     //               Marshal.StructureToPtr(unityViewStruct, UIViewStructPtr, !GetTrueSky().UsingIL2CPP);
-     //               StaticUnityRenderUI(UIViewStructPtr);
+					unityViewStruct.targetViewports = targetViewports;
 
-                }
+					Marshal.StructureToPtr(unityViewStruct, UIViewStructPtr, !GetTrueSky().UsingIL2CPP);
+					StaticUnityRenderUI(UIViewStructPtr);
+
+				}
 
 
             }
@@ -4841,13 +4929,14 @@ namespace simul
 				SimulVersionBuild = Marshal.ReadInt32(bu);
 
 				UnityEngine.Debug.Log("trueSKY version:" + SimulVersionMajor + "." + SimulVersionMinor + "." + SimulVersionBuild);
+				UpdateDefines();
 
 #if TRUESKY_LOGGING
 				StaticEnableLogging("trueSKYUnityRender.log");
 #endif
 
-				// Push the shader and texture paths:
-				if(!Application.isEditor)
+                // Push the shader and texture paths:
+                if (!Application.isEditor)
 				{
 #if UNITY_PS4
 					StaticPushPath("ShaderBinaryPath", Application.streamingAssetsPath + @"/Simul/shaderbin/ps4");

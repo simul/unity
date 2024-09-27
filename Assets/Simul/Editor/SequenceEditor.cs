@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using UnityEditor;
 using UnityEngine;
-
+#if USING_TRUESKY_4_3
 using static simul.TrueSkyUIFunctionImporter;
 
 namespace simul
@@ -180,3 +180,4 @@ namespace simul
         }
     }
 }
+#endif

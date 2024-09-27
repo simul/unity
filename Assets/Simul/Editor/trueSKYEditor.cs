@@ -861,11 +861,11 @@ namespace simul
 				if (debugging)
 				{
 					EditorGUILayout.BeginHorizontal();
-					trueSky.cloudShadowRT = (RenderTexture)EditorGUILayout.ObjectField(trueSky.cloudShadowRT, typeof(RenderTexture), false, GUILayout.Width(90), GUILayout.Height(90));
-					trueSky.inscatterRT = (RenderTexture)EditorGUILayout.ObjectField(trueSky.inscatterRT, typeof(RenderTexture), false, GUILayout.Width(90), GUILayout.Height(90));
-					trueSky.lossRT = (RenderTexture)EditorGUILayout.ObjectField(trueSky.lossRT, typeof(RenderTexture), false, GUILayout.Width(90), GUILayout.Height(90));
-					trueSky.cloudVisibilityRT = (RenderTexture)EditorGUILayout.ObjectField(trueSky.cloudVisibilityRT, typeof(RenderTexture), false, GUILayout.Width(90), GUILayout.Height(90));
-					trueSky.GlobalViewTexture.renderTexture = (RenderTexture)EditorGUILayout.ObjectField(trueSky.GlobalViewTexture.renderTexture, typeof(RenderTexture), false, GUILayout.Width(90), GUILayout.Height(90));
+					//trueSky.cloudShadowRT = (RenderTexture)EditorGUILayout.ObjectField(trueSky.cloudShadowRT, typeof(RenderTexture), false, GUILayout.Width(90), GUILayout.Height(90));
+					//trueSky.inscatterRT = (RenderTexture)EditorGUILayout.ObjectField(trueSky.inscatterRT, typeof(RenderTexture), false, GUILayout.Width(90), GUILayout.Height(90));
+					//trueSky.lossRT = (RenderTexture)EditorGUILayout.ObjectField(trueSky.lossRT, typeof(RenderTexture), false, GUILayout.Width(90), GUILayout.Height(90));
+					//trueSky.cloudVisibilityRT = (RenderTexture)EditorGUILayout.ObjectField(trueSky.cloudVisibilityRT, typeof(RenderTexture), false, GUILayout.Width(90), GUILayout.Height(90));
+					//trueSky.GlobalViewTexture.renderTexture = (RenderTexture)EditorGUILayout.ObjectField(trueSky.GlobalViewTexture.renderTexture, typeof(RenderTexture), false, GUILayout.Width(90), GUILayout.Height(90));
 
 					EditorGUILayout.EndHorizontal();
 					EditorGUILayout.BeginHorizontal();

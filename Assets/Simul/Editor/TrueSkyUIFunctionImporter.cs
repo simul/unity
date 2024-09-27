@@ -7,16 +7,17 @@ using System.Runtime.InteropServices;
 
 namespace simul
 {
+#if SIMUL_43
 	class TrueSkyUIFunctionImporter
 	{
-	#if UNITY_IPHONE || UNITY_XBOX360
+#if UNITY_IPHONE || UNITY_XBOX360
 		// On iOS and Xbox 360 plugins are statically linked into
 		// the executable, so we have to use __Internal as the
 		// library name.
 		public const string editor_dll ="__Internal";
-	#else
+#else
 		public const string editor_dll = "TrueSkyUI_MD";
-	#endif
+#endif
 
 		[UnmanagedFunctionPointer(CallingConvention.StdCall)]
 		public delegate void TGetColourTableCallback(uint x, int r, int g, int b, float[] arr);
@@ -71,4 +72,5 @@ namespace simul
 		[DllImport(editor_dll)] public static extern void StaticGet(IntPtr hwnd, string name, int count, Variant[] value);
 		[DllImport(editor_dll)] public static extern void StaticSetString(IntPtr OwnerHWND, string name, string value);
 	}
+#endif
 }
