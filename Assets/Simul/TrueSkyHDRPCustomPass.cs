@@ -24,7 +24,9 @@ namespace simul
 		}
 
 		UnityViewStruct unityViewStruct;
+		UnityViewStruct unityUIViewStruct;
 		System.IntPtr unityViewStructPtr;
+		System.IntPtr unityUIViewStructPtr;
 
 		int lastFrameCount = -1;
 		protected int cbuf_view_id = -1;
@@ -50,6 +52,7 @@ namespace simul
 
 			unityViewStruct = new UnityViewStruct();
 			unityViewStructPtr = Marshal.AllocHGlobal(Marshal.SizeOf(typeof(UnityViewStruct)));
+			unityUIViewStructPtr = Marshal.AllocHGlobal(Marshal.SizeOf(typeof(UnityViewStruct)));
 		}
 
 #if UNITY_2020_2_OR_NEWER
@@ -89,9 +92,11 @@ namespace simul
 
 			//Fill-in UnityViewStruct
 			PrepareMatrices(camera);
-
-			//Set up Render Targets
-			RenderBuffer rbColour = colour.rt.colorBuffer;
+			unityUIViewStruct = unityViewStruct;
+			unityUIViewStruct.nativeColourRenderBuffer = (System.IntPtr)0;
+            unityUIViewStruct.nativeDepthRenderBuffer = (System.IntPtr)0;
+            //Set up Render Targets
+            RenderBuffer rbColour = colour.rt.colorBuffer;
 			RenderBuffer rbDepth = depth.rt.depthBuffer;
 			bool msaa = (colour.rt.antiAliasing > 1);
 			if (cubemapProbe && colour.rt.width != colour.rt.height)
@@ -108,10 +113,12 @@ namespace simul
 			unityViewStruct.colourResourceState = (msaa ? ResourceState.ResolveSource : ResourceState.RenderTarget);
 			unityViewStruct.depthResourceState = ResourceState.DepthWrite;
 			
-			//Execute CmdBuffer
-			cbuf_view_id = InternalGetViewId();
-			
-			if (mainCamera) //Main view render
+            //Execute CmdBuffer
+            cbuf_view_id = InternalGetViewId();
+            ts.GlobalViewTexture.SetRenderTexture(Resources.Load<RenderTexture>("GlobalViewRT"));
+            ts.PropertiesTexture.SetRenderTexture(Resources.Load<RenderTexture>("PropertiesRT"));
+            ts.SequencerTexture.SetRenderTexture(Resources.Load<RenderTexture>("SequencerRT"));
+            if (mainCamera) //Main view render
 			{
 				bool il2cppScripting = simul.trueSKY.GetTrueSky().UsingIL2CPP;
 				Marshal.StructureToPtr(unityViewStruct, unityViewStructPtr, !il2cppScripting);
@@ -121,14 +128,69 @@ namespace simul
 					cmd.DrawProcedural(Matrix4x4.identity, testMaterial, 0, MeshTopology.Quads, 4);
 #endif
 				if (injectionPoint == CustomPassInjectionPoint.BeforePreRefraction)
+				{
 					cmd.IssuePluginEventAndData(UnityGetRenderEventFuncWithData(), GetTRUESKY_EVENT_ID() + cbuf_view_id, unityViewStructPtr);
+				}
 				else if (injectionPoint == CustomPassInjectionPoint.BeforePostProcess)
+				{
 					cmd.IssuePluginEventAndData(UnityGetPostTranslucentFuncWithData(), GetTRUESKY_EVENT_ID() + cbuf_view_id, unityViewStructPtr);
+				}
 				else if (injectionPoint == CustomPassInjectionPoint.AfterPostProcess)
 					cmd.IssuePluginEventAndData(UnityGetOverlayFuncWithData(), GetTRUESKY_EVENT_ID() + cbuf_view_id, unityViewStructPtr);
-                //else if (injectionPoint == CustomPassInjectionPoint.AfterOpaqueDepthAndNormal)
-                //    cmd.IssuePluginEventAndData(UnityGetEditorUIFuncWithData(), GetTRUESKY_EVENT_ID() + cbuf_view_id, unityViewStructPtr);
-                else
+				else if (injectionPoint == CustomPassInjectionPoint.AfterOpaqueDepthAndNormal)
+				{
+					if (ts.SequencerTexture.renderTexture != null) //&& Update_globalview == true
+					{
+						unityUIViewStruct.nativeColourRenderBuffer = ts.SequencerTexture.renderTexture.colorBuffer.GetNativeRenderBufferPtr();
+						unityUIViewStruct.colourResourceState = ResourceState.RenderTarget;
+						unityUIViewStruct.gamma = 1.0f;
+						unityUIViewStruct.exposure = 1.0f;
+						unityUIViewStruct.unityRenderOptions = UnityRenderOptions.FLIP_OVERLAYS;
+						unityUIViewStruct.targetViewports[0].x = 0;
+						unityUIViewStruct.targetViewports[0].y = 0;
+						unityUIViewStruct.targetViewports[0].w = ts.SequencerTexture.renderTexture.width;
+						unityUIViewStruct.targetViewports[0].h = ts.SequencerTexture.renderTexture.height;
+						unityUIViewStruct.renderStyle = RenderStyle.UNITY_STYLE | RenderStyle.DRAW_SEQUENCER_UI | RenderStyle.CLEAR_SCREEN;
+						Marshal.StructureToPtr(unityUIViewStruct, unityUIViewStructPtr, !il2cppScripting);
+
+						cmd.IssuePluginEventAndData(UnityGetEditorUIFuncWithData(), GetTRUESKY_EVENT_ID() + cbuf_view_id, unityUIViewStructPtr);
+					}
+                    //if (ts.PropertiesTexture.renderTexture != null) //&& Update_globalview == true
+                    //{
+                    //    unityUIViewStruct.nativeColourRenderBuffer = ts.PropertiesTexture.renderTexture.colorBuffer.GetNativeRenderBufferPtr();
+                    //    //unityUIViewStruct.colourTexture = ts.PropertiesTexture.renderTexture.colorBuffer.GetNativeRenderBufferPtr(); - Enabling this instead of nativeColourRenderBuffer will render the texture directly to the main view? JE
+                    //    unityUIViewStruct.colourResourceState = ResourceState.RenderTarget;
+                    //    unityUIViewStruct.gamma = 1.0f;
+                    //    unityUIViewStruct.exposure = 1.0f;
+                    //    unityUIViewStruct.unityRenderOptions = UnityRenderOptions.FLIP_OVERLAYS;
+                    //    unityUIViewStruct.targetViewports[0].x = 0;
+                    //    unityUIViewStruct.targetViewports[0].y = 0;
+                    //    unityUIViewStruct.targetViewports[0].w = ts.PropertiesTexture.renderTexture.width;
+                    //    unityUIViewStruct.targetViewports[0].h = ts.PropertiesTexture.renderTexture.height;
+                    //    unityUIViewStruct.renderStyle = RenderStyle.UNITY_STYLE | RenderStyle.DRAW_PROPERTIES_UI | RenderStyle.CLEAR_SCREEN;
+                    //    Marshal.StructureToPtr(unityUIViewStruct, unityUIViewStructPtr, !il2cppScripting);
+
+                    //    cmd.IssuePluginEventAndData(UnityGetEditorUIFuncWithData(), GetTRUESKY_EVENT_ID() + cbuf_view_id + 2, unityUIViewStructPtr);
+                    //}
+                    //if (ts.GlobalViewTexture.renderTexture != null) //&& Update_globalview == true
+                    //{
+                    //    unityUIViewStruct.nativeColourRenderBuffer = ts.GlobalViewTexture.renderTexture.colorBuffer.GetNativeRenderBufferPtr();
+                    //    //unityUIViewStruct.colourTexture = ts.GlobalViewTexture.renderTexture.colorBuffer.GetNativeRenderBufferPtr(); - Enabling this instead of nativeColourRenderBuffer will render the texture directly to the main view? JE
+                    //    unityUIViewStruct.colourResourceState = ResourceState.RenderTarget;
+                    //    unityUIViewStruct.gamma = 0.5f;
+                    //    unityUIViewStruct.exposure = 1.0f;
+                    //    unityUIViewStruct.unityRenderOptions = UnityRenderOptions.FLIP_OVERLAYS;
+                    //    unityUIViewStruct.targetViewports[0].x = 0;
+                    //    unityUIViewStruct.targetViewports[0].y = 0;
+                    //    unityUIViewStruct.targetViewports[0].w = ts.GlobalViewTexture.renderTexture.width;
+                    //    unityUIViewStruct.targetViewports[0].h = ts.GlobalViewTexture.renderTexture.height;
+                    //    unityUIViewStruct.renderStyle = RenderStyle.UNITY_STYLE | RenderStyle.DRAW_GLOBAL_VIEW_UI | RenderStyle.CLEAR_SCREEN;
+                    //    Marshal.StructureToPtr(unityUIViewStruct, unityUIViewStructPtr, !il2cppScripting);
+
+                    //    cmd.IssuePluginEventAndData(UnityGetEditorUIFuncWithData(), GetTRUESKY_EVENT_ID() + cbuf_view_id + 3, unityUIViewStructPtr);
+                    //}
+                }
+				else
 					return;
 			}
 			if(cubemapProbe) //Cubemap view render
@@ -158,12 +220,12 @@ namespace simul
 						for (int i = 0; i < 6; i++)
 						{
 							int _faceMask = 1 << i;
-							RenderCubemapFace(_faceMask);
+							//RenderCubemapFace(_faceMask);
 						}
 					}
 					else
 					{
-						RenderCubemapFace(faceMask);
+						//RenderCubemapFace(faceMask);
 					}
 				}
 				else
@@ -363,11 +425,16 @@ namespace simul
 				trueSKY ts = trueSKY.GetTrueSky();
 
                 //
-
+                //ts.InscatterTexture.SetRenderTexture(Resources.Load<RenderTexture>("InscatterRT"));
+                //ts.CloudShadowTexture.SetRenderTexture(Resources.Load<RenderTexture>("cloudShadowRT"));
+                //ts.LossTexture.SetRenderTexture(Resources.Load<RenderTexture>("LossRT"));
+                //ts.InscatterTexture.SetRenderTexture(Resources.Load<RenderTexture>("GlobalViewRT"));
+                //ts.CloudVisibilityTexture.SetRenderTexture(Resources.Load<RenderTexture>("CloudVisibilityRT"));
                 ts.InscatterTexture.SetRenderTexture(ts.inscatterRT);
                 ts.LossTexture.SetRenderTexture(ts.lossRT);
                 ts.CloudVisibilityTexture.SetRenderTexture(ts.cloudVisibilityRT);
                 ts.CloudShadowTexture.SetRenderTexture(ts.cloudShadowRT);
+               // ts.GlobalViewTexture.SetRenderTexture(ts.globalViewRT);
 
                 //InitExternalTexture(ref ts.InscatterTexture.externalTexture, ts.inscatterRT);
                 //ts.LossTexture.renderTexture = ts.lossRT;

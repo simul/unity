@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Runtime.InteropServices;
+using static simul.TrueSkyCameraBase;
 
 namespace simul
 {
@@ -71,6 +72,8 @@ namespace simul
 		[DllImport(editor_dll)] public static extern void StaticSet(IntPtr hwnd, string name, int count, Variant[] value);
 		[DllImport(editor_dll)] public static extern void StaticGet(IntPtr hwnd, string name, int count, Variant[] value);
 		[DllImport(editor_dll)] public static extern void StaticSetString(IntPtr OwnerHWND, string name, string value);
-	}
+		[DllImport(editor_dll)] public static extern void UnityRenderUI(int eventID, int pipeline, IntPtr unityViewStruct);
+
+    }
 #endif
 }

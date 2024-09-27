@@ -50,15 +50,17 @@ namespace simul
 
 			public void SetRenderTexture(RenderTexture tex)
 			{
-                renderTexture = tex;
+				if (tex != null)
+				{
+					renderTexture = tex;
 
-                InitExternalTexture(ref externalTexture, renderTexture);
+					InitExternalTexture(ref externalTexture, renderTexture);
 
-                Marshal.StructureToPtr(externalTexture, _nativeExternalTexturePtr, !simul.trueSKY.GetTrueSky().UsingIL2CPP);
+					Marshal.StructureToPtr(externalTexture, _nativeExternalTexturePtr, !simul.trueSKY.GetTrueSky().UsingIL2CPP);
+				}
             }
 
 			protected RenderTexture cachedRenderTexture = null;
-			protected System.IntPtr _nativeTexturePtr = (System.IntPtr)0;
 			protected System.IntPtr _nativeExternalTexturePtr = Marshal.AllocHGlobal(Marshal.SizeOf(new ExternalTexture()));
         };
 

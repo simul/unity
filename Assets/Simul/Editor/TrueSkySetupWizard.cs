@@ -453,6 +453,7 @@ namespace simul
 				simul.TrueSkyHDRPCustomPass TrueSkyMainPass = new simul.TrueSkyHDRPCustomPass();
                 simul.TrueSkyHDRPCustomPass TrueSkyTranslucentPass = new simul.TrueSkyHDRPCustomPass();
 				simul.TrueSkyHDRPCustomPass TrueSkyOverlayPass = new simul.TrueSkyHDRPCustomPass();
+				simul.TrueSkyHDRPCustomPass TrueSkyUIPass = new simul.TrueSkyHDRPCustomPass();
 				CustomPassVolume MainPassVolume = trueSky.gameObject.GetComponent<CustomPassVolume>();
                 if (MainPassVolume == null)
                 {
@@ -473,7 +474,14 @@ namespace simul
 					OverlayVolume.injectionPoint = CustomPassInjectionPoint.AfterPostProcess;
 					OverlayVolume.customPasses.Add(TrueSkyOverlayPass);
 					TrueSkyOverlayPass.enabled = false; //disabled by default. 
-				}
+
+                    CustomPassVolume UIVolume;
+                    TrueSkyUIPass.name = "trueSKY - After Everything";
+                    UIVolume = trueSky.gameObject.AddComponent<CustomPassVolume>();
+                    UIVolume.injectionPoint = CustomPassInjectionPoint.AfterOpaqueDepthAndNormal;
+                    UIVolume.customPasses.Add(TrueSkyUIPass);
+                    TrueSkyUIPass.enabled = true; 
+                }
                 if (UnityEngine.Rendering.GraphicsSettings.allConfiguredRenderPipelines.Length > 0)
 				{
 					trueSky.HDRP_RenderPipelineAsset = UnityEngine.Rendering.GraphicsSettings.allConfiguredRenderPipelines[0];

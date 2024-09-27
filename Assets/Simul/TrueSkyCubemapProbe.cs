@@ -216,7 +216,7 @@ namespace simul
 			if (dummyCam == null)
 			{
 				GameObject aDummyCamObject = new GameObject("CubemapCamera1", typeof(Camera));
-				//UnityEngine.Debug.LogWarning("DoUpdateStandard");
+				UnityEngine.Debug.LogWarning("trueSKY is using Standard RP");
 				aDummyCamObject.gameObject.layer = trueSKY.GetTrueSky().trueSKYLayerIndex;
 				aDummyCamObject.hideFlags        = HideFlags.HideAndDontSave;
 				dummyCam                         = aDummyCamObject.GetComponent<Camera>();
@@ -334,9 +334,9 @@ namespace simul
 				{
 					trueSkyCubemapProbe = new GameObject("TrueSkyCubemapProbe", typeof(Camera));
 					trueSkyCubemapProbe.AddComponent<HDAdditionalCameraData>();
-					UnityEngine.Debug.LogWarning("DoUpdateHDRP");
+                    UnityEngine.Debug.LogWarning("trueSKY is using HDRP");
 
-					trueSkyCubemapProbe.gameObject.layer = trueSKY.GetTrueSky().trueSKYLayerIndex;
+                    trueSkyCubemapProbe.gameObject.layer = trueSKY.GetTrueSky().trueSKYLayerIndex;
 
 					if (trueSkyCubemapProbe.GetComponent<Camera>() == null)
 						trueSkyCubemapProbe.AddComponent<Camera>();

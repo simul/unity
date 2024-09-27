@@ -15,6 +15,7 @@ using UnityEngine.Rendering;
 using static simul.TrueSkyPluginRenderFunctionImporter;
 using static simul.TrueSkyCameraBase;
 using UnityEditor;
+using UnityEditor.Purchasing;
 
 namespace simul
 {
@@ -876,7 +877,7 @@ namespace simul
 		{
 			if (!cloudShadowRT)
 			{
-                cloudShadowRT = Resources.Load<RenderTexture>("cloudShadowRT");
+                cloudShadowRT = Resources.Load<RenderTexture>("CloudShadowRT");
 
 				if (!cloudShadowRT)
 				{
@@ -887,7 +888,7 @@ namespace simul
 			}
 			if (!lossRT)
             {
-                lossRT = Resources.Load<RenderTexture>("lossRT");
+                lossRT = Resources.Load<RenderTexture>("LossRT");
                 if (!lossRT)
 				{ 
 					lossRT = new RenderTexture(256, 256, 16, RenderTextureFormat.ARGB32);
@@ -897,7 +898,7 @@ namespace simul
 			}
 			if (!inscatterRT)
             {
-                inscatterRT = Resources.Load<RenderTexture>("inscatterRT");
+                inscatterRT = Resources.Load<RenderTexture>("InscatterRT");
                 if (!inscatterRT)
 				{
 					inscatterRT = new RenderTexture(256, 256, 16, RenderTextureFormat.ARGB32);
@@ -907,7 +908,7 @@ namespace simul
 			}
 			if (!cloudVisibilityRT)
             {
-                cloudVisibilityRT = Resources.Load<RenderTexture>("cloudVisibilityRT");
+                cloudVisibilityRT = Resources.Load<RenderTexture>("CloudVisibilityRT");
                 if (!cloudVisibilityRT)
 				{
 					cloudVisibilityRT = new RenderTexture(256, 256, 16, RenderTextureFormat.ARGB32);
@@ -917,20 +918,25 @@ namespace simul
 			}
             if (!globalViewRT)
             {
-                globalViewRT = Resources.Load<RenderTexture>("globalViewRT");
+                globalViewRT = Resources.Load<RenderTexture>("GlobalViewRT");
                 if (!globalViewRT)
 				{
-					globalViewRT = new RenderTexture(256, 256, 16, RenderTextureFormat.ARGB32);
-					globalViewRT.name = "globalViewRT_32";
-					globalViewRT.Create();
-				}
+					UnityEngine.Debug.Log("TrueSKY - Failed to find GlobalViewRT");
+                    //globalViewRT = new RenderTexture(256, 256, 16, RenderTextureFormat.ARGB32);
+                    //globalViewRT.name = "globalViewRT_32";
+                    //globalViewRT.Create();
+                }
+				else
+				{
+                    GlobalViewTexture.renderTexture = globalViewRT;
+                }
             }
 
             LossTexture.renderTexture = lossRT;
 			InscatterTexture.renderTexture = inscatterRT;
 			CloudVisibilityTexture.renderTexture = cloudVisibilityRT;
 			CloudShadowTexture.renderTexture = cloudShadowRT;
-			GlobalViewTexture.renderTexture = globalViewRT;
+			
 		}
 
 		~trueSKY()
@@ -2577,6 +2583,8 @@ namespace simul
 		RenderTextureHolder _lossRT = new RenderTextureHolder();
 		RenderTextureHolder _cloudVisibilityRT = new RenderTextureHolder();
 		RenderTextureHolder _globalViewTexture = new RenderTextureHolder();
+		RenderTextureHolder _sequencerTexture = new RenderTextureHolder();
+		RenderTextureHolder _propertiesTexture = new RenderTextureHolder();
 		
 		static public bool _showCloudCrossSections = false;
 		static public bool _showRainTextures = false;
@@ -4026,6 +4034,42 @@ namespace simul
                     }
             }
         }
+        public RenderTextureHolder SequencerTexture
+        {
+            get
+            {
+                return _sequencerTexture;
+            }
+            set
+            {
+                if (_sequencerTexture != null) try
+                    {
+                        _sequencerTexture = value;
+                    }
+                    catch (Exception exc)
+                    {
+                        UnityEngine.Debug.Log(exc.ToString());
+                    }
+            }
+        }
+        public RenderTextureHolder PropertiesTexture
+        {
+            get
+            {
+                return _propertiesTexture;
+            }
+            set
+            {
+                if (_propertiesTexture != null) try
+                    {
+                        _propertiesTexture = value;
+                    }
+                    catch (Exception exc)
+                    {
+                        UnityEngine.Debug.Log(exc.ToString());
+                    }
+            }
+        }
 
         public RenderTextureHolder CloudShadowTexture
 		{
@@ -4654,31 +4698,6 @@ namespace simul
 								_moons.Remove(moon);
 						}
 					}
-				}
-				if (SimulVersion >= MakeSimulVersion(4, 4))
-				{
-					UnityViewStruct unityViewStruct = new UnityViewStruct();
-					System.IntPtr UIViewStructPtr = Marshal.AllocHGlobal(Marshal.SizeOf(new UnityViewStruct()));
-					unityViewStruct.colourTexture = _globalViewTexture.GetNative();
-					uint texWidth = _globalViewTexture.externalTexture.width;
-					uint texHeight = _globalViewTexture.externalTexture.height;
-					unityViewStruct.renderStyle = RenderStyle.UNITY_STYLE | RenderStyle.DRAW_GLOBAL_VIEW_UI | RenderStyle.CLEAR_SCREEN;
-
-					if (_globalViewTexture.renderTexture)
-						unityViewStruct.colourTexture = _globalViewTexture.renderTexture.GetNativeTexturePtr();
-					unityViewStruct.gamma = 1.0f;
-					unityViewStruct.exposure = 1.0f;
-					Viewport[] targetViewports = new Viewport[3];
-					targetViewports[0].x = 0;
-					targetViewports[0].y = 0;
-					targetViewports[0].w = (int)texWidth;
-					targetViewports[0].h = (int)texHeight;
-
-					unityViewStruct.targetViewports = targetViewports;
-
-					Marshal.StructureToPtr(unityViewStruct, UIViewStructPtr, !GetTrueSky().UsingIL2CPP);
-					StaticUnityRenderUI(UIViewStructPtr);
-
 				}
 
 

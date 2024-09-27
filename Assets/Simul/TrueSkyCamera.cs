@@ -305,9 +305,9 @@ namespace simul
                 unityViewStruct.targetViewports[0].y = 0;
                 unityViewStruct.targetViewports[0].w = ts.GlobalViewTexture.renderTexture.width;
                 unityViewStruct.targetViewports[0].h = ts.GlobalViewTexture.renderTexture.height;
-                unityViewStruct.renderStyle = RenderStyle.UNITY_STYLE | RenderStyle.DRAW_PROPERTIES_UI | RenderStyle.CLEAR_SCREEN;
+                unityViewStruct.renderStyle = RenderStyle.UNITY_STYLE | RenderStyle.DRAW_GLOBAL_VIEW_UI | RenderStyle.CLEAR_SCREEN;
 				Marshal.StructureToPtr(unityViewStruct, EditorUIStructPtr, !il2cppScripting);
-				//ui_buf.IssuePluginEventAndData(UnityGetEditorUIFuncWithData(), TRUESKY_EVENT_ID + cbuf_view_id + 5, EditorUIStructPtr);
+				ui_buf.IssuePluginEventAndData(UnityGetEditorUIFuncWithData(), TRUESKY_EVENT_ID + cbuf_view_id + 5, EditorUIStructPtr);
 				UIFramenumber++;
 
             }
