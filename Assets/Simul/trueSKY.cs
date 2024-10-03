@@ -88,6 +88,8 @@ namespace simul
 		[FieldOffset(0)] public double Double;
 		[FieldOffset(0)] public long Int64;
 		[FieldOffset(0)] public vec3 Vec3;
+		[FieldOffset(0)] public Vector3Int Vec3Int;
+
 	};
 	public struct Viewport
 	{
@@ -205,6 +207,24 @@ namespace simul
         , R_8_SNORM
 
         , RGB10_A2_UNORM
+    };
+    public enum UIEventType
+    {
+			NONE=0,
+			MOUSE_MOVE,
+			MOUSE_ENTER,
+			MOUSE_LEAVE,
+			MOUSE_DOWN,
+			MOUSE_UP,
+			MOUSE_WHEEL,
+			KEY_DOWN,
+			KEY_UP
+    };
+    public struct UIEvent
+    {
+        public Int64 view_id;
+        public UIEventType type;
+        public Variant value;
     };
     class SimulImports
 	{
@@ -884,8 +904,11 @@ namespace simul
 					cloudShadowRT = new RenderTexture(256, 256, 16, RenderTextureFormat.ARGB32);
 					cloudShadowRT.name = "CloudShadowRT_32";
 					cloudShadowRT.Create();
-				}
-			}
+
+                    UnityEngine.Debug.Log("TrueSKY - Warning - CloudShadowRT not found");
+                }
+               
+            }
 			if (!lossRT)
             {
                 lossRT = Resources.Load<RenderTexture>("LossRT");
@@ -894,7 +917,10 @@ namespace simul
 					lossRT = new RenderTexture(256, 256, 16, RenderTextureFormat.ARGB32);
 					lossRT.name = "lossRT_32";
 					lossRT.Create();
-				}
+
+                    UnityEngine.Debug.Log("TrueSKY - Warning - LossRT not found");
+                }
+
 			}
 			if (!inscatterRT)
             {
@@ -904,7 +930,9 @@ namespace simul
 					inscatterRT = new RenderTexture(256, 256, 16, RenderTextureFormat.ARGB32);
 					inscatterRT.name = "inscatterRT_32";
 					inscatterRT.Create();
-				}
+
+                    UnityEngine.Debug.Log("TrueSKY - Warning - InscatterRT not found");
+                }
 			}
 			if (!cloudVisibilityRT)
             {
@@ -914,23 +942,25 @@ namespace simul
 					cloudVisibilityRT = new RenderTexture(256, 256, 16, RenderTextureFormat.ARGB32);
 					cloudVisibilityRT.name = "cloudVisibilityRT_32";
 					cloudVisibilityRT.Create();
-				}
+
+                    UnityEngine.Debug.Log("TrueSKY - Warning - CloudVisibilityRT not found");
+                }
 			}
-            if (!globalViewRT)
-            {
-                globalViewRT = Resources.Load<RenderTexture>("GlobalViewRT");
-                if (!globalViewRT)
-				{
-					UnityEngine.Debug.Log("TrueSKY - Failed to find GlobalViewRT");
-                    //globalViewRT = new RenderTexture(256, 256, 16, RenderTextureFormat.ARGB32);
-                    //globalViewRT.name = "globalViewRT_32";
-                    //globalViewRT.Create();
-                }
-				else
-				{
-                    GlobalViewTexture.renderTexture = globalViewRT;
-                }
-            }
+    //        if (!globalViewRT)
+    //        {
+    //            globalViewRT = Resources.Load<RenderTexture>("GlobalViewRT");
+    //            if (!globalViewRT)
+				//{
+				//	UnityEngine.Debug.Log("TrueSKY - Failed to find GlobalViewRT");
+    //                //globalViewRT = new RenderTexture(256, 256, 16, RenderTextureFormat.ARGB32);
+    //                //globalViewRT.name = "globalViewRT_32";
+    //                //globalViewRT.Create();
+    //            }
+				//else
+				//{
+    //                GlobalViewTexture.renderTexture = globalViewRT;
+    //            }
+    //        }
 
             LossTexture.renderTexture = lossRT;
 			InscatterTexture.renderTexture = inscatterRT;
@@ -1276,36 +1306,39 @@ namespace simul
 			SetKeyframeValue(uid, name, value);
 		}
 
+		public void AddUIEvent(UIEvent ui_ev)
+		{
+			simulUIEvents.Add(ui_ev);
+		}
 
-
-		//public float GetStormFloat(uint uid, string name)
-		//{
-		//	return StaticRenderKeyframeGetFloat(uid, name);
-		//}
-		//public void SetStormFloat(uint uid, string name, float value)
-		//{
-		//	SetKeyframeValue(uid, name, value);
-		//}
-		//public int GetStormInt(uint uid, string name)
-		//{
-		//	return StaticRenderKeyframeGetInt(uid, name);
-		//}
-		//public void SetStormInt(uint uid, string name, int value)
-		//{
-		//	StaticRenderKeyframeSetInt(uid, name, value);
-		//}
-		//public bool GetStormBool(uint uid, string name)
-		//{
-		//	return StaticRenderKeyframeGetBool(uid, name);
-		//}
-		//public void SetStormBool(uint uid, string name, bool value)
-		//{
-		//	StaticRenderKeyframeSetBool(uid, name, value);
-		//}
-		/// <summary>
-		/// Retrieve the active strike. end and start position in metres.
-		/// </summary>
-		public ExportLightningStrike GetCurrentStrike()
+        //public float GetStormFloat(uint uid, string name)
+        //{
+        //	return StaticRenderKeyframeGetFloat(uid, name);
+        //}
+        //public void SetStormFloat(uint uid, string name, float value)
+        //{
+        //	SetKeyframeValue(uid, name, value);
+        //}
+        //public int GetStormInt(uint uid, string name)
+        //{
+        //	return StaticRenderKeyframeGetInt(uid, name);
+        //}
+        //public void SetStormInt(uint uid, string name, int value)
+        //{
+        //	StaticRenderKeyframeSetInt(uid, name, value);
+        //}
+        //public bool GetStormBool(uint uid, string name)
+        //{
+        //	return StaticRenderKeyframeGetBool(uid, name);
+        //}
+        //public void SetStormBool(uint uid, string name, bool value)
+        //{
+        //	StaticRenderKeyframeSetBool(uid, name, value);
+        //}
+        /// <summary>
+        /// Retrieve the active strike. end and start position in metres.
+        /// </summary>
+        public ExportLightningStrike GetCurrentStrike()
 		{
 			IntPtr unmanagedResultPtr = Marshal.AllocHGlobal(Marshal.SizeOf(typeof(ExportLightningStrike)));
 			StaticGetLightningBolts(unmanagedResultPtr, 1);
@@ -2590,8 +2623,8 @@ namespace simul
 		static public bool _showRainTextures = false;
 		static public bool _showAuroraeTextures = false;
 		static public bool _showWaterTextures = false;
-		
-		//bool _simulationTimeRain = false;
+
+		public List<UIEvent> simulUIEvents  = new List<UIEvent>();
 
 		public int trueSKYLayerIndex = 14;
 
@@ -3992,29 +4025,6 @@ namespace simul
 			}
 		}
 
-        //[SerializeField]
-        //int _cloudShadowResolution = 256;
-        //public int CloudShadowResolution
-        //{
-        //	get
-        //	{
-        //		return _cloudShadowResolution;
-        //	}
-        //	set
-        //	{
-        //		if (_cloudShadowResolution != value) try
-        //                  {
-        //                      _cloudShadowResolution = value;
-        //				SanitizeSize(ref _cloudShadowResolution);
-        //                      StaticSetRenderInt("cloudshadowresolution", _cloudShadowResolution);
-        //			}
-        //			catch (Exception exc)
-        //			{
-        //				UnityEngine.Debug.Log(exc.ToString());
-        //			}
-        //	}
-        //}
-
 
         public RenderTextureHolder GlobalViewTexture
         {
@@ -4024,7 +4034,7 @@ namespace simul
             }
             set
             {
-                if (_globalViewTexture != null) try
+                if (_globalViewTexture != null) try 
                     {
                         _globalViewTexture = value;
                     }
@@ -4453,7 +4463,9 @@ namespace simul
 		ExternalDynamicValues EDV = new ExternalDynamicValues();
 		System.IntPtr EDVptr = Marshal.AllocHGlobal(Marshal.SizeOf(new ExternalDynamicValues()));
 
-		public bool updateERV = true;
+        System.IntPtr ui_event_ptr = Marshal.AllocHGlobal(Marshal.SizeOf(new UIEvent()));
+
+        public bool updateERV = true;
 
 		public void UpdateExternalRender()
 		{
@@ -4670,8 +4682,14 @@ namespace simul
 				if (SimulVersion >= MakeSimulVersion(4, 2))
 				{
 					UpdateExternalDynamic();
-	
-					foreach(var moon in _moons)
+					if (simulUIEvents != null && simulUIEvents.Count > 0)
+					{
+						Marshal.StructureToPtr(simulUIEvents[0], ui_event_ptr, !GetTrueSky().UsingIL2CPP);
+						StaticAddUIEvents(ui_event_ptr, (Int16)simulUIEvents.Count);
+						simulUIEvents.Clear();
+
+                    }
+                    foreach (var moon in _moons)
 					{
 						if (moon.Render && !moon.DestroyMoon)
 						{

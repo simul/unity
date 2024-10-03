@@ -174,6 +174,7 @@ namespace simul
 		[DllImport(renderer_dll)] public static extern void StaticSetCloudKeyframePosition(uint uid, float[] LatLongHeadingDeg);
 		[DllImport(renderer_dll)] public static extern int StaticSpawnLightning2(IntPtr startpos, IntPtr endpos, float magnitude, IntPtr colour);
 		[DllImport(renderer_dll)] public static extern void GetSimulVersion(IntPtr major, IntPtr minor, IntPtr build);
+		[DllImport(renderer_dll)] public static extern void StaticAddUIEvents(IntPtr uIEvent, Int16 num);
 
 		//Unity
 		//[DllImport(renderer_dll)] public static extern void UnityPluginLoad(IntPtr unityInterfaces);
