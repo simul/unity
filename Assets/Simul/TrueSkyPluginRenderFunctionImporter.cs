@@ -8,7 +8,7 @@ using static simul.TrueSkyCameraBase;
 
 namespace simul
 {
-	class TrueSkyPluginRenderFunctionImporter
+	public class TrueSkyPluginRenderFunctionImporter
 	{
 		#if UNITY_EDITOR
 			#if _WIN32
@@ -70,7 +70,6 @@ namespace simul
 		[DllImport(renderer_dll)] public static extern void StaticProbeSkylight(IntPtr pContext, int cube_id, int mip_size, int face_index, int x, int y, int w, int h, float[] targetValues);
 		[DllImport(renderer_dll)] public static extern int StaticSetRenderTexture(string name, IntPtr texture);
 		[DllImport(renderer_dll)] public static extern int StaticSetRenderTexture2(string name, IntPtr texture);
-		[DllImport(renderer_dll)] public static extern int StaticUnityRenderUI(IntPtr unityViewStruct);
 		[DllImport(renderer_dll)] public static extern int StaticSetCloudPlacementTexture(int index, IntPtr placement_tex, float[] origin_km, float[] extents_km);
 		[DllImport(renderer_dll)] public static extern void StaticPushPath(string name, string path);
 		[DllImport(renderer_dll)] public static extern int StaticPopPath(string name);
@@ -153,9 +152,16 @@ namespace simul
 		[DllImport(renderer_dll)] public static extern uint StaticRenderCreateCloudKeyframer(string name);
 		[DllImport(renderer_dll)] public static extern uint StaticRenderDeleteCloudKeyframer(uint uid);
 
+        //trueSKY Sequences (4.4)
+        public delegate IntPtr AllocDelegate(int size);
+        [DllImport(renderer_dll)] public static extern IntPtr StaticGetSequence(ulong sequence_id, AllocDelegate Alloc);
 
-		//trueSKY Other
-		[DllImport(renderer_dll)] public static extern int GetNumStorms();
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
+        public delegate void TOnSequenceChangeCallback(string newSequenceState);
+        [DllImport(renderer_dll)] public static extern void StaticSetOnSequenceChangeCallback(TOnSequenceChangeCallback CallbackFunc);
+
+        //trueSKY Other
+        [DllImport(renderer_dll)] public static extern int GetNumStorms();
 		[DllImport(renderer_dll)] public static extern uint GetStormAtTime(float t);
 		[DllImport(renderer_dll)] public static extern uint GetStormByIndex(int i);
 		[DllImport(renderer_dll)] public static extern int StaticGetLightningBolts(IntPtr s, int maxnum);

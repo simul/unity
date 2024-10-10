@@ -8,23 +8,27 @@ using UnityEditor;
 using UnityEngine;
 #if USING_TRUESKY_4_3
 using static simul.TrueSkyUIFunctionImporter;
-
+# elif USING_TRUESKY_4_4
+using static simul.TrueSkyPluginRenderFunctionImporter;
+#endif
 namespace simul
 {
+
     public class ClipboardHelper
     {
         private static PropertyInfo m_systemCopyBufferProperty = null;
         private static PropertyInfo GetSystemCopyBufferProperty()
         {
-            if(m_systemCopyBufferProperty == null)
+            if (m_systemCopyBufferProperty == null)
             {
                 Type T = typeof(GUIUtility);
                 m_systemCopyBufferProperty = T.GetProperty("systemCopyBuffer", BindingFlags.Static | BindingFlags.NonPublic);
-                if(m_systemCopyBufferProperty == null)
+                if (m_systemCopyBufferProperty == null)
                     throw new Exception("Can't access internal member 'GUIUtility.systemCopyBuffer' it may have been removed / renamed");
             }
             return m_systemCopyBufferProperty;
         }
+
         public static string clipBoard
         {
             get
@@ -37,12 +41,15 @@ namespace simul
             }
         }
     }
+
+#if USING_TRUESKY_4_3
     class SequenceEditorImports
     {
         static SequenceEditorImports()
         {
             CopyDependencyDllsToProjectDir();
         }
+
         public static void ReplaceDepthCameraWithTrueSkyCamera()
         {
             UnityEngine.Object[] brokenList = Resources.FindObjectsOfTypeAll(typeof(Camera));
@@ -60,10 +67,12 @@ namespace simul
                 }
             }
         }
+
         public static void Init()
         {
             ReplaceDepthCameraWithTrueSkyCamera();
         }
+
         public static bool CopyDependencyDllsToProjectDir()
         {
             String currentPath = Environment.GetEnvironmentVariable("PATH", EnvironmentVariableTarget.Process);
@@ -84,6 +93,7 @@ namespace simul
             return true;
         }
     }
+#endif // USING_TRUESKY_4_3
 
     [CustomEditor(typeof(Sequence))]
     public class SequenceEditor : Editor
@@ -91,25 +101,44 @@ namespace simul
         public static Sequence sequence = null;
 
         static bool show = false;
+        static bool showGlobalView = false;
+        static bool showProperties = false;
+        static bool showSequencer = false;
         static bool copy = false;
         static bool paste = false;
-
         public override void OnInspectorGUI()
         {
-            SequenceEditorImports.CopyDependencyDllsToProjectDir();
-
-            if(sequence != target)
+#if USING_TRUESKY_4_3
+            //SequenceEditorImports.CopyDependencyDllsToProjectDir();
+#endif
+            if (sequence != target)
             {
                 sequence = (Sequence)target;
-                SequencerManager.SetSequence(sequence);
+                //
             }
 
             EditorGUILayout.BeginVertical();
+#if USING_TRUESKY_4_3
             if(GUILayout.Button("Show Sequencer"))
             {
                 show = true;
             }
-            if(GUILayout.Button("Copy"))
+#endif
+#if USING_TRUESKY_4_4
+            if (GUILayout.Button("Show Global View"))
+            {
+                showGlobalView = true;
+            }
+            if (GUILayout.Button("Show Sequencer"))
+            {
+                showSequencer = true;
+            }            
+            if (GUILayout.Button("Show Properties"))
+            {
+                showProperties = true;
+            }
+#endif
+            if (GUILayout.Button("Copy"))
             {
                 copy = true;
             }
@@ -118,6 +147,7 @@ namespace simul
                 paste = true;
             }
             EditorGUILayout.EndVertical();
+
             if(Event.current.type == EventType.Repaint)
             {
                 if(show)
@@ -126,36 +156,71 @@ namespace simul
                     EditorApplication.delayCall += Paste;
                 if(copy)
                     EditorApplication.delayCall += Copy;
+                if(showGlobalView)
+                    EditorApplication.delayCall += ShowGlobalViewUI;   
+                if(showProperties)
+                    EditorApplication.delayCall += ShowPropertiesUI;   
+                if(showSequencer)
+                    EditorApplication.delayCall += ShowSequencerUI;
+
                 show = false;
-                copy = false;
-                paste = false;
+               copy = false;
+               paste = false;
+               showGlobalView = false;
+               showProperties = false;
+               showSequencer = false;
             }
+
         }
 
         public static void ShowSequencer()
         {
             SequencerManager.OpenSequencer();
+
+        }
+        public static void ShowGlobalViewUI()
+        {
+          simul.TrueSkyGlobalViewWindow.ShowWindow();
+        }
+        public static void ShowPropertiesUI()
+        {
+            simul.TrueSkyPropertiesWindow.ShowWindow();
+        }
+        public static void ShowSequencerUI()
+        {
+            simul.TrueSkySequencerWindow.ShowWindow();
         }
 
         public static void Copy()
         {
-            if(sequence == null)
+            if (sequence == null)
             {
                 UnityEngine.Debug.LogError("Null sequence");
                 return;
             }
+#if USING_TRUESKY_4_3
+
             StringBuilder str = new StringBuilder("", 20);
             try
             {
                 int newlen = StaticGetString(SequencerManager.Handle, "Sequence", str, 16);
-                if(newlen > 0)
+                if (newlen > 0)
                 {
                     str = new StringBuilder("", newlen);
                     StaticGetString(SequencerManager.Handle, "Sequence", str, newlen);
                 }
                 ClipboardHelper.clipBoard = str.ToString();
             }
-            catch(Exception exc)
+#elif USING_TRUESKY_4_4
+            try
+            {
+
+                IntPtr seqPtr = StaticGetSequence(0, trueSKY.MyAllocator);
+                string currentSequence = Marshal.PtrToStringAnsi(seqPtr);
+                ClipboardHelper.clipBoard = currentSequence;
+            }
+#endif
+            catch (Exception exc)
             {
                 UnityEngine.Debug.Log(exc.ToString());
             }
@@ -163,21 +228,28 @@ namespace simul
 
         public static void Paste()
         {
-            if(sequence == null)
+            if (sequence == null)
             {
                 UnityEngine.Debug.LogError("Null sequence");
                 return;
             }
+
             string txt = ClipboardHelper.clipBoard;
 
-			if (txt.Length > 0 && txt.Contains("skyKeyframer"))
-			{
-				StaticSetSequence(SequencerManager.Handle, txt, txt.Length + 1);
-				//onPropertiesChangedCallback(handle, txt);
-			}
+            if (txt.Length > 0 && txt.Contains("skyKeyframer"))
+            {
+
+#if USING_TRUESKY_4_3
+                StaticSetSequence(SequencerManager.Handle, txt, txt.Length + 1);
+#elif USING_TRUESKY_4_4
+                StaticSetSequence2(txt);
+#endif
+                // onPropertiesChangedCallback(handle, txt);
+            }
             else
+            {
                 UnityEngine.Debug.LogError("Sequence information not found in clipboard");
+            }
         }
     }
 }
-#endif

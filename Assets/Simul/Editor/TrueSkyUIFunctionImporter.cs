@@ -7,16 +7,16 @@ using System.Runtime.InteropServices;
 
 namespace simul
 {
-#if SIMUL_43
-	class TrueSkyUIFunctionImporter
+    class TrueSkyUIFunctionImporter
 	{
+#if USING_TRUESKY_4_3 
 #if UNITY_IPHONE || UNITY_XBOX360
 		// On iOS and Xbox 360 plugins are statically linked into
 		// the executable, so we have to use __Internal as the
 		// library name.
 		public const string editor_dll ="__Internal";
 #else
-		public const string editor_dll = "TrueSkyUI_MD";
+        public const string editor_dll = "TrueSkyUI_MD";
 #endif
 
 		[UnmanagedFunctionPointer(CallingConvention.StdCall)]
@@ -33,7 +33,7 @@ namespace simul
 		public delegate void TGenericDataCallback(int hwnd, Int64 size, IntPtr data);
 		public delegate string FAlloc(int size);
 
-		public enum Style
+        public enum Style
 		{
 			DEFAULT_STYLE = 0,
 			UNREAL_STYLE = 1,
@@ -71,6 +71,6 @@ namespace simul
 		[DllImport(editor_dll)] public static extern void StaticSet(IntPtr hwnd, string name, int count, Variant[] value);
 		[DllImport(editor_dll)] public static extern void StaticGet(IntPtr hwnd, string name, int count, Variant[] value);
 		[DllImport(editor_dll)] public static extern void StaticSetString(IntPtr OwnerHWND, string name, string value);
-	}
-#endif
+#endif //USING_TRUESKY_4_3
+    }
 }

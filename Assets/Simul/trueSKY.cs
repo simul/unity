@@ -16,6 +16,7 @@ using static simul.TrueSkyPluginRenderFunctionImporter;
 using static simul.TrueSkyCameraBase;
 using UnityEditor;
 using UnityEditor.Purchasing;
+using static UnityEngine.Rendering.VirtualTexturing.Debugging;
 
 namespace simul
 {
@@ -2625,8 +2626,11 @@ namespace simul
 		static public bool _showWaterTextures = false;
 
 		public List<UIEvent> simulUIEvents  = new List<UIEvent>();
+		static float UIEventInterval = 0.1f;
+		static float LastUIEvent = 0;
 
-		public int trueSKYLayerIndex = 14;
+
+        public int trueSKYLayerIndex = 14;
 
 		int _MaxPrecipitationParticles = 100000;
 
@@ -3505,20 +3509,68 @@ namespace simul
 				}
 			}
 		}
-		// The sequence .asset has changed, so we now reload the text in the asset.
-		public void Reload()
+
+        // Store the GCHandle so we can free it later
+        private static GCHandle? allocatedHandle = null;
+
+        public static IntPtr MyAllocator(int size)
+        {
+            if (size <= 0)
+            {
+                throw new ArgumentException("Size must be greater than zero.");
+            }
+
+            // Allocate an array of bytes and pin it so the garbage collector doesn't move it
+            byte[] buffer = new byte[size];
+
+            // Pin the buffer in memory to prevent the garbage collector from moving it
+            allocatedHandle = GCHandle.Alloc(buffer, GCHandleType.Pinned);
+
+            // Get the pointer to the byte array
+            IntPtr pointer = allocatedHandle.Value.AddrOfPinnedObject();
+
+            // Must be freed!
+            return pointer;
+        }
+
+        // The sequence .asset has changed, so we now reload the text in the asset.
+        public void Reload()
 		{
 			if (_sequence == null)
 				return;
 			try
 			{
-				StaticSetSequence2(_sequence.SequenceAsText);
+                IntPtr result = StaticGetSequence(0, MyAllocator);
+				string sequenceData = "";
+				
+                if (result != IntPtr.Zero)
+                {
+                    sequenceData = Marshal.PtrToStringAnsi(result);
+					if(SequencerManager.GetSequence() != null)
+					{
+                        SequencerManager.GetSequence().SequenceAsText = sequenceData;
+                    }				        
+                }
+                else
+                {
+                    Console.WriteLine("Failed to retrieve sequence.");
+                }
+
+                StaticSetSequence2(sequence.SequenceAsText);			
 				StaticTriggerAction("Reset");
 			}
 			catch (Exception exc)
 			{
 				UnityEngine.Debug.Log(exc.ToString());
 			}
+			finally
+			{
+                if (allocatedHandle.HasValue)
+                {
+                    allocatedHandle.Value.Free();
+                    allocatedHandle = null;
+                }
+            }
 		}
 
 		[SerializeField]
@@ -4682,11 +4734,13 @@ namespace simul
 				if (SimulVersion >= MakeSimulVersion(4, 2))
 				{
 					UpdateExternalDynamic();
-					if (simulUIEvents != null && simulUIEvents.Count > 0)
+					if (simulUIEvents != null && simulUIEvents.Count > 0  &&  Time.realtimeSinceStartup - LastUIEvent > UIEventInterval)
 					{
-						Marshal.StructureToPtr(simulUIEvents[0], ui_event_ptr, !GetTrueSky().UsingIL2CPP);
+						//simulUIEvents.Reverse();
+                        Marshal.StructureToPtr(simulUIEvents[0], ui_event_ptr, !GetTrueSky().UsingIL2CPP);
 						StaticAddUIEvents(ui_event_ptr, (Int16)simulUIEvents.Count);
 						simulUIEvents.Clear();
+						LastUIEvent = Time.realtimeSinceStartup;
 
                     }
                     foreach (var moon in _moons)
@@ -4717,7 +4771,6 @@ namespace simul
 						}
 					}
 				}
-
 
             }
 			catch (Exception exc)
@@ -4993,6 +5046,7 @@ namespace simul
 						StaticPushPath("ShaderBinaryPath", Application.dataPath + @"/Simul/shaderbin/x86_64");
 #endif
 					StaticPushPath("TexturePath", Application.dataPath + @"/Simul/Media/Textures");
+                   // StaticPushPath("TexturePath", Application.dataPath + @"/Simul/fonts");
 #if UNITY_GAMECORE
 					if (SystemInfo.graphicsDeviceType == GraphicsDeviceType.GameCoreXboxSeries 
 						|| SystemInfo.graphicsDeviceType == GraphicsDeviceType.GameCoreXboxOne)
@@ -5003,7 +5057,7 @@ namespace simul
 						StaticPushPath("ShaderPath", "D3D12");
 					}
 #endif
-				}
+                }
 				else
 				{
 					if (SystemInfo.graphicsDeviceType == GraphicsDeviceType.Direct3D11)
@@ -5037,6 +5091,7 @@ namespace simul
 						StaticPushPath("ShaderPath", Application.dataPath + @"/Simul/shaderbin/x86_64");
 					}
 					StaticPushPath("TexturePath", Application.dataPath + @"/Simul/Media/Textures");
+					StaticPushPath("TexturePath", Application.dataPath + @"/Simul/fonts");
 				}
 
 				StaticInitInterface();

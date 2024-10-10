@@ -117,8 +117,8 @@ namespace simul
 
 		[SerializeField]
 		static bool clouds = false;
-			[SerializeField]
-			static bool render = false;
+			//[SerializeField]
+			//static bool render = false;
 			[SerializeField]
 			static bool noise = false;
 			[SerializeField]
@@ -313,9 +313,13 @@ namespace simul
 						else
 							trueSky.MaxCloudDistanceKm = EditorGUILayout.Slider("Max Cloud Distance (km)", trueSky.MaxCloudDistanceKm, 100.0F, 1000.0F);
 
-						trueSky.IntegrationScheme = EditorGUILayout.Popup("Integration Scheme", trueSky.IntegrationScheme, renderOptions);
+						if (trueSky.SimulVersion <= trueSky.MakeSimulVersion(4, 3))
+							trueSky.IntegrationScheme = EditorGUILayout.Popup("Integration Scheme", trueSky.IntegrationScheme, renderOptions);
+						else
+							trueSky.IntegrationScheme = 3;
 
-						if (trueSky.IntegrationScheme < 2)
+
+                        if (trueSky.IntegrationScheme < 2)
 						{
 							trueSky.CloudSteps = EditorGUILayout.IntSlider("Cloud Steps", trueSky.CloudSteps, 60, 500);
 						}
@@ -414,7 +418,7 @@ namespace simul
 						trueSky.Extinction = EditorGUILayout.Slider("Extinction (per km)", trueSky.Extinction, 0.0F, 100.0F);
 						trueSky.MieAsymmetry = EditorGUILayout.Slider("Mie Asymmetry", trueSky.MieAsymmetry, 0.0F, 0.999F);
 
-						if (trueSky.IntegrationScheme == 2)
+						if (trueSky.IntegrationScheme >= 2)
 							trueSky.CloudTint = EditorGUILayout.ColorField("Cloud Tint", trueSky.CloudTint);
 					}
 				}
@@ -832,29 +836,30 @@ namespace simul
 					trueSky.CloudShadowRangeKm = EditorGUILayout.IntSlider("Shadow Range KM", trueSky.CloudShadowRangeKm, 100, (int)trueSky.MaxCloudDistanceKm);
 					//trueSky.CloudShadowResolution = EditorGUILayout.IntSlider("Cloud Shadow Resolution", trueSky.CloudShadowResolution, 64, 1024);
 				}
-
-				// Water settings
-				EditorGUILayout.Space();
-				water = EditorGUILayout.Foldout(water, "Water", outerFoldoutStyle);
-				if (water)
+				if (trueSky.SimulVersion <= trueSky.MakeSimulVersion(4, 2))
 				{
-					if (trueSky.SimulVersion >= trueSky.MakeSimulVersion(4, 2))
+					// Water settings
+					EditorGUILayout.Space();
+					water = EditorGUILayout.Foldout(water, "Water", outerFoldoutStyle);
+					if (water)
 					{
-						trueSky.RenderWater = EditorGUILayout.Toggle("Render Water", trueSky.RenderWater);
-						trueSky.WaterFullResolution = EditorGUILayout.Toggle("Full Resolution Water", trueSky.WaterFullResolution);
-						trueSky.EnableReflections = EditorGUILayout.Toggle("Enable Reflections", trueSky.EnableReflections);
-						if (trueSky.EnableReflections)
+						if (trueSky.SimulVersion >= trueSky.MakeSimulVersion(4, 2))
 						{
-							trueSky.WaterFullResolutionReflections = EditorGUILayout.Toggle("Full Resolution Reflections", trueSky.WaterFullResolutionReflections);
-							trueSky.WaterReflectionSteps = EditorGUILayout.IntSlider("Reflection Steps", trueSky.WaterReflectionSteps, 10, 100);
-							trueSky.WaterReflectionPixelStep = EditorGUILayout.IntSlider("Pixel Steps", trueSky.WaterReflectionPixelStep, 1, 10);
-							trueSky.WaterReflectionDistance = EditorGUILayout.Slider("Reflection Distance", trueSky.WaterReflectionDistance, 1000, 40000);
+							trueSky.RenderWater = EditorGUILayout.Toggle("Render Water", trueSky.RenderWater);
+							trueSky.WaterFullResolution = EditorGUILayout.Toggle("Full Resolution Water", trueSky.WaterFullResolution);
+							trueSky.EnableReflections = EditorGUILayout.Toggle("Enable Reflections", trueSky.EnableReflections);
+							if (trueSky.EnableReflections)
+							{
+								trueSky.WaterFullResolutionReflections = EditorGUILayout.Toggle("Full Resolution Reflections", trueSky.WaterFullResolutionReflections);
+								trueSky.WaterReflectionSteps = EditorGUILayout.IntSlider("Reflection Steps", trueSky.WaterReflectionSteps, 10, 100);
+								trueSky.WaterReflectionPixelStep = EditorGUILayout.IntSlider("Pixel Steps", trueSky.WaterReflectionPixelStep, 1, 10);
+								trueSky.WaterReflectionDistance = EditorGUILayout.Slider("Reflection Distance", trueSky.WaterReflectionDistance, 1000, 40000);
+							}
 						}
+						else
+							EditorGUILayout.LabelField("Water is supported from trueSKY 4.2 onwards.");
 					}
-					else
-						EditorGUILayout.LabelField("Water is supported from trueSKY 4.2 onwards.");
 				}
-
 				// Debugging settings
 				EditorGUILayout.Space();
 				debugging = EditorGUILayout.Foldout(debugging, "Debugging", outerFoldoutStyle);

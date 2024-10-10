@@ -8,9 +8,9 @@ using static simul.TrueSkyCameraBase;
 
 namespace simul
 {
-#if USING_TRUESKY_4_4
 	class TrueSkyUIFunctionImporter
 	{
+#if USING_TRUESKY_4_3
 #if UNITY_IPHONE || UNITY_XBOX360
 		// On iOS and Xbox 360 plugins are statically linked into
 		// the executable, so we have to use __Internal as the
@@ -72,8 +72,7 @@ namespace simul
 		[DllImport(editor_dll)] public static extern void StaticSet(IntPtr hwnd, string name, int count, Variant[] value);
 		[DllImport(editor_dll)] public static extern void StaticGet(IntPtr hwnd, string name, int count, Variant[] value);
 		[DllImport(editor_dll)] public static extern void StaticSetString(IntPtr OwnerHWND, string name, string value);
-		[DllImport(editor_dll)] public static extern void UnityRenderUI(int eventID, int pipeline, IntPtr unityViewStruct);
-
-    }
-#endif
+		//[DllImport(editor_dll)] public static extern void UnityRenderUI(int eventID, int pipeline, IntPtr unityViewStruct);
+#endif //USING_TRUESKY_4_3
+	}
 }

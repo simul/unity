@@ -3,14 +3,17 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
+using Unity.Collections;
 using UnityEditor;
 using UnityEngine;
 #if USING_TRUESKY_4_3
 using static simul.TrueSkyUIFunctionImporter;
+#elif USING_TRUESKY_4_4
+using static simul.TrueSkyPluginRenderFunctionImporter;
+#endif
 
 namespace simul
 {
-
     class SequencerManagerImports
     {
         static SequencerManagerImports()
@@ -171,7 +174,7 @@ namespace simul
             }
             private set { }
         }
-        #endregion
+#endregion
 
         //Sequence currently being edited.
         static Sequence currentSequence = null;
@@ -186,13 +189,13 @@ namespace simul
 
         public static void OpenSequencer()
         {
-#if SIMUL_43
             if(currentSequence == null)
             {
                 UnityEngine.Debug.LogError("Null sequence");
                 return;
             }
-
+           //UnityEngine.Debug.LogError("Sequence Opened");
+#if USING_TRUESKY_4_3
             string local_path = AssetDatabase.GetAssetPath(currentSequence);
             if(!local_path.Contains(".asset"))
             {
@@ -228,11 +231,10 @@ namespace simul
 
 			EditorApplication.playModeStateChanged += CloseDueToPlayModeStateChange;
 			EditorApplication.update += UpdateSequencer;
-#endif
-		}
-
-
-		static void CloseDueToPlayModeStateChange(PlayModeStateChange state)
+#endif //USING_TRUESKY_4_3
+        }
+#if USING_TRUESKY_4_3
+        static void CloseDueToPlayModeStateChange(PlayModeStateChange state)
 		{
 			if (_handle != (System.IntPtr)0)
 				CloseUI(_handle);
@@ -243,22 +245,57 @@ namespace simul
         {
             CloseUI(Handle);
         }
-
-        //Set sequence to be edited in sequencer.
-        public static void SetSequence(Sequence newSequence)
-        {
-            currentSequence = newSequence;
-        }
-
         //Tell sequencer QT window to process events.
         static void UpdateSequencer()
         {
             UpdateUI();
         }
+#endif //USING_TRUESKY_4_3
+        //Set sequence to be edited in sequencer.
+        public static void SetSequence(Sequence newSequence)
+        {
+            currentSequence = newSequence;
+        }
+        public static Sequence GetSequence()
+        {
+            return currentSequence;
+        }
 
+        public static void SaveCurrentSequence()
+        {
+            trueSKY trueSKY = GetTrueSKY();
+            if (trueSKY)
+            {
+                IntPtr result = StaticGetSequence(0, trueSKY.MyAllocator);
+                string sequenceData = "";
+
+                if (result != IntPtr.Zero)
+                {
+                    sequenceData = Marshal.PtrToStringAnsi(result);
+                    if (SequencerManager.GetSequence() != null)
+                    {
+                        SequencerManager.GetSequence().SequenceAsText = sequenceData;
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Failed to retrieve sequence.");
+                }
+                AssetDatabase.SaveAssets();
+            }
+            
+        }
         //Returns trueSKY object with the same sequence as is being edited.
         static trueSKY GetTrueSKY()
         {
+#if USING_TRUESKY_4_4
+            //we can assume there is only 1 trueSKY in the scene
+            UnityEngine.Object[] trueSkies = UnityEngine.Object.FindObjectsOfType(typeof(trueSKY));
+            trueSKY trueSKY = (trueSKY)trueSkies[0];
+            if(trueSkies.Length > 1)
+                UnityEngine.Debug.LogError("Multiple trueSKY instances found");
+            return trueSKY;
+#elif USING_TRUESKY_4_3
             UnityEngine.Object[] trueSkies = UnityEngine.Object.FindObjectsOfType(typeof(trueSKY));
             foreach (UnityEngine.Object t in trueSkies)
             {
@@ -268,17 +305,27 @@ namespace simul
             //no need to spam warnings about incorrect sequence
 			//UnityEngine.Debug.LogError("Active trueSky not found with Current Sequence");
             return null;
+#endif
         }
 
         //Link Simul back-end code with unity events/functions.
         static void LinkDelegates()
         {
+
+#if USING_TRUESKY_4_3
             SetOnPropertiesChangedCallback(OnPropertiesChangedCallback);
             SetOnTimeChangedCallback(OnTimeChangedCallback);
 			SetDeferredRenderCallback(DeferredRenderCallback);
-			EditorApplication.update += UpdateSequencer;
-        }
 
+            EditorApplication.update += UpdateSequencer;
+#endif
+
+#if USING_TRUESKY_4_4
+            StaticSetOnSequenceChangeCallback(OnSequenceChangeCallback);
+#endif
+            
+        }
+#if USING_TRUESKY_4_3
         //Delegate function for when the properties change in the sequencer window.
         static TOnSequenceChangeCallback OnPropertiesChangedCallback =
             (int hwnd, string newSequenceState) =>
@@ -311,8 +358,24 @@ namespace simul
 				{
 					EditorUtility.SetDirty(trueSKY);
 				}
-			}; 
-	}
+			};
+#endif
+        static TOnSequenceChangeCallback OnSequenceChangeCallback =
+        (string val) =>
+        {
+            trueSKY trueSKY = GetTrueSKY();         
+            if (trueSKY)
+            {
+              
+                EditorUtility.SetDirty(currentSequence);
+                
+              
+                SetSequence(trueSKY.sequence);
+                EditorUtility.SetDirty(trueSKY);
+
+                 AssetDatabase.SaveAssets();
+            }
+        };
+    }
 }
-#endif //SIMUL_43
 #endif //UNITY_EDITOR
