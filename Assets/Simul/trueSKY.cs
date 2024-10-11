@@ -3540,7 +3540,8 @@ namespace simul
 				return;
 			try
 			{
-                IntPtr result = StaticGetSequence(0, MyAllocator);
+#if USING_TRUESKY_4_4
+				IntPtr result = StaticGetSequence(0, MyAllocator);
 				string sequenceData = "";
 				
                 if (result != IntPtr.Zero)
@@ -3555,7 +3556,7 @@ namespace simul
                 {
                     Console.WriteLine("Failed to retrieve sequence.");
                 }
-
+#endif
                 StaticSetSequence2(sequence.SequenceAsText);			
 				StaticTriggerAction("Reset");
 			}
@@ -4672,8 +4673,8 @@ namespace simul
 		bool isApplicationPlaying = false;
 		void Update()
 		{
-			if (GraphicsSettings.renderPipelineAsset != HDRP_RenderPipelineAsset && LoadRenderPipelineAsset)
-				GraphicsSettings.renderPipelineAsset = HDRP_RenderPipelineAsset;
+			if (GraphicsSettings.defaultRenderPipeline != HDRP_RenderPipelineAsset && LoadRenderPipelineAsset)
+				GraphicsSettings.defaultRenderPipeline = HDRP_RenderPipelineAsset;
 			try
 			{
 				if (!_initialized)

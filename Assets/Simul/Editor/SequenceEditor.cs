@@ -198,11 +198,13 @@ namespace simul
                 UnityEngine.Debug.LogError("Null sequence");
                 return;
             }
+            try
+            {
+
 #if USING_TRUESKY_4_3
 
             StringBuilder str = new StringBuilder("", 20);
-            try
-            {
+            
                 int newlen = StaticGetString(SequencerManager.Handle, "Sequence", str, 16);
                 if (newlen > 0)
                 {
@@ -210,16 +212,15 @@ namespace simul
                     StaticGetString(SequencerManager.Handle, "Sequence", str, newlen);
                 }
                 ClipboardHelper.clipBoard = str.ToString();
-            }
+            
 #elif USING_TRUESKY_4_4
-            try
-            {
 
                 IntPtr seqPtr = StaticGetSequence(0, trueSKY.MyAllocator);
                 string currentSequence = Marshal.PtrToStringAnsi(seqPtr);
                 ClipboardHelper.clipBoard = currentSequence;
-            }
+            
 #endif
+            }
             catch (Exception exc)
             {
                 UnityEngine.Debug.Log(exc.ToString());

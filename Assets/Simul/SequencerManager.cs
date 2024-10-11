@@ -263,6 +263,7 @@ namespace simul
 
         public static void SaveCurrentSequence()
         {
+#if USING_TRUESKY_4_4
             trueSKY trueSKY = GetTrueSKY();
             if (trueSKY)
             {
@@ -283,6 +284,7 @@ namespace simul
                 }
                 AssetDatabase.SaveAssets();
             }
+#endif
             
         }
         //Returns trueSKY object with the same sequence as is being edited.
@@ -306,8 +308,8 @@ namespace simul
 			//UnityEngine.Debug.LogError("Active trueSky not found with Current Sequence");
             return null;
 #endif
+            return null;
         }
-
         //Link Simul back-end code with unity events/functions.
         static void LinkDelegates()
         {
@@ -360,6 +362,7 @@ namespace simul
 				}
 			};
 #endif
+#if USING_TRUESKY_4_4
         static TOnSequenceChangeCallback OnSequenceChangeCallback =
         (string val) =>
         {
@@ -376,6 +379,7 @@ namespace simul
                  AssetDatabase.SaveAssets();
             }
         };
+#endif
     }
 }
 #endif //UNITY_EDITOR
