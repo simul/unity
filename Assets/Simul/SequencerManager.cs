@@ -366,14 +366,13 @@ namespace simul
             trueSKY trueSKY = GetTrueSKY();         
             if (trueSKY)
             {
-              
-                EditorUtility.SetDirty(currentSequence);
+                if(currentSequence != null)
+                    EditorUtility.SetDirty(currentSequence);
                 
               
                 SetSequence(trueSKY.sequence);
                 EditorUtility.SetDirty(trueSKY);
-
-                 AssetDatabase.SaveAssets();
+                //AssetDatabase.SaveAssets();
             }
         };
     }

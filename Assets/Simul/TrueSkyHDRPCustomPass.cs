@@ -234,12 +234,12 @@ namespace simul
 						for (int i = 0; i < 6; i++)
 						{
 							int _faceMask = 1 << i;
-							//RenderCubemapFace(_faceMask);
+							RenderCubemapFace(_faceMask);
 						}
 					}
 					else
 					{
-						//RenderCubemapFace(faceMask);
+						RenderCubemapFace(faceMask);
 					}
 				}
 				else

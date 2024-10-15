@@ -2626,7 +2626,7 @@ namespace simul
 		static public bool _showWaterTextures = false;
 
 		public List<UIEvent> simulUIEvents  = new List<UIEvent>();
-		static float UIEventInterval = 0.1f;
+		static float UIEventInterval = 0.05f;
 		static float LastUIEvent = 0;
 
 
@@ -3540,6 +3540,7 @@ namespace simul
 				return;
 			try
 			{
+#if USING_TRUESKY_4_4
                 IntPtr result = StaticGetSequence(0, MyAllocator);
 				string sequenceData = "";
 				
@@ -3555,7 +3556,7 @@ namespace simul
                 {
                     Console.WriteLine("Failed to retrieve sequence.");
                 }
-
+#endif
                 StaticSetSequence2(sequence.SequenceAsText);			
 				StaticTriggerAction("Reset");
 			}
