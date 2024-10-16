@@ -42,7 +42,7 @@ namespace simul
 		/// This material is used the blit the camera's depth to a render target
 		/// that we'll send to the plugin
 		/// </summary>
-		Material depthMaterial = null;
+		//Material depthMaterial = null;
 
 		//Mesh screenQuad = null;
 
@@ -518,7 +518,7 @@ namespace simul
 		void PrepareDepthMaterial()
 		{
 			RenderStyle renderStyle = GetRenderStyle();
-			depthMaterial           = null;
+			//depthMaterial           = null;
 			Camera cam = GetComponent<Camera>();
 			//SystemInfo.SupportsRenderTextureFormat(RenderTextureFormat.DefaultHDR)
 			bool toTexture = (HDROutputSettings.main.active && cam.allowHDR)

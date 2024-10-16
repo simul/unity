@@ -305,9 +305,10 @@ namespace simul
                 if (trueSKY.sequence == currentSequence) return trueSKY;
             }
             //no need to spam warnings about incorrect sequence
-			//UnityEngine.Debug.LogError("Active trueSky not found with Current Sequence");           
+			//UnityEngine.Debug.LogError("Active trueSky not found with Current Sequence");                  
+            return null;
 #endif
-			return null;
+
         }
 
         //Link Simul back-end code with unity events/functions.

@@ -2298,7 +2298,11 @@ namespace simul
 					{
 						_interpolationMode = value;
 						StaticSetRenderInt("interpolationmode", _interpolationMode);
-					}
+						if(_interpolationMode == 1)
+                            StaticSetRenderFloat("InterpolationTimeDays", _interpolationGameTimeHours);
+						else if( _interpolationMode == 2)
+                            StaticSetRenderFloat("InterpolationTimeSeconds", _interpolationRealTimeSeconds);
+                    }
 					catch (Exception exc)
 					{
 						UnityEngine.Debug.Log(exc.ToString());
@@ -2326,7 +2330,51 @@ namespace simul
 					}
 			}
 		}
-		[SerializeField]
+
+        [SerializeField]
+        float _interpolationGameTimeHours = 2;
+        public float InterpolationGameTimeHours
+        {
+            get
+            {
+                return _interpolationGameTimeHours;
+            }
+            set
+            {
+                if (_interpolationGameTimeHours != value) try
+                    {
+                        _interpolationGameTimeHours = Math.Max(0.5f, Math.Min(value, 24.0f));
+                        StaticSetRenderFloat("InterpolationTimeDays", _interpolationGameTimeHours);
+                    }
+                    catch (Exception exc)
+                    {
+                        UnityEngine.Debug.Log(exc.ToString());
+                    }
+            }
+        }
+
+        [SerializeField]
+        float _interpolationRealTimeSeconds = 6;
+        public float InterpolationRealTime
+        {
+            get
+            {
+                return _interpolationRealTimeSeconds;
+            }
+            set
+            {
+                if (_interpolationRealTimeSeconds != value) try
+                    {
+                        _interpolationRealTimeSeconds = Math.Max(1, Math.Min(value, 3600));
+                        StaticSetRenderFloat("InterpolationTimeSeconds", _interpolationRealTimeSeconds);
+                    }
+                    catch (Exception exc)
+                    {
+                        UnityEngine.Debug.Log(exc.ToString());
+                    }
+            }
+        }
+        [SerializeField]
 		bool _instantUpdate = true;
 		public bool InstantUpdate
 		{
