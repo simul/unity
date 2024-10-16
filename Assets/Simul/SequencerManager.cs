@@ -364,7 +364,7 @@ namespace simul
 			};
 #endif
 #if USING_TRUESKY_4_4
-        static TOnSequenceChangeCallback OnSequenceChangeCallback =
+        static public TOnSequenceChangeCallback OnSequenceChangeCallback =
         (string val) =>
         {
             trueSKY trueSKY = GetTrueSKY();         

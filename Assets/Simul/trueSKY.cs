@@ -1753,7 +1753,7 @@ namespace simul
 		}
 
 		[SerializeField]
-		float _crepuscularRaysStrength = 1.0f;
+		float _crepuscularRaysStrength = 0.0f;
 		public float CrepuscularRaysStrength
 		{
 			get
@@ -2285,7 +2285,7 @@ namespace simul
 		}
 
 		[SerializeField]
-		int _interpolationMode = 0;
+		int _interpolationMode = 2;
 		public int InterpolationMode
 		{
 			get
@@ -2683,7 +2683,7 @@ namespace simul
 		int _MaxPrecipitationParticles = 100000;
 
 		[SerializeField]
-		int _amortization = 2;
+		int _amortization = 1;
 		[SerializeField]
 		int _atmosphericsAmortization = 2;
 
@@ -3605,6 +3605,8 @@ namespace simul
                     Console.WriteLine("Failed to retrieve sequence.");
                 }
 #endif
+				//why do we need to set the callback again, address hasn't changed??
+				StaticSetOnSequenceChangeCallback(SequencerManager.OnSequenceChangeCallback);
                 StaticSetSequence2(sequence.SequenceAsText);			
 				StaticTriggerAction("Reset");
 			}
