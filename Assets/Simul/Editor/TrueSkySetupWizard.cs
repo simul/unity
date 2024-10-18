@@ -29,9 +29,8 @@ namespace simul
 
 		//Be careful adding more than 6 due to UI spacing issues.
 		string[] currentIssues = {
-			"Standard: No Dynamic Lighting with Lightning Strikes in clouds",
-			"HDRP: Lightning strikes not present",
-			"Using Manual cloud positioning can cause irregular cloud movement",
+			"Currently 4.4 Only Supports DX11 for Unity, we are working on other APIs",
+			"The trueSKY UI currently has responsiveness issues",
 		};
 
 		[MenuItem("GameObject/Remove trueSKY from Scene", false, 200000)]
@@ -245,10 +244,7 @@ namespace simul
 				if (GUILayout.Button("Launch Documentation", defaultButtonStyle))
 					Application.OpenURL("https://docs.simul.co/unity");
 
-				GUILayout.Label("\n\nOur currently known issues thread in our Q&A forum will let you see what we are working on.", textStyle);
-
-				if (GUILayout.Button("Currently known issues", defaultButtonStyle))
-					Application.OpenURL("https://simul.co/question/currently-known-issues-in-the-latest-update/");
+				GUILayout.Label("\n\nCurrently known issues for the 4.4 Beta", textStyle);
 
 				textStyle.fontSize = 0; //default
 				textStyle.alignment = TextAnchor.UpperLeft;
