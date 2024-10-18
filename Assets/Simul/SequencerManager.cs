@@ -290,26 +290,27 @@ namespace simul
         //Returns trueSKY object with the same sequence as is being edited.
         static trueSKY GetTrueSKY()
         {
+            trueSKY trueSKY = null;
 #if USING_TRUESKY_4_4
             //we can assume there is only 1 trueSKY in the scene
             UnityEngine.Object[] trueSkies = UnityEngine.Object.FindObjectsOfType(typeof(trueSKY));
-            trueSKY trueSKY = (trueSKY)trueSkies[0];
+            trueSKY = (trueSKY)trueSkies[0];
             if(trueSkies.Length > 1)
                 UnityEngine.Debug.LogError("Multiple trueSKY instances found");
-            return trueSKY;
 #elif USING_TRUESKY_4_3
             UnityEngine.Object[] trueSkies = UnityEngine.Object.FindObjectsOfType(typeof(trueSKY));
             foreach (UnityEngine.Object t in trueSkies)
             {
-                trueSKY trueSKY = (trueSKY)t;
-                if (trueSKY.sequence == currentSequence) return trueSKY;
+                trueSKY = (trueSKY)t;
+                if (trueSKY.sequence == currentSequence)
+                    break;
             }
+#endif
             //no need to spam warnings about incorrect sequence
 			//UnityEngine.Debug.LogError("Active trueSky not found with Current Sequence");
-            return null;
-#endif
-            return null;
+            return trueSKY;
         }
+
         //Link Simul back-end code with unity events/functions.
         static void LinkDelegates()
         {
@@ -363,20 +364,19 @@ namespace simul
 			};
 #endif
 #if USING_TRUESKY_4_4
-        static TOnSequenceChangeCallback OnSequenceChangeCallback =
+        static public TOnSequenceChangeCallback OnSequenceChangeCallback =
         (string val) =>
         {
             trueSKY trueSKY = GetTrueSKY();         
             if (trueSKY)
             {
-              
+                if(currentSequence != null)
                 EditorUtility.SetDirty(currentSequence);
                 
               
                 SetSequence(trueSKY.sequence);
                 EditorUtility.SetDirty(trueSKY);
-
-                 AssetDatabase.SaveAssets();
+                //AssetDatabase.SaveAssets();
             }
         };
 #endif

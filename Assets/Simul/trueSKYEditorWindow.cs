@@ -136,8 +136,8 @@ namespace simul
         }
 
         private float lastMouseMoveTime = 0f;
-        private float mouseMoveThrottleTime = 0.05f;
-        private float mouseMoveDistanceThreshold = 0.2f;
+       // private float mouseMoveThrottleTime = 0.05f;
+       // private float mouseMoveDistanceThreshold = 0.2f;
         protected void HandleMouseInput(Event e, int viewID)
         {
             trueSKY ts = trueSKY.GetTrueSky();

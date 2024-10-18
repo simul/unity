@@ -42,7 +42,7 @@ namespace simul
 		/// This material is used the blit the camera's depth to a render target
 		/// that we'll send to the plugin
 		/// </summary>
-		Material depthMaterial = null;
+		//Material depthMaterial = null;
 
 		//Mesh screenQuad = null;
 

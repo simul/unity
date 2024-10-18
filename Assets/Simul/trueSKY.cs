@@ -1753,7 +1753,7 @@ namespace simul
 		}
 
 		[SerializeField]
-		float _crepuscularRaysStrength = 1.0f;
+		float _crepuscularRaysStrength = 0.0f;
 		public float CrepuscularRaysStrength
 		{
 			get
@@ -2285,7 +2285,7 @@ namespace simul
 		}
 
 		[SerializeField]
-		int _interpolationMode = 0;
+		int _interpolationMode = 2;
 		public int InterpolationMode
 		{
 			get
@@ -2298,6 +2298,10 @@ namespace simul
 					{
 						_interpolationMode = value;
 						StaticSetRenderInt("interpolationmode", _interpolationMode);
+						if(_interpolationMode == 1)
+                            StaticSetRenderFloat("InterpolationTimeDays", _interpolationGameTimeHours);
+						else if( _interpolationMode == 2)
+                            StaticSetRenderFloat("InterpolationTimeSeconds", _interpolationRealTimeSeconds);
 					}
 					catch (Exception exc)
 					{
@@ -2326,6 +2330,50 @@ namespace simul
 					}
 			}
 		}
+
+        [SerializeField]
+        float _interpolationGameTimeHours = 2;
+        public float InterpolationGameTimeHours
+        {
+            get
+            {
+                return _interpolationGameTimeHours;
+            }
+            set
+            {
+                if (_interpolationGameTimeHours != value) try
+                    {
+                        _interpolationGameTimeHours = Math.Max(0.5f, Math.Min(value, 24.0f));
+                        StaticSetRenderFloat("InterpolationTimeDays", _interpolationGameTimeHours);
+                    }
+                    catch (Exception exc)
+                    {
+                        UnityEngine.Debug.Log(exc.ToString());
+                    }
+            }
+        }
+
+        [SerializeField]
+        float _interpolationRealTimeSeconds = 6;
+        public float InterpolationRealTime
+        {
+            get
+            {
+                return _interpolationRealTimeSeconds;
+            }
+            set
+            {
+                if (_interpolationRealTimeSeconds != value) try
+                    {
+                        _interpolationRealTimeSeconds = Math.Max(1, Math.Min(value, 3600));
+                        StaticSetRenderFloat("InterpolationTimeSeconds", _interpolationRealTimeSeconds);
+                    }
+                    catch (Exception exc)
+                    {
+                        UnityEngine.Debug.Log(exc.ToString());
+                    }
+            }
+        }
 		[SerializeField]
 		bool _instantUpdate = true;
 		public bool InstantUpdate
@@ -2626,7 +2674,7 @@ namespace simul
 		static public bool _showWaterTextures = false;
 
 		public List<UIEvent> simulUIEvents  = new List<UIEvent>();
-		static float UIEventInterval = 0.1f;
+		static float UIEventInterval = 0.05f;
 		static float LastUIEvent = 0;
 
 
@@ -2635,7 +2683,7 @@ namespace simul
 		int _MaxPrecipitationParticles = 100000;
 
 		[SerializeField]
-		int _amortization = 2;
+		int _amortization = 1;
 		[SerializeField]
 		int _atmosphericsAmortization = 2;
 
@@ -3557,6 +3605,8 @@ namespace simul
                     Console.WriteLine("Failed to retrieve sequence.");
                 }
 #endif
+				//why do we need to set the callback again, address hasn't changed??
+				StaticSetOnSequenceChangeCallback(SequencerManager.OnSequenceChangeCallback);
                 StaticSetSequence2(sequence.SequenceAsText);			
 				StaticTriggerAction("Reset");
 			}

@@ -384,13 +384,13 @@ namespace simul
 			if (cubemapRenderTexture == null
 				||!cubemapRenderTexture.IsCreated()
 				|| cubemapRenderTexture.width != textureSize
-				|| cubemapRenderTexture.depth != 24
+				|| cubemapRenderTexture.depth != 0
 				|| cubemapRenderTexture.format != renderTextureFormat
 				|| cubemapRenderTexture.dimension != UnityEngine.Rendering.TextureDimension.Cube
 			)
 			{
 				RenderTextureFormat rtf         = renderTextureFormat;
-				cubemapRenderTexture            = new RenderTexture(textureSize, textureSize, 24, rtf, RenderTextureReadWrite.Linear);
+				cubemapRenderTexture            = new RenderTexture(textureSize, textureSize, 0, rtf, RenderTextureReadWrite.Linear);
 				renderTextureFormat             = cubemapRenderTexture.format;
 				cubemapRenderTexture.dimension  = UnityEngine.Rendering.TextureDimension.Cube;
 				cubemapRenderTexture.name       = "trueSKY CubemapRenderTexture";
