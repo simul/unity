@@ -37,3 +37,13 @@ The following packages were added:
   com.unity.modules.wind@1.0.0
   com.unity.modules.xr@1.0.0
   com.unity.modules.accessibility@1.0.0
+
+=== Fri Oct 18 11:31:25 2024
+
+Packages were changed.
+Update Mode: updateDependencies
+
+The following packages were added:
+  com.unity.multiplayer.center@1.0.0
+The following packages were updated:
+  com.unity.collab-proxy from version 2.4.4 to 2.5.2

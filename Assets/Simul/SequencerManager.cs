@@ -293,7 +293,7 @@ namespace simul
             trueSKY trueSKY = null;
 #if USING_TRUESKY_4_4
             //we can assume there is only 1 trueSKY in the scene
-            UnityEngine.Object[] trueSkies = UnityEngine.Object.FindObjectsOfType(typeof(trueSKY));
+            UnityEngine.Object[] trueSkies = UnityEngine.Object.FindObjectsByType(typeof(trueSKY),FindObjectsSortMode.None);
             trueSKY = (trueSKY)trueSkies[0];
             if(trueSkies.Length > 1)
                 UnityEngine.Debug.LogError("Multiple trueSKY instances found");

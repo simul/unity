@@ -42,7 +42,8 @@ RenderSettings:
 --- !u!157 &3
 LightmapSettings:
   m_ObjectHideFlags: 0
-  serializedVersion: 12
+  serializedVersion: 13
+  m_BakeOnSceneLoad: 0
   m_GISettings:
     serializedVersion: 2
     m_BounceScale: 1
@@ -376,7 +377,7 @@ MonoBehaviour:
   AmbientMultiplier: 1
   ApplyRotation: 1
   Units: 1
---- !u!1 &232190581
+--- !u!1 &1705999540
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -384,13 +385,13 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 232190588}
-  - component: {fileID: 232190587}
-  - component: {fileID: 232190586}
-  - component: {fileID: 232190585}
-  - component: {fileID: 232190584}
-  - component: {fileID: 232190583}
-  - component: {fileID: 232190582}
+  - component: {fileID: 1705999547}
+  - component: {fileID: 1705999546}
+  - component: {fileID: 1705999545}
+  - component: {fileID: 1705999544}
+  - component: {fileID: 1705999543}
+  - component: {fileID: 1705999542}
+  - component: {fileID: 1705999541}
   m_Layer: 0
   m_Name: trueSky
   m_TagString: Untagged
@@ -398,13 +399,13 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &232190582
+--- !u!114 &1705999541
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 232190581}
+  m_GameObject: {fileID: 1705999540}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 73661cd764129404b8091f5b746e6901, type: 3}
@@ -420,13 +421,13 @@ MonoBehaviour:
   _skylightAllMips: 0
   _skylightAllFaces: 0
   _skylightAmortization: 2
---- !u!114 &232190583
+--- !u!114 &1705999542
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 232190581}
+  m_GameObject: {fileID: 1705999540}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 26d6499a6bd256e47b859377446493a1, type: 3}
@@ -436,14 +437,14 @@ MonoBehaviour:
   fadeRadius: 0
   priority: 0
   customPasses:
-  - rid: 530832380084092931
+  - rid: 530832538681475075
   injectionPoint: 5
   m_TargetCamera: {fileID: 0}
   useTargetCamera: 0
   references:
     version: 2
     RefIds:
-    - rid: 530832380084092931
+    - rid: 530832538681475075
       type: {class: TrueSkyHDRPCustomPass, ns: simul, asm: Assembly-CSharp}
       data:
         m_Name: trueSKY - After Everything
@@ -458,13 +459,13 @@ MonoBehaviour:
         gamma: 0.5
         flippedView: 0
         ShareBuffersForVR: 1
---- !u!114 &232190584
+--- !u!114 &1705999543
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 232190581}
+  m_GameObject: {fileID: 1705999540}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 26d6499a6bd256e47b859377446493a1, type: 3}
@@ -474,14 +475,14 @@ MonoBehaviour:
   fadeRadius: 0
   priority: 0
   customPasses:
-  - rid: 530832380084092930
+  - rid: 530832538681475074
   injectionPoint: 3
   m_TargetCamera: {fileID: 0}
   useTargetCamera: 0
   references:
     version: 2
     RefIds:
-    - rid: 530832380084092930
+    - rid: 530832538681475074
       type: {class: TrueSkyHDRPCustomPass, ns: simul, asm: Assembly-CSharp}
       data:
         m_Name: trueSKY - After Post Process(Overlay)
@@ -496,13 +497,13 @@ MonoBehaviour:
         gamma: 0.5
         flippedView: 0
         ShareBuffersForVR: 1
---- !u!114 &232190585
+--- !u!114 &1705999544
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 232190581}
+  m_GameObject: {fileID: 1705999540}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 26d6499a6bd256e47b859377446493a1, type: 3}
@@ -512,14 +513,14 @@ MonoBehaviour:
   fadeRadius: 0
   priority: 0
   customPasses:
-  - rid: 530832380084092929
+  - rid: 530832538681475073
   injectionPoint: 2
   m_TargetCamera: {fileID: 0}
   useTargetCamera: 0
   references:
     version: 2
     RefIds:
-    - rid: 530832380084092929
+    - rid: 530832538681475073
       type: {class: TrueSkyHDRPCustomPass, ns: simul, asm: Assembly-CSharp}
       data:
         m_Name: trueSKY - Before Post Process(Translucent Effects)
@@ -534,13 +535,13 @@ MonoBehaviour:
         gamma: 0.5
         flippedView: 0
         ShareBuffersForVR: 1
---- !u!114 &232190586
+--- !u!114 &1705999545
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 232190581}
+  m_GameObject: {fileID: 1705999540}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 26d6499a6bd256e47b859377446493a1, type: 3}
@@ -550,14 +551,14 @@ MonoBehaviour:
   fadeRadius: 0
   priority: 0
   customPasses:
-  - rid: 530832380084092928
+  - rid: 530832538681475072
   injectionPoint: 4
   m_TargetCamera: {fileID: 0}
   useTargetCamera: 0
   references:
     version: 2
     RefIds:
-    - rid: 530832380084092928
+    - rid: 530832538681475072
       type: {class: TrueSkyHDRPCustomPass, ns: simul, asm: Assembly-CSharp}
       data:
         m_Name: trueSKY - Before Pre Refraction(Main Render)
@@ -572,13 +573,13 @@ MonoBehaviour:
         gamma: 0.5
         flippedView: 0
         ShareBuffersForVR: 1
---- !u!114 &232190587
+--- !u!114 &1705999546
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 232190581}
+  m_GameObject: {fileID: 1705999540}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6c9584c35c660674d8e03faa566289dc, type: 3}
@@ -600,7 +601,7 @@ MonoBehaviour:
   _waterReflectionPixelStep: 2
   _waterReflectionDistance: 20000
   _godRaysGrid: {x: 64, y: 32, z: 32}
-  _crepuscularRaysStrength: 1
+  _crepuscularRaysStrength: 0
   _depthSamplingPixelRange: 1.5
   _maxSunRadiance: 5000
   _edgeNoiseFrequency: 4
@@ -611,7 +612,7 @@ MonoBehaviour:
   _edgeNoiseWavelengthKm: 5
   _worleyTextureSize: 64
   _worleyWavelengthKm: 8.7
-  _trueSKYTime: 18
+  _trueSKYTime: 12
   _timeProgressionScale: 0
   _timeUnits: 24
   _loop: 0
@@ -619,6 +620,8 @@ MonoBehaviour:
   _loopEnd: 13
   _interpolationMode: 2
   _interpolationSubdivisions: 8
+  _interpolationGameTimeHours: 2
+  _interpolationRealTimeSeconds: 6
   _instantUpdate: 1
   _HighDetailProportion: 0.2
   _MediumDetailProportion: 0.4
@@ -634,7 +637,7 @@ MonoBehaviour:
   cloudVisibilityRT: {fileID: 8400000, guid: 39c92c2ec117720419ee930c10f086b3, type: 2}
   globalViewRT: {fileID: 0}
   trueSKYLayerIndex: 14
-  _amortization: 2
+  _amortization: 1
   _atmosphericsAmortization: 2
   _depthTemporalAlpha: 0.1
   _depthBlending: 1
@@ -662,7 +665,7 @@ MonoBehaviour:
   _maxGpuProfileLevel: 4
   _backgroundTexture: {fileID: 0}
   _moonTexture: {fileID: 0}
-  _sequence: {fileID: 11400000, guid: 15c784e335ace274a962da26ba61cff2, type: 2}
+  _sequence: {fileID: 11400000, guid: 7b55945087129e04d918a578334b5efc, type: 2}
   _renderSky: 1
   _CloudSteps: 300
   _CubemapResolution: 256
@@ -697,13 +700,13 @@ MonoBehaviour:
   _LoadRenderPipelineAsset: 0
   _UsingIL2CPP: 0
   updateERV: 0
---- !u!4 &232190588
+--- !u!4 &1705999547
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 232190581}
+  m_GameObject: {fileID: 1705999540}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
@@ -1000,4 +1003,4 @@ SceneRoots:
   - {fileID: 1823688467}
   - {fileID: 157207114}
   - {fileID: 2013410475}
-  - {fileID: 232190588}
+  - {fileID: 1705999547}

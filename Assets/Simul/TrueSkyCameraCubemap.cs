@@ -114,7 +114,7 @@ namespace simul
 			// that leads to the clear happening AFTER the sky rendering that IssuePluginEventAndData is meant to call.
             mainCommandBuffer.ClearRenderTarget(true,false, new Color(0.0F, 0.3F, 0.0F, 1.0F), 1.0F);
 
-            int faceMask = FindObjectOfType<TrueSkyCubemapProbe>().GetFaceMask();
+            int faceMask = FindFirstObjectByType<TrueSkyCubemapProbe>().GetFaceMask();
             if (faceMask == 63) { faceMask = 1; }
 
             if (prevFaceMask != faceMask)

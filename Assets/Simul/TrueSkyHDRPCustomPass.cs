@@ -212,12 +212,12 @@ namespace simul
 				if (injectionPoint == CustomPassInjectionPoint.BeforePreRefraction)
 				{
 					unityViewStruct.renderStyle |= RenderStyle.CUBEMAP_STYLE;
-					unityViewStruct.exposure = GameObject.FindObjectOfType<TrueSkyCubemapProbe>().exposure;
-					unityViewStruct.gamma = GameObject.FindObjectOfType<TrueSkyCubemapProbe>().gamma;
+					unityViewStruct.exposure = GameObject.FindFirstObjectByType<TrueSkyCubemapProbe>().exposure;
+					unityViewStruct.gamma = GameObject.FindFirstObjectByType<TrueSkyCubemapProbe>().gamma;
 
 					PFN_RenderCubemapFace RenderCubemapFace = _faceMask =>
 					{
-						UpdateViewMatricsForCubemapFace(camera, _faceMask, GameObject.FindObjectOfType<TrueSkyCubemapProbe>().flipProbeY);
+						UpdateViewMatricsForCubemapFace(camera, _faceMask, GameObject.FindFirstObjectByType<TrueSkyCubemapProbe>().flipProbeY);
 						unityViewStruct.colourTextureArrayIndex = (int)ToCubemapFace(_faceMask);
 
 						bool il2cppScripting = simul.trueSKY.GetTrueSky().UsingIL2CPP;
@@ -228,7 +228,7 @@ namespace simul
 						cmd.IssuePluginEventAndData(UnityGetRenderEventFuncWithData(), GetTRUESKY_EVENT_ID() + cbuf_view_id, unityViewStructPtr);
 					};
 
-					int faceMask = GameObject.FindObjectOfType<TrueSkyCubemapProbe>().GetFaceMask();
+					int faceMask = GameObject.FindFirstObjectByType<TrueSkyCubemapProbe>().GetFaceMask();
 					if (faceMask == 63)
 					{
 						for (int i = 0; i < 6; i++)
@@ -332,7 +332,6 @@ namespace simul
 				bool toTexture = (HDROutputSettings.main.active && cam.allowHDR)
 								|| (QualitySettings.antiAliasing > 0 && cam.allowMSAA)
 								|| cam.actualRenderingPath == RenderingPath.DeferredShading
-								|| cam.actualRenderingPath == RenderingPath.DeferredLighting
 								|| cam.targetTexture;
 
 				Matrix4x4 p = GL.GetGPUProjectionMatrix(cam.projectionMatrix, toTexture);
@@ -367,8 +366,7 @@ namespace simul
 
 				// There are now three viewports. 1 and 2 are for left and right eyes in VR.
 				targetViewports[0].x = targetViewports[0].y = 0;
-				if (cam.actualRenderingPath != RenderingPath.DeferredLighting &&
-					cam.actualRenderingPath != RenderingPath.DeferredShading)
+				if (cam.actualRenderingPath != RenderingPath.DeferredShading)
 				{
 					Vector3 screen_0 = cam.ViewportToScreenPoint(new Vector3(0, 0, 0));
 					targetViewports[0].x = (int)(screen_0.x);
@@ -496,8 +494,7 @@ namespace simul
 		public RenderStyle GetBaseRenderStyle(Camera cam)
 		{
 			RenderStyle renderStyle = RenderStyle.UNITY_STYLE_DEFERRED;
-			if (cam.actualRenderingPath != RenderingPath.DeferredLighting
-				&& cam.actualRenderingPath != RenderingPath.DeferredShading)
+			if (cam.actualRenderingPath != RenderingPath.DeferredShading)
 			{
 				if (flippedView)
 					renderStyle = RenderStyle.UNITY_STYLE_DEFERRED;

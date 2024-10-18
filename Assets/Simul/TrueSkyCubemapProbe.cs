@@ -222,7 +222,7 @@ namespace simul
 				dummyCam                         = aDummyCamObject.GetComponent<Camera>();
 				dummyCam.enabled                 = false;
 				dummyCam.backgroundColor         = new Color(0, 0, 0, 0);
-				dummyCam.renderingPath           = RenderingPath.DeferredLighting;
+				dummyCam.renderingPath           = RenderingPath.DeferredShading;
 				dummyCam.depthTextureMode        |= DepthTextureMode.Depth;
 				dummyCam.allowHDR                = false;
 				dummyCam.allowMSAA               = false;
@@ -322,7 +322,7 @@ namespace simul
 
 			if (trueSkyCubemapProbe == null)
 			{
-				foreach (var cam in FindObjectsOfType(typeof(Camera)) as Camera[])
+				foreach (var cam in FindObjectsByType(typeof(Camera),FindObjectsSortMode.None) as Camera[])
 				{
 					if (cam.name == "TrueSkyCubemapProbe")
 					{
@@ -349,7 +349,7 @@ namespace simul
 					dummyCam.enabled = true;
 					dummyCam.clearFlags = CameraClearFlags.Color;
 					dummyCam.backgroundColor = new Color(0, 0, 0, 0);
-					dummyCam.renderingPath = RenderingPath.DeferredLighting;
+					dummyCam.renderingPath = RenderingPath.UsePlayerSettings;
 					dummyCam.depthTextureMode |= DepthTextureMode.Depth;
 					dummyCam.fieldOfView = 90.0f;
 					dummyCam.targetTexture = cubemapRenderTexture;

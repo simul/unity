@@ -410,8 +410,7 @@ namespace simul
 		{
 			RenderStyle renderStyle = RenderStyle.UNITY_STYLE_DEFERRED;
 			var cam = GetComponent<Camera>();
-			if (cam.actualRenderingPath != RenderingPath.DeferredLighting
-				&&cam.actualRenderingPath!=RenderingPath.DeferredShading)
+			if (cam.actualRenderingPath!=RenderingPath.DeferredShading)
 			{
 				if (flippedView)
 					renderStyle = RenderStyle.UNITY_STYLE_DEFERRED;

@@ -124,7 +124,7 @@ namespace simul
 
 		private void Start()
 		{
-			var probes = FindObjectsOfType<TrueSkyCubemapProbe>();
+			var probes = FindObjectsByType<TrueSkyCubemapProbe>(FindObjectsSortMode.None);
 			if(probes.Length <= 0)
 			{
 				Debug.LogWarning("Could not find a TrueSkyCubemapProbe object");
@@ -337,8 +337,7 @@ namespace simul
 				Matrix4x4 m = cam.worldToCameraMatrix;
 				bool toTexture = cam.allowHDR
 								|| (QualitySettings.antiAliasing > 0 && cam.allowMSAA)
-								|| cam.actualRenderingPath == RenderingPath.DeferredShading
-								|| cam.actualRenderingPath == RenderingPath.DeferredLighting;
+								|| cam.actualRenderingPath == RenderingPath.DeferredShading;
 								//|| (activeTexture != null);
 
 				Matrix4x4 p = GL.GetGPUProjectionMatrix(cam.projectionMatrix, toTexture);
@@ -373,8 +372,7 @@ namespace simul
 
 				// There are now three viewports. 1 and 2 are for left and right eyes in VR.
 				targetViewports[0].x = targetViewports[0].y = 0;
-				if (cam.actualRenderingPath != RenderingPath.DeferredLighting &&
-					cam.actualRenderingPath != RenderingPath.DeferredShading)
+
 				{
 					Vector3 screen_0        = cam.ViewportToScreenPoint(new Vector3(0,0,0));
 					targetViewports[0].x    = (int)(screen_0.x);
@@ -518,13 +516,12 @@ namespace simul
 		void PrepareDepthMaterial()
 		{
 			RenderStyle renderStyle = GetRenderStyle();
-			depthMaterial           = null;
+			//depthMaterial           = null;
 			Camera cam = GetComponent<Camera>();
 			//SystemInfo.SupportsRenderTextureFormat(RenderTextureFormat.DefaultHDR)
 			bool toTexture = (HDROutputSettings.main.active && cam.allowHDR)
 								|| (QualitySettings.antiAliasing > 0 && cam.allowMSAA)
 								|| cam.actualRenderingPath == RenderingPath.DeferredShading
-								|| cam.actualRenderingPath == RenderingPath.DeferredLighting
 								|| cam.targetTexture;
 
 			if (!toTexture)
