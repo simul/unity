@@ -3606,9 +3606,10 @@ namespace simul
                 {
                     Console.WriteLine("Failed to retrieve sequence.");
                 }
-#endif
+
 				//why do we need to set the callback again, address hasn't changed??
 				StaticSetOnSequenceChangeCallback(SequencerManager.OnSequenceChangeCallback);
+#endif
                 StaticSetSequence2(sequence.SequenceAsText);			
 				StaticTriggerAction("Reset");
 			}

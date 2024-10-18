@@ -50,7 +50,7 @@ namespace simul
 		{
 			UnityEngine.Object[] trueSkies;
 			trueSKY trueSky = null;
-			trueSkies = FindObjectsOfType(typeof(trueSKY));
+			trueSkies = FindObjectsByType(typeof(trueSKY), FindObjectsSortMode.None);
 			foreach (UnityEngine.Object t in trueSkies)
 			{
 				trueSky = (trueSKY)t;

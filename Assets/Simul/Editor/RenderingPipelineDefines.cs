@@ -111,7 +111,8 @@ public class RenderingPipelineDefines
     {
         var target = EditorUserBuildSettings.activeBuildTarget;
         var buildTargetGroup = BuildPipeline.GetBuildTargetGroup(target);
-        var defines = PlayerSettings.GetScriptingDefineSymbolsForGroup(buildTargetGroup);
+        var NamedBuildTarget = UnityEditor.Build.NamedBuildTarget.FromBuildTargetGroup(buildTargetGroup);
+        var defines = PlayerSettings.GetScriptingDefineSymbols(NamedBuildTarget);
         return defines.Split(';').ToList();
     }
 
@@ -119,7 +120,8 @@ public class RenderingPipelineDefines
     {
         var target = EditorUserBuildSettings.activeBuildTarget;
         var buildTargetGroup = BuildPipeline.GetBuildTargetGroup(target);
+        var NamedBuildTarget = UnityEditor.Build.NamedBuildTarget.FromBuildTargetGroup(buildTargetGroup);
         var defines = string.Join(";", definesList.ToArray());
-        PlayerSettings.SetScriptingDefineSymbolsForGroup(buildTargetGroup, defines);
+        PlayerSettings.SetScriptingDefineSymbols(NamedBuildTarget, defines);
     }
 }

@@ -37,35 +37,35 @@ namespace simul
 		[MenuItem("GameObject/Remove trueSKY from Scene", false, 200000)]
 		public static void RemoveTrueSky()
 		{
-			UnityEngine.Object[] objects = FindObjectsOfType(typeof(Light));
+			UnityEngine.Object[] objects = FindObjectsByType(typeof(Light),FindObjectsSortMode.None);
 			foreach (UnityEngine.Object t in objects)
 			{
 				Light l = (Light)t;
 				if (l.GetComponent<TrueSkyDirectionalLight>() != null)
 					DestroyImmediate(l.GetComponent<TrueSkyDirectionalLight>());
 			}
-			objects = FindObjectsOfType(typeof(Camera));
+			objects = FindObjectsByType(typeof(Camera), FindObjectsSortMode.None);
 			foreach (UnityEngine.Object t in objects)
 			{
 				Camera c = (Camera)t;
 				if (c.GetComponent<TrueSkyCamera>() != null)
 					DestroyImmediate(c.GetComponent<TrueSkyCamera>());
 			}
-			objects = FindObjectsOfType(typeof(TrueSkyCameraBase));
+			objects = FindObjectsByType(typeof(TrueSkyCameraBase), FindObjectsSortMode.None);
 			foreach (UnityEngine.Object t in objects)
 			{
 				MonoBehaviour b = (MonoBehaviour)t;
 				if (b.GetComponent<TrueSkyCameraBase>() != null)
 					DestroyImmediate(b.GetComponent<TrueSkyCameraBase>());
 			}
-			objects = FindObjectsOfType(typeof(TrueSkyCubemapProbe));
+			objects = FindObjectsByType(typeof(TrueSkyCubemapProbe), FindObjectsSortMode.None);
 			foreach (UnityEngine.Object t in objects)
 			{
 				MonoBehaviour b = (MonoBehaviour)t;
 				if (b.GetComponent<TrueSkyCubemapProbe>() != null)
 					DestroyImmediate(b.GetComponent<TrueSkyCubemapProbe>());
 			}
-			objects = FindObjectsOfType(typeof(trueSKY));
+			objects = FindObjectsByType(typeof(trueSKY), FindObjectsSortMode.None);
 			foreach (UnityEngine.Object o in objects)
 			{
 				trueSKY ts = (trueSKY)o;
@@ -197,7 +197,7 @@ namespace simul
 			{
 				UnityEngine.Light[] lights;
 
-				lights = FindObjectsOfType(typeof(Light)) as Light[];
+				lights = FindObjectsByType(typeof(Light), FindObjectsSortMode.None) as Light[];
 				int directionalLights = 0;
 
 				foreach (Light t in lights)
@@ -496,7 +496,7 @@ namespace simul
 			if (createCubemapProbe)
 			{           // must be after trueSKY obj assigned, in case assigning probe to this instead of mainCam
 
-				UnityEngine.Object[] objects = FindObjectsOfType(typeof(TrueSkyCubemapProbe));
+				UnityEngine.Object[] objects = FindObjectsByType(typeof(TrueSkyCubemapProbe), FindObjectsSortMode.None);
 
 				if (trueSky.gameObject.GetComponent<TrueSkyCubemapProbe>() != null)
 					DestroyImmediate(trueSky.gameObject.GetComponent<TrueSkyCubemapProbe>());
@@ -562,7 +562,7 @@ namespace simul
 		{
 			// And we need a trueSKY object in the scene.
 			UnityEngine.Object[] trueSkies;
-			trueSkies = FindObjectsOfType(typeof(trueSKY));
+			trueSkies = FindObjectsByType(typeof(trueSKY), FindObjectsSortMode.None);
 			foreach (UnityEngine.Object t in trueSkies)
 			{
 				trueSky = (trueSKY)t;
