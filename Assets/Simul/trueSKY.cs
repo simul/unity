@@ -849,6 +849,27 @@ namespace simul
             }
         }
 
+		void EnsureTextures()
+		{
+            InscatterTexture.SetRenderTexture(inscatterRT);
+            LossTexture.SetRenderTexture(lossRT);
+            CloudVisibilityTexture.SetRenderTexture(cloudVisibilityRT);
+            CloudShadowTexture.SetRenderTexture(cloudShadowRT);
+
+            GlobalViewTexture.SetRenderTexture(Resources.Load<RenderTexture>("GlobalViewRT"));
+            PropertiesTexture.SetRenderTexture(Resources.Load<RenderTexture>("PropertiesRT"));
+            SequencerTexture.SetRenderTexture(Resources.Load<RenderTexture>("SequencerRT"));
+
+            Marshal.StructureToPtr(InscatterTexture.externalTexture, InscatterTexture.GetExternalTexturePtr(), !trueSKY.GetTrueSky().UsingIL2CPP);
+            StaticSetRenderTexture2("inscatter2D", InscatterTexture.GetExternalTexturePtr());
+            Marshal.StructureToPtr(LossTexture.externalTexture, LossTexture.GetExternalTexturePtr(), !trueSKY.GetTrueSky().UsingIL2CPP);
+            StaticSetRenderTexture2("Loss2D", LossTexture.GetExternalTexturePtr());
+            Marshal.StructureToPtr(CloudVisibilityTexture.externalTexture, CloudVisibilityTexture.GetExternalTexturePtr(), !trueSKY.GetTrueSky().UsingIL2CPP);
+            StaticSetRenderTexture2("CloudVisibilityRT", CloudVisibilityTexture.GetExternalTexturePtr());
+            Marshal.StructureToPtr(CloudShadowTexture.externalTexture, CloudShadowTexture.GetExternalTexturePtr(), !trueSKY.GetTrueSky().UsingIL2CPP);
+            StaticSetRenderTexture2("CloudShadowRT", CloudShadowTexture.GetExternalTexturePtr());
+        }
+
         static void AddDefine(string define)
         {
             var definesList = GetDefines();
@@ -1086,7 +1107,7 @@ namespace simul
 		{
 			return StaticRenderGetNumKeyframes(0);
 		}
-		public int GetNumCloudKeyframes(int layer)
+		public int GetNumCloudKeyframes(uint layerUID)
 		{
 			if (SimulVersion < MakeSimulVersion(4, 2))
 			{
@@ -1094,7 +1115,7 @@ namespace simul
 			}
 			else
 			{
-				return StaticRenderGetNumKeyframes((int)GetCloudLayerByIndex(layer));
+				return StaticRenderGetNumKeyframes(layerUID);
 			}
 		}
 		public int GetNumCloud2DKeyframes()
@@ -1111,16 +1132,11 @@ namespace simul
 		{
 			return StaticRenderInsertKeyframe(0, t);
 		}
-		public uint InsertCloudKeyframe(float t, int layer)
+		public uint InsertCloudKeyframe(float t, uint layerUID)
 		{
-			if (SimulVersion < MakeSimulVersion(4, 2))
-			{
-				return StaticRenderInsertKeyframe(1, t);
-			}
-			else
-			{ 
-				return StaticRenderInsertKeyframe((int)GetCloudLayerByIndex(layer), t);
-			}
+		
+			return StaticRenderInsertKeyframe(layerUID, t);
+			
 		}
 		public uint Insert2DCloudKeyframe(float t)
 		{
@@ -1142,24 +1158,12 @@ namespace simul
 		{
 			return StaticRenderGetKeyframeByIndex(0, index);
 		}
-		public uint GetCloudKeyframeByIndex(int index, int layer)
+		public uint GetCloudKeyframeByIndex(uint uid, int index )
 		{
-			if (SimulVersion < MakeSimulVersion(4, 2))
+
 			{
-				return StaticRenderGetKeyframeByIndex(1, index);
+				return StaticRenderGetKeyframeByIndex(uid, index);
 			}
-			else
-			{
-				return StaticRenderGetKeyframeByIndex((int)GetCloudLayerByIndex(layer), index);
-			}
-		}
-		public uint GetCloud2DKeyframeByIndex(int index)
-		{
-			if (SimulVersion < MakeSimulVersion(4, 2))
-			{
-				return StaticRenderGetKeyframeByIndex(2, index);
-			}
-			return 0;
 		}
 
 		//Get interpolated Keyframe
@@ -1167,7 +1171,7 @@ namespace simul
 		{
 			return GetInterpolatedSkyKeyframeUniqueId();
 		}
-		public uint GetInterpolatedCloudKeyframe(int layer)
+		public uint GetInterpolatedCloudKeyframe(uint layerUID)
 		{
 			if (SimulVersion < MakeSimulVersion(4, 2))
 			{
@@ -1175,7 +1179,7 @@ namespace simul
 			}
 			else
 			{
-				return GetInterpolatedCloudKeyframeUniqueId((int)GetCloudLayerByIndex(layer));
+				return GetInterpolatedCloudKeyframeUniqueId(layerUID);
 			}
 		}
 
@@ -4732,7 +4736,8 @@ namespace simul
 			{
 				if (!_initialized)
 					Init();
-				if (Application.isPlaying)
+                EnsureTextures();
+                if (Application.isPlaying)
 				{
 					if (!isApplicationPlaying)
 					{
@@ -5074,6 +5079,7 @@ namespace simul
 
 				UnityEngine.Debug.Log("trueSKY version:" + SimulVersionMajor + "." + SimulVersionMinor + "." + SimulVersionBuild);
 				UpdateDefines();
+				
 
 #if TRUESKY_LOGGING
 				StaticEnableLogging("trueSKYUnityRender.log");

@@ -530,8 +530,8 @@ Light:
   m_Enabled: 1
   serializedVersion: 11
   m_Type: 1
-  m_Color: {r: 1, g: 0.979875, b: 0.9188064, a: 1}
-  m_Intensity: 158701.39
+  m_Color: {r: 1, g: 0.9773973, b: 0.9136987, a: 1}
+  m_Intensity: 160793.9
   m_Range: 10
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -593,7 +593,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1661479976}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.55151355, y: 0.014139373, z: -0.009350258, w: -0.8339937}
+  m_LocalRotation: {x: -0.55162174, y: 0.009009237, z: -0.005958687, w: -0.8340245}
   m_LocalPosition: {x: 0, y: 3000, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -888,14 +888,14 @@ MonoBehaviour:
   _maxGpuProfileLevel: 4
   _backgroundTexture: {fileID: 0}
   _moonTexture: {fileID: 0}
-  _sequence: {fileID: 11400000, guid: 834b84e591d3ac34ca9f944249f194a6, type: 2}
+  _sequence: {fileID: 11400000, guid: 94df2340afdc9db4b946068fe347e52c, type: 2}
   _renderSky: 1
   _CloudSteps: 300
   _CubemapResolution: 256
   _WindSpeed: {x: 0, y: 0, z: 0}
-  _IntegrationScheme: 2
+  _IntegrationScheme: 3
   _LightingMode: 0
-  _MaxCloudDistanceKm: 400
+  _MaxCloudDistanceKm: 397
   _RenderGridXKm: 0.4
   _RenderGridZKm: 0.4
   _windowGridWidth: 512

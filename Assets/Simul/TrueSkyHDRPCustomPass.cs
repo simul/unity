@@ -443,23 +443,23 @@ namespace simul
                 //ts.InscatterTexture.SetRenderTexture(Resources.Load<RenderTexture>("GlobalViewRT"));
                 //ts.CloudVisibilityTexture.SetRenderTexture(Resources.Load<RenderTexture>("CloudVisibilityRT"));
 
-                ts.InscatterTexture.SetRenderTexture(ts.inscatterRT);
-                ts.LossTexture.SetRenderTexture(ts.lossRT);
-                ts.CloudVisibilityTexture.SetRenderTexture(ts.cloudVisibilityRT);
-                ts.CloudShadowTexture.SetRenderTexture(ts.cloudShadowRT);
+                //ts.InscatterTexture.SetRenderTexture(ts.inscatterRT);
+                //ts.LossTexture.SetRenderTexture(ts.lossRT);
+                //ts.CloudVisibilityTexture.SetRenderTexture(ts.cloudVisibilityRT);
+                //ts.CloudShadowTexture.SetRenderTexture(ts.cloudShadowRT);
 
-                ts.GlobalViewTexture.SetRenderTexture(Resources.Load<RenderTexture>("GlobalViewRT"));
-                ts.PropertiesTexture.SetRenderTexture(Resources.Load<RenderTexture>("PropertiesRT"));
-                ts.SequencerTexture.SetRenderTexture(Resources.Load<RenderTexture>("SequencerRT"));
+                //ts.GlobalViewTexture.SetRenderTexture(Resources.Load<RenderTexture>("GlobalViewRT"));
+                //ts.PropertiesTexture.SetRenderTexture(Resources.Load<RenderTexture>("PropertiesRT"));
+                //ts.SequencerTexture.SetRenderTexture(Resources.Load<RenderTexture>("SequencerRT"));
 
-                Marshal.StructureToPtr(ts.InscatterTexture.externalTexture, ts.InscatterTexture.GetExternalTexturePtr(), !trueSKY.GetTrueSky().UsingIL2CPP);
-                StaticSetRenderTexture2("inscatter2D", ts.InscatterTexture.GetExternalTexturePtr());
-                Marshal.StructureToPtr(ts.LossTexture.externalTexture, ts.LossTexture.GetExternalTexturePtr(), !trueSKY.GetTrueSky().UsingIL2CPP);
-                StaticSetRenderTexture2("Loss2D", ts.LossTexture.GetExternalTexturePtr());
-                Marshal.StructureToPtr(ts.CloudVisibilityTexture.externalTexture, ts.CloudVisibilityTexture.GetExternalTexturePtr(), !trueSKY.GetTrueSky().UsingIL2CPP);
-                StaticSetRenderTexture2("CloudVisibilityRT", ts.CloudVisibilityTexture.GetExternalTexturePtr());
-                Marshal.StructureToPtr(ts.CloudShadowTexture.externalTexture, ts.CloudShadowTexture.GetExternalTexturePtr(), !trueSKY.GetTrueSky().UsingIL2CPP);
-                StaticSetRenderTexture2("CloudShadowRT", ts.CloudShadowTexture.GetExternalTexturePtr());
+                //Marshal.StructureToPtr(ts.InscatterTexture.externalTexture, ts.InscatterTexture.GetExternalTexturePtr(), !trueSKY.GetTrueSky().UsingIL2CPP);
+                //StaticSetRenderTexture2("inscatter2D", ts.InscatterTexture.GetExternalTexturePtr());
+                //Marshal.StructureToPtr(ts.LossTexture.externalTexture, ts.LossTexture.GetExternalTexturePtr(), !trueSKY.GetTrueSky().UsingIL2CPP);
+                //StaticSetRenderTexture2("Loss2D", ts.LossTexture.GetExternalTexturePtr());
+                //Marshal.StructureToPtr(ts.CloudVisibilityTexture.externalTexture, ts.CloudVisibilityTexture.GetExternalTexturePtr(), !trueSKY.GetTrueSky().UsingIL2CPP);
+                //StaticSetRenderTexture2("CloudVisibilityRT", ts.CloudVisibilityTexture.GetExternalTexturePtr());
+                //Marshal.StructureToPtr(ts.CloudShadowTexture.externalTexture, ts.CloudShadowTexture.GetExternalTexturePtr(), !trueSKY.GetTrueSky().UsingIL2CPP);
+                //StaticSetRenderTexture2("CloudShadowRT", ts.CloudShadowTexture.GetExternalTexturePtr());
 
                 /*_inscatterRT.renderTexture = inscatterRT;
 				_cloudVisibilityRT.renderTexture = cloudVisibilityRT;

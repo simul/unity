@@ -6,6 +6,10 @@ using System;
 using System.Text;
 using System.Diagnostics;
 using System.IO;
+using UnityEditor.Rendering;
+using Unity.VisualScripting;
+
+
 
 #if USING_HDRP
 using UnityEngine.Rendering.HighDefinition;
@@ -242,7 +246,7 @@ namespace simul
 				GUILayout.Label("\n\nTo view more information on using trueSKY for Unity, along with code reference pages and a detailed explanation of the sequencer, please click the button below.", textStyle);
 
 				if (GUILayout.Button("Launch Documentation", defaultButtonStyle))
-					Application.OpenURL("https://docs.simul.co/unity");
+					Application.OpenURL("https://docs.simul.co/4.4/");
 
 				GUILayout.Label("\n\nCurrently known issues for the 4.4 Beta", textStyle);
 
@@ -264,14 +268,27 @@ namespace simul
 			GUILayout.FlexibleSpace();
 			if (stage == Stage.START)
 			{
-				if (GUILayout.Button("Cancel"))
-					Close();
-				if (sceneFilename.Length == 0)
-					GUI.enabled = false;
-				if (GUILayout.Button("Next", defaultButtonStyle))
-					OnWizardNext();
-				if (sceneFilename.Length == 0)
-					GUI.enabled = true;
+                trueSKY trueSKYGameObj = GameObject.FindFirstObjectByType<trueSKY>();
+
+				if (trueSKYGameObj)
+					GUILayout.Label("TrueSKY found in scene, please delete to initialize");
+				else
+				{
+
+					if (GUILayout.Button("Cancel"))
+						Close();
+					if (sceneFilename.Length == 0)
+						GUI.enabled = false;
+					if (GUILayout.Button("Next", defaultButtonStyle))
+						OnWizardNext();
+					if (GUILayout.Button("Initialize with Defaults", defaultButtonStyle))
+					{
+						FinishWithDefaults();
+						Close();
+					}
+					if (sceneFilename.Length == 0)
+						GUI.enabled = true;
+				}
 			}
 			else if (stage < Stage.FINISH)
 			{
@@ -279,16 +296,16 @@ namespace simul
 					OnWizardBack();
 				if (GUILayout.Button("Next", defaultButtonStyle))
 					OnWizardNext();
-			}
+            }
 			else
 			{
 				minSize = new Vector2(550.0F, 550.0F);
 				maxSize = new Vector2(550.0F, 550.0F);
 				if (GUILayout.Button("Back"))
 					OnWizardBack();
-				if (GUILayout.Button("Finish", defaultButtonStyle))
+				if (GUILayout.Button("Initialize", defaultButtonStyle))
 				{
-					Finish();
+                    Finish();
 					Close();
 				}
 			}
@@ -322,8 +339,8 @@ namespace simul
 		trueSKY trueSky = null;
 		GameObject lightGameObject = null;
 		TrueSkyDirectionalLight lightComponent;
-
-		public bool removeFog = true;
+		int ts_layer_index = 0;
+        public bool removeFog = true;
 		public bool removeSkybox = true;
 		public bool createCubemapProbe = true;
 		public bool multipleCameras = false;
@@ -367,47 +384,15 @@ namespace simul
 		{
 			TrueSkyCamera trueSkyCamera;
 
-			if (sequence == null)
+			AddSequence();          
+
+            AddLayerTag();
+
+            if (mainCamera == null && !createAMainCamera)
 			{
-				// Build asset path and name (it has to be relative)
-				string relativePath = UnityEngine.SceneManagement.SceneManager.GetActiveScene().path;
-
-				string sequenceFilename = relativePath.Replace(".unity", "_sq.asset");
-				sequence = CustomAssetUtility.CreateAsset<Sequence>(sequenceFilename);
-			}
-			if (trueSky == null)
-			{
-				GameObject g = new GameObject("trueSky");
-				trueSky = g.AddComponent<trueSKY>();
-			}
-
-			// Open tag+Layer manager
-			SerializedObject tagLayerManager = new SerializedObject(AssetDatabase.LoadAllAssetsAtPath("ProjectSettings/TagManager.asset")[0]);
-			SerializedProperty layersProp = tagLayerManager.FindProperty("layers");
-
-			// Adding a Layer/Tag
-			string ts_layer = "trueSKY";
-			int ts_layer_index = trueSky.trueSKYLayerIndex;
-			// First check if it is not already present
-			bool found = false;
-
-			var newLayer = LayerMask.NameToLayer("trueSKY");
-			if (newLayer > -1)
-			{
-				found = true;
-			}
-
-			// if not found, add it
-			if (!found)
-			{
-				layersProp.InsertArrayElementAtIndex(ts_layer_index);
-				SerializedProperty n = layersProp.GetArrayElementAtIndex(ts_layer_index);
-				n.stringValue = ts_layer;
-			}
-			tagLayerManager.ApplyModifiedProperties();
-
-
-			if (createAMainCamera)      // if user has requested a main camera to be created (as none already)
+                FindCamera();
+            }
+			else if (createAMainCamera)      // if user has requested a main camera to be created (as none already)
 			{
 				GameObject MainCam = new GameObject("Main Camera");
 				MainCam.gameObject.AddComponent<Camera>();
@@ -446,49 +431,15 @@ namespace simul
 			else
 			{
 #if USING_HDRP
-				simul.TrueSkyHDRPCustomPass TrueSkyMainPass = new simul.TrueSkyHDRPCustomPass();
-                simul.TrueSkyHDRPCustomPass TrueSkyTranslucentPass = new simul.TrueSkyHDRPCustomPass();
-				simul.TrueSkyHDRPCustomPass TrueSkyOverlayPass = new simul.TrueSkyHDRPCustomPass();
-				simul.TrueSkyHDRPCustomPass TrueSkyUIPass = new simul.TrueSkyHDRPCustomPass();
-				CustomPassVolume MainPassVolume = trueSky.gameObject.GetComponent<CustomPassVolume>();
-                if (MainPassVolume == null)
-                {
-                    TrueSkyMainPass.name = "trueSKY - Before Pre Refraction(Main Render)";
-                    MainPassVolume = trueSky.gameObject.AddComponent<CustomPassVolume>();
-                    MainPassVolume.injectionPoint = CustomPassInjectionPoint.BeforePreRefraction;
-                    MainPassVolume.customPasses.Add(TrueSkyMainPass);
-
-                    CustomPassVolume TranslucentVolume;
-                    TrueSkyTranslucentPass.name = "trueSKY - Before Post Process(Translucent Effects)";
-                    TranslucentVolume = trueSky.gameObject.AddComponent<CustomPassVolume>();
-                    TranslucentVolume.injectionPoint = CustomPassInjectionPoint.BeforePostProcess;
-                    TranslucentVolume.customPasses.Add(TrueSkyTranslucentPass);
-
-					CustomPassVolume OverlayVolume;
-					TrueSkyOverlayPass.name = "trueSKY - After Post Process(Overlay)";
-					OverlayVolume = trueSky.gameObject.AddComponent<CustomPassVolume>();
-					OverlayVolume.injectionPoint = CustomPassInjectionPoint.AfterPostProcess;
-					OverlayVolume.customPasses.Add(TrueSkyOverlayPass);
-					TrueSkyOverlayPass.enabled = false; //disabled by default. 
-
-                    CustomPassVolume UIVolume;
-                    TrueSkyUIPass.name = "trueSKY - After Everything";
-                    UIVolume = trueSky.gameObject.AddComponent<CustomPassVolume>();
-                    UIVolume.injectionPoint = CustomPassInjectionPoint.AfterOpaqueDepthAndNormal;
-                    UIVolume.customPasses.Add(TrueSkyUIPass);
-                    TrueSkyUIPass.enabled = true; 
-                }
-                if (UnityEngine.Rendering.GraphicsSettings.allConfiguredRenderPipelines.Length > 0)
-				{
-					trueSky.HDRP_RenderPipelineAsset = UnityEngine.Rendering.GraphicsSettings.allConfiguredRenderPipelines[0];
-				}
+                SetHDRPCustomPasses();
 #else
-					trueSkyCamera = mainCamera.gameObject.GetComponent<TrueSkyCamera>();
-					if (trueSkyCamera == null)
-						mainCamera.gameObject.AddComponent<TrueSkyCamera>();
+			trueSkyCamera = mainCamera.gameObject.GetComponent<TrueSkyCamera>();
+			if (trueSkyCamera == null)
+				mainCamera.gameObject.AddComponent<TrueSkyCamera>();
 #endif
-				mainCamera.gameObject.layer = ts_layer_index;
+                mainCamera.gameObject.layer = ts_layer_index;
 			}
+
 			if (createCubemapProbe)
 			{           // must be after trueSKY obj assigned, in case assigning probe to this instead of mainCam
 
@@ -554,7 +505,197 @@ namespace simul
 			trueSky.TrueSKYTime = 12.0F;
 		}
 
-		void FindTrueSky()
+		void FinishWithDefaults()
+		{
+
+			AddSequence();
+
+            AddLayerTag();
+
+            FindCamera();
+			
+            if (mainCamera == null)      // if user has requested a main camera to be created (as none already)
+            {
+                GameObject MainCam = new GameObject("Main Camera");
+                MainCam.gameObject.AddComponent<Camera>();
+                MainCam.tag = "MainCamera";
+                mainCamera = MainCam.GetComponent<Camera>();
+#if USING_HDRP
+                MainCam.AddComponent<HDAdditionalCameraData>();	  
+#endif
+            }
+
+            mainCamera.gameObject.layer = ts_layer_index;
+#if USING_HDRP
+            SetHDRPCustomPasses();
+#else
+			TrueSkyCamera trueSkyCamera = mainCamera.gameObject.GetComponent<TrueSkyCamera>();
+			if (trueSkyCamera == null)
+				mainCamera.gameObject.AddComponent<TrueSkyCamera>();
+#endif
+
+            if (createCubemapProbe)
+            {           // must be after trueSKY obj assigned, in case assigning probe to this instead of mainCam
+
+                UnityEngine.Object[] objects = FindObjectsByType(typeof(TrueSkyCubemapProbe), FindObjectsSortMode.None);
+
+                if (trueSky.gameObject.GetComponent<TrueSkyCubemapProbe>() != null)
+                    DestroyImmediate(trueSky.gameObject.GetComponent<TrueSkyCubemapProbe>());
+
+                trueSky.gameObject.AddComponent<TrueSkyCubemapProbe>();
+
+                Material trueSKYSkyboxMat = Resources.Load("trueSKYSkybox", typeof(Material)) as Material;
+                RenderSettings.skybox = trueSKYSkyboxMat;
+            }
+
+            //Remove other Dir lights
+            UnityEngine.Light[] lights;
+            lights = FindObjectsByType(typeof(Light), FindObjectsSortMode.InstanceID) as Light[];
+
+            foreach (Light t in lights)
+            {
+                Light l = (Light)t;
+                if (l.type == LightType.Directional)
+                {
+                    lightComponent = l.GetComponent<TrueSkyDirectionalLight>();
+					if(lightComponent == null)
+						lightComponent = l.AddComponent<TrueSkyDirectionalLight>();
+                    break;
+                }
+            }
+            // If there is not light on the scene, add one:
+            if (lightComponent == null)
+			{
+                lightGameObject = new GameObject("TrueSkyDirectionalLight");
+                Light dirLight = lightGameObject.AddComponent<Light>();
+                dirLight.type = LightType.Directional;
+                lightComponent = lightGameObject.AddComponent<TrueSkyDirectionalLight>();
+                RenderSettings.sun = lightGameObject.GetComponent<Light>();
+            }
+            
+
+#if USING_HDRP
+            lightComponent.Units = TrueSkyDirectionalLight.LightUnits.Photometric;
+#else
+			lightComponent.Units = TrueSkyDirectionalLight.LightUnits.Radiometric;
+#endif
+
+           RenderSettings.fog = false;
+
+
+#if USING_HDRP
+                HDAdditionalCameraData mHDAdditionalCameraData = mainCamera.GetComponent<HDAdditionalCameraData>();
+
+                if (mHDAdditionalCameraData)
+                {
+                    mHDAdditionalCameraData.clearColorMode = HDAdditionalCameraData.ClearColorMode.Color;
+                    mHDAdditionalCameraData.backgroundColorHDR = Color.black;
+                }
+#endif
+                if (mainCamera.clearFlags != CameraClearFlags.SolidColor)
+                {
+                    mainCamera.clearFlags = CameraClearFlags.SolidColor;
+                    mainCamera.backgroundColor = Color.black;
+                }
+            
+            if (mainCamera != null)
+            {
+                // Set the Near and Far clipping planes on the main camera.
+                mainCamera.nearClipPlane = 0.1f;
+                mainCamera.farClipPlane = 300000.0f;
+            }
+            // Now the sequence must be assigned to the trueSKY object.
+            trueSky.sequence = sequence;
+            trueSky.TrueSKYTime = 12.0F;
+        }
+
+		void AddSequence()
+		{
+            if (sequence == null)
+            {
+                // Build asset path and name (it has to be relative)
+                string relativePath = UnityEngine.SceneManagement.SceneManager.GetActiveScene().path;
+
+                string sequenceFilename = relativePath.Replace(".unity", "_sq.asset");
+                sequence = CustomAssetUtility.CreateAsset<Sequence>(sequenceFilename);
+                sequence.SequenceAsText = simul.CreateSequence.DefaultSequence;
+            }
+            if (trueSky == null)
+            {
+                GameObject g = new GameObject("trueSky");
+                trueSky = g.AddComponent<trueSKY>();
+            }
+        }
+
+		void AddLayerTag()
+		{
+
+            // Open tag+Layer manager
+            SerializedObject tagLayerManager = new SerializedObject(AssetDatabase.LoadAllAssetsAtPath("ProjectSettings/TagManager.asset")[0]);
+            SerializedProperty layersProp = tagLayerManager.FindProperty("layers");
+
+            // Adding a Layer/Tag
+            string ts_layer = "trueSKY";
+            ts_layer_index = trueSky.trueSKYLayerIndex;
+            // First check if it is not already present
+            bool found = false;
+
+            var newLayer = LayerMask.NameToLayer("trueSKY");
+            if (newLayer > -1)
+            {
+                found = true;
+            }
+
+            // if not found, add it
+            if (!found)
+            {
+                layersProp.InsertArrayElementAtIndex(ts_layer_index);
+                SerializedProperty n = layersProp.GetArrayElementAtIndex(ts_layer_index);
+                n.stringValue = ts_layer;
+            }
+            tagLayerManager.ApplyModifiedProperties();
+        }
+
+		void SetHDRPCustomPasses()
+		{
+            simul.TrueSkyHDRPCustomPass TrueSkyMainPass = new simul.TrueSkyHDRPCustomPass();
+            simul.TrueSkyHDRPCustomPass TrueSkyTranslucentPass = new simul.TrueSkyHDRPCustomPass();
+            simul.TrueSkyHDRPCustomPass TrueSkyOverlayPass = new simul.TrueSkyHDRPCustomPass();
+            simul.TrueSkyHDRPCustomPass TrueSkyUIPass = new simul.TrueSkyHDRPCustomPass();
+            CustomPassVolume MainPassVolume = trueSky.gameObject.GetComponent<CustomPassVolume>();
+            if (MainPassVolume == null)
+            {
+                TrueSkyMainPass.name = "trueSKY - Before Pre Refraction(Main Render)";
+                MainPassVolume = trueSky.gameObject.AddComponent<CustomPassVolume>();
+                MainPassVolume.injectionPoint = CustomPassInjectionPoint.BeforePreRefraction;
+                MainPassVolume.customPasses.Add(TrueSkyMainPass);
+
+                CustomPassVolume TranslucentVolume;
+                TrueSkyTranslucentPass.name = "trueSKY - Before Post Process(Translucent Effects)";
+                TranslucentVolume = trueSky.gameObject.AddComponent<CustomPassVolume>();
+                TranslucentVolume.injectionPoint = CustomPassInjectionPoint.BeforePostProcess;
+                TranslucentVolume.customPasses.Add(TrueSkyTranslucentPass);
+
+                CustomPassVolume OverlayVolume;
+                TrueSkyOverlayPass.name = "trueSKY - After Post Process(Overlay)";
+                OverlayVolume = trueSky.gameObject.AddComponent<CustomPassVolume>();
+                OverlayVolume.injectionPoint = CustomPassInjectionPoint.AfterPostProcess;
+                OverlayVolume.customPasses.Add(TrueSkyOverlayPass);
+                TrueSkyOverlayPass.enabled = false; //disabled by default. 
+
+                CustomPassVolume UIVolume;
+                TrueSkyUIPass.name = "trueSKY - After Everything";
+                UIVolume = trueSky.gameObject.AddComponent<CustomPassVolume>();
+                UIVolume.injectionPoint = CustomPassInjectionPoint.AfterOpaqueDepthAndNormal;
+                UIVolume.customPasses.Add(TrueSkyUIPass);
+                TrueSkyUIPass.enabled = true;
+            }
+            if (UnityEngine.Rendering.GraphicsSettings.allConfiguredRenderPipelines.Length > 0)
+            {
+                trueSky.HDRP_RenderPipelineAsset = UnityEngine.Rendering.GraphicsSettings.allConfiguredRenderPipelines[0];
+            }
+        }
+        void FindTrueSky()
 		{
 			// And we need a trueSKY object in the scene.
 			UnityEngine.Object[] trueSkies;
