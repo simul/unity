@@ -1110,7 +1110,7 @@ MonoBehaviour:
   globalViewRT: {fileID: 0}
   trueSKYLayerIndex: 14
   _amortization: 1
-  _atmosphericsAmortization: 2
+  _atmosphericsAmortization: 1
   _depthTemporalAlpha: 0.1
   _depthBlending: 1
   _cloudTint: {r: 1, g: 1, b: 1, a: 1}
@@ -1168,8 +1168,8 @@ MonoBehaviour:
   _signedDistanceFieldDivisorZ: 2
   _signedDistanceFieldIntersectLimitKm: 3
   _blendRate: 0.8
-  _HDRP_RenderPipelineAsset: {fileID: 11400000, guid: 36dd385e759c96147b6463dcd1149c11, type: 2}
-  _LoadRenderPipelineAsset: 0
+  _HDRP_RenderPipelineAsset: {fileID: 11400000, guid: 3e2e6bfc59709614ab90c0cd7d755e48, type: 2}
+  _LoadRenderPipelineAsset: 1
   _UsingIL2CPP: 0
   updateERV: 0
 --- !u!4 &1270760682

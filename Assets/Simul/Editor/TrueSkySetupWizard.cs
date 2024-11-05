@@ -25,8 +25,6 @@ namespace simul
 		{
 			minSize = new Vector2(400.0F, 300.0F);
 			maxSize = new Vector2(400.0F, 300.0F);
-
-            RenderingPipelineDefines.GetDefines();
         }
 		enum Stage
 		{

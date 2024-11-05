@@ -12,10 +12,11 @@ namespace simul
 	[CustomEditor(typeof(trueSKY))]
 	public class trueSKYEditor : Editor
 	{
-		[MenuItem("Help/trueSKY Documentation...", false, 1000)]
+ 
+        [MenuItem("Help/trueSKY Documentation...", false, 1000)]
 		public static void ShowTrueSkyDocs()
 		{
-			string path = @"http://docs.simul.co/unity";// "Simul/Documentation/TrueSkyUnity.html";
+			string path = @"http://docs.simul.co/4.4/";// "Simul/Documentation/TrueSkyUnity.html";
 			Help.BrowseURL(path);
 		}
 		bool recomp = false;
@@ -70,12 +71,7 @@ namespace simul
 			trueSKY.ShowAuroraeTextures = !trueSKY.ShowAuroraeTextures;
 			Debug.Log("trueSKY Show Aurorae Textures is set to: " + trueSKY.ShowAuroraeTextures);
 		}
-		[MenuItem("Window/trueSky/Show Water Textures %#&w", false, 200000)]
-		public static void ShowWaterTextures()
-		{
-			trueSKY.ShowWaterTextures = !trueSKY.ShowWaterTextures;
-			Debug.Log("trueSKY Show Water Textures is set to: " + trueSKY.ShowWaterTextures);
-		}
+
 		[MenuItem("Window/trueSky/Show Cubemaps %#&m", false, 200000)]
 		public static void ShowCubemaps()
 		{
@@ -842,27 +838,27 @@ namespace simul
 				}
 				if (trueSky.SimulVersion <= trueSky.MakeSimulVersion(4, 2))
 				{
-					// Water settings
-					EditorGUILayout.Space();
-					water = EditorGUILayout.Foldout(water, "Water", outerFoldoutStyle);
-					if (water)
-					{
-						if (trueSky.SimulVersion >= trueSky.MakeSimulVersion(4, 2))
-						{
-							trueSky.RenderWater = EditorGUILayout.Toggle("Render Water", trueSky.RenderWater);
-							trueSky.WaterFullResolution = EditorGUILayout.Toggle("Full Resolution Water", trueSky.WaterFullResolution);
-							trueSky.EnableReflections = EditorGUILayout.Toggle("Enable Reflections", trueSky.EnableReflections);
-							if (trueSky.EnableReflections)
-							{
-								trueSky.WaterFullResolutionReflections = EditorGUILayout.Toggle("Full Resolution Reflections", trueSky.WaterFullResolutionReflections);
-								trueSky.WaterReflectionSteps = EditorGUILayout.IntSlider("Reflection Steps", trueSky.WaterReflectionSteps, 10, 100);
-								trueSky.WaterReflectionPixelStep = EditorGUILayout.IntSlider("Pixel Steps", trueSky.WaterReflectionPixelStep, 1, 10);
-								trueSky.WaterReflectionDistance = EditorGUILayout.Slider("Reflection Distance", trueSky.WaterReflectionDistance, 1000, 40000);
-							}
-						}
-						else
-							EditorGUILayout.LabelField("Water is supported from trueSKY 4.2 onwards.");
-					}
+					//// Water settings
+					//EditorGUILayout.Space();
+					//water = EditorGUILayout.Foldout(water, "Water", outerFoldoutStyle);
+					//if (water)
+					//{
+					//	if (trueSky.SimulVersion >= trueSky.MakeSimulVersion(4, 2))
+					//	{
+					//		trueSky.RenderWater = EditorGUILayout.Toggle("Render Water", trueSky.RenderWater);
+					//		trueSky.WaterFullResolution = EditorGUILayout.Toggle("Full Resolution Water", trueSky.WaterFullResolution);
+					//		trueSky.EnableReflections = EditorGUILayout.Toggle("Enable Reflections", trueSky.EnableReflections);
+					//		if (trueSky.EnableReflections)
+					//		{
+					//			trueSky.WaterFullResolutionReflections = EditorGUILayout.Toggle("Full Resolution Reflections", trueSky.WaterFullResolutionReflections);
+					//			trueSky.WaterReflectionSteps = EditorGUILayout.IntSlider("Reflection Steps", trueSky.WaterReflectionSteps, 10, 100);
+					//			trueSky.WaterReflectionPixelStep = EditorGUILayout.IntSlider("Pixel Steps", trueSky.WaterReflectionPixelStep, 1, 10);
+					//			trueSky.WaterReflectionDistance = EditorGUILayout.Slider("Reflection Distance", trueSky.WaterReflectionDistance, 1000, 40000);
+					//		}
+					//	}
+					//	else
+					//		EditorGUILayout.LabelField("Water is supported from trueSKY 4.2 onwards.");
+					//}
 				}
 				// Debugging settings
 				EditorGUILayout.Space();

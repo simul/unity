@@ -10,39 +10,39 @@ namespace simul
 	[CustomEditor(typeof(TrueSkyWaterObject))]
 	public class TrueSkyWaterObjectEditor : Editor
 	{
-		[MenuItem("GameObject/Create trueSKY Water Object", false, 150000)]
-		public static void CreateWaterObject()
-		{
-			trueSKY trueSky = trueSKY.GetTrueSky();
+		//[MenuItem("GameObject/Create trueSKY Water Object", false, 150000)]
+		//public static void CreateWaterObject()
+		//{
+		//	trueSKY trueSky = trueSKY.GetTrueSky();
 
-			if (trueSky && trueSky.SimulVersion >= trueSky.MakeSimulVersion(4, 2))
-			{
-				GameObject g = new GameObject("Water Object");
-				g.AddComponent<TrueSkyWaterObject>();
-			}
-			else
-			{
-				UnityEngine.Debug.LogWarning("No compatible Truesky version installed, cannot create water objects.");
-			}
-		}
+		//	if (trueSky && trueSky.SimulVersion >= trueSky.MakeSimulVersion(4, 2))
+		//	{
+		//		GameObject g = new GameObject("Water Object");
+		//		g.AddComponent<TrueSkyWaterObject>();
+		//	}
+		//	else
+		//	{
+		//		UnityEngine.Debug.LogWarning("No compatible Truesky version installed, cannot create water objects.");
+		//	}
+		//}
 
-		[MenuItem("CONTEXT/TrueSkyWaterBuoyancy/Create Water Probe", false, 200000)]
-		public static void CreateWaterProbe()
-		{
-			trueSKY trueSky = trueSKY.GetTrueSky();
+		//[MenuItem("CONTEXT/TrueSkyWaterBuoyancy/Create Water Probe", false, 200000)]
+		//public static void CreateWaterProbe()
+		//{
+		//	trueSKY trueSky = trueSKY.GetTrueSky();
 
-			if (trueSky && trueSky.SimulVersion >= trueSky.MakeSimulVersion(4, 2))
-			{
-				GameObject g = new GameObject("Water Probe");
-				g.AddComponent<TrueSkyWaterProbe>();
-				g.transform.parent = Selection.GetTransforms(SelectionMode.TopLevel | SelectionMode.Editable)[0];
-				g.transform.localPosition = new Vector3(0.0f,0.0f,0.0f);
-			}
-			else
-			{
-				UnityEngine.Debug.LogWarning("No compatible Truesky version installed, cannot create water probes.");
-			}
-		}
+		//	if (trueSky && trueSky.SimulVersion >= trueSky.MakeSimulVersion(4, 2))
+		//	{
+		//		GameObject g = new GameObject("Water Probe");
+		//		g.AddComponent<TrueSkyWaterProbe>();
+		//		g.transform.parent = Selection.GetTransforms(SelectionMode.TopLevel | SelectionMode.Editable)[0];
+		//		g.transform.localPosition = new Vector3(0.0f,0.0f,0.0f);
+		//	}
+		//	else
+		//	{
+		//		UnityEngine.Debug.LogWarning("No compatible Truesky version installed, cannot create water probes.");
+		//	}
+		//}
 
 		[SerializeField]
 		static bool advanced = false;
