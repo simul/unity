@@ -19,6 +19,7 @@ public class TrueSkyDirectionalLight : MonoBehaviour
 	public float MoonMultiplier = 1.0f;
 	public float AmbientMultiplier = 1.0f;
 	public bool ApplyRotation = true;
+	public bool UseShadowTexture = false;
 
 	public enum LightUnits : byte
 	{
@@ -46,15 +47,15 @@ public class TrueSkyDirectionalLight : MonoBehaviour
 	{
 		if (mLightComponent && mTsInstance)
 		{
-			if (mLightComponent.cookie == null)
-				mLightComponent.cookie = mTsInstance.CloudShadowTexture.renderTexture;
+			if (mLightComponent.cookie && UseShadowTexture)
+			{
+            if (mLightComponent.cookie == null)
+                mLightComponent.cookie = mTsInstance.CloudShadowTexture.renderTexture;
 #if USING_HDRP
 			if (mHDAdditionalLightData == null)
 				mHDAdditionalLightData = GetComponent<HDAdditionalLightData>();
 #endif
-			if (mLightComponent.cookie)
-			{
-				UpdateCookie();
+                UpdateCookie();
 			}
 
 			UpdateLight();

@@ -32,7 +32,7 @@ MonoBehaviour:
     \"0.300000011920929\"\n\t\t\t\"WorleyNoise\": \"           0.125\"\n\t\t\t\"WorleyScale\":
     \"               3\"\n\t\t\t\"baseNoiseFactor\": \"            0.75\"\n\t\t\t\"churn\":
     \"               1\"\n\t\t\t\"cloud_base_km\": \"               3\"\n\t\t\t\"cloud_height_km\":
-    \"               8\"\n\t\t\t\"cloud_width_km\": \"             120\"\n\t\t\t\"cloudiness\":
+    \"               5\"\n\t\t\t\"cloud_width_km\": \"             120\"\n\t\t\t\"cloudiness\":
     \"0.6000000238418579\"\n\t\t\t\"diffusivity\": \"0.449999988079071\"\n\t\t\t\"distributionBaseLayer\":
     \"0.1299999952316284\"\n\t\t\t\"distributionTransition\": \"0.2000000029802322\"\n\t\t\t\"edgeSharpness\":
     \"0.05999999865889549\"\n\t\t\t\"fractal_amplitude\": \"               2\"\n\t\t\t\"maxDensityGm3\":
