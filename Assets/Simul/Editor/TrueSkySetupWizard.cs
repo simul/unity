@@ -658,6 +658,7 @@ namespace simul
 
 		void SetHDRPCustomPasses()
 		{
+		#if USING_HDRP
             simul.TrueSkyHDRPCustomPass TrueSkyMainPass = new simul.TrueSkyHDRPCustomPass();
             simul.TrueSkyHDRPCustomPass TrueSkyTranslucentPass = new simul.TrueSkyHDRPCustomPass();
             simul.TrueSkyHDRPCustomPass TrueSkyOverlayPass = new simul.TrueSkyHDRPCustomPass();
@@ -694,6 +695,7 @@ namespace simul
             {
                 trueSky.HDRP_RenderPipelineAsset = UnityEngine.Rendering.GraphicsSettings.allConfiguredRenderPipelines[0];
             }
+		#endif
         }
         void FindTrueSky()
 		{
