@@ -471,7 +471,7 @@ namespace simul
 #if USING_HDRP
 			lightComponent.Units = TrueSkyDirectionalLight.LightUnits.Photometric;
 #else
-			lightComponent.Units = TrueSkyDirectionalLight.LightUnits.Radiometric;
+			lightComponent.Units = TrueSkyDirectionalLight.LightUnits.Photometric; //Radiometric?
 #endif
 			if (removeFog)
 			{
