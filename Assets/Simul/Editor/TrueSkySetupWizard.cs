@@ -20,11 +20,14 @@ namespace simul
 {
 	public class TrueSkySetupWizard : EditorWindow
 	{
+
 		public TrueSkySetupWizard()
 		{
 			minSize = new Vector2(400.0F, 300.0F);
 			maxSize = new Vector2(400.0F, 300.0F);
-		}
+
+            RenderingPipelineDefines.GetDefines();
+        }
 		enum Stage
 		{
 			PRE_START, START, FIND_SEQUENCE, FIND_CAMERA, FIND_TRUESKY, FIND_SUN, FINISH
@@ -101,6 +104,7 @@ namespace simul
 
 		void OnGUI()
 		{
+
 			if (stage == Stage.PRE_START)
 			{
 				// DirectoryCopy.CopyPluginsAndGizmosToAssetsFolder();
@@ -131,10 +135,10 @@ namespace simul
 				{
 					GUILayout.Label("This wizard will initialize trueSKY for the current scene.\nThe current scene has not yet been saved - plase do this first, so the wizard knows where to put the trueSKY data.", textStyle);
 				}
+
 #if USING_HDRP
 				GUILayout.Label("trueSKY will configure for HDRP", textStyle);
-#endif
-#if USING_URP
+#else
 			GUILayout.Label("trueSKY does not currently support URP. Please make sure you are using either HDRP or standard", EditorStyles.boldLabel);
 #endif
 			}
