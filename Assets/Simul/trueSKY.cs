@@ -90,6 +90,7 @@ namespace simul
 		[FieldOffset(0)] public long Int64;
 		[FieldOffset(0)] public vec3 Vec3;
 		[FieldOffset(0)] public Vector3Int Vec3Int;
+		[FieldOffset(0)] public vec4 Vec4;
 
 	};
 	public struct Viewport
@@ -464,7 +465,6 @@ namespace simul
 
     };
 
-    [StructLayout(LayoutKind.Sequential, Pack = 1)]
 	public struct ExternalDynamicValues
 	{
         public static int static_version = 3; //NearCloudExtinctionPerKm
@@ -495,7 +495,7 @@ namespace simul
 		public float CosmicBackgroundBrightness;       //!< Brightness multiplier for cosmic background.
 
 		public float CloudShadowRangeKm;
-		public float CloudShadowResolution;
+		public float CloudShadowStrength;
 
 		public int MaxPrecipitationParticles;
 		public float RainFallSpeedMS;
@@ -565,8 +565,8 @@ namespace simul
 		public int AuroraTraceLength;
 
         public float NearCloudExtinctionPerKm;
-		public int padi;
     };
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
 
 	public class FMoon
 	{
@@ -851,10 +851,21 @@ namespace simul
 
 		void EnsureTextures()
 		{
-            InscatterTexture.SetRenderTexture(inscatterRT);
+			if (!cloudShadowRT)
+			{
+				cloudShadowRT = new RenderTexture(256, 256, 16, RenderTextureFormat.ARGB32);
+				cloudShadowRT.name = "CloudShadowRT_32";
+				cloudShadowRT.enableRandomWrite = true;
+				cloudShadowRT.Create();
+			}
+			InscatterTexture.SetRenderTexture(inscatterRT);
             LossTexture.SetRenderTexture(lossRT);
             CloudVisibilityTexture.SetRenderTexture(cloudVisibilityRT);
             CloudShadowTexture.SetRenderTexture(cloudShadowRT);
+			if (CloudShadowTexture.externalTexture.texturePtr == (System.IntPtr)0)
+			{
+				cloudShadowRT=null;
+			}
 
             GlobalViewTexture.SetRenderTexture(Resources.Load<RenderTexture>("GlobalViewRT"));
             PropertiesTexture.SetRenderTexture(Resources.Load<RenderTexture>("PropertiesRT"));
@@ -919,20 +930,6 @@ namespace simul
 
 		void OnEnable()
 		{
-			if (!cloudShadowRT)
-			{
-                cloudShadowRT = Resources.Load<RenderTexture>("CloudShadowRT");
-
-				if (!cloudShadowRT)
-				{
-					cloudShadowRT = new RenderTexture(256, 256, 16, RenderTextureFormat.ARGB32);
-					cloudShadowRT.name = "CloudShadowRT_32";
-					cloudShadowRT.Create();
-
-                    UnityEngine.Debug.Log("TrueSKY - Warning - CloudShadowRT not found");
-                }
-               
-            }
 			if (!lossRT)
             {
                 lossRT = Resources.Load<RenderTexture>("LossRT");
@@ -943,7 +940,7 @@ namespace simul
 					lossRT.Create();
 
                     UnityEngine.Debug.Log("TrueSKY - Warning - LossRT not found");
-                }
+				}
 
 			}
 			if (!inscatterRT)
@@ -956,7 +953,7 @@ namespace simul
 					inscatterRT.Create();
 
                     UnityEngine.Debug.Log("TrueSKY - Warning - InscatterRT not found");
-                }
+				}
 			}
 			if (!cloudVisibilityRT)
             {
@@ -968,23 +965,8 @@ namespace simul
 					cloudVisibilityRT.Create();
 
                     UnityEngine.Debug.Log("TrueSKY - Warning - CloudVisibilityRT not found");
-                }
+				}
 			}
-    //        if (!globalViewRT)
-    //        {
-    //            globalViewRT = Resources.Load<RenderTexture>("GlobalViewRT");
-    //            if (!globalViewRT)
-				//{
-				//	UnityEngine.Debug.Log("TrueSKY - Failed to find GlobalViewRT");
-    //                //globalViewRT = new RenderTexture(256, 256, 16, RenderTextureFormat.ARGB32);
-    //                //globalViewRT.name = "globalViewRT_32";
-    //                //globalViewRT.Create();
-    //            }
-				//else
-				//{
-    //                GlobalViewTexture.renderTexture = globalViewRT;
-    //            }
-    //        }
 
             LossTexture.renderTexture = lossRT;
 			InscatterTexture.renderTexture = inscatterRT;
@@ -1410,6 +1392,14 @@ namespace simul
 			Vector4 u_dir = t2u * (new Vector4(ts_dir.x, ts_dir.z, ts_dir.y, 0.0F));
 			return new Vector3(u_dir.x, u_dir.y, u_dir.z);
 		}
+		static public Quaternion TrueSkyToUnityRotation(Quaternion ts_q)
+		{
+			float temp=ts_q.z;
+			ts_q.z=ts_q.y;
+			ts_q.y= temp;
+			Quaternion engine_q= trueSKY.GetTrueSky().transform.rotation*ts_q;
+			return engine_q;
+		}
 		static public Vector3 UnityToTrueSkyPosition(Vector3 upos)
 		{
 			Vector4 u_dir = UnityToTrueSkyMatrix() * (new Vector4(upos.x, upos.y, upos.z, 1.0F));
@@ -1422,12 +1412,12 @@ namespace simul
         }
         static public Matrix4x4 UnityToTrueSkyMatrix()
         {
-            Matrix4x4 transform = trueSKY.GetTrueSky().transform.worldToLocalMatrix;
+            Matrix4x4 worldToLocalMatrix = trueSKY.GetTrueSky().transform.worldToLocalMatrix;
             float metresPerUnit = trueSKY.GetTrueSky().MetresPerUnit;
             Matrix4x4 scale = new Matrix4x4();
             scale.SetTRS(new Vector3(0, 0, 0), new Quaternion(0, 0, 0, 1.0F), new Vector3(metresPerUnit, metresPerUnit, metresPerUnit));
-            transform = scale * transform;
-            return transform;
+			worldToLocalMatrix = scale * worldToLocalMatrix;
+            return worldToLocalMatrix;
         }
 
 		static public void SanitizeSize(ref int value, int minRes = 64, int maxRes = 2048)
@@ -4286,7 +4276,10 @@ namespace simul
                         UnityEngine.Debug.Log(exc.ToString());
                     }
             }
-        }
+		}
+		[SerializeField]
+		float _cloudShadowStrength = 1.0F;
+		
 
 		[SerializeField]
 		int _highDetailMultiplier = 1;
@@ -4646,7 +4639,7 @@ namespace simul
 			EDV.AutomaticRainbowPosition = Convert.ToUInt32(_AutomaticRainbowPosition);
 			EDV.CellNoiseWavelengthKm = _CellNoiseWavelengthKm;
 			EDV.CloudShadowRangeKm = _cloudShadowRangeKm;
-			//EDV.CloudShadowStrength = _cloudShadowStrength;
+			EDV.CloudShadowStrength = _cloudShadowStrength;
 			EDV.CosmicBackgroundBrightness = _backgroundBrightness;
 			EDV.CrepuscularRayStrength = _crepuscularRaysStrength;
 			EDV.DirectLight = _DirectLight;
@@ -4988,11 +4981,29 @@ namespace simul
 			}
 		}
 
-		/// <summary>
-		/// Returns the rotation of the sun as a Quaternion, for Directional Light objects.
-		/// </summary>
-		/// <returns></returns>
-		public Quaternion getSunRotation()
+		public Vector3 getSunPosition()
+		{
+			try
+			{
+				Variant[] values = new Variant[1];
+				long EngineSunPosition = StaticGetEnum("SunPosition");
+				if (StaticGetVariant(EngineSunPosition, values)==0)
+				{
+					simul.vec3 P = values[0].Vec3;
+					Vector3 p= new Vector3(P.x, P.y, P.z);
+					Vector3 p_unity=TrueSkyToUnityPosition(p);
+					return p_unity;
+				}
+			}
+			catch (Exception exc)
+			{
+				_initialized = false;
+				UnityEngine.Debug.Log(exc.ToString());
+			}
+			Vector3 pp = new Vector3(0,0,0);
+			return pp;
+		}
+		public Quaternion getSunRotation_legacy()
 		{
 			float az = 0.0F, el = 0.0F;
 			try
@@ -5005,8 +5016,37 @@ namespace simul
 				_initialized = false;
 				UnityEngine.Debug.Log(exc.ToString());
 			}
-			Quaternion q=Quaternion.Euler(el,az+180.0F,0.0F);
+			Quaternion q = Quaternion.Euler(el, az + 180.0F, 0.0F);
 			return q;
+		}
+
+		/// <summary>
+		/// Returns the rotation of the sun as a Quaternion, for Directional Light objects.
+		/// </summary>
+		/// <returns></returns>
+		public Quaternion getSunRotation()
+		{
+			try
+			{
+				Variant [] values=new Variant[1];
+				long EngineSunOrientation=StaticGetEnum("SunRotation");
+				if (StaticGetVariant(EngineSunOrientation,values)==0)
+				{
+					simul.vec4 Q = values[0].Vec4;
+					Quaternion q = new Quaternion(Q.x,Q.y,Q.z,Q.w);
+					Quaternion q_unity=TrueSkyToUnityRotation(q);
+					// But this rotates the Y axis and we want the Z in Unity.
+					return q_unity;
+				}
+				//el = StaticGetRenderFloat("SunElevationDegrees");
+			}
+			catch (Exception exc)
+			{
+				_initialized = false;
+				UnityEngine.Debug.Log(exc.ToString());
+			}
+			Quaternion qq= Quaternion.Euler(0.0F,0.0F,0.0F);
+			return qq;
 		}
 
 		/// <summary>

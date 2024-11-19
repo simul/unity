@@ -414,9 +414,6 @@ namespace simul
 				if (ShareBuffersForVR)
 					unityRenderOptions = unityRenderOptions | UnityRenderOptions.NO_SEPARATION;
 
-				
-
-
 				unityViewStruct.view_id = view_id;
 				unityViewStruct.framenumber = Time.renderedFrameCount;
 				unityViewStruct.exposure = exposure;
@@ -433,61 +430,6 @@ namespace simul
 				unityViewStruct.colourTextureArrayIndex = -1;
 
 				lastFrameCount = Time.renderedFrameCount;
-
-				trueSKY ts = trueSKY.GetTrueSky();
-
-                //
-                //ts.InscatterTexture.SetRenderTexture(Resources.Load<RenderTexture>("InscatterRT"));
-                //ts.CloudShadowTexture.SetRenderTexture(Resources.Load<RenderTexture>("cloudShadowRT"));
-                //ts.LossTexture.SetRenderTexture(Resources.Load<RenderTexture>("LossRT"));
-                //ts.InscatterTexture.SetRenderTexture(Resources.Load<RenderTexture>("GlobalViewRT"));
-                //ts.CloudVisibilityTexture.SetRenderTexture(Resources.Load<RenderTexture>("CloudVisibilityRT"));
-
-                //ts.InscatterTexture.SetRenderTexture(ts.inscatterRT);
-                //ts.LossTexture.SetRenderTexture(ts.lossRT);
-                //ts.CloudVisibilityTexture.SetRenderTexture(ts.cloudVisibilityRT);
-                //ts.CloudShadowTexture.SetRenderTexture(ts.cloudShadowRT);
-
-                //ts.GlobalViewTexture.SetRenderTexture(Resources.Load<RenderTexture>("GlobalViewRT"));
-                //ts.PropertiesTexture.SetRenderTexture(Resources.Load<RenderTexture>("PropertiesRT"));
-                //ts.SequencerTexture.SetRenderTexture(Resources.Load<RenderTexture>("SequencerRT"));
-
-                //Marshal.StructureToPtr(ts.InscatterTexture.externalTexture, ts.InscatterTexture.GetExternalTexturePtr(), !trueSKY.GetTrueSky().UsingIL2CPP);
-                //StaticSetRenderTexture2("inscatter2D", ts.InscatterTexture.GetExternalTexturePtr());
-                //Marshal.StructureToPtr(ts.LossTexture.externalTexture, ts.LossTexture.GetExternalTexturePtr(), !trueSKY.GetTrueSky().UsingIL2CPP);
-                //StaticSetRenderTexture2("Loss2D", ts.LossTexture.GetExternalTexturePtr());
-                //Marshal.StructureToPtr(ts.CloudVisibilityTexture.externalTexture, ts.CloudVisibilityTexture.GetExternalTexturePtr(), !trueSKY.GetTrueSky().UsingIL2CPP);
-                //StaticSetRenderTexture2("CloudVisibilityRT", ts.CloudVisibilityTexture.GetExternalTexturePtr());
-                //Marshal.StructureToPtr(ts.CloudShadowTexture.externalTexture, ts.CloudShadowTexture.GetExternalTexturePtr(), !trueSKY.GetTrueSky().UsingIL2CPP);
-                //StaticSetRenderTexture2("CloudShadowRT", ts.CloudShadowTexture.GetExternalTexturePtr());
-
-                /*_inscatterRT.renderTexture = inscatterRT;
-				_cloudVisibilityRT.renderTexture = cloudVisibilityRT;
-				_cloudShadowRT.renderTexture = cloudShadowRT;
-
-				_lossRT.renderTexture = lossRT;
-				StaticSetRenderTexture("inscatter2D", _inscatterRT.GetNative());
-				StaticSetRenderTexture("Loss2D", _lossRT.GetNative());
-				StaticSetRenderTexture("CloudVisibilityRT", _cloudVisibilityRT.GetNative());
-				if (reflectionProbeTexture.renderTexture)
-				{
-					StaticSetRenderTexture("Cubemap", reflectionProbeTexture.GetNative());
-				}
-				StaticSetRenderTexture("CloudShadowRT", _cloudShadowRT.GetNative());
-				MatrixTransform(cubemapTransformMatrix);
-				StaticSetMatrix4x4("CubemapTransform", cubemapTransformMatrix);
-				 
-				if (RainDepthCamera != null)
-					_rainDepthRT.renderTexture = RainDepthCamera.targetTexture;
-				StaticSetRenderTexture("RainDepthTexture", _rainDepthRT.GetNative());
-				if (RainDepthCamera != null)
-				{
-					ViewMatrixToTrueSkyFormat(RainDepthCamera.matrix, rainDepthMatrix, 0, true);
-					rainDepthTextureScale = 1.0F;// DepthCamera.farClipPlane;
-					StaticSetMatrix4x4("RainDepthTransform", rainDepthMatrix);
-					StaticSetMatrix4x4("RainDepthProjection", rainDepthProjection);
-					StaticSetRenderFloat("RainDepthTextureScale", rainDepthTextureScale);
-				}*/
             }
 		}
 
@@ -581,7 +523,7 @@ namespace simul
 			proj[offset + 14] = m.m32;
 			proj[offset + 15] = m.m33 * metresPerUnit;
 		}
-		protected void ViewMatrixToTrueSkyFormat_HDRP(RenderStyle renderStyle, Matrix4x4 m, float[] view, int offset = 0, bool swap_yz = true)
+		protected void ViewMatrixToTrueSkyFormat_HDRP(RenderStyle renderStyle, Matrix4x4 m, float[] view, int offset = 0)
 		{
 			if (!tsValid)
 				return;
@@ -593,7 +535,6 @@ namespace simul
 			m = m.transpose;
 			Matrix4x4 n = m.inverse;
 			Matrix4x4 y;
-			if (swap_yz)
 			{
 				// Swap the y and z columns - this makes a left-handed matrix into right-handed:
 				y.m00 = n.m00;
@@ -616,30 +557,7 @@ namespace simul
 				y.m32 = n.m31 * metresPerUnit;
 				y.m33 = n.m33;
 			}
-			else
-			{
-				// Swap the y and z columns - this makes a left-handed matrix into right-handed:
-				y.m00 = n.m00;
-				y.m01 = n.m01;
-				y.m02 = n.m02;
-				y.m03 = n.m03;
-
-				y.m10 = n.m10;
-				y.m11 = n.m11;
-				y.m12 = n.m12;
-				y.m13 = n.m13;
-
-				y.m20 = n.m20;
-				y.m21 = n.m21;
-				y.m22 = n.m22;
-				y.m23 = n.m23;
-				// Swap the position values as well, as Unity uses y=up, we use z:
-				y.m30 = n.m30 * metresPerUnit;
-				y.m31 = n.m31 * metresPerUnit;
-				y.m32 = n.m32 * metresPerUnit;
-				y.m33 = n.m33;
-			}
-
+			// Invert the matrix, so it converts from world to view
 			Matrix4x4 z = y.inverse;
 			view[offset + 00] = z.m00;
 			view[offset + 01] = z.m01;

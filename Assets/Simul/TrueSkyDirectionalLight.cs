@@ -47,21 +47,21 @@ public class TrueSkyDirectionalLight : MonoBehaviour
 	{
 		if (mLightComponent && mTsInstance)
 		{
-			if (mLightComponent.cookie && UseShadowTexture)
+			if (UseShadowTexture)
 			{
-            if (mLightComponent.cookie == null)
-                mLightComponent.cookie = mTsInstance.CloudShadowTexture.renderTexture;
+				mLightComponent.cookie = mTsInstance.CloudShadowTexture.renderTexture;
 #if USING_HDRP
-			if (mHDAdditionalLightData == null)
-				mHDAdditionalLightData = GetComponent<HDAdditionalLightData>();
+				if (mHDAdditionalLightData == null)
+					mHDAdditionalLightData = GetComponent<HDAdditionalLightData>();
 #endif
-                UpdateCookie();
+				if (mLightComponent.cookie != null)
+					UpdateCookie();
 			}
 
 			UpdateLight();
 		}
 	}
-
+	public bool LegacySunRotation=false;
 	float intensity_scale = 0.1f;
 	bool UpdateLight()
 	{
@@ -106,7 +106,17 @@ public class TrueSkyDirectionalLight : MonoBehaviour
 				linearColour /= l;
 				mLightComponent.shadows = LightShadows.Soft;
 				mLightComponent.intensity = l * intensity_scale;
-				lrotation = mTsInstance.getSunRotation();
+				if(LegacySunRotation)
+					lrotation= mTsInstance.getSunRotation_legacy();
+				else
+				{ 
+					lrotation = mTsInstance.getSunRotation();
+					Transform tr=transform;
+					transform.rotation=lrotation;
+					tr.Rotate(new Vector3(1.0F, 0.0F, 0.0F),-90.0F);
+					lrotation=tr.rotation;
+					// But this rotates the Y axis and we want the Z in Unity.
+				}
 			}
 			else
 			{
@@ -151,6 +161,8 @@ public class TrueSkyDirectionalLight : MonoBehaviour
 			if (ApplyRotation)
 			{
 				transform.rotation = lrotation;
+				transform.position= mTsInstance.getSunPosition();
+				transform.Translate(0,0,-100.0F);
 			}
 			return true;
 		}
@@ -168,13 +180,17 @@ public class TrueSkyDirectionalLight : MonoBehaviour
 		{
 			curShadowCenter = Vector3.zero;
 		}
-		uint currentKeyframe = mTsInstance.GetInterpolatedCloudKeyframe(0);
+		// Get the uid of the first layer in the list:
+		uint layer_uid= mTsInstance.GetCloudLayerByIndex(0);
+		// For that layer, get its interpolated (i.e. current) keyframe:
+		uint currentKeyframe = mTsInstance.GetInterpolatedCloudKeyframe(layer_uid);
 		float sunHeight = mTsInstance.GetKeyframeValue<float>(currentKeyframe, "cloudBase") * 1000.0f;
 		float shadowSize = mTsInstance.getCloudShadowScale();
 		//float halfShadowSize		= shadowSize * 0.5f;
 		transform.position = new Vector3(0.0f, sunHeight, 0.0f);
 		mLightComponent.cookieSize = shadowSize / 4.0f; //would be moved if using shaderGraph.
 														// cookieSize does not work in HDRP, instead we use:
+		mLightComponent.cookie= mTsInstance.CloudShadowTexture.renderTexture;
 #if USING_HDRP
 		if (mHDAdditionalLightData != null)
 		{

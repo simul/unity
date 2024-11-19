@@ -25,7 +25,7 @@ RenderTexture:
   m_UseDynamicScaleExplicit: 0
   m_BindMS: 0
   m_EnableCompatibleFormat: 1
-  m_EnableRandomWrite: 0
+  m_EnableRandomWrite: 1
   m_TextureSettings:
     serializedVersion: 2
     m_FilterMode: 1

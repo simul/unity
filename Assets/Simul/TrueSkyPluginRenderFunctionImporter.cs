@@ -94,7 +94,8 @@ namespace simul
 		[DllImport(renderer_dll)] public static extern bool StaticHasRenderInt(string name);
 		[DllImport(renderer_dll)] public static extern void StaticSetRender(string name, int numparams, Variant[] values);
 		[DllImport(renderer_dll)] public static extern int StaticGetRenderInt(string name);
-		[DllImport(renderer_dll)] public static extern void StaticGetRender(string name, int numparams, Variant[] values);
+		[DllImport(renderer_dll)] public static extern int StaticGetVariant(long enum_, Variant[] value);
+		[DllImport(renderer_dll)] public static extern bool StaticGetVariants(long  enum_, int numparams, Variant[] values);
 		[DllImport(renderer_dll)] public static extern void StaticSetRenderInt(string name, int value);
 
 		//trueWATER
