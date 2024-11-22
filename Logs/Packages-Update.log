@@ -47,3 +47,11 @@ The following packages were added:
   com.unity.multiplayer.center@1.0.0
 The following packages were updated:
   com.unity.collab-proxy from version 2.4.4 to 2.5.2
+
+=== Thu Nov 21 21:24:17 2024
+
+Packages were changed.
+Update Mode: updateDependencies
+
+The following packages were updated:
+  com.unity.visualscripting from version 1.9.4 to 1.9.5

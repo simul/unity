@@ -14,8 +14,9 @@ using UnityEngine.Rendering;
 
 using static simul.TrueSkyPluginRenderFunctionImporter;
 using static simul.TrueSkyCameraBase;
+#if UNITY_EDITOR
 using UnityEditor;
-using UnityEditor.Purchasing;
+#endif
 using static UnityEngine.Rendering.VirtualTexturing.Debugging;
 
 namespace simul
@@ -838,26 +839,28 @@ namespace simul
         void UpdateDefines()
         {
 
+#if UNITY_EDITOR
             if (SimulVersion == MakeSimulVersion(4,3))
             {
                 AddDefine("USING_TRUESKY_4_3");
                 
             }
             else if (SimulVersion == MakeSimulVersion(4, 4))
-            {
-                AddDefine("USING_TRUESKY_4_4");             
+#endif
+			{
+				AddDefine("USING_TRUESKY_4_4");             
             }
-        }
+		}
 
 		void EnsureTextures()
 		{
-			if (!cloudShadowRT)
+		/*	if (!cloudShadowRT)
 			{
 				cloudShadowRT = new RenderTexture(256, 256, 16, RenderTextureFormat.ARGB32);
 				cloudShadowRT.name = "CloudShadowRT_32";
 				cloudShadowRT.enableRandomWrite = true;
 				cloudShadowRT.Create();
-			}
+			}*/
 			InscatterTexture.SetRenderTexture(inscatterRT);
             LossTexture.SetRenderTexture(lossRT);
             CloudVisibilityTexture.SetRenderTexture(cloudVisibilityRT);
@@ -882,21 +885,22 @@ namespace simul
         }
 
         static void AddDefine(string define)
-        {
+		{
+#if UNITY_EDITOR
             var definesList = GetDefines();
             if (!definesList.Contains(define))
             {
                 definesList.Add(define);
                 SetDefines(definesList);
             }
-        }
-
-        /// <summary>
-        /// Remove a custom define
-        /// </summary>
-        /// <param name="_define"></param>
-        /// <param name="_buildTargetGroup"></param>
-        public static void RemoveDefine(string define)
+#endif
+		}
+		/// <summary>
+		/// Remove a custom define
+		/// </summary>
+		/// <param name="_define"></param>
+		/// <param name="_buildTargetGroup"></param>
+		public static void RemoveDefine(string define)
         {
             var definesList = GetDefines();
             if (definesList.Contains(define))
@@ -904,26 +908,35 @@ namespace simul
                 definesList.Remove(define);
                 SetDefines(definesList);
             }
-        }
-
-        public static List<string> GetDefines()
-        {
+		}
+		[SerializeField]
+		string defines="";
+		public void setdefines(string s)
+		{
+			defines=s;
+		}
+		public static List<string> GetDefines()
+		{
+#if UNITY_EDITOR
             var target = EditorUserBuildSettings.activeBuildTarget;
             var buildTargetGroup = BuildPipeline.GetBuildTargetGroup(target);
 			var NamedBuildTarget = UnityEditor.Build.NamedBuildTarget.FromBuildTargetGroup(buildTargetGroup);
-            var defines = PlayerSettings.GetScriptingDefineSymbols(NamedBuildTarget);
-            return defines.Split(';').ToList();
+            GetTrueSky().defines = PlayerSettings.GetScriptingDefineSymbols(NamedBuildTarget);
+#endif
+			return GetTrueSky().defines.Split(';').ToList();
         }
 
         public static void SetDefines(List<string> definesList)
         {
+#if UNITY_EDITOR
             var target = EditorUserBuildSettings.activeBuildTarget;
             var buildTargetGroup = BuildPipeline.GetBuildTargetGroup(target);
             var NamedBuildTarget = UnityEditor.Build.NamedBuildTarget.FromBuildTargetGroup(buildTargetGroup);
-            var defines = string.Join(";", definesList.ToArray());
-            PlayerSettings.SetScriptingDefineSymbols(NamedBuildTarget, defines);
-        }
-        public trueSKY()
+            GetTrueSky().setdefines(string.Join(";", definesList.ToArray()));
+            PlayerSettings.SetScriptingDefineSymbols(NamedBuildTarget, GetTrueSky().defines);
+#endif
+		}
+		public trueSKY()
 		{
 
 		}
@@ -967,8 +980,20 @@ namespace simul
                     UnityEngine.Debug.Log("TrueSKY - Warning - CloudVisibilityRT not found");
 				}
 			}
+			if (!cloudShadowRT)
+			{
+				cloudShadowRT = Resources.Load<RenderTexture>("CloudShadowRT");
+				/*if (!cloudShadowRT)
+				{
+					cloudShadowRT = new RenderTexture(256, 256, 16, RenderTextureFormat.ARGB32);
+					cloudShadowRT.name = "cloudShadowRT_32";
+					cloudShadowRT.Create();
 
-            LossTexture.renderTexture = lossRT;
+					UnityEngine.Debug.Log("TrueSKY - Warning - CloudShadowRT not found");
+				}*/
+			}
+
+			LossTexture.renderTexture = lossRT;
 			InscatterTexture.renderTexture = inscatterRT;
 			CloudVisibilityTexture.renderTexture = cloudVisibilityRT;
 			CloudShadowTexture.renderTexture = cloudShadowRT;
@@ -1425,7 +1450,7 @@ namespace simul
 			value = Mathf.Clamp(Mathf.NextPowerOfTwo(value), minRes, maxRes);
 		}
 
-	#endregion
+#endregion
 	public List<FMoon> _moons = new List<FMoon>();
 
 		public void AddNewMoon()
@@ -3584,7 +3609,7 @@ namespace simul
 				return;
 			try
 			{
-#if USING_TRUESKY_4_4
+#if USING_TRUESKY_4_4 && UNITY_EDITOR
 				IntPtr result = StaticGetSequence(0, MyAllocator);
 				string sequenceData = "";
 				

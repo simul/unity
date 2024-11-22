@@ -120,6 +120,10 @@ namespace simul
                 ext.numSamples = 0;
                 ext.resourceState = 0;
             }
+			else
+			{ 
+				ext.texturePtr =(System.IntPtr)0;
+			}
         }
 
 
