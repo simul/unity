@@ -168,14 +168,20 @@ namespace simul
                     ev.value.Vec3Int.y = Mathf.RoundToInt(e.mousePosition.y);
                     ev.value.Vec3Int.z = 0; // No button held down
                     break;
+				case EventType.MouseLeaveWindow:
+					ev.type = UIEventType.MOUSE_UP;
+					ev.value.Vec3Int.x = Mathf.RoundToInt(e.mousePosition.x);
+					ev.value.Vec3Int.y = Mathf.RoundToInt(e.mousePosition.y);
+					ev.value.Vec3Int.z = 0; // No button held down
+					break;
 
-                //case EventType.MouseDrag:
-                //    ev.type = UIEventType.MOUSE_DRAG;
-                //    ev.value.Vec3Int.x = Mathf.RoundToInt(e.mousePosition.x);
-                //    ev.value.Vec3Int.y = Mathf.RoundToInt(e.mousePosition.y);
-                //    break;
+				//case EventType.MouseDrag:
+				//    ev.type = UIEventType.MOUSE_DRAG;
+				//    ev.value.Vec3Int.x = Mathf.RoundToInt(e.mousePosition.x);
+				//    ev.value.Vec3Int.y = Mathf.RoundToInt(e.mousePosition.y);
+				//    break;
 
-                case EventType.MouseMove:
+				case EventType.MouseMove:
                     //if (/*Time.realtimeSinceStartup - lastMouseMoveTime > mouseMoveThrottleTime && */e.delta.magnitude > mouseMoveDistanceThreshold)
                     {
                         ev.type = UIEventType.MOUSE_MOVE;

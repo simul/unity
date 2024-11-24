@@ -854,21 +854,18 @@ namespace simul
 
 		void EnsureTextures()
 		{
-		/*	if (!cloudShadowRT)
-			{
-				cloudShadowRT = new RenderTexture(256, 256, 16, RenderTextureFormat.ARGB32);
-				cloudShadowRT.name = "CloudShadowRT_32";
-				cloudShadowRT.enableRandomWrite = true;
-				cloudShadowRT.Create();
-			}*/
+			InscatterTexture.renderTexture.IncrementUpdateCount();
+			LossTexture.renderTexture.IncrementUpdateCount();
+			CloudVisibilityTexture.renderTexture.IncrementUpdateCount();
+			CloudShadowTexture.renderTexture.IncrementUpdateCount();
 			InscatterTexture.SetRenderTexture(inscatterRT);
             LossTexture.SetRenderTexture(lossRT);
             CloudVisibilityTexture.SetRenderTexture(cloudVisibilityRT);
             CloudShadowTexture.SetRenderTexture(cloudShadowRT);
-			if (CloudShadowTexture.externalTexture.texturePtr == (System.IntPtr)0)
+			/*if (CloudShadowTexture.externalTexture.texturePtr == (System.IntPtr)0)
 			{
 				cloudShadowRT=null;
-			}
+			}*/
 
             GlobalViewTexture.SetRenderTexture(Resources.Load<RenderTexture>("GlobalViewRT"));
             PropertiesTexture.SetRenderTexture(Resources.Load<RenderTexture>("PropertiesRT"));
@@ -882,7 +879,9 @@ namespace simul
             StaticSetRenderTexture2("CloudVisibilityRT", CloudVisibilityTexture.GetExternalTexturePtr());
             Marshal.StructureToPtr(CloudShadowTexture.externalTexture, CloudShadowTexture.GetExternalTexturePtr(), !trueSKY.GetTrueSky().UsingIL2CPP);
             StaticSetRenderTexture2("CloudShadowRT", CloudShadowTexture.GetExternalTexturePtr());
-        }
+			//if(CloudShadowTexture.renderTexture!=null && CloudShadowTexture.renderTexture.colorBuffer.GetNativeRenderBufferPtr()!=null)
+				//StaticSetUnityRenderBuffer("CloudShadowRT",CloudShadowTexture.renderTexture.colorBuffer.GetNativeRenderBufferPtr());
+		}
 
         static void AddDefine(string define)
 		{
@@ -983,14 +982,14 @@ namespace simul
 			if (!cloudShadowRT)
 			{
 				cloudShadowRT = Resources.Load<RenderTexture>("CloudShadowRT");
-				/*if (!cloudShadowRT)
+				if (!cloudShadowRT)
 				{
 					cloudShadowRT = new RenderTexture(256, 256, 16, RenderTextureFormat.ARGB32);
 					cloudShadowRT.name = "cloudShadowRT_32";
 					cloudShadowRT.Create();
 
 					UnityEngine.Debug.Log("TrueSKY - Warning - CloudShadowRT not found");
-				}*/
+				}
 			}
 
 			LossTexture.renderTexture = lossRT;

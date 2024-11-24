@@ -39,7 +39,7 @@ namespace simul
 			}
 			public System.IntPtr GetExternalTexturePtr()
 			{ 
-				if ((renderTexture != null && _nativeExternalTexturePtr == (System.IntPtr)0)|| externalTexture.texturePtr == (System.IntPtr)0 || externalTexture.texturePtr != renderTexture.GetNativeTexturePtr() || externalTexture.width != renderTexture.width || externalTexture.height != renderTexture.height)// && externalTexture.texturePtr == (System.IntPtr)0)
+				//if ((renderTexture != null && _nativeExternalTexturePtr == (System.IntPtr)0)|| externalTexture.texturePtr == (System.IntPtr)0 || externalTexture.texturePtr != renderTexture.GetNativeTexturePtr() || externalTexture.width != renderTexture.width || externalTexture.height != renderTexture.height)// && externalTexture.texturePtr == (System.IntPtr)0)
                 {
                     InitExternalTexture(ref externalTexture, renderTexture);
                     Marshal.StructureToPtr(externalTexture, _nativeExternalTexturePtr, !simul.trueSKY.GetTrueSky().UsingIL2CPP);

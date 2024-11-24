@@ -19,7 +19,7 @@ public class TrueSkyDirectionalLight : MonoBehaviour
 	public float MoonMultiplier = 1.0f;
 	public float AmbientMultiplier = 1.0f;
 	public bool ApplyRotation = true;
-	public bool UseShadowTexture = false;
+	public bool UseShadowTexture = true;
 
 	public enum LightUnits : byte
 	{
@@ -45,16 +45,12 @@ public class TrueSkyDirectionalLight : MonoBehaviour
 
 	private void Update()
 	{
+		mTsInstance = trueSKY.GetTrueSky();
 		if (mLightComponent && mTsInstance)
 		{
 			if (UseShadowTexture)
 			{
-				mLightComponent.cookie = mTsInstance.CloudShadowTexture.renderTexture;
-#if USING_HDRP
-				if (mHDAdditionalLightData == null)
-					mHDAdditionalLightData = GetComponent<HDAdditionalLightData>();
-#endif
-				if (mLightComponent.cookie != null)
+				if (mTsInstance.CloudShadowTexture.renderTexture != null)
 					UpdateCookie();
 			}
 
@@ -175,6 +171,15 @@ public class TrueSkyDirectionalLight : MonoBehaviour
 
 	void UpdateCookie()
 	{
+		mLightComponent.cookie = mTsInstance.CloudShadowTexture.renderTexture;
+		if(mLightComponent.cookie==null)
+			return;
+		// The following is important:
+		mLightComponent.cookie.IncrementUpdateCount();
+#if USING_HDRP
+		if(mHDAdditionalLightData==null)
+			mHDAdditionalLightData = GetComponent<HDAdditionalLightData>();
+#endif	
 		Vector3 curShadowCenter = mTsInstance.getCloudShadowCentre();
 		if (curShadowCenter.x >= Mathf.Infinity || curShadowCenter.z >= Mathf.Infinity)
 		{
@@ -188,14 +193,16 @@ public class TrueSkyDirectionalLight : MonoBehaviour
 		float shadowSize = 1.0F*mTsInstance.getCloudShadowScale();
 		//float halfShadowSize		= shadowSize * 0.5f;
 		//transform.position = new Vector3(0.0f, sunHeight, 0.0f);
-		mLightComponent.cookieSize = shadowSize / 4.0f; //would be moved if using shaderGraph.
+		mLightComponent.cookieSize = shadowSize ; //would be moved if using shaderGraph.
 														// cookieSize does not work in HDRP, instead we use:
-		mLightComponent.cookie= mTsInstance.CloudShadowTexture.renderTexture;
+		//mLightComponent.cookie= mTsInstance.CloudShadowTexture.renderTexture;
 #if USING_HDRP
 		if (mHDAdditionalLightData != null)
 		{
 			//mHDAdditionalLightData.intensity = 200000.0F*mLightComponent.intensity;//Change the intensity of the light
-			mHDAdditionalLightData.SetCookie(mLightComponent.cookie, new Vector2(shadowSize / 4.0f, shadowSize / 4.0f));//Change size of the light cookie
+			mHDAdditionalLightData.SetCookie(mLightComponent.cookie, new Vector2(shadowSize, shadowSize ));//Change size of the light cookie
+			mHDAdditionalLightData.updateUponLightMovement=true;
+			mHDAdditionalLightData.UpdateAllLightValues();
 		}
 #endif
 
