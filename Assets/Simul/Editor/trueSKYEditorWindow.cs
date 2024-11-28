@@ -4,6 +4,7 @@ using simul;
 using UnityEngine.UIElements;
 using UnityEngine.Rendering.HighDefinition;
 using static UnityEngine.GraphicsBuffer;
+using UnityEditorInternal;
 
 namespace simul
 {
@@ -45,7 +46,8 @@ namespace simul
             }
             autoSaveIncrement++;
             Repaint();
-        }
+			UnityEditorInternal.InternalEditorUtility.RepaintAllViews();
+		}
         protected void DrawTextureAndHandleResizing()
         {
             trueSKY ts = trueSKY.GetTrueSky();

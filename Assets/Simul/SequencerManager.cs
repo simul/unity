@@ -276,8 +276,13 @@ namespace simul
                     if (SequencerManager.GetSequence() != null)
                     {
                         SequencerManager.GetSequence().SequenceAsText = sequenceData;
-                    }
-                }
+
+#if UNITY_EDITOR
+						EditorUtility.SetDirty(SequencerManager.GetSequence());
+#endif
+
+					}
+				}
                 else
                 {
                     Console.WriteLine("Failed to retrieve sequence.");
@@ -373,7 +378,7 @@ namespace simul
             if (trueSKY)
             {
                 if(currentSequence != null)
-                EditorUtility.SetDirty(currentSequence);
+					EditorUtility.SetDirty(currentSequence);
                 
               
                 SetSequence(trueSKY.sequence);

@@ -89,9 +89,6 @@ namespace simul
 			bool mainCamera = camera.camera.tag.Equals("MainCamera"); //Do we want to force trueSKY to only render in Main Camera?
 			bool cubemapProbe = camera.camera.name.Equals("TrueSkyCubemapProbe"); //If we are hiding this then it might be ok. But using the set name isn't great.
 
-			//Don't draw to the scene view. This should never be removed!
-			if (camera.camera.cameraType == CameraType.SceneView)
-				return;
 
 			if (camera.camera.gameObject.layer != trueSKY.GetTrueSky().trueSKYLayerIndex && (mainCamera || cubemapProbe))
 				return;
@@ -123,7 +120,12 @@ namespace simul
 			
             //Execute CmdBuffer
             cbuf_view_id = InternalGetViewId();
-            if (mainCamera) //Main view render
+			//Don't draw to the scene view. This should never be removed!
+			if (camera.camera.cameraType == CameraType.SceneView)
+			{
+				return;
+			}
+			else if (mainCamera) //Main view render
 			{
 				bool il2cppScripting = simul.trueSKY.GetTrueSky().UsingIL2CPP;
 				Marshal.StructureToPtr(unityViewStruct, unityViewStructPtr, !il2cppScripting);
@@ -198,7 +200,7 @@ namespace simul
 						unityUIViewStruct.targetViewports[0].y = 0;
 						unityUIViewStruct.targetViewports[0].w = ts.GlobalViewTexture.renderTexture.width;
 						unityUIViewStruct.targetViewports[0].h = ts.GlobalViewTexture.renderTexture.height;
-						unityUIViewStruct.renderStyle = RenderStyle.UNITY_STYLE | RenderStyle.DRAW_GLOBAL_VIEW_UI | RenderStyle.CLEAR_SCREEN;
+						unityUIViewStruct.renderStyle = RenderStyle.DRAW_OVERLAYS | RenderStyle.UNITY_STYLE | RenderStyle.DRAW_GLOBAL_VIEW_UI | RenderStyle.CLEAR_SCREEN;
 						Marshal.StructureToPtr(unityUIViewStruct, unityUIGlobalViewStructPtr, !il2cppScripting);
 
 						cmd.IssuePluginEventAndData(UnityGetEditorUIFuncWithData(), GetTRUESKY_EVENT_ID() + cbuf_view_id + 3, unityUIGlobalViewStructPtr);
@@ -453,6 +455,7 @@ namespace simul
 #endif
 #endif
 			RenderStyle r = GetBaseRenderStyle(cam);
+			r = r ;
 			if (trueSKY.GetTrueSky() && trueSKY.GetTrueSky().DepthBlending)
 			{
 				r = r | RenderStyle.DEPTH_BLENDING;
