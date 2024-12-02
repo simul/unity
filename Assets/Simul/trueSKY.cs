@@ -4606,16 +4606,16 @@ namespace simul
 		private bool CheckSizeOf(Type t)
 		{
 			if (SimulVersion < MakeSimulVersion(4, 2))
-				return false;
+				return true;
 			string str = "sizeof:"+t.Name;
 			int dllSize = StaticGetRenderInt(str);
 			int thisSize = Marshal.SizeOf(t);
-			bool wrong = (dllSize != thisSize) ? true : false;
-			if (wrong)
+			bool okay = (dllSize != thisSize) ? false : true;
+			if (!okay)
 			{
 				UnityEngine.Debug.LogError("Struct sizes do not match for " + t.Name + ". DLL size is " + dllSize.ToString() + ", EXE size is " + thisSize.ToString() + ". Please check your trueSKY version and/or update the trueSKY DLLs.");
 			}
-			return wrong;
+			return okay;
 		}
 
 		System.IntPtr Moonptr = Marshal.AllocHGlobal(Marshal.SizeOf(new ExternalMoon()));
