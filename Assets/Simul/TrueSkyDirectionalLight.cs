@@ -57,7 +57,7 @@ public class TrueSkyDirectionalLight : MonoBehaviour
 			UpdateLight();
 		}
 	}
-	public bool LegacySunRotation=false;
+	bool LegacySunRotation=false;
 	float intensity_scale = 0.1f;
 	bool UpdateLight()
 	{
