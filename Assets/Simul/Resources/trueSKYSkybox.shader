@@ -6,6 +6,7 @@
    SubShader {
       Tags { "Queue"="Background"  }
  
+	  Cull off
       Pass {
          ZWrite On 
  

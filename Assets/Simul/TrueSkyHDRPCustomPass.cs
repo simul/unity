@@ -6,6 +6,8 @@ using System.Runtime.InteropServices;
 
 using static simul.TrueSkyPluginRenderFunctionImporter;
 using static simul.TrueSkyCameraBase;
+using System.Drawing;
+using System.Numerics;
 
 delegate void PFN_RenderCubemapFace(int x);
 
@@ -87,11 +89,13 @@ namespace simul
 		private void InternalExecute(ScriptableRenderContext src, CommandBuffer cmd, HDCamera camera, CullingResults cullingResult, RTHandle colour, RTHandle depth)
 		{
 			bool mainCamera = camera.camera.tag.Equals("MainCamera"); //Do we want to force trueSKY to only render in Main Camera?
-			bool cubemapProbe = camera.camera.name.Equals("TrueSkyCubemapProbe"); //If we are hiding this then it might be ok. But using the set name isn't great.
+			bool cubemapProbe = camera.camera.cameraType == CameraType.Reflection|| camera.camera.name.Equals("TrueSkyCubemapProbe")
+				; //If we are hiding this then it might be ok. But using the set name isn't great.
+			bool reflectionProbe= camera.camera.name.Contains("Reflection Probe");
 
-
-			if (camera.camera.gameObject.layer != trueSKY.GetTrueSky().trueSKYLayerIndex && (mainCamera || cubemapProbe))
-				return;
+			if (!reflectionProbe)
+				if(camera.camera.gameObject.layer != trueSKY.GetTrueSky().trueSKYLayerIndex && (mainCamera || cubemapProbe))
+					return;
 
 			//Fill-in UnityViewStruct
 			PrepareMatrices(camera);
@@ -104,13 +108,13 @@ namespace simul
             RenderBuffer rbColour = colour.rt.colorBuffer;
 			RenderBuffer rbDepth = depth.rt.depthBuffer;
 			bool msaa = (colour.rt.antiAliasing > 1);
-			if (cubemapProbe && colour.rt.width != colour.rt.height)
+			if ((reflectionProbe||cubemapProbe)&& colour.rt.width != colour.rt.height)
 			{
 				if (camera.camera.activeTexture == null)
 					return;
 				//Unity has set the wrong buffers from the CustomPass, and we should use the ones within the camera.
-				rbColour = camera.camera.activeTexture.colorBuffer;
-				rbDepth = camera.camera.activeTexture.depthBuffer;
+				////rbColour = camera.camera.activeTexture.colorBuffer;
+				//rbDepth = camera.camera.activeTexture.depthBuffer;
 			}
 
 			unityViewStruct.nativeColourRenderBuffer = rbColour.GetNativeRenderBufferPtr();
@@ -132,7 +136,7 @@ namespace simul
 #if UNITY_PS5
 				PrepareTestMaterial();
 					// Draw quad on current rt. This SEEMS to be needed to force unity to activate its rendertarget/depth target. Sadly.
-					cmd.DrawProcedural(Matrix4x4.identity, testMaterial, 0, MeshTopology.Quads, 4);
+					cmd.DrawProcedural(UnityEngine.Matrix4x4.identity, testMaterial, 0, MeshTopology.Quads, 4);
 #endif
 				if (injectionPoint == CustomPassInjectionPoint.BeforePreRefraction)
 				{
@@ -209,7 +213,64 @@ namespace simul
 				else
 					return;
 			}
-			if(cubemapProbe) //Cubemap view render
+			if(reflectionProbe)
+			{
+				if (injectionPoint == CustomPassInjectionPoint.BeforePostProcess)
+				{
+					int cubeFace = -1;
+					if (camera.camera.name.Contains("Positive"))
+					{
+						if (camera.camera.name.Contains("PositiveX"))
+						{
+							cubeFace = 0;
+						}
+						else if (camera.camera.name.Contains("PositiveY"))
+						{
+							cubeFace = 2;
+						}
+						else if (camera.camera.name.Contains("PositiveZ"))
+						{
+							cubeFace = 4;
+						}
+					}
+					else
+					{
+						if (camera.camera.name.Contains("NegativeX"))
+						{
+							cubeFace = 1;
+						}
+						else if (camera.camera.name.Contains("NegativeY"))
+						{
+							cubeFace = 3;
+						}
+						else if (camera.camera.name.Contains("NegativeZ"))
+						{
+							cubeFace = 5;
+						}
+					}
+					if (cubeFace <0)
+						return;
+					unityViewStruct.renderStyle |= RenderStyle.CUBEMAP_STYLE;
+					unityViewStruct.exposure = 1.0F;
+					unityViewStruct.gamma = 1.0F;
+
+					{
+						UnityEngine.CubemapFace faceNum = (UnityEngine.CubemapFace)(cubeFace);
+						UpdateViewMatricsForCubemapFace(camera, faceNum, true, false); //UnityEngine.CubemapFace.Unknown
+						unityViewStruct.colourTextureArrayIndex = (int)cubeFace;
+
+						bool il2cppScripting = simul.trueSKY.GetTrueSky().UsingIL2CPP;
+						Marshal.StructureToPtr(unityViewStruct, unityViewStructPtr, !il2cppScripting);
+						//cmd.SetRenderTarget(rbColour, 0, faceNum, 0);
+						cmd.ClearRenderTarget(true, true, new UnityEngine.Color(0,0,0,0), 1.0F);
+						cmd.IssuePluginEventAndData(UnityGetRenderEventFuncWithData(), GetTRUESKY_EVENT_ID() + cbuf_view_id, unityViewStructPtr);
+					cmd.SetRenderTarget(rbColour, 1, faceNum,0);
+						cmd.ClearRenderTarget(true, true, new UnityEngine.Color(0, 1.0F, 0, 0), 1.0F);
+					};
+
+				}
+			}
+			else if(reflectionProbe||cubemapProbe) //Cubemap view render
 			{
 				if (injectionPoint == CustomPassInjectionPoint.BeforePreRefraction)
 				{
@@ -219,14 +280,14 @@ namespace simul
 
 					PFN_RenderCubemapFace RenderCubemapFace = _faceMask =>
 					{
-						UpdateViewMatricsForCubemapFace(camera, _faceMask, GameObject.FindFirstObjectByType<TrueSkyCubemapProbe>().flipProbeY);
+						UnityEngine.CubemapFace faceNum = ToCubemapFace(_faceMask);
+						UpdateViewMatricsForCubemapFace(camera, faceNum, GameObject.FindFirstObjectByType<TrueSkyCubemapProbe>().flipProbeY,false);
 						unityViewStruct.colourTextureArrayIndex = (int)ToCubemapFace(_faceMask);
 
 						bool il2cppScripting = simul.trueSKY.GetTrueSky().UsingIL2CPP;
 						Marshal.StructureToPtr(unityViewStruct, unityViewStructPtr, !il2cppScripting);
-
-						cmd.SetRenderTarget(rbColour, 0, ToCubemapFace(_faceMask), 0);
-						cmd.ClearRenderTarget(true, true, new Color(0.0F, 0.0F, 0.0F, 1.0F), 1.0F);
+						cmd.SetRenderTarget(rbColour, 0, faceNum, 0); 
+						cmd.ClearRenderTarget(true, true, new UnityEngine.Color(0.0F, 0.5F, 0.0F, 0.0F), 1.0F);
 						cmd.IssuePluginEventAndData(UnityGetRenderEventFuncWithData(), GetTRUESKY_EVENT_ID() + cbuf_view_id, unityViewStructPtr);
 					};
 
@@ -244,8 +305,6 @@ namespace simul
 						RenderCubemapFace(faceMask);
 					}
 				}
-				else
-					return;
 			}
 		}
 
@@ -262,37 +321,66 @@ namespace simul
 			}
 		}
 #endif
-		private void UpdateViewMatricsForCubemapFace(HDCamera camera, int faceMask, bool flipProbeY)
+		private void UpdateViewMatricsForCubemapFace(HDCamera camera, UnityEngine.CubemapFace face, bool flipProbeY,bool overrides)
 		{
-			Vector3 positive_y = new Vector3(0.0f, 1.0f, 0.0f);
-			Vector3 positive_x = new Vector3(1.0f, 0.0f, 0.0f);
-			Matrix4x4 m = camera.camera.worldToCameraMatrix;
-			switch (faceMask)
+			UnityEngine.Vector3 positive_y = new UnityEngine.Vector3(0.0f, 1.0f, 0.0f);
+			UnityEngine.Vector3 positive_x = new UnityEngine.Vector3(1.0f, 0.0f, 0.0f);
+			UnityEngine.Vector3 positive_z = new UnityEngine.Vector3(0, 0.0f, 1.0f);
+			UnityEngine.Matrix4x4 m;
+			if(overrides)
+				m=UnityEngine.Matrix4x4.identity;
+			else
+				m= camera.camera.worldToCameraMatrix;
+			switch (face)
 			{
-				case 1:
-						m *= Matrix4x4.Rotate(Quaternion.AngleAxis(270.0f, positive_y)); break;
-				case 2:
-						m *= Matrix4x4.Rotate(Quaternion.AngleAxis(090.0f, positive_y)); break;
-				case 4:
-						m *= Matrix4x4.Rotate(Quaternion.AngleAxis(090.0f, positive_x)); break;
-				case 8:
-						m *= Matrix4x4.Rotate(Quaternion.AngleAxis(270.0f, positive_x)); break;
-				case 16:
-						break;
-				case 32:
-						m *= Matrix4x4.Rotate(Quaternion.AngleAxis(180.0f, positive_y)); break;
+				case UnityEngine.CubemapFace.PositiveX:
+					//m *= UnityEngine.Matrix4x4.Rotate(UnityEngine.Quaternion.AngleAxis(180.0f, positive_x));
+					break;
+				case UnityEngine.CubemapFace.NegativeX:
+					//m *= UnityEngine.Matrix4x4.Rotate(UnityEngine.Quaternion.AngleAxis(180.0f, positive_x));
+					break;
+				case UnityEngine.CubemapFace.PositiveY:
+					m *= UnityEngine.Matrix4x4.Rotate(UnityEngine.Quaternion.AngleAxis(180.0f, positive_y));
+					break;
+				case UnityEngine.CubemapFace.NegativeY:
+					m *= UnityEngine.Matrix4x4.Rotate(UnityEngine.Quaternion.AngleAxis(0.0f, positive_y));
+					break;
+				case UnityEngine.CubemapFace.PositiveZ:
+					//m *= UnityEngine.Matrix4x4.Rotate(UnityEngine.Quaternion.AngleAxis(180.0f, positive_z));
+					break;
+				case UnityEngine.CubemapFace.NegativeZ:
+					//m *= UnityEngine.Matrix4x4.Rotate(UnityEngine.Quaternion.AngleAxis(180.0f, positive_z));
+					break;
 				default:
-					return;
+					break;
 			}
+			/*switch (face)
+			{
+				case UnityEngine.CubemapFace.PositiveZ:
+						m *= UnityEngine.Matrix4x4.Rotate(UnityEngine.Quaternion.AngleAxis(90.0f, positive_y)); break;
+				case UnityEngine.CubemapFace.NegativeZ:
+						m *= UnityEngine.Matrix4x4.Rotate(UnityEngine.Quaternion.AngleAxis(270.0f, positive_y)); break;
+				case UnityEngine.CubemapFace.PositiveX:
+						m *= UnityEngine.Matrix4x4.Rotate(UnityEngine.Quaternion.AngleAxis(90.0f, positive_x)); break;
+				case UnityEngine.CubemapFace.NegativeX:
+						m *= UnityEngine.Matrix4x4.Rotate(UnityEngine.Quaternion.AngleAxis(180.0f, positive_x)); break;
+					break;
+				case UnityEngine.CubemapFace.NegativeY:
+						break;
+				case UnityEngine.CubemapFace.PositiveY:
+						m *= UnityEngine.Matrix4x4.Rotate(UnityEngine.Quaternion.AngleAxis(180.0f, positive_y)); break;
+				default:
+					break;
+			}*/
 			ViewMatrixToTrueSkyFormat_HDRP(GetRenderStyle(camera.camera), m, viewMatrices);
 			unityViewStruct.viewMatrices4x4 = viewMatrices;
 
 			if (flipProbeY)
 			{
-				Matrix4x4 p = camera.camera.projectionMatrix;
-				p[1, 1] = -1.0f;
+				UnityEngine.Matrix4x4 p = camera.camera.projectionMatrix;
+				//p[1, 1] = -1.0f;
 
-				ProjMatrixToTrueSkyFormat_HDRP(GetRenderStyle(camera.camera), p, projMatrices);
+				ProjMatrixToTrueSkyFormat_HDRP(GetRenderStyle(camera.camera), p, projMatrices,0,true);
 				unityViewStruct.projMatrices4x4 = projMatrices;
 			}
 		}
@@ -330,33 +418,33 @@ namespace simul
 			{
 
 				// View and projection: non-stereo rendering
-				Matrix4x4 m = cam.worldToCameraMatrix;
+				UnityEngine.Matrix4x4 m = cam.worldToCameraMatrix;
 				bool toTexture = (HDROutputSettings.main.active && cam.allowHDR)
 								|| (QualitySettings.antiAliasing > 0 && cam.allowMSAA)
 								|| cam.actualRenderingPath == RenderingPath.DeferredShading
 								|| cam.targetTexture;
 
-				Matrix4x4 p = GL.GetGPUProjectionMatrix(cam.projectionMatrix, toTexture);
+				UnityEngine.Matrix4x4 p = GL.GetGPUProjectionMatrix(cam.projectionMatrix, toTexture);
 
 				ViewMatrixToTrueSkyFormat_HDRP(GetRenderStyle(camera.camera), m, viewMatrices);
-				ProjMatrixToTrueSkyFormat_HDRP(renderStyle, p, projMatrices);
+				ProjMatrixToTrueSkyFormat_HDRP(renderStyle, p, projMatrices,0,flippedView);
 
 				if ((renderStyle & RenderStyle.VR_STYLE) == RenderStyle.VR_STYLE)
 				{
 					// View matrix: left & right eyes
-					Matrix4x4 l = cam.GetStereoViewMatrix(Camera.StereoscopicEye.Left);
-					Matrix4x4 r = cam.GetStereoViewMatrix(Camera.StereoscopicEye.Right);
+					UnityEngine.Matrix4x4 l = cam.GetStereoViewMatrix(Camera.StereoscopicEye.Left);
+					UnityEngine.Matrix4x4 r = cam.GetStereoViewMatrix(Camera.StereoscopicEye.Right);
 					ViewMatrixToTrueSkyFormat_HDRP(GetRenderStyle(camera.camera), l, viewMatrices, 1);
 					ViewMatrixToTrueSkyFormat_HDRP(GetRenderStyle(camera.camera), r, viewMatrices, 2);
 
 					// Projection matrix: left & right eyes
-					Matrix4x4 pl = GL.GetGPUProjectionMatrix(cam.GetStereoProjectionMatrix(Camera.StereoscopicEye.Left), true);
-					Matrix4x4 pr = GL.GetGPUProjectionMatrix(cam.GetStereoProjectionMatrix(Camera.StereoscopicEye.Right), true);
-					ProjMatrixToTrueSkyFormat_HDRP(renderStyle, pl, projMatrices, 1);
-					ProjMatrixToTrueSkyFormat_HDRP(renderStyle, pr, projMatrices, 2);
+					UnityEngine.Matrix4x4 pl = GL.GetGPUProjectionMatrix(cam.GetStereoProjectionMatrix(Camera.StereoscopicEye.Left), true);
+					UnityEngine.Matrix4x4 pr = GL.GetGPUProjectionMatrix(cam.GetStereoProjectionMatrix(Camera.StereoscopicEye.Right), true);
+					ProjMatrixToTrueSkyFormat_HDRP(renderStyle, pl, projMatrices, 1,flippedView	);
+					ProjMatrixToTrueSkyFormat_HDRP(renderStyle, pr, projMatrices, 2,flippedView);
 				}
 
-				ProjMatrixToTrueSkyFormat_HDRP(RenderStyle.UNITY_STYLE, p, overlayProjMatrix);
+				ProjMatrixToTrueSkyFormat_HDRP(RenderStyle.UNITY_STYLE, p, overlayProjMatrix,0,flippedView);
 
 				// Query depth size
 				int depthWidth = cam.pixelWidth;
@@ -370,7 +458,7 @@ namespace simul
 				targetViewports[0].x = targetViewports[0].y = 0;
 				if (cam.actualRenderingPath != RenderingPath.DeferredShading)
 				{
-					Vector3 screen_0 = cam.ViewportToScreenPoint(new Vector3(0, 0, 0));
+					UnityEngine.Vector3 screen_0 = cam.ViewportToScreenPoint(new UnityEngine.Vector3(0, 0, 0));
 					targetViewports[0].x = (int)(screen_0.x);
 					targetViewports[0].y = (int)(screen_0.y);
 				}
@@ -455,7 +543,7 @@ namespace simul
 #endif
 #endif
 			RenderStyle r = GetBaseRenderStyle(cam);
-			r = r ;
+		
 			if (trueSKY.GetTrueSky() && trueSKY.GetTrueSky().DepthBlending)
 			{
 				r = r | RenderStyle.DEPTH_BLENDING;
@@ -492,7 +580,7 @@ namespace simul
 
 		protected trueSKY ts;
 		protected bool tsValid = false;
-		protected void ProjMatrixToTrueSkyFormat_HDRP(RenderStyle renderStyle, Matrix4x4 m, float[] proj, int offset = 0)
+		protected void ProjMatrixToTrueSkyFormat_HDRP(RenderStyle renderStyle, UnityEngine.Matrix4x4 m, float[] proj, int offset,bool flip)
 		{
 			if (!tsValid)
 				return;
@@ -501,9 +589,9 @@ namespace simul
 			float metresPerUnit = ts.MetresPerUnit;
 
 			m = m.transpose;
-			if ((renderStyle & RenderStyle.UNITY_STYLE_DEFERRED) == RenderStyle.UNITY_STYLE_DEFERRED && flippedView)
+			if ((renderStyle & RenderStyle.UNITY_STYLE_DEFERRED) == RenderStyle.UNITY_STYLE_DEFERRED && flip)
 			{
-				m = m * Matrix4x4.Scale(new Vector3(1, -1, 1));
+				m = m * UnityEngine.Matrix4x4.Scale(new UnityEngine.Vector3(1, -1, 1));
 			}
 
 			proj[offset + 00] = m.m00;
@@ -526,18 +614,18 @@ namespace simul
 			proj[offset + 14] = m.m32;
 			proj[offset + 15] = m.m33 * metresPerUnit;
 		}
-		protected void ViewMatrixToTrueSkyFormat_HDRP(RenderStyle renderStyle, Matrix4x4 m, float[] view, int offset = 0)
+		protected void ViewMatrixToTrueSkyFormat_HDRP(RenderStyle renderStyle, UnityEngine.Matrix4x4 m, float[] view, int offset = 0)
 		{
 			if (!tsValid)
 				return;
 
 			offset *= 16;
 			float metresPerUnit = ts.MetresPerUnit;
-			Matrix4x4 transform = ts.transform.worldToLocalMatrix.inverse;
+			UnityEngine.Matrix4x4 transform = ts.transform.worldToLocalMatrix.inverse;
 			m = m * transform;
 			m = m.transpose;
-			Matrix4x4 n = m.inverse;
-			Matrix4x4 y;
+			UnityEngine.Matrix4x4 n = m.inverse;
+			UnityEngine.Matrix4x4 y;
 			{
 				// Swap the y and z columns - this makes a left-handed matrix into right-handed:
 				y.m00 = n.m00;
@@ -561,7 +649,7 @@ namespace simul
 				y.m33 = n.m33;
 			}
 			// Invert the matrix, so it converts from world to view
-			Matrix4x4 z = y.inverse;
+			UnityEngine.Matrix4x4 z = y.inverse;
 			view[offset + 00] = z.m00;
 			view[offset + 01] = z.m01;
 			view[offset + 02] = z.m02;

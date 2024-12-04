@@ -13,7 +13,7 @@ namespace simul
 	{
 		private Camera dummyCam = null;
 
-		private RenderTexture cubemapRenderTexture = null;
+		public RenderTexture cubemapRenderTexture = null;
 		public int textureSize = 32;
 		public float exposure = 1.0F;
 		public float gamma = 1.0F;//0.44F
@@ -90,7 +90,7 @@ namespace simul
 		// Variables solely for HDRP
 #if USING_HDRP
 		private HDAdditionalCameraData HDRPdummyCam = null;
-		private GameObject trueSkyCubemapProbe = null;
+		private GameObject hdrpCameraObject = null;
 #endif
 		private int faceMask = 63;
 		public int GetFaceMask() { return faceMask; }
@@ -111,9 +111,9 @@ namespace simul
 		void OnDisable()
 		{
 #if USING_HDRP
-			if (trueSkyCubemapProbe)
+			if (hdrpCameraObject)
 			{
-				DestroyImmediate(trueSkyCubemapProbe);
+				DestroyImmediate(hdrpCameraObject);
 			}
 
 			if (HDRPdummyCam)
@@ -280,9 +280,9 @@ namespace simul
 			}
 
 			// Render to the cubemap (using the mask to only render a face at a time)
-			if (!dummyCam.RenderToCubemap(cubemapRenderTexture, faceMask))
+			//if (!dummyCam.RenderToCubemap(cubemapRenderTexture, faceMask))
 			{
-				Debug.LogWarning("Failed to capture the probe");
+			//	Debug.LogWarning("Failed to capture the probe");
 			}
 
 			// Re-enable the renderers
@@ -319,51 +319,6 @@ namespace simul
 			textureSize = Mathf.Clamp(Mathf.ClosestPowerOfTwo(textureSize), 8, 512);   
 
 			CreateTexture();
-
-			if (trueSkyCubemapProbe == null)
-			{
-				foreach (var cam in FindObjectsByType(typeof(Camera),FindObjectsSortMode.None) as Camera[])
-				{
-					if (cam.name == "TrueSkyCubemapProbe")
-					{
-						trueSkyCubemapProbe = cam.gameObject;
-						break;
-					}
-				}
-				if (trueSkyCubemapProbe == null)
-				{
-					trueSkyCubemapProbe = new GameObject("TrueSkyCubemapProbe", typeof(Camera));
-					trueSkyCubemapProbe.AddComponent<HDAdditionalCameraData>();
-                    UnityEngine.Debug.LogWarning("trueSKY is using HDRP");
-
-                    trueSkyCubemapProbe.gameObject.layer = trueSKY.GetTrueSky().trueSKYLayerIndex;
-
-					if (trueSkyCubemapProbe.GetComponent<Camera>() == null)
-						trueSkyCubemapProbe.AddComponent<Camera>();
-				}
-				if(dummyCam == null)
-				{
-					dummyCam = trueSkyCubemapProbe.GetComponent<Camera>();
-					HDRPdummyCam = trueSkyCubemapProbe.GetComponent<HDAdditionalCameraData>();
-					trueSkyCubemapProbe.hideFlags = HideFlags.HideAndDontSave;
-					dummyCam.enabled = true;
-					dummyCam.clearFlags = CameraClearFlags.Color;
-					dummyCam.backgroundColor = new Color(0, 0, 0, 0);
-					dummyCam.renderingPath = RenderingPath.UsePlayerSettings;
-					dummyCam.depthTextureMode |= DepthTextureMode.Depth;
-					dummyCam.fieldOfView = 90.0f;
-					dummyCam.targetTexture = cubemapRenderTexture;
-					dummyCam.nearClipPlane = 0.1f;
-					dummyCam.farClipPlane = 300000.0f;
-				}
-
-			}
-			if (skyOnly)
-			{
-				dummyCam.cullingMask = 0;
-			}
-				
-
 			// Set the cube texture
 			Material trueSKYSkyboxMat = Resources.Load("trueSKYSkybox", typeof(Material)) as Material;
 			if (trueSKYSkyboxMat)
@@ -373,7 +328,56 @@ namespace simul
 			}
 			else
 				UnityEngine.Debug.LogWarning("Can't find Material 'trueSKYSkybox' - it should be in Simul/Resources.");
-	
+
+			if (hdrpCameraObject == null)
+			{
+				foreach (var cam in FindObjectsByType(typeof(Camera),FindObjectsSortMode.None) as Camera[])
+				{
+					if (cam.name == "TrueSkyCubemapProbe")
+					{
+						hdrpCameraObject = cam.gameObject;
+						break;
+					}
+				}
+				if (hdrpCameraObject == null)
+				{
+					hdrpCameraObject = new GameObject("TrueSkyCubemapProbe", typeof(Camera));
+					hdrpCameraObject.AddComponent<HDAdditionalCameraData>();
+                    //UnityEngine.Debug.LogWarning("trueSKY is using HDRP");
+
+                    hdrpCameraObject.gameObject.layer = trueSKY.GetTrueSky().trueSKYLayerIndex;
+
+					if (hdrpCameraObject.GetComponent<Camera>() == null)
+						hdrpCameraObject.AddComponent<Camera>();
+				}
+				if (dummyCam == null)
+				{
+					dummyCam = hdrpCameraObject.GetComponent<Camera>();
+					HDRPdummyCam = hdrpCameraObject.GetComponent<HDAdditionalCameraData>();
+					//hdrpCameraObject.hideFlags = HideFlags.HideAndDontSave;
+					dummyCam.enabled = true;
+					dummyCam.clearFlags = CameraClearFlags.Color;
+					dummyCam.backgroundColor = new Color(0, 0, 0, 0);
+					dummyCam.renderingPath = RenderingPath.UsePlayerSettings;
+					dummyCam.depthTextureMode |= DepthTextureMode.Depth;
+					dummyCam.fieldOfView = 90.0f;
+					dummyCam.targetTexture = cubemapRenderTexture;
+					dummyCam.nearClipPlane = 0.1f;
+					dummyCam.farClipPlane = 300.0f;
+					HDRPdummyCam.probeLayerMask=LayerMask.NameToLayer("Nothing");
+					HDRPdummyCam.volumeLayerMask = 1<<14;
+					HDRPdummyCam.clearColorMode = HDAdditionalCameraData.ClearColorMode.None;
+					HDRPdummyCam.backgroundColorHDR=new Color(0,0,1.0F,1.0F);
+				}
+				if(cubemapRenderTexture)
+					cubemapRenderTexture.IncrementUpdateCount();
+			}
+			if (skyOnly)
+			{
+				dummyCam.cullingMask = 0;
+			}
+				
+
 			faceMask *= 2;
 			if (faceMask > 32)
 				faceMask = 1;
@@ -381,7 +385,7 @@ namespace simul
 #endif
 		void CreateTexture()
 		{
-			if (cubemapRenderTexture == null
+		/*	if (cubemapRenderTexture == null
 				||!cubemapRenderTexture.IsCreated()
 				|| cubemapRenderTexture.width != textureSize
 				|| cubemapRenderTexture.depth != 0
@@ -397,7 +401,7 @@ namespace simul
 
                 cubemapRenderTexture.Create();
                 _initialized = false;
-			}
+			}*/
 		}
 	}
 }

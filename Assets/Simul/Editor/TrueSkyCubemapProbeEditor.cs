@@ -5,6 +5,7 @@ using System.Text.RegularExpressions;
 using UnityEditor;
 //Used for File IO
 using System.IO;
+using UnityEngine.Rendering;
 
 namespace simul
 {
@@ -15,7 +16,8 @@ namespace simul
         {
             TrueSkyCubemapProbe t = (TrueSkyCubemapProbe)target;
 
-            t.textureSize = EditorGUILayout.IntSlider("Texture Size", t.textureSize, 8, 512);
+			t.cubemapRenderTexture = (RenderTexture)EditorGUILayout.ObjectField(t.cubemapRenderTexture,typeof(RenderTexture),true);
+			t.textureSize = EditorGUILayout.IntSlider("Texture Size", t.textureSize, 8, 512);
             t.renderTextureFormat = (RenderTextureFormat)EditorGUILayout.EnumPopup("Format", (System.Enum)t.renderTextureFormat);
             t.exposure = EditorGUILayout.Slider("Exposure", t.exposure, 0.0F, 10.0F);
             t.gamma = EditorGUILayout.Slider("Gamma", t.gamma, 0.0F, 2.0F);

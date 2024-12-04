@@ -185,6 +185,7 @@ namespace simul
 		protected void RemoveBuffer(string name)
 		{
 			Camera cam=GetComponent<Camera>();
+#if !USING_HDRP
 			CommandBuffer[] opaque=cam.GetCommandBuffers(CameraEvent.BeforeImageEffectsOpaque);
 			CommandBuffer[] after=cam.GetCommandBuffers(CameraEvent.AfterEverything);
 			CommandBuffer[] afterF = cam.GetCommandBuffers(CameraEvent.AfterForwardAlpha);
@@ -203,6 +204,7 @@ namespace simul
 					return;
 				}
 			}
+#endif
 		}
 		protected static Mutex mut  = new Mutex ();
 		public bool flippedView     = false;
