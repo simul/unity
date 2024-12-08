@@ -14,6 +14,8 @@ using UnityEngine.Rendering;
 
 using static simul.TrueSkyPluginRenderFunctionImporter;
 using static simul.TrueSkyCameraBase;
+using static UnityEngine.Rendering.DebugUI;
+
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -1793,7 +1795,27 @@ namespace simul
 			
 			}
 		}
+		long CubemapGroundColourEnum = 0;
+		[SerializeField]
+		Color _cubemapGroundColour = new Color(0.2F,0.2F, 0.2F);
+		public Color CubemapGroundColour
+		{
+			get
+			{
+				return _cubemapGroundColour;
+			}
+			set
+			{
+				if (_cubemapGroundColour != value)
+				{
+					_cubemapGroundColour=value;
+					SetColour(CubemapGroundColourEnum, _cubemapGroundColour);
+				}
 
+			}
+		}
+		
+					
 		[SerializeField]
 		float _crepuscularRaysStrength = 0.0f;
 		public float CrepuscularRaysStrength
@@ -5270,6 +5292,9 @@ namespace simul
 #endif
 				InitRendering();
 				//	StaticSetRenderBool("RenderSky", _renderSky);
+				CubemapGroundColourEnum = StaticGetEnum("CubemapGroundColour");
+				SetColour(CubemapGroundColourEnum, _cubemapGroundColour);
+
 				StaticSetRenderBool("RenderWater", _renderWater);
 				StaticSetRenderBool("ReverseDepth", false);
 				StaticSetRenderBool("EnableRendering", _renderInEditMode);
@@ -5321,6 +5346,14 @@ namespace simul
 				EditorApplication.ExitPlaymode();
 #endif
 			}
+		}
+		public static void SetColour(long enum_, Color c)
+		{
+			Variant[] values = new Variant[1];
+			values[0].Vec3.x = c.r;
+			values[0].Vec3.y = c.g;
+			values[0].Vec3.z = c.b;
+			StaticSet(enum_, values);
 		}
 		void InitRendering()
 		{

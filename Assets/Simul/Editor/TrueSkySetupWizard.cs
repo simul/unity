@@ -235,16 +235,6 @@ namespace simul
 				removeFog = GUILayout.Toggle(removeFog, "Remove standard distance fog");
 				removeSkybox = GUILayout.Toggle(removeSkybox, "Remove default skybox from camera");
 
-				//if (Camera.main == null && !createAMainCamera) 
-				//{
-				//	createCubemapProbeCam = false;  	// set to false as no main camera, so can't attach to cam
-				//} 
-				//else 
-				//{
-				//	createCubemapProbeCam = GUILayout.Toggle (createCubemapProbeCam, "Add trueSKY Cubemap Probe to main camera (will replace any existing)", textStyle);
-				//	createCubemapProbeObj = false;	 	// want to assign to main cam as it exists, so don't allow option to assign to obj
-				//}
-
 				GUILayout.Label("\n\nTo view more information on using trueSKY for Unity, along with code reference pages and a detailed explanation of the sequencer, please click the button below.", textStyle);
 
 				if (GUILayout.Button("Launch Documentation", defaultButtonStyle))
@@ -441,7 +431,8 @@ namespace simul
 #endif
                 mainCamera.gameObject.layer = ts_layer_index;
 			}
-
+			// Don't do this for HDRP, we just use Reflection Probes.
+#if !USING_HDRP
 			if (createCubemapProbe)
 			{           // must be after trueSKY obj assigned, in case assigning probe to this instead of mainCam
 
@@ -455,6 +446,7 @@ namespace simul
 				Material trueSKYSkyboxMat = Resources.Load("trueSKYSkybox", typeof(Material)) as Material;
 				RenderSettings.skybox = trueSKYSkyboxMat;
 			}
+#endif
 			// If there is not light on the scene, add one:
 			if (lightGameObject == null)
 			{

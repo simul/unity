@@ -830,11 +830,12 @@ namespace simul
 				}
 				// Shadow Settings
 				EditorGUILayout.Space();
-				shadows = EditorGUILayout.Foldout(shadows, "Shadows", outerFoldoutStyle);
+				shadows = EditorGUILayout.Foldout(shadows, "Lighting/Shadows", outerFoldoutStyle);
 				if (shadows)
 				{
 					trueSky.CloudShadowRangeKm = EditorGUILayout.IntSlider("Shadow Range KM", trueSky.CloudShadowRangeKm, 100, (int)trueSky.MaxCloudDistanceKm);
 					//trueSky.CloudShadowResolution = EditorGUILayout.IntSlider("Cloud Shadow Resolution", trueSky.CloudShadowResolution, 64, 1024);
+					trueSky.CubemapGroundColour = EditorGUILayout.ColorField("Cubemap Ground Colour", trueSky.CubemapGroundColour);
 				}
 				if (trueSky.SimulVersion <= trueSky.MakeSimulVersion(4, 2))
 				{

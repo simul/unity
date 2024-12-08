@@ -125,11 +125,7 @@ namespace simul
 		private void Start()
 		{
 			var probes = FindObjectsByType<TrueSkyCubemapProbe>(FindObjectsSortMode.None);
-			if(probes.Length <= 0)
-			{
-				Debug.LogWarning("Could not find a TrueSkyCubemapProbe object");
-			}
-			else
+			if(probes.Length > 0)
 			{
 				for (int i = 0; i < probes.Length; i++) 
 				{

@@ -18,7 +18,8 @@ namespace simul
 		public TrueSkyHDRPCustomPass()
 		{
 			view_ident = last_view_ident + 1;
-			last_view_ident++;
+			cube_view_ident = view_ident + 1; 
+			last_view_ident+=2;
 		}
 		~TrueSkyHDRPCustomPass()
 		{
@@ -37,6 +38,8 @@ namespace simul
 		protected int cbuf_ui_view_id = -1;
 		protected int view_ident = 0;
 		protected int ui_view_ident = 0;
+		protected int cube_view_ident = 0;
+		protected int cube_view_id = -1;
 		protected int view_id = -1;
 		protected static int last_view_ident = 0;
 
@@ -96,7 +99,6 @@ namespace simul
 			if (!reflectionProbe)
 				if(camera.camera.gameObject.layer != trueSKY.GetTrueSky().trueSKYLayerIndex && (mainCamera || cubemapProbe))
 					return;
-
 			//Fill-in UnityViewStruct
 			PrepareMatrices(camera);
 			//unityUIViewStruct = unityViewStruct;
@@ -217,93 +219,22 @@ namespace simul
 			{
 				if (injectionPoint == CustomPassInjectionPoint.BeforePostProcess)
 				{
-					int cubeFace = -1;
-					if (camera.camera.name.Contains("Positive"))
-					{
-						if (camera.camera.name.Contains("PositiveX"))
-						{
-							cubeFace = 0;
-						}
-						else if (camera.camera.name.Contains("PositiveY"))
-						{
-							cubeFace = 2;
-						}
-						else if (camera.camera.name.Contains("PositiveZ"))
-						{
-							cubeFace = 4;
-						}
-					}
-					else
-					{
-						if (camera.camera.name.Contains("NegativeX"))
-						{
-							cubeFace = 1;
-						}
-						else if (camera.camera.name.Contains("NegativeY"))
-						{
-							cubeFace = 3;
-						}
-						else if (camera.camera.name.Contains("NegativeZ"))
-						{
-							cubeFace = 5;
-						}
-					}
-					if (cubeFace <0)
-						return;
 					unityViewStruct.renderStyle |= RenderStyle.CUBEMAP_STYLE;
 					unityViewStruct.exposure = 1.0F;
 					unityViewStruct.gamma = 1.0F;
 
-					{
-						UnityEngine.CubemapFace faceNum = (UnityEngine.CubemapFace)(cubeFace);
-						UpdateViewMatricsForCubemapFace(camera, faceNum, true, false); //UnityEngine.CubemapFace.Unknown
-						unityViewStruct.colourTextureArrayIndex = (int)cubeFace;
+					UpdateViewMatricsForCubemapFace(camera); 
+					unityViewStruct.colourTextureArrayIndex = (int)0;
 
-						bool il2cppScripting = simul.trueSKY.GetTrueSky().UsingIL2CPP;
-						Marshal.StructureToPtr(unityViewStruct, unityViewStructPtr, !il2cppScripting);
-						//cmd.SetRenderTarget(rbColour, 0, faceNum, 0);
-						cmd.ClearRenderTarget(true, true, new UnityEngine.Color(0,0,0,0), 1.0F);
-						cmd.IssuePluginEventAndData(UnityGetRenderEventFuncWithData(), GetTRUESKY_EVENT_ID() + cbuf_view_id, unityViewStructPtr);
-					cmd.SetRenderTarget(rbColour, 1, faceNum,0);
-						cmd.ClearRenderTarget(true, true, new UnityEngine.Color(0, 1.0F, 0, 0), 1.0F);
-					};
+					bool il2cppScripting = simul.trueSKY.GetTrueSky().UsingIL2CPP;
+					Marshal.StructureToPtr(unityViewStruct, unityViewStructPtr, !il2cppScripting);
+					//cmd.SetRenderTarget(rbColour, 0, faceNum, 0);
+					cmd.ClearRenderTarget(true, true, new UnityEngine.Color(0,0,0,0), 1.0F);
+					cube_view_id = StaticGetOrAddView((System.IntPtr)cube_view_ident);
+					cmd.IssuePluginEventAndData(UnityGetRenderEventFuncWithData(), GetTRUESKY_EVENT_ID() +cube_view_id , unityViewStructPtr);
+					//cmd.SetRenderTarget(rbColour, 1, faceNum,0);
+					//cmd.ClearRenderTarget(true, true, new UnityEngine.Color(0, 1.0F, 0, 0), 1.0F);
 
-				}
-			}
-			else if(reflectionProbe||cubemapProbe) //Cubemap view render
-			{
-				if (injectionPoint == CustomPassInjectionPoint.BeforePreRefraction)
-				{
-					unityViewStruct.renderStyle |= RenderStyle.CUBEMAP_STYLE;
-					unityViewStruct.exposure = GameObject.FindFirstObjectByType<TrueSkyCubemapProbe>().exposure;
-					unityViewStruct.gamma = GameObject.FindFirstObjectByType<TrueSkyCubemapProbe>().gamma;
-
-					PFN_RenderCubemapFace RenderCubemapFace = _faceMask =>
-					{
-						UnityEngine.CubemapFace faceNum = ToCubemapFace(_faceMask);
-						UpdateViewMatricsForCubemapFace(camera, faceNum, GameObject.FindFirstObjectByType<TrueSkyCubemapProbe>().flipProbeY,false);
-						unityViewStruct.colourTextureArrayIndex = (int)ToCubemapFace(_faceMask);
-
-						bool il2cppScripting = simul.trueSKY.GetTrueSky().UsingIL2CPP;
-						Marshal.StructureToPtr(unityViewStruct, unityViewStructPtr, !il2cppScripting);
-						cmd.SetRenderTarget(rbColour, 0, faceNum, 0); 
-						cmd.ClearRenderTarget(true, true, new UnityEngine.Color(0.0F, 0.5F, 0.0F, 0.0F), 1.0F);
-						cmd.IssuePluginEventAndData(UnityGetRenderEventFuncWithData(), GetTRUESKY_EVENT_ID() + cbuf_view_id, unityViewStructPtr);
-					};
-
-					int faceMask = GameObject.FindFirstObjectByType<TrueSkyCubemapProbe>().GetFaceMask();
-					if (faceMask == 63)
-					{
-						for (int i = 0; i < 6; i++)
-						{
-							int _faceMask = 1 << i;
-							RenderCubemapFace(_faceMask);
-						}
-					}
-					else
-					{
-						RenderCubemapFace(faceMask);
-					}
 				}
 			}
 		}
@@ -321,68 +252,58 @@ namespace simul
 			}
 		}
 #endif
-		private void UpdateViewMatricsForCubemapFace(HDCamera camera, UnityEngine.CubemapFace face, bool flipProbeY,bool overrides)
+		private void UpdateViewMatricsForCubemapFace(HDCamera camera)
 		{
 			UnityEngine.Vector3 positive_y = new UnityEngine.Vector3(0.0f, 1.0f, 0.0f);
 			UnityEngine.Vector3 positive_x = new UnityEngine.Vector3(1.0f, 0.0f, 0.0f);
 			UnityEngine.Vector3 positive_z = new UnityEngine.Vector3(0, 0.0f, 1.0f);
 			UnityEngine.Matrix4x4 m;
-			if(overrides)
-				m=UnityEngine.Matrix4x4.identity;
-			else
-				m= camera.camera.worldToCameraMatrix;
-			switch (face)
-			{
-				case UnityEngine.CubemapFace.PositiveX:
-					//m *= UnityEngine.Matrix4x4.Rotate(UnityEngine.Quaternion.AngleAxis(180.0f, positive_x));
-					break;
-				case UnityEngine.CubemapFace.NegativeX:
-					//m *= UnityEngine.Matrix4x4.Rotate(UnityEngine.Quaternion.AngleAxis(180.0f, positive_x));
-					break;
-				case UnityEngine.CubemapFace.PositiveY:
-					m *= UnityEngine.Matrix4x4.Rotate(UnityEngine.Quaternion.AngleAxis(180.0f, positive_y));
-					break;
-				case UnityEngine.CubemapFace.NegativeY:
-					m *= UnityEngine.Matrix4x4.Rotate(UnityEngine.Quaternion.AngleAxis(0.0f, positive_y));
-					break;
-				case UnityEngine.CubemapFace.PositiveZ:
-					//m *= UnityEngine.Matrix4x4.Rotate(UnityEngine.Quaternion.AngleAxis(180.0f, positive_z));
-					break;
-				case UnityEngine.CubemapFace.NegativeZ:
-					//m *= UnityEngine.Matrix4x4.Rotate(UnityEngine.Quaternion.AngleAxis(180.0f, positive_z));
-					break;
-				default:
-					break;
-			}
-			/*switch (face)
-			{
-				case UnityEngine.CubemapFace.PositiveZ:
-						m *= UnityEngine.Matrix4x4.Rotate(UnityEngine.Quaternion.AngleAxis(90.0f, positive_y)); break;
-				case UnityEngine.CubemapFace.NegativeZ:
-						m *= UnityEngine.Matrix4x4.Rotate(UnityEngine.Quaternion.AngleAxis(270.0f, positive_y)); break;
-				case UnityEngine.CubemapFace.PositiveX:
-						m *= UnityEngine.Matrix4x4.Rotate(UnityEngine.Quaternion.AngleAxis(90.0f, positive_x)); break;
-				case UnityEngine.CubemapFace.NegativeX:
-						m *= UnityEngine.Matrix4x4.Rotate(UnityEngine.Quaternion.AngleAxis(180.0f, positive_x)); break;
-					break;
-				case UnityEngine.CubemapFace.NegativeY:
-						break;
-				case UnityEngine.CubemapFace.PositiveY:
-						m *= UnityEngine.Matrix4x4.Rotate(UnityEngine.Quaternion.AngleAxis(180.0f, positive_y)); break;
-				default:
-					break;
-			}*/
-			ViewMatrixToTrueSkyFormat_HDRP(GetRenderStyle(camera.camera), m, viewMatrices);
+			m = camera.camera.transform.worldToLocalMatrix;
+			m.m20*=-1.0F;
+			m.m21 *= -1.0F;
+			m.m22 *= -1.0F;
+			ViewMatrixToTrueSkyFormat_HDRP2( m, viewMatrices);
 			unityViewStruct.viewMatrices4x4 = viewMatrices;
 
-			if (flipProbeY)
 			{
 				UnityEngine.Matrix4x4 p = camera.camera.projectionMatrix;
 				//p[1, 1] = -1.0f;
 
-				ProjMatrixToTrueSkyFormat_HDRP(GetRenderStyle(camera.camera), p, projMatrices,0,true);
+				ProjMatrixToTrueSkyFormat_HDRP(GetRenderStyle(camera.camera), p, projMatrices, 0, false);
 				unityViewStruct.projMatrices4x4 = projMatrices;
 			}
+		}
+		protected void ViewMatrixToTrueSkyFormat_HDRP2( UnityEngine.Matrix4x4 m, float[] view)
+		{
+			float metresPerUnit = ts.MetresPerUnit;
+			m = m.transpose;
+			UnityEngine.Matrix4x4 n = m.inverse;
+			UnityEngine.Matrix4x4 y;
+			{
+				// Swap the y and z columns - this makes a left-handed matrix into right-handed:
+				y.m00 = n.m00;
+				y.m01 = n.m02;
+				y.m02 = n.m01;
+				y.m03 = n.m03;
+
+				y.m10 = n.m10;
+				y.m11 = n.m12;
+				y.m12 = n.m11;
+				y.m13 = n.m13;
+
+				y.m20 = n.m20;
+				y.m21 = n.m22;
+				y.m22 = n.m21;
+				y.m23 = n.m23;
+				// Swap the position values as well, as Unity uses y=up, we use z:
+				y.m30 = n.m30 * metresPerUnit;
+				y.m31 = n.m32 * metresPerUnit;
+				y.m32 = n.m31 * metresPerUnit;
+				y.m33 = n.m33;
+			}
+			// Invert the matrix, so it converts from world to view
+			UnityEngine.Matrix4x4 z = y.inverse;
+			MatrixToFloatArray(z, view, 0);
 		}
 		CubemapFace ToCubemapFace(int faceMask)
 		{
@@ -614,6 +535,28 @@ namespace simul
 			proj[offset + 14] = m.m32;
 			proj[offset + 15] = m.m33 * metresPerUnit;
 		}
+		protected void MatrixToFloatArray( UnityEngine.Matrix4x4 m, float[] view, int offset = 0)
+		{
+			view[offset + 00] = m.m00;
+			view[offset + 01] = m.m01;
+			view[offset + 02] = m.m02;
+			view[offset + 03] = m.m03;
+								
+			view[offset + 04] = m.m10;
+			view[offset + 05] = m.m11;
+			view[offset + 06] = m.m12;
+			view[offset + 07] = m.m13;
+								
+			view[offset + 08] = m.m20;
+			view[offset + 09] = m.m21;
+			view[offset + 10] = m.m22;
+			view[offset + 11] = m.m23;
+							
+			view[offset + 12] = m.m30;
+			view[offset + 13] = m.m31;
+			view[offset + 14] = m.m32;
+			view[offset + 15] = m.m33;
+		}
 		protected void ViewMatrixToTrueSkyFormat_HDRP(RenderStyle renderStyle, UnityEngine.Matrix4x4 m, float[] view, int offset = 0)
 		{
 			if (!tsValid)
@@ -650,25 +593,7 @@ namespace simul
 			}
 			// Invert the matrix, so it converts from world to view
 			UnityEngine.Matrix4x4 z = y.inverse;
-			view[offset + 00] = z.m00;
-			view[offset + 01] = z.m01;
-			view[offset + 02] = z.m02;
-			view[offset + 03] = z.m03;
-
-			view[offset + 04] = z.m10;
-			view[offset + 05] = z.m11;
-			view[offset + 06] = z.m12;
-			view[offset + 07] = z.m13;
-
-			view[offset + 08] = z.m20;
-			view[offset + 09] = z.m21;
-			view[offset + 10] = z.m22;
-			view[offset + 11] = z.m23;
-
-			view[offset + 12] = z.m30;
-			view[offset + 13] = z.m31;
-			view[offset + 14] = z.m32;
-			view[offset + 15] = z.m33;
+			MatrixToFloatArray(z,view,offset);
 		}
 	}
 }
