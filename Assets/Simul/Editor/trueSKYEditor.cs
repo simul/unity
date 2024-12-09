@@ -174,8 +174,6 @@ namespace simul
 		[SerializeField]
 		static bool rainbows = false;
 		[SerializeField]
-		static bool water = false;
-		[SerializeField]
 		static bool debugging = false;
 		//[SerializeField]
 		//static bool Textures = false; On the Camera
@@ -833,7 +831,8 @@ namespace simul
 				shadows = EditorGUILayout.Foldout(shadows, "Lighting/Shadows", outerFoldoutStyle);
 				if (shadows)
 				{
-					trueSky.CloudShadowRangeKm = EditorGUILayout.IntSlider("Shadow Range KM", trueSky.CloudShadowRangeKm, 100, (int)trueSky.MaxCloudDistanceKm);
+					trueSky.CloudShadowRangeKm = EditorGUILayout.IntSlider("Shadow Range KM", trueSky.CloudShadowRangeKm, 10, (int)trueSky.MaxCloudDistanceKm);
+					trueSky.CloudShadowStrength = EditorGUILayout.Slider("Shadow Strength", trueSky.CloudShadowStrength, 0.1F, 1.0F);
 					//trueSky.CloudShadowResolution = EditorGUILayout.IntSlider("Cloud Shadow Resolution", trueSky.CloudShadowResolution, 64, 1024);
 					trueSky.CubemapGroundColour = EditorGUILayout.ColorField("Cubemap Ground Colour", trueSky.CubemapGroundColour);
 				}

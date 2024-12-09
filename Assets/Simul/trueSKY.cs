@@ -4347,6 +4347,24 @@ namespace simul
 		}
 		[SerializeField]
 		float _cloudShadowStrength = 1.0F;
+		public float CloudShadowStrength
+		{
+			get
+			{
+				return _cloudShadowStrength;
+			}
+			set
+			{
+				if (_cloudShadowStrength != value) try
+					{
+						_cloudShadowStrength = value;
+					}
+					catch (Exception exc)
+					{
+						UnityEngine.Debug.Log(exc.ToString());
+					}
+			}
+		}
 		
 
 		[SerializeField]

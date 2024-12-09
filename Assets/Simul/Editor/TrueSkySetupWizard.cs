@@ -431,8 +431,6 @@ namespace simul
 #endif
                 mainCamera.gameObject.layer = ts_layer_index;
 			}
-			// Don't do this for HDRP, we just use Reflection Probes.
-#if !USING_HDRP
 			if (createCubemapProbe)
 			{           // must be after trueSKY obj assigned, in case assigning probe to this instead of mainCam
 
@@ -440,15 +438,16 @@ namespace simul
 
 				if (trueSky.gameObject.GetComponent<TrueSkyCubemapProbe>() != null)
 					DestroyImmediate(trueSky.gameObject.GetComponent<TrueSkyCubemapProbe>());
-
+#if USING_HDRP
+				// Don't do this for HDRP, we just use Reflection Probes.
+#else
 				trueSky.gameObject.AddComponent<TrueSkyCubemapProbe>();
-
+#endif
 				Material trueSKYSkyboxMat = Resources.Load("trueSKYSkybox", typeof(Material)) as Material;
 				RenderSettings.skybox = trueSKYSkyboxMat;
 			}
-#endif
-			// If there is not light on the scene, add one:
-			if (lightGameObject == null)
+				// If there is not light on the scene, add one:
+				if (lightGameObject == null)
 			{
 				lightGameObject = new GameObject("TrueSkyDirectionalLight");
 				Light dirLight = lightGameObject.AddComponent<Light>();
@@ -528,7 +527,7 @@ namespace simul
 				mainCamera.gameObject.AddComponent<TrueSkyCamera>();
 #endif
 
-            if (createCubemapProbe)
+			if (createCubemapProbe)
             {           // must be after trueSKY obj assigned, in case assigning probe to this instead of mainCam
 
                 UnityEngine.Object[] objects = FindObjectsByType(typeof(TrueSkyCubemapProbe), FindObjectsSortMode.None);
@@ -536,9 +535,12 @@ namespace simul
                 if (trueSky.gameObject.GetComponent<TrueSkyCubemapProbe>() != null)
                     DestroyImmediate(trueSky.gameObject.GetComponent<TrueSkyCubemapProbe>());
 
-                trueSky.gameObject.AddComponent<TrueSkyCubemapProbe>();
+#if USING_HDRP
+#else
+				trueSky.gameObject.AddComponent<TrueSkyCubemapProbe>();
+#endif
 
-                Material trueSKYSkyboxMat = Resources.Load("trueSKYSkybox", typeof(Material)) as Material;
+				Material trueSKYSkyboxMat = Resources.Load("trueSKYSkybox", typeof(Material)) as Material;
                 RenderSettings.skybox = trueSKYSkyboxMat;
             }
 
