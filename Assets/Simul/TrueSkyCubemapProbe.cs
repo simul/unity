@@ -235,6 +235,8 @@ namespace simul
 				return;
 			if (cubemapRenderTexture == null)
 				CreateTexture();
+			if (cubemapRenderTexture == null)
+				return;
 			// Don't render if is not ready yet
 			if (!cubemapRenderTexture.IsCreated())
 			{
