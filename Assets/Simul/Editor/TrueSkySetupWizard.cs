@@ -10,7 +10,6 @@ using UnityEditor.Rendering;
 using Unity.VisualScripting;
 
 
-
 #if USING_HDRP
 using UnityEngine.Rendering.HighDefinition;
 #endif
@@ -434,13 +433,30 @@ namespace simul
 			if (createCubemapProbe)
 			{           // must be after trueSKY obj assigned, in case assigning probe to this instead of mainCam
 
-				UnityEngine.Object[] objects = FindObjectsByType(typeof(TrueSkyCubemapProbe), FindObjectsSortMode.None);
-
 				if (trueSky.gameObject.GetComponent<TrueSkyCubemapProbe>() != null)
 					DestroyImmediate(trueSky.gameObject.GetComponent<TrueSkyCubemapProbe>());
 #if USING_HDRP
-				// Don't do this for HDRP, we just use Reflection Probes.
+
+				UnityEngine.Object[] objects = FindObjectsByType(typeof(ReflectionProbe), FindObjectsSortMode.None);
+				if(objects.Length==0)
+				{
+					GameObject probeGameObject = new GameObject("Realtime Reflection Probe");
+					ReflectionProbe probeComponent = probeGameObject.AddComponent<ReflectionProbe>();
+
+					// The probe will contribute to reflections inside a box of size 10x10x10 centered on the position of the probe
+					probeComponent.size = new Vector3(10000, 10000, 10000);
+
+					// Set the type to realtime and refresh the probe every frame
+					probeComponent.mode = UnityEngine.Rendering.ReflectionProbeMode.Realtime;
+					probeComponent.refreshMode = UnityEngine.Rendering.ReflectionProbeRefreshMode.EveryFrame;
+					// Don't do this for HDRP, we just use Reflection Probes.
+					probeComponent.hdr=true;
+					probeComponent.timeSlicingMode=UnityEngine.Rendering.ReflectionProbeTimeSlicingMode.IndividualFaces;
+					probeComponent.renderDynamicObjects=false;
+				}
 #else
+				UnityEngine.Object[] objects = FindObjectsByType(typeof(TrueSkyCubemapProbe), FindObjectsSortMode.None);
+
 				trueSky.gameObject.AddComponent<TrueSkyCubemapProbe>();
 #endif
 				Material trueSKYSkyboxMat = Resources.Load("trueSKYSkybox", typeof(Material)) as Material;
