@@ -4193,7 +4193,6 @@ namespace simul
 			}
 		}
 
-
         public RenderTextureHolder GlobalViewTexture
         {
             get

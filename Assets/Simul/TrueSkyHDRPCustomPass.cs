@@ -206,7 +206,7 @@ namespace simul
 						unityUIViewStruct.targetViewports[0].y = 0;
 						unityUIViewStruct.targetViewports[0].w = ts.GlobalViewTexture.renderTexture.width;
 						unityUIViewStruct.targetViewports[0].h = ts.GlobalViewTexture.renderTexture.height;
-						unityUIViewStruct.renderStyle = RenderStyle.DRAW_OVERLAYS | RenderStyle.UNITY_STYLE | RenderStyle.DRAW_GLOBAL_VIEW_UI | RenderStyle.CLEAR_SCREEN;
+						unityUIViewStruct.renderStyle = RenderStyle.UNITY_STYLE | RenderStyle.DRAW_GLOBAL_VIEW_UI | RenderStyle.CLEAR_SCREEN;
 						Marshal.StructureToPtr(unityUIViewStruct, unityUIGlobalViewStructPtr, !il2cppScripting);
 
 						cmd.IssuePluginEventAndData(UnityGetEditorUIFuncWithData(), GetTRUESKY_EVENT_ID() + cbuf_view_id + 3, unityUIGlobalViewStructPtr);

@@ -5,6 +5,8 @@ using UnityEngine.UIElements;
 using UnityEngine.Rendering.HighDefinition;
 using static UnityEngine.GraphicsBuffer;
 using UnityEditorInternal;
+using Codice.CM.Common;
+using System.Reflection;
 
 namespace simul
 {
@@ -242,9 +244,10 @@ namespace simul
     {
         [MenuItem("Window/trueSKY Global View")]
         public static void ShowWindow()
-        {
-            GetWindow<TrueSkyGlobalViewWindow>("Global View");
-        }
+		{
+			var projT = Assembly.GetAssembly(typeof(UnityEditor.Editor)).GetType("UnityEditor.InspectorWindow");
+			GetWindow<TrueSkyGlobalViewWindow>("Global View", true, new System.Type[] { projT });
+		}
 
         protected override RenderTexture GetRenderTexture(trueSKY ts)
         {
@@ -261,9 +264,11 @@ namespace simul
     {
         [MenuItem("Window/trueSKY Properties")]
         public static void ShowWindow()
-        {
-            GetWindow<TrueSkyPropertiesWindow>("Properties");
-        }
+		{
+			var inspT = Assembly.GetAssembly(typeof(UnityEditor.Editor)).GetType("UnityEditor.InspectorWindow");
+			System.Type[] tps = new System.Type[] { inspT };
+			GetWindow<TrueSkyPropertiesWindow>("Properties", true, tps);
+		}
 
         protected override RenderTexture GetRenderTexture(trueSKY ts)
         {
@@ -281,8 +286,11 @@ namespace simul
         [MenuItem("Window/trueSKY Sequencer")]
         public static void ShowWindow()
         {
-            GetWindow<TrueSkySequencerWindow>("Sequencer");
-        }
+			// TRY to dock with Project Browser...
+			var projT = Assembly.GetAssembly(typeof(UnityEditor.Editor)).GetType("UnityEditor.ProjectBrowser");
+			GetWindow<TrueSkySequencerWindow>("Sequencer",true, new System.Type[] { projT });
+			TrueSkyPropertiesWindow.ShowWindow();
+		}
 
         protected override RenderTexture GetRenderTexture(trueSKY ts)
         {
