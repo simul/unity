@@ -15,6 +15,8 @@ using UnityEngine.Rendering;
 using static simul.TrueSkyPluginRenderFunctionImporter;
 using static simul.TrueSkyCameraBase;
 using static UnityEngine.Rendering.DebugUI;
+using UnityEngine.Rendering.HighDefinition;
+
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -5024,6 +5026,14 @@ namespace simul
 			return c;
 		}
 
+		public bool isCloudShadowScaleValid()
+		{
+			if(_cloudShadowScale>0.0f)
+				return true;
+			else
+				return false;
+		}
+		float _cloudShadowScale=0.0f;
 		public float getCloudShadowScale()
 		{
 			if (!_initialized)
@@ -5032,7 +5042,10 @@ namespace simul
 			{
 				float r = StaticGetRenderFloat("cloudshadowscale.x");
 				float metresPerUnit = trueSKY.GetTrueSky().MetresPerUnit;
-				return 1000.0F * r/ metresPerUnit;
+				_cloudShadowScale= 1000.0F * r/ metresPerUnit;
+				if(_cloudShadowScale==0.0f)
+					return 1.0f;
+				return _cloudShadowScale;
 			}
 			catch (Exception exc)
 			{
@@ -5218,14 +5231,14 @@ namespace simul
 
 				UnityEngine.Debug.Log("trueSKY version:" + SimulVersionMajor + "." + SimulVersionMinor + "." + SimulVersionBuild);
 				UpdateDefines();
-				
+				SetHDRPCustomPasses();
 
 #if TRUESKY_LOGGING
 				StaticEnableLogging("trueSKYUnityRender.log");
 #endif
 
-                // Push the shader and texture paths:
-                if (!Application.isEditor)
+				// Push the shader and texture paths:
+				if (!Application.isEditor)
 				{
 #if UNITY_PS4
 					StaticPushPath("ShaderBinaryPath", Application.streamingAssetsPath + @"/Simul/shaderbin/ps4");
@@ -5402,6 +5415,54 @@ namespace simul
 			{
 				StaticSetRenderTexture("Background", _backgroundTexture.GetNativeTexturePtr());
 			}
+		}
+
+		public void SetHDRPCustomPasses()
+		{
+#if USING_HDRP
+			var passVolumes= gameObject.GetComponents<CustomPassVolume>();
+			foreach (var V in passVolumes)
+			{
+				if(V.customPasses.Count==0)
+					DestroyImmediate(V);
+			}
+			passVolumes = gameObject.GetComponents<CustomPassVolume>();
+			if (passVolumes.Length==0)
+			{
+				simul.TrueSkyHDRPCustomPass TrueSkyMainPass = new simul.TrueSkyHDRPCustomPass();
+				TrueSkyMainPass.name = "trueSKY - Before Pre Refraction(Main Render)";
+				CustomPassVolume MainPassVolume = gameObject.AddComponent<CustomPassVolume>();
+				MainPassVolume.injectionPoint = CustomPassInjectionPoint.BeforePreRefraction;
+				MainPassVolume.customPasses.Add(TrueSkyMainPass);
+
+				CustomPassVolume TranslucentVolume;
+				simul.TrueSkyHDRPCustomPass TrueSkyTranslucentPass = new simul.TrueSkyHDRPCustomPass();
+				TrueSkyTranslucentPass.name = "trueSKY - Before Post Process(Translucent Effects)";
+				TranslucentVolume = gameObject.AddComponent<CustomPassVolume>();
+				TranslucentVolume.injectionPoint = CustomPassInjectionPoint.BeforePostProcess;
+				TranslucentVolume.customPasses.Add(TrueSkyTranslucentPass);
+
+				CustomPassVolume OverlayVolume;
+				simul.TrueSkyHDRPCustomPass TrueSkyOverlayPass = new simul.TrueSkyHDRPCustomPass();
+				TrueSkyOverlayPass.name = "trueSKY - After Post Process(Overlay)";
+				OverlayVolume = gameObject.AddComponent<CustomPassVolume>();
+				OverlayVolume.injectionPoint = CustomPassInjectionPoint.AfterPostProcess;
+				OverlayVolume.customPasses.Add(TrueSkyOverlayPass);
+				TrueSkyOverlayPass.enabled = false; //disabled by default. 
+
+				CustomPassVolume UIVolume;
+				simul.TrueSkyHDRPCustomPass TrueSkyUIPass = new simul.TrueSkyHDRPCustomPass();
+				TrueSkyUIPass.name = "trueSKY - After Everything";
+				UIVolume = gameObject.AddComponent<CustomPassVolume>();
+				UIVolume.injectionPoint = CustomPassInjectionPoint.AfterOpaqueDepthAndNormal;
+				UIVolume.customPasses.Add(TrueSkyUIPass);
+				TrueSkyUIPass.enabled = true;
+			}
+			if (UnityEngine.Rendering.GraphicsSettings.allConfiguredRenderPipelines.Length > 0)
+			{
+				HDRP_RenderPipelineAsset = UnityEngine.Rendering.GraphicsSettings.allConfiguredRenderPipelines[0];
+			}
+#endif
 		}
 	}
 }

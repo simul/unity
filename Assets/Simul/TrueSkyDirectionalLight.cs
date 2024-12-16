@@ -171,6 +171,12 @@ public class TrueSkyDirectionalLight : MonoBehaviour
 
 	void UpdateCookie()
 	{
+		float shadowSize = 1.0F*mTsInstance.getCloudShadowScale();
+		if(!mTsInstance.isCloudShadowScaleValid())
+		{
+			mLightComponent.cookie=null;
+			return;
+		}
 		mLightComponent.cookie = mTsInstance.CloudShadowTexture.renderTexture;
 		if(mLightComponent.cookie==null)
 			return;
@@ -190,7 +196,6 @@ public class TrueSkyDirectionalLight : MonoBehaviour
 		// For that layer, get its interpolated (i.e. current) keyframe:
 		uint currentKeyframe = mTsInstance.GetInterpolatedCloudKeyframe(layer_uid);
 		float sunHeight = mTsInstance.GetKeyframeValue<float>(currentKeyframe, "cloudBase") * 1000.0f;
-		float shadowSize = 1.0F*mTsInstance.getCloudShadowScale();
 		//float halfShadowSize		= shadowSize * 0.5f;
 		//transform.position = new Vector3(0.0f, sunHeight, 0.0f);
 		mLightComponent.cookieSize = shadowSize ; //would be moved if using shaderGraph.

@@ -422,7 +422,7 @@ namespace simul
 			else
 			{
 #if USING_HDRP
-                SetHDRPCustomPasses();
+				trueSky.SetHDRPCustomPasses();
 #else
 			trueSkyCamera = mainCamera.gameObject.GetComponent<TrueSkyCamera>();
 			if (trueSkyCamera == null)
@@ -536,7 +536,7 @@ namespace simul
 
             mainCamera.gameObject.layer = ts_layer_index;
 #if USING_HDRP
-            SetHDRPCustomPasses();
+			trueSky.SetHDRPCustomPasses();
 #else
 			TrueSkyCamera trueSkyCamera = mainCamera.gameObject.GetComponent<TrueSkyCamera>();
 			if (trueSkyCamera == null)
@@ -668,47 +668,6 @@ namespace simul
             tagLayerManager.ApplyModifiedProperties();
         }
 
-		void SetHDRPCustomPasses()
-		{
-		#if USING_HDRP
-            simul.TrueSkyHDRPCustomPass TrueSkyMainPass = new simul.TrueSkyHDRPCustomPass();
-            simul.TrueSkyHDRPCustomPass TrueSkyTranslucentPass = new simul.TrueSkyHDRPCustomPass();
-            simul.TrueSkyHDRPCustomPass TrueSkyOverlayPass = new simul.TrueSkyHDRPCustomPass();
-            simul.TrueSkyHDRPCustomPass TrueSkyUIPass = new simul.TrueSkyHDRPCustomPass();
-            CustomPassVolume MainPassVolume = trueSky.gameObject.GetComponent<CustomPassVolume>();
-            if (MainPassVolume == null)
-            {
-                TrueSkyMainPass.name = "trueSKY - Before Pre Refraction(Main Render)";
-                MainPassVolume = trueSky.gameObject.AddComponent<CustomPassVolume>();
-                MainPassVolume.injectionPoint = CustomPassInjectionPoint.BeforePreRefraction;
-                MainPassVolume.customPasses.Add(TrueSkyMainPass);
-
-                CustomPassVolume TranslucentVolume;
-                TrueSkyTranslucentPass.name = "trueSKY - Before Post Process(Translucent Effects)";
-                TranslucentVolume = trueSky.gameObject.AddComponent<CustomPassVolume>();
-                TranslucentVolume.injectionPoint = CustomPassInjectionPoint.BeforePostProcess;
-                TranslucentVolume.customPasses.Add(TrueSkyTranslucentPass);
-
-                CustomPassVolume OverlayVolume;
-                TrueSkyOverlayPass.name = "trueSKY - After Post Process(Overlay)";
-                OverlayVolume = trueSky.gameObject.AddComponent<CustomPassVolume>();
-                OverlayVolume.injectionPoint = CustomPassInjectionPoint.AfterPostProcess;
-                OverlayVolume.customPasses.Add(TrueSkyOverlayPass);
-                TrueSkyOverlayPass.enabled = false; //disabled by default. 
-
-                CustomPassVolume UIVolume;
-                TrueSkyUIPass.name = "trueSKY - After Everything";
-                UIVolume = trueSky.gameObject.AddComponent<CustomPassVolume>();
-                UIVolume.injectionPoint = CustomPassInjectionPoint.AfterOpaqueDepthAndNormal;
-                UIVolume.customPasses.Add(TrueSkyUIPass);
-                TrueSkyUIPass.enabled = true;
-            }
-            if (UnityEngine.Rendering.GraphicsSettings.allConfiguredRenderPipelines.Length > 0)
-            {
-                trueSky.HDRP_RenderPipelineAsset = UnityEngine.Rendering.GraphicsSettings.allConfiguredRenderPipelines[0];
-            }
-		#endif
-        }
         void FindTrueSky()
 		{
 			// And we need a trueSKY object in the scene.

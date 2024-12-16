@@ -239,7 +239,7 @@ MonoBehaviour:
       type: {class: LookDevVolumeProfileSettings, ns: UnityEngine.Rendering.HighDefinition, asm: Unity.RenderPipelines.HighDefinition.Runtime}
       data:
         m_Version: 0
-        m_VolumeProfile: {fileID: 11400000, guid: 49ab52254be40c24595fd040c56e54be, type: 2}
+        m_VolumeProfile: {fileID: 11400000, guid: d48eabcc205b5e14f98771b15ee6b8e4, type: 2}
     - rid: 295298366981799940
       type: {class: WaterSystemRuntimeResources, ns: UnityEngine.Rendering.HighDefinition, asm: Unity.RenderPipelines.HighDefinition.Runtime}
       data:
@@ -507,7 +507,7 @@ MonoBehaviour:
       type: {class: HDRPDefaultVolumeProfileSettings, ns: UnityEngine.Rendering.HighDefinition, asm: Unity.RenderPipelines.HighDefinition.Runtime}
       data:
         m_Version: 0
-        m_VolumeProfile: {fileID: 11400000, guid: 434644c30657e7b42824677dd742bccf, type: 2}
+        m_VolumeProfile: {fileID: 11400000, guid: cda79ad6d38c2b94f94bb39cd471423d, type: 2}
     - rid: 295298366981799955
       type: {class: HDRPRayTracingResources, ns: UnityEngine.Rendering.HighDefinition, asm: Unity.RenderPipelines.HighDefinition.Runtime}
       data:
