@@ -345,9 +345,10 @@ namespace simul
 				{
 					hdrpCameraObject = new GameObject("TrueSkyCubemapProbe", typeof(Camera));
 					hdrpCameraObject.AddComponent<HDAdditionalCameraData>();
-                    //UnityEngine.Debug.LogWarning("trueSKY is using HDRP");
+					hdrpCameraObject.hideFlags = HideFlags.HideAndDontSave;
+					//UnityEngine.Debug.LogWarning("trueSKY is using HDRP");
 
-                    hdrpCameraObject.gameObject.layer = trueSKY.GetTrueSky().trueSKYLayerIndex;
+					hdrpCameraObject.gameObject.layer = trueSKY.GetTrueSky().trueSKYLayerIndex;
 
 					if (hdrpCameraObject.GetComponent<Camera>() == null)
 						hdrpCameraObject.AddComponent<Camera>();
